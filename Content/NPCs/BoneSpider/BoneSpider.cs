@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Soulfire Creeper");
+            // DisplayName.SetDefault("Soulfire Creeper");
             Main.npcFrameCount[NPC.type] = 8;
         }
 

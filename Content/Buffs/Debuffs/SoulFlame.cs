@@ -13,7 +13,7 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
             Main.debuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
-            DisplayName.SetDefault("Flame Test");
+            // DisplayName.SetDefault("Flame Test");
         }
 
         public override string Texture => "Terraria/Images/Buff_" + BuffID.OnFire;

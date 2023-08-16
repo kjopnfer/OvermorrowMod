@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Armor.SSARG
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("S.S.A.R.G Reactor");
+            // DisplayName.SetDefault("S.S.A.R.G Reactor");
         }
 
         public override void SetDefaults()

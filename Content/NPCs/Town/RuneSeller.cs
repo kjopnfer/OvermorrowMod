@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.NPCs.Town
 {
     [AutoloadHead]
-    public class RuneSeller : ModNPC
+    public class RuneSeller : ModNPC // This NPC is outdated
     {
         public override string Texture => "OvermorrowMod/Content/NPCs/Town/RuneSeller";
 
@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.NPCs.Town
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rune Merchant");
+            // DisplayName.SetDefault("Rune Merchant");
             Main.npcFrameCount[NPC.type] = 26;
             NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
             NPCID.Sets.AttackFrameCount[NPC.type] = 4;
@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.NPCs.Town
             AnimationType = NPCID.Guide;
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money)
+        public override bool CanTownNPCSpawn(int numTownNPCs)/* tModPorter Suggestion: Copy the implementation of NPC.SpawnAllowed_Merchant in vanilla if you to count money, and be sure to set a flag when unlocked, so you don't count every tick. */
         {
             // EoW or BoC
             return NPC.downedBoss2 && Main.player.Any(x => x.active);
@@ -78,21 +78,23 @@ namespace OvermorrowMod.Content.NPCs.Town
             return Main.rand.Next(dialogue);
         }
 
-        public override void SetupShop(Chest shop, ref int nextSlot)
+        public override void AddShops()
         {
-            shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
+            base.AddShops();
+        }
+
+        public override void ModifyActiveShop(string shopName, Item[] items)
+        {
+            /*shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
             nextSlot++;
 
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
-            nextSlot++;
+            nextSlot++;*/
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
-            if (firstButton)
-            {
-                shop = true;
-            }
+           
         }
 
         public override void SetChatButtons(ref string button, ref string button2)

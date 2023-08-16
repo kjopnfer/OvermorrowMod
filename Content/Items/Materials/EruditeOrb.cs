@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Erudite Orb");
-            Tooltip.SetDefault("'You know what I like a lot more than materialistic things? Knowledge!'");
+            // DisplayName.SetDefault("Erudite Orb");
+            // Tooltip.SetDefault("'You know what I like a lot more than materialistic things? Knowledge!'");
         }
 
         public override void SetDefaults()

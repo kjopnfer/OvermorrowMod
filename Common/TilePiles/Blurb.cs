@@ -7,7 +7,7 @@ namespace OvermorrowMod.Common.TilePiles
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
+            // Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
         }
 
         public override void SetDefaults()

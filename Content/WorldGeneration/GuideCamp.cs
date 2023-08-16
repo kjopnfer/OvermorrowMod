@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 {
     public class GuideCamp : ModSystem
     {
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
             if (GuideIndex != -1)

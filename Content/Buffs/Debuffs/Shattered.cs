@@ -8,8 +8,8 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shattered");
-            Description.SetDefault("Your gauntlets have been disabled!");
+            // DisplayName.SetDefault("Shattered");
+            // Description.SetDefault("Your gauntlets have been disabled!");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;

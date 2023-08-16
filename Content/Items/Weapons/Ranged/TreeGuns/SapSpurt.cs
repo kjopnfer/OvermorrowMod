@@ -11,7 +11,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sap Spurt");
+            // DisplayName.SetDefault("Sap Spurt");
         }
         public override void SetDefaults()
         {
@@ -77,7 +77,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sap Spurt");
+            // DisplayName.SetDefault("Sap Spurt");
         }
         public override void SetDefaults()
         {

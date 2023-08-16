@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Dev
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Chilean's Weeb Mask");
-            Tooltip.SetDefault("'This is an anime server only'");
+            // DisplayName.SetDefault("Chilean's Weeb Mask");
+            // Tooltip.SetDefault("'This is an anime server only'");
         }
 
         public override void SetDefaults()

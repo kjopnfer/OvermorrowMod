@@ -11,8 +11,8 @@ namespace OvermorrowMod.Content.Buffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Steal!");
-            Description.SetDefault("You've taken something from the enemy, better put it to good use...");
+            // DisplayName.SetDefault("Steal!");
+            // Description.SetDefault("You've taken something from the enemy, better put it to good use...");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = false;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;

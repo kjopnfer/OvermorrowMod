@@ -13,7 +13,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
         private Vector2 InitialPosition;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Scimitar");
+            // DisplayName.SetDefault("Scimitar");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }

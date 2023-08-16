@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Crystallized Mana Fragment");
-            Tooltip.SetDefault("'Excess mana from cast spells tend to seep into the ground, crystallizing over time'");
+            // DisplayName.SetDefault("Crystallized Mana Fragment");
+            // Tooltip.SetDefault("'Excess mana from cast spells tend to seep into the ground, crystallizing over time'");
         }
 
         public override void SetDefaults()

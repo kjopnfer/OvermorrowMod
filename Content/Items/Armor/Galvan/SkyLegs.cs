@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Armor.Galvan
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Galvan Boots");
+            // DisplayName.SetDefault("Ancient Galvan Boots");
         }
 
         public override void SetDefaults()

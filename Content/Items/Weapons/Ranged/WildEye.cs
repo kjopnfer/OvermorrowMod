@@ -165,11 +165,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override GunType GunType => GunType.Revolver;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wild Eye");
-            Tooltip.SetDefault("{Keyword:Fail}: Your next clip has 1 less bullet\n" +
+            // DisplayName.SetDefault("Wild Eye");
+            /* Tooltip.SetDefault("{Keyword:Fail}: Your next clip has 1 less bullet\n" +
                 "{Keyword:Alt}: Consume 5 bullets to gain 100% critical strike chance for this gun\n" +
                 "Your {Keyword:Alt} can only be activated with 6 or more bullets\n" +
-                "'It only takes one bullet'");
+                "'It only takes one bullet'"); */
         }
 
         public override void SafeSetDefaults()

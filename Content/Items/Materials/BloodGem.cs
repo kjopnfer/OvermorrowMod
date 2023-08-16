@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood Gem");
+            // DisplayName.SetDefault("Blood Gem");
         }
 
         public override void SetDefaults()

@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -28,8 +29,8 @@ namespace OvermorrowMod.Content.Tiles.Underground
 
             DustType = DustID.Stone;
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Crawler Egg");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Crawler Egg");
             AddMapEntry(new Color(49, 201, 221), name);
         }
 

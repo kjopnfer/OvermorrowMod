@@ -12,7 +12,7 @@ namespace OvermorrowMod.Content.Projectiles.Pets
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Atom");
+            // DisplayName.SetDefault("Atom");
             Main.projFrames[Projectile.type] = 8;
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;

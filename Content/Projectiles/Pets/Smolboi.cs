@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Projectiles.Pets
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Smolboi");
+            // DisplayName.SetDefault("Smolboi");
             Main.projFrames[Projectile.type] = 3;
             Main.projPet[Projectile.type] = true;
         }

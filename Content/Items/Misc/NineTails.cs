@@ -13,9 +13,9 @@ namespace OvermorrowMod.Content.Items.Misc
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Cat-o-Nine Tails");
-            Tooltip.SetDefault("Useable at the Dark Pantheon\n" +
-                "Invokes the Curse of Caerea");
+            // DisplayName.SetDefault("The Cat-o-Nine Tails");
+            /* Tooltip.SetDefault("Useable at the Dark Pantheon\n" +
+                "Invokes the Curse of Caerea"); */
         }
 
         public override void SetDefaults()

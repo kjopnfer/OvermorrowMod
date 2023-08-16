@@ -218,7 +218,7 @@ namespace OvermorrowMod.Common
         public float maxTime = 30;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Bolt");
+            // DisplayName.SetDefault("Lightning Bolt");
         }
         public override void SafeSetDefaults()
         {
@@ -247,7 +247,7 @@ namespace OvermorrowMod.Common
         public float maxTime = 360;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Breath");
+            // DisplayName.SetDefault("Lightning Breath");
         }
         public override void SafeSetDefaults()
         {
@@ -277,7 +277,7 @@ namespace OvermorrowMod.Common
         public float maxTime = 90;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Spark");
+            // DisplayName.SetDefault("Lightning Spark");
         }
         public override void SafeSetDefaults()
         {
@@ -311,7 +311,7 @@ namespace OvermorrowMod.Common
         public float maxTime = 600;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Beam");
+            // DisplayName.SetDefault("Lightning Beam");
         }
         public override void SafeSetDefaults()
         {
@@ -339,7 +339,7 @@ namespace OvermorrowMod.Common
         public float maxTime = 180;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Breath");
+            // DisplayName.SetDefault("Lightning Breath");
         }
         public override void SafeSetDefaults()
         {
@@ -367,7 +367,7 @@ namespace OvermorrowMod.Common
         public float maxTime = 15;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Storm Bolt");
+            // DisplayName.SetDefault("Storm Bolt");
         }
         public override void SafeSetDefaults()
         {

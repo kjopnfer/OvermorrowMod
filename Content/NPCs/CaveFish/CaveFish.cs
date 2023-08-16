@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.CaveFish
         protected bool bounces = true;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sullen Angler");
+            // DisplayName.SetDefault("Sullen Angler");
             Main.npcFrameCount[NPC.type] = 4;
         }
 

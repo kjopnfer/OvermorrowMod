@@ -8,8 +8,8 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Watched");
-            Description.SetDefault("'It sees you'");
+            // DisplayName.SetDefault("Watched");
+            // Description.SetDefault("'It sees you'");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;

@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Ammo
     {
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("10 Armor Penetration\n25% Increased Critical Strike Damage");
+			// Tooltip.SetDefault("10 Armor Penetration\n25% Increased Critical Strike Damage");
 		}
 
 		public override void SetDefaults()

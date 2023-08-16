@@ -54,9 +54,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             GraniteLauncher = false;
         }
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Projectile, consider using OnHitNPC instead */
         {
-            if (crit && proj.DamageType == DamageClass.Ranged)
+            if (hit.Crit && proj.DamageType == DamageClass.Ranged)
             {
                 if (Player.GetModPlayer<GunPlayer>().GraniteEnergyCount < 8)
                 {
@@ -71,8 +71,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     Projectile.NewProjectile(null, target.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 3, ModContent.ProjectileType<GraniteEnergy>(), 0, 0f, Player.whoAmI);
                 }
             }
-
-            base.OnHitNPCWithProj(proj, target, damage, knockback, crit);
         }
     }
 }

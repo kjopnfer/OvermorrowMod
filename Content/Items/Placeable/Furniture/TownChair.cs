@@ -6,8 +6,8 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wooden Chair");
-            SacrificeTotal = 1;
+            // DisplayName.SetDefault("Wooden Chair");
+            Item.ResearchUnlockCount = 1;
         }
 
         public override void SetDefaults()

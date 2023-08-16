@@ -213,7 +213,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Boss + "SandstormBoss/Hilt";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Laser Artifact");
+            // DisplayName.SetDefault("Forbidden Laser Artifact");
         }
 
         public override void SetDefaults()
@@ -376,7 +376,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Boss + "SandstormBoss/Gem";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Beam Artifact");
+            // DisplayName.SetDefault("Forbidden Beam Artifact");
         }
 
         public override void SetDefaults()
@@ -568,7 +568,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Boss + "SandstormBoss/Mask";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Blaster Artifact");
+            // DisplayName.SetDefault("Forbidden Blaster Artifact");
         }
 
         public override void SetDefaults()

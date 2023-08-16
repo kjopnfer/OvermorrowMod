@@ -8,7 +8,7 @@ namespace OvermorrowMod.Common.Detours
 {
     public class ParticleDrawing
     {
-        public static void DrawParticles(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)
+        public static void DrawParticles(Terraria.On_Main.orig_DrawInterface orig, Main self, GameTime time)
         {
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
             Particle.DrawParticles(Main.spriteBatch);

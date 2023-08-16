@@ -10,10 +10,10 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Snakebite");
-            Tooltip.SetDefault("{Type:Arrows} and {Type:Melee} gain {Increase:5} armor penetration\n" +
+            // DisplayName.SetDefault("Snakebite");
+            /* Tooltip.SetDefault("{Type:Arrows} and {Type:Melee} gain {Increase:5} armor penetration\n" +
                 "{Type:Arrows} and {Type:Melee} have a {Increase:20%} chance to inflict <Debuff:Poison>\n" +
-                "If the target's defense is less than your armor penetration, inflict <Debuff:Acid Venom> instead");
+                "If the target's defense is less than your armor penetration, inflict <Debuff:Acid Venom> instead"); */
         }
 
         public override void SetDefaults()

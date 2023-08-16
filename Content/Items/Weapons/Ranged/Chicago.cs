@@ -101,8 +101,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override GunType GunType => GunType.SubMachineGun;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Chicago");
-            Tooltip.SetDefault("{Keyword:Reload}: Fire 2 bullets per click");
+            // DisplayName.SetDefault("Chicago");
+            // Tooltip.SetDefault("{Keyword:Reload}: Fire 2 bullets per click");
         }
 
         public override void SafeSetDefaults()

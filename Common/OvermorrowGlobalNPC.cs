@@ -6,7 +6,6 @@ using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
 using OvermorrowMod.Content.NPCs.CaveFish;
-using OvermorrowMod.Content.Projectiles.Hexes;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -30,43 +29,17 @@ namespace OvermorrowMod.Common
             LightningMarked = false;
         }
 
-        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref int damage, ref float knockback, ref bool crit)
+        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
-            if (npc.HasBuff<PhoenixMarkBuff>()) damage += (int)(damage * 0.25f);
+            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 0.25f;
         }
-        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
-            if (npc.HasBuff<PhoenixMarkBuff>()) damage += (int)(damage * 0.2f);
+            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 0.2f;
         }
 
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
-        {
-            Player owner = Main.player[projectile.owner];
-
-            if (npc.HasHex(Hex.HexType<CursedFlames>()))
-            {
-                if (Main.rand.NextBool(10))
-                {
-                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
-                    {
-                        Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
-                    }
-                }
-            }
-
-            if (npc.HasHex(Hex.HexType<LesserIchor>()))
-            {
-                if (Main.rand.NextBool(8))
-                {
-                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
-                    {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
-                        }
-                    }
-                }
-            }
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {   
 
         }
 

@@ -12,8 +12,8 @@ namespace OvermorrowMod.Content.Items.Placeable
         public override string Texture => AssetDirectory.Resprites + "ChainKnife";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test Placeable");
-            Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
+            // DisplayName.SetDefault("Test Placeable");
+            // Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
         }
 
         public override void SetDefaults()

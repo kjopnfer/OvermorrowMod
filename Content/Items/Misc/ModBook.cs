@@ -11,8 +11,8 @@ namespace OvermorrowMod.Content.Items.Misc
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mod Book Test");
-            Tooltip.SetDefault("Click while in hand to read");
+            // DisplayName.SetDefault("Mod Book Test");
+            // Tooltip.SetDefault("Click while in hand to read");
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)

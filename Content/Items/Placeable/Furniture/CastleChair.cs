@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Castle Chair");
+            // DisplayName.SetDefault("Castle Chair");
         }
 
         public override void SetDefaults()

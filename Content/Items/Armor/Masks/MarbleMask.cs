@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Armor.Masks
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Marbella Mask");
+            // DisplayName.SetDefault("Marbella Mask");
         }
 
         public override void SetDefaults()

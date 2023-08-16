@@ -7,8 +7,8 @@ namespace OvermorrowMod.Content.Items.Misc
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Resonance Crystal of Erudition");
-            Tooltip.SetDefault("Used to enhance your mental prowess");
+            // DisplayName.SetDefault("Resonance Crystal of Erudition");
+            // Tooltip.SetDefault("Used to enhance your mental prowess");
         }
 
         public override void SetDefaults()

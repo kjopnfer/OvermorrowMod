@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -24,8 +25,8 @@ namespace OvermorrowMod.Content.Tiles.DesertTemple
 
             TileID.Sets.DisableSmartCursor[Type] = true;
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Large Pot");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Large Pot");
             AddMapEntry(new Color(151, 79, 80), name);
         }
 

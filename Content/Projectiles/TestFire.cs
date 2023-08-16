@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.Projectiles
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("FIRE TEST");
+            // DisplayName.SetDefault("FIRE TEST");
         }
 
         public override void SetDefaults()

@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Boss + "SandstormBoss/SandPlatform";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("AAH");
+            // DisplayName.SetDefault("AAH");
         }
 
         public override void SetDefaults()
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("AA");
+            // DisplayName.SetDefault("AA");
         }
 
         public override void SetDefaults()

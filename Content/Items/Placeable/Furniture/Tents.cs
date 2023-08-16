@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blue Tent");
+            // DisplayName.SetDefault("Blue Tent");
         }
 
         public override void SetDefaults()
@@ -38,7 +38,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Green Tent");
+            // DisplayName.SetDefault("Green Tent");
         }
 
         public override void SetDefaults()
@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Brown Tent");
+            // DisplayName.SetDefault("Brown Tent");
         }
 
         public override void SetDefaults()
