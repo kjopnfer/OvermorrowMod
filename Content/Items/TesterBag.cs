@@ -19,8 +19,8 @@ namespace OvermorrowMod.Content.Items
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tester's Bag of Shit");
-            Tooltip.SetDefault("Used to obtain literally everything\n{$CommonItemTooltip.RightClickToOpen}");
+            // DisplayName.SetDefault("Tester's Bag of Shit");
+            // Tooltip.SetDefault("Used to obtain literally everything\n{$CommonItemTooltip.RightClickToOpen}");
         }
 
         public override void SetDefaults()

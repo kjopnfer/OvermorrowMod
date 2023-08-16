@@ -12,7 +12,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shockwave");
+            // DisplayName.SetDefault("Shockwave");
         }
 
         public override void SetDefaults()

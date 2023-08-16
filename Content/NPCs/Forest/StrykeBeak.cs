@@ -36,7 +36,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
         //public override bool CanHitPlayer(Player target, ref int cooldownSlot) => canHitPlayer;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Red Strykebeak");
+            // DisplayName.SetDefault("Red Strykebeak");
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
         }
 
@@ -375,7 +375,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             Main.NewText("flyspeed: [" + flySpeedX + ", " + flySpeedY + "] vs velocity: [" + NPC.velocity.X + ", " + NPC.velocity.Y + "]");
         }
 
-        public override void OnHitByItem(Player player, Item item, int damage, float knockback, bool crit)
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
             if (AIState == (int)AICase.Idle)
             {
@@ -388,7 +388,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             }
         }
 
-        public override void OnHitByProjectile(Projectile projectile, int damage, float knockback, bool crit)
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             if (AIState == (int)AICase.Idle)
             {

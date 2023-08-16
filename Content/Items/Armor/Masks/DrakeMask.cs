@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Armor.Masks
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Storm Drake Mask");
+            // DisplayName.SetDefault("Storm Drake Mask");
         }
 
         public override void SetDefaults()

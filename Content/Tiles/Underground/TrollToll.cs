@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
@@ -43,8 +44,8 @@ namespace OvermorrowMod.Content.Tiles.Underground
             //animationFrameHeight = 126;
             MinPick = 1;
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Troll Toll");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Troll Toll");
             AddMapEntry(new Color(24, 23, 23), name);
         }
 

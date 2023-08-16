@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -18,8 +19,8 @@ namespace OvermorrowMod.Content.Tiles
             Main.tileLavaDeath[Type] = false;
             Main.tileSolid[Type] = false;
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Resonance Altar");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Resonance Altar");
             AddMapEntry(Color.ForestGreen, name);
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);

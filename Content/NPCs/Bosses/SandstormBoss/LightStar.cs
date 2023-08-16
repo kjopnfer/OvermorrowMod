@@ -20,7 +20,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Searing Star");
+            // DisplayName.SetDefault("Searing Star");
         }
 
         public override void SetDefaults()

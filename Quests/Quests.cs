@@ -41,7 +41,7 @@ namespace OvermorrowMod.Quests
                     QuestTypes.Add(type, quest);
                 }
             }
-            On.Terraria.Main.DrawNPCChatButtons += Main_DrawNPCChatButtons;
+            Terraria.On_Main.DrawNPCChatButtons += Main_DrawNPCChatButtons;
         }
 
         public static void ClearAllCompletedQuests()
@@ -166,7 +166,7 @@ namespace OvermorrowMod.Quests
         }
 
         private static void Main_DrawNPCChatButtons(
-            On.Terraria.Main.orig_DrawNPCChatButtons orig,
+            Terraria.On_Main.orig_DrawNPCChatButtons orig,
             int superColor,
             Microsoft.Xna.Framework.Color chatColor,
             int numLines,

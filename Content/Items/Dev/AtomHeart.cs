@@ -11,7 +11,7 @@ namespace OvermorrowMod.Content.Items.Dev
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Atomic Heart");
+            // DisplayName.SetDefault("Atomic Heart");
         }
         public override void SetDefaults()
         {

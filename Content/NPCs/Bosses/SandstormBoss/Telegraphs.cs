@@ -12,7 +12,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Telegraph");
+            // DisplayName.SetDefault("Telegraph");
         }
 
         public override void SetDefaults()

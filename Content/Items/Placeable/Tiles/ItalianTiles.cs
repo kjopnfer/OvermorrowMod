@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Tiles
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Italian Shingles");
+            // DisplayName.SetDefault("Italian Shingles");
         }
 
         public override void SetDefaults()

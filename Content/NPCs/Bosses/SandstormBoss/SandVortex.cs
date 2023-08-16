@@ -12,7 +12,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool? CanDamage() => true;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sand Vortex");
+            // DisplayName.SetDefault("Sand Vortex");
         }
 
         public override void SetDefaults()

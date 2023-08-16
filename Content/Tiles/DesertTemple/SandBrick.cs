@@ -20,7 +20,6 @@ namespace OvermorrowMod.Content.Tiles.DesertTemple
 
             MinPick = 999;
             MineResist = 600f;
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.SandBrick>();
 
             AddMapEntry(new Color(91, 57, 28));
         }

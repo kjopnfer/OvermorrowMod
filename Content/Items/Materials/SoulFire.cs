@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Soul Fire");
+            // DisplayName.SetDefault("Soul Fire");
         }
 
         public override void SetDefaults()

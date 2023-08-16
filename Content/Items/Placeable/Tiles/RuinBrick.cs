@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Tiles
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fortress Block");
+            // DisplayName.SetDefault("Fortress Block");
         }
 
         public override void SetDefaults()

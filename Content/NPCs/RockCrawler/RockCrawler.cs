@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.NPCs.RockCrawler
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rock Crawler");
+            // DisplayName.SetDefault("Rock Crawler");
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
         }
 

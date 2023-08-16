@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public float maxTime = 15;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Electricity");
+            // DisplayName.SetDefault("Ancient Electricity");
         }
         public override void SafeSetDefaults()
         {
@@ -60,7 +60,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Energy");
+            // DisplayName.SetDefault("Ancient Energy");
         }
 
         public override void SetDefaults()
@@ -148,7 +148,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Bolt");
+            // DisplayName.SetDefault("Ancient Bolt");
         }
 
         public override void SetDefaults()
@@ -225,7 +225,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Obelisk");
+            // DisplayName.SetDefault("Ancient Obelisk");
             Main.npcFrameCount[NPC.type] = 19;
         }
 

@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 {
     public class VanillaBlocking : ModSystem
     {
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sand"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);

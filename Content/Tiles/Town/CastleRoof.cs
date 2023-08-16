@@ -16,7 +16,6 @@ namespace OvermorrowMod.Content.Tiles.Town
             MinPick = 95;
             MineResist = 2f;
 
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.ItalianTiles>();
             AddMapEntry(new Color(117, 70, 46));
         }
     }

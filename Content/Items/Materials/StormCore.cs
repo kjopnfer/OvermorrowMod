@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Storm Core");
-            Tooltip.SetDefault("'Resonates with the unbridled strength of the storm'");
+            // DisplayName.SetDefault("Storm Core");
+            // Tooltip.SetDefault("'Resonates with the unbridled strength of the storm'");
         }
 
         public override void SetDefaults()

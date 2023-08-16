@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Stack of Books");
+            // DisplayName.SetDefault("Stack of Books");
         }
 
         public override void SetDefaults()

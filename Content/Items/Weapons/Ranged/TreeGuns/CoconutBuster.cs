@@ -10,8 +10,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Coconut Buster");
-            Tooltip.SetDefault("'His coconut gun can fire in spurts'");
+            // DisplayName.SetDefault("Coconut Buster");
+            // Tooltip.SetDefault("'His coconut gun can fire in spurts'");
         }
         public override void SetDefaults()
         {

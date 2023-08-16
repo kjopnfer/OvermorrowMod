@@ -8,8 +8,8 @@ namespace OvermorrowMod.Content.Items.Misc
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Resonance Crystal of Eternity");
-            Tooltip.SetDefault("Used to enhance your physical form");
+            // DisplayName.SetDefault("Resonance Crystal of Eternity");
+            // Tooltip.SetDefault("Used to enhance your physical form");
         }
 
         public override void SetDefaults()

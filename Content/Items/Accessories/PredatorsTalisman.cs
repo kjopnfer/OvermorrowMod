@@ -10,8 +10,8 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Predator's Talisman");
-            Tooltip.SetDefault("Increases armor penetration by {Increase:5}\n{Increase:5%} increased crit chance\nIncreases all damage by {Increase:3}");
+            // DisplayName.SetDefault("Predator's Talisman");
+            // Tooltip.SetDefault("Increases armor penetration by {Increase:5}\n{Increase:5%} increased crit chance\nIncreases all damage by {Increase:3}");
         }
 
         public override void SetDefaults()

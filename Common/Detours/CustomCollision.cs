@@ -12,7 +12,7 @@ namespace OvermorrowMod.Common.Detours
 {
     public class CustomCollision
     {
-        public static void Player_UpdateNPCCollision(On.Terraria.Player.orig_Update_NPCCollision orig, Player self)
+        public static void Player_UpdateNPCCollision(Terraria.On_Player.orig_Update_NPCCollision orig, Player self)
         {
             for (int i = 0; i < Main.maxNPCs; i++)
             {
@@ -118,7 +118,7 @@ namespace OvermorrowMod.Common.Detours
         }
 
         // Detour for moving platforms
-        public static void Player_PlatformCollision(On.Terraria.Player.orig_SlopingCollision orig, Player self, bool fallThrough, bool ignorePlats)
+        public static void Player_PlatformCollision(Terraria.On_Player.orig_SlopingCollision orig, Player self, bool fallThrough, bool ignorePlats)
         {
             if (self.GetModPlayer<OvermorrowModPlayer>().PlatformTimer > 0)
             {

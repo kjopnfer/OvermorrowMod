@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Heat Circle");
+            // DisplayName.SetDefault("Heat Circle");
         }
 
         public override void SetDefaults()

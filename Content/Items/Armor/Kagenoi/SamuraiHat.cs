@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Armor.Kagenoi
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Kagenoi Hat");
+            // DisplayName.SetDefault("Kagenoi Hat");
         }
 
         public override void SetDefaults()

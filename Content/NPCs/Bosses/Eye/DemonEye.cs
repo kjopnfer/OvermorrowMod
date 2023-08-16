@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override string Texture => AssetDirectory.Boss + "Eye/EyeStalk";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test");
+            // DisplayName.SetDefault("Test");
         }
 
         public override void SetDefaults()

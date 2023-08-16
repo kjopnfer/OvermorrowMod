@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool? CanDamage() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Crosshair");
+            // DisplayName.SetDefault("Crosshair");
         }
 
         public override void SetDefaults()

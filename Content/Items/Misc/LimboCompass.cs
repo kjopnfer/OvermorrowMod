@@ -12,8 +12,8 @@ namespace OvermorrowMod.Content.Items.Misc
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Limbo Compass");
-            Tooltip.SetDefault("'Points to nowhere'");
+            // DisplayName.SetDefault("Limbo Compass");
+            // Tooltip.SetDefault("'Points to nowhere'");
         }
 
         public override void SetDefaults()

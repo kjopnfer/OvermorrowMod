@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             SojournLocation = tag.Get<Vector2>("SojournLocation");
         }
 
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Wavy Caves"));
             if (TerrainIndex != -1)

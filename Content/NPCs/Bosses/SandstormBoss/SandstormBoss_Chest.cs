@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Chestplate");
+            // DisplayName.SetDefault("Chestplate");
         }
 
         public override void SetDefaults()

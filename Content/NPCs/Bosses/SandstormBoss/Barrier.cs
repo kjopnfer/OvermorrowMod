@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool CheckActive() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Barrier");
+            // DisplayName.SetDefault("Forbidden Barrier");
         }
 
         public override void SetDefaults()
@@ -236,7 +236,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("");
+            // DisplayName.SetDefault("");
         }
 
         public override void SetDefaults()

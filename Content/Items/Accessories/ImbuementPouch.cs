@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Imbuement Pouch");
-            Tooltip.SetDefault("Flask buffs apply to ALL your projectiles");
+            // DisplayName.SetDefault("Imbuement Pouch");
+            // Tooltip.SetDefault("Flask buffs apply to ALL your projectiles");
         }
 
         public override void SetDefaults()

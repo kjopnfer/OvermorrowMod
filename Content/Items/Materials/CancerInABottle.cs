@@ -7,8 +7,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flesh Contagion");
-            Tooltip.SetDefault("'Meat flavored monster energy drink'");
+            // DisplayName.SetDefault("Flesh Contagion");
+            // Tooltip.SetDefault("'Meat flavored monster energy drink'");
         }
 
         public override void SetDefaults()

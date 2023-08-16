@@ -4,7 +4,7 @@ namespace OvermorrowMod.Common.NPCs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("A");
+            // DisplayName.SetDefault("A");
         }
 
         public override void SetDefaults()

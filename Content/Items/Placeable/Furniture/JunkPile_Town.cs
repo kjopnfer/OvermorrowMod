@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pile of Junk");
+            // DisplayName.SetDefault("Pile of Junk");
         }
 
         public override void SetDefaults()

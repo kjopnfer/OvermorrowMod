@@ -13,9 +13,9 @@ namespace OvermorrowMod.Content.Items.Misc
         public int ItemFrame = 0;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Monkey Stone");
+            // DisplayName.SetDefault("Monkey Stone");
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(0, 3));
-            Tooltip.SetDefault("'It resonates at a unique frequency, doesn't seem very useful but it might have value for someone.'");
+            // Tooltip.SetDefault("'It resonates at a unique frequency, doesn't seem very useful but it might have value for someone.'");
         }
 
         public override void SetDefaults()

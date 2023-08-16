@@ -4,7 +4,6 @@ using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Content.Tiles.Ores;
-using OvermorrowMod.Content.Tiles.TrapOre;
 using OvermorrowMod.Content.Tiles.WaterCave;
 using System;
 using System.Collections.Generic;
@@ -49,7 +48,7 @@ namespace OvermorrowMod.Common
             return Main.keyState.IsKeyDown(key) && !Main.oldKeyState.IsKeyDown(key);
         }
 
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int ShiniesIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shinies"));
             if (ShiniesIndex != -1)
@@ -79,7 +78,7 @@ namespace OvermorrowMod.Common
                 // The inside of this for loop corresponds to one single splotch of our Ore.
                 // First, we randomly choose any coordinate in the world by choosing a random x and y value.
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+                int y = WorldGen.genRand.Next((int)GenVars.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
 
                 // Strength controls size
                 // Steps control interations
@@ -94,7 +93,7 @@ namespace OvermorrowMod.Common
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00025); k++)
             {
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY);
+                int y = WorldGen.genRand.Next((int)GenVars.rockLayer, Main.maxTilesY);
 
                 WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 4), WorldGen.genRand.Next(2, 6), ModContent.TileType<EruditeTile>());
             }
@@ -104,37 +103,11 @@ namespace OvermorrowMod.Common
                 // The inside of this for loop corresponds to one single splotch of our Ore.
                 // First, we randomly choose any coordinate in the world by choosing a random x and y value.
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX / 6);
-                int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+                int y = WorldGen.genRand.Next((int)GenVars.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
 
                 // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
                 WorldGen.PlaceTile(x, y, ModContent.TileType<HerosAltar>());
             }
-
-            // Fake Ores
-            int[] ValidTiles = { TileID.Stone, TileID.IceBlock, TileID.SnowBlock, TileID.Mud, TileID.HardenedSand };
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
-            {
-                // The inside of this for loop corresponds to one single splotch of our Ore.
-                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
-                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 200); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
-
-                // Strength controls size
-                // Steps control interations
-                Tile tile = Framing.GetTileSafely(x, y);
-                if (tile.HasTile && ValidTiles.Contains(tile.TileType))
-                {
-                    if (WorldGen.SavedOreTiers.Gold == TileID.Gold)
-                    {
-                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<FakeiteGold>());
-                    }
-                    else
-                    {
-                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<FakeitePlatinum>());
-                    }
-                }
-            }
-
         }
 
         private void GenerateAmbientObjects(GenerationProgress progress, GameConfiguration config)
@@ -144,12 +117,12 @@ namespace OvermorrowMod.Common
             {
                 int[] rockFormations = { ModContent.TileType<Rock1>(), ModContent.TileType<Rock2>(), ModContent.TileType<Rock3>(), ModContent.TileType<Rock4>(), ModContent.TileType<Stalagmite1>(), ModContent.TileType<Stalagmite2>(), ModContent.TileType<Stalagmite3>(), ModContent.TileType<Stalagmite4>(), ModContent.TileType<Stalagmite5>() };
                 int x = WorldGen.genRand.Next(300, Main.maxTilesX - 300);
-                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 200);
+                int y = WorldGen.genRand.Next((int)GenVars.rockLayer, Main.maxTilesY - 200);
                 int type = rockFormations[Main.rand.Next(9)];
                 if (Main.tile[x, y].TileType == ModContent.TileType<GlowBlock>())
                 {
                     WorldGen.PlaceObject(x, y, (ushort)type);
-                    NetMessage.SendObjectPlacment(-1, x, y, (ushort)type, 0, 0, -1, -1);
+                    NetMessage.SendObjectPlacement(-1, x, y, (ushort)type, 0, 0, -1, -1);
                 }
             }
         }

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -25,8 +26,8 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.Origin = new Point16(0, 1);
 
             AddMapEntry(new Color(159, 131, 65));
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Candelabra");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Candelabra");
 
             TileObjectData.addTile(Type);
         }

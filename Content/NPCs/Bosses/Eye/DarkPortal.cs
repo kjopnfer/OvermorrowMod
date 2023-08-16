@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Stab Portal");
+            // DisplayName.SetDefault("Stab Portal");
         }
 
         public override void SetDefaults()
