@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
@@ -16,7 +17,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
     public class Knife : ModItem
     {
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] < Item.maxStack;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] < Item.stack;
 
         public override void SetStaticDefaults()
         {
@@ -62,10 +63,20 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             attackIndex++;
             if (attackIndex > 1) attackIndex = 0;
 
+            attackIndex = 0;
             if (player.altFunctionUse == 2)
                 Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, -1);
             else
-                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex);
+            {
+                bool dualWieldFlag = Item.stack == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] < 1;
+
+                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex, 0f);
+
+                float invertedAttackIndex = 0;
+                //float invertedAttackIndex = attackIndex == 1 ? 0 : 1;
+                if (dualWieldFlag)
+                    Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, invertedAttackIndex, 1f);
+            }
 
             return false;
         }
@@ -80,8 +91,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             if (Item.stack == 2)
             {
                 Texture2D texture = TextureAssets.Item[Item.type].Value;
-                spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.None, 1);
-                spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
+                Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] == 2 ? Color.Black : drawColor;
+                Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] >= 1 ? Color.Black : drawColor;
+
+                spriteBatch.Draw(texture, position, frame, backKnifeColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
+                spriteBatch.Draw(texture, position, frame, frontKnifeColor, 0f, origin, scale, SpriteEffects.None, 1);
 
                 return false;
             }
@@ -121,7 +135,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.timeLeft = 120;
 
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 3;
+            Projectile.localNPCHitCooldown = -1;
+        }
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            if (DualWieldFlag == 1)
+            {
+                Projectile.hide = true;
+                behindProjectiles.Add(index);
+            }
+
+            base.DrawBehind(index, behindNPCsAndTiles, behindNPCs, behindProjectiles, overPlayers, overWiresUI);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -137,7 +162,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         Player player => Main.player[Projectile.owner];
 
         public ref float ComboIndex => ref Projectile.ai[0];
-        public ref float AICounter => ref Projectile.ai[1];
+        public ref float DualWieldFlag => ref Projectile.ai[1];
+        public ref float AICounter => ref Projectile.ai[2];
 
 
         // TODO: OnSpawn Hook with combo initializer
@@ -175,7 +201,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             if (player.active && player.HeldItem.type == ModContent.ItemType<Knife>()) Projectile.timeLeft = 10;
 
             Projectile.width = Projectile.height = 40;
-            player.heldProj = Projectile.whoAmI;
+
+            if (DualWieldFlag != 1)
+                player.heldProj = Projectile.whoAmI;
 
             HandleArmDrawing();
             HandleWeaponUse();
@@ -244,7 +272,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     case 1:
                         return 10;
                     default:
-                        return 15;
+                        return DualWieldFlag == 1 ? 5 : 15;
                 }
             }
         }
@@ -257,10 +285,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 {
                     case -1:
                         return 4;
-                    case 2:
-                        return 8;
                     default:
-                        return 5;
+                        return DualWieldFlag == 1 ? 10 : 5;
                 }
             }
         }
@@ -414,23 +440,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Vector2 spritePositionOffset = Vector2.Zero;
             float rotationOffset = 0f;
+            Vector2 dualWieldOffset;
             switch (ComboIndex)
             {
-                case -1:
+                case -1: // The throwing index
                     spritePositionOffset = new Vector2(6, 0).RotatedBy(Projectile.rotation);
                     rotationOffset = MathHelper.ToRadians(120 * player.direction);
                     break;
                 case 0:
-                    spritePositionOffset = new Vector2(-16, 12 * player.direction).RotatedBy(Projectile.rotation);
+                    dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -4) : Vector2.Zero;
+                    spritePositionOffset = new Vector2(-16 + dualWieldOffset.X, (12 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
                     rotationOffset = MathHelper.ToRadians(45 * player.direction);
                     break;
                 case 1:
-                    spritePositionOffset = new Vector2(-8, 12 * player.direction).RotatedBy(Projectile.rotation);
+                    dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -14) : Vector2.Zero;
+                    spritePositionOffset = new Vector2(-8 + dualWieldOffset.X, (12 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
                     rotationOffset = MathHelper.ToRadians(-45 * player.direction);
-                    break;
-                case 2:
-                    spritePositionOffset = new Vector2(-2, 2 * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
                     break;
             }
 
@@ -443,7 +468,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Color lerpColor = Color.Lerp(lightColor, Color.White, flashProgress);
 
-            Main.spriteBatch.Draw(texture, spriteCenter + spritePositionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation + rotationOffset, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
+            float scaleFactor = DualWieldFlag == 1 ? 0.9f : 1f;
+            Main.spriteBatch.Draw(texture, spriteCenter + spritePositionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation + rotationOffset, texture.Size() / 2f, Projectile.scale * scaleFactor, spriteEffects, 1);
         }
 
         public float swingAngle = 0;
@@ -456,48 +482,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             float staffRotation = player.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
             Projectile.rotation = staffRotation;
 
-            float backRotation = player.direction == -1 ? -150 : -30;
-
             switch (ComboIndex)
             {
-                case 2:
-                    if (AICounter < backTime + 2)
-                    {
-                        float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
-                        if (progress < 50)
-                        {
-                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(-90));
-                        }
-                        else
-                        {
-                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(-90));
-                        }
-                    }
-
-                    if (justReleasedWeapon) // For some reason the arm resets while holding the staff back
-                    {
-                        if (AICounter > backTime && AICounter <= backTime + forwardTime)
-                        {
-                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
-                        }
-
-                        if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
-                        {
-                            float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
-                            if (progress < 50)
-                            {
-                                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(-90));
-                            }
-                            else
-                            {
-                                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(-90));
-                            }
-                        }
-                    }
-
-                    break;
                 default:
-                    player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
+                    if (DualWieldFlag == 1)
+                        player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
+                    else
+                        player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
                     break;
             }
         }
