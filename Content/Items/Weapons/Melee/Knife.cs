@@ -88,19 +88,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
+            Texture2D texture = TextureAssets.Item[Item.type].Value;
+
             if (Item.stack == 2)
             {
-                Texture2D texture = TextureAssets.Item[Item.type].Value;
                 Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] == 2 ? Color.Black : drawColor;
                 Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] >= 1 ? Color.Black : drawColor;
 
                 spriteBatch.Draw(texture, position, frame, backKnifeColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
                 spriteBatch.Draw(texture, position, frame, frontKnifeColor, 0f, origin, scale, SpriteEffects.None, 1);
 
-                return false;
+            }
+            else
+            {
+                Color color = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] < 1 ? drawColor : Color.Black;
+                spriteBatch.Draw(texture, position, frame, color, 0f, origin, scale, SpriteEffects.None, 1);
+
             }
 
-            return base.PreDrawInInventory(spriteBatch, position, frame, drawColor, itemColor, origin, scale);
+
+            return false;
         }
     }
 
