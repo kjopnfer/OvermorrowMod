@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
     public class Knife : ModItem
     {
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] <= 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] < Item.maxStack;
 
         public override void SetStaticDefaults()
         {
@@ -38,6 +38,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.noUseGraphic = true; // The sword is actually a "projectile", so the item should not be visible when used
             Item.noMelee = true; // The projectile will do the damage and not the item
+            Item.maxStack = 2;
 
             Item.rare = ItemRarityID.White;
             Item.value = Item.sellPrice(0, 0, 0, 10);
@@ -52,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             if (Main.playerInventory) return;
 
             int knifeCount = 1 - Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()];
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, knifeCount.ToString(), position + new Vector2(-18f, 2f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
+            //ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, knifeCount.ToString(), position + new Vector2(-18f, 2f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
         }
 
         public int attackIndex = 1;
@@ -72,6 +73,20 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override bool AltFunctionUse(Player player)
         {
             return true;
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            if (Item.stack == 2)
+            {
+                Texture2D texture = TextureAssets.Item[Item.type].Value;
+                spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.None, 1);
+                spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
+
+                return false;
+            }
+
+            return base.PreDrawInInventory(spriteBatch, position, frame, drawColor, itemColor, origin, scale);
         }
     }
 
@@ -570,7 +585,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Tile bottomRightTile = Main.tile[(int)Projectile.Hitbox.BottomRight().X / 16, (int)Projectile.Hitbox.BottomRight().Y / 16];
 
             // These are for weird slopes that don't trigger the collision code normally
-            if ((bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || 
+            if ((bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) ||
                 (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType])) HandleCollisionBounce();
 
             if (Projectile.ai[0] == 0)
