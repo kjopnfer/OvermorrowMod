@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.VanillaOverrides;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
@@ -46,6 +48,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Item.shoot = ModContent.ProjectileType<Knife_Held>(); // The projectile is what makes a shortsword work
             Item.shootSpeed = 2.1f; // This value bleeds into the behavior of the projectile as velocity, keep that in mind when tweaking values
+
+            // TODO: Change this
+            Item.GetGlobalItem<GlobalGun>().MeleeType = MeleeType.Dagger;
         }
 
         // Draw knife counter in inventory

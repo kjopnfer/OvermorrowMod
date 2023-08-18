@@ -24,11 +24,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
     }
 
+    // TODO: Generalize this to not only be guns
     public class GlobalGun : GlobalItem
     {
         public override bool InstancePerEntity => true;
 
-        public GunType WeaponType = GunType.None;
+        public GunType GunType = GunType.None;
+        public MeleeType MeleeType = MeleeType.None;
 
         public Dictionary<int, GunStats> OverridedGuns = new Dictionary<int, GunStats>()
         {
@@ -58,10 +60,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
             int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
-            if (WeaponType.ToString() != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(WeaponType) + " Type]"));
+            if (GunType.ToString() != "None")
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + " Type]"));
 
-            
+            if (MeleeType.ToString() != "None")
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));
 
             base.ModifyTooltips(item, tooltips);
         }
@@ -76,7 +79,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 item.noUseGraphic = true;
                 item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
 
-                WeaponType = gun.WeaponType;
+                GunType = gun.WeaponType;
             }
 
             if (item.type == ItemID.Handgun) item.useTime = item.useAnimation = 18;

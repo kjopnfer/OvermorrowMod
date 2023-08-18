@@ -192,12 +192,12 @@ namespace OvermorrowMod.Core
 
         public static void SetWeaponType(this Item item, GunType gunType)
         {
-            item.GetGlobalItem<GlobalGun>().WeaponType = gunType;
+            item.GetGlobalItem<GlobalGun>().GunType = gunType;
         }
 
         public static GunType GetWeaponType(this Item item)
         {
-            return item.GetGlobalItem<GlobalGun>().WeaponType;
+            return item.GetGlobalItem<GlobalGun>().GunType;
         }
 
         public static NPC FindClosestNPC(this Projectile projectile, float maxDetectDistance, NPC ignoreNPC = null)

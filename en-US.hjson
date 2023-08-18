@@ -784,6 +784,7 @@ Mods: {
 				DisplayName: Knife
 				Tooltip:
 					'''
+					Stacks up to 2
 					{Keyword:Alt}: Throw the knife. Hold down to increase {Keyword:Focus}
 					{Keyword:Focus}: Gain 20% increased critical strike chance
 					'''
