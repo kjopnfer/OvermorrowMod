@@ -123,6 +123,8 @@ Mods: {
 			TestFire.DisplayName: FIRE TEST
 			TestTileOverlay.DisplayName: SLIME TEST
 			FakeGold.DisplayName: Fakeite
+			Windrunner_Held.DisplayName: Windrunner_ Held
+			Windrunner_Thrown.DisplayName: Windrunner_ Thrown
 		}
 
 		NPCs: {
@@ -866,6 +868,11 @@ Mods: {
 
 			MonkeyStone_ShowItem: {
 				DisplayName: Monkey Stone_ Show Item
+				Tooltip: ""
+			}
+
+			Windrunner: {
+				DisplayName: Windrunner
 				Tooltip: ""
 			}
 		}

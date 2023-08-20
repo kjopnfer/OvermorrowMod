@@ -65,12 +65,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         /// How long the player has held down the weapon, separate from the counter that handles actions
         /// </summary>
         public float HoldCounter = 0; // TODO: Sync this with ExtraAI
-        Player player => Main.player[Projectile.owner];
+        protected Player player => Main.player[Projectile.owner];
         public ref float ComboIndex => ref Projectile.ai[0];
         public ref float DualWieldFlag => ref Projectile.ai[1];
         public ref float AICounter => ref Projectile.ai[2];
 
-        public override void AI()
+        public sealed override void AI()
         {
             if (player.active && player.HeldItem.type == ParentItem) Projectile.timeLeft = 10;
 
@@ -287,8 +287,26 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             var spriteEffects = player.direction == 1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
 
             Vector2 spritePositionOffset = Vector2.Zero;
+            Vector2 dualWieldOffset = Vector2.Zero;
             float rotationOffset = 0f;
-            Vector2 dualWieldOffset;
+
+            SetWeaponDrawing(ref spritePositionOffset, ref dualWieldOffset, ref rotationOffset);
+
+            float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 5f), 0, 1);
+
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(flashProgress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+            Color lerpColor = Color.Lerp(lightColor, Color.White, flashProgress);
+
+            float scaleFactor = DualWieldFlag == 1 ? 0.9f : 1f;
+            Main.spriteBatch.Draw(texture, spriteCenter + spritePositionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation + rotationOffset, texture.Size() / 2f, Projectile.scale * scaleFactor, spriteEffects, 1);
+        }
+
+        public virtual void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset)
+        {
             switch (ComboIndex)
             {
                 case -1: // The throwing index
@@ -306,18 +324,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                     rotationOffset = MathHelper.ToRadians(-45 * player.direction);
                     break;
             }
-
-            float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 5f), 0, 1);
-
-            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
-            effect.Parameters["WhiteoutProgress"].SetValue(flashProgress);
-            effect.CurrentTechnique.Passes["Whiteout"].Apply();
-
-            Color lerpColor = Color.Lerp(lightColor, Color.White, flashProgress);
-
-            float scaleFactor = DualWieldFlag == 1 ? 0.9f : 1f;
-            Main.spriteBatch.Draw(texture, spriteCenter + spritePositionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation + rotationOffset, texture.Size() / 2f, Projectile.scale * scaleFactor, spriteEffects, 1);
         }
 
         public float swingAngle = 0;
@@ -351,12 +357,19 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             base.ReceiveExtraAI(reader);
         }
 
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        public sealed override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            Vector2 hitboxOffset = Vector2.Zero;
+            SetDamageHitbox(positionOffset, ref hitboxOffset, ref hitbox);
+         
+            spriteCenter = new Vector2(hitbox.X + (hitbox.Width / 2f), hitbox.Y + (hitbox.Height / 2f));
+        }
+
+        public virtual void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox)
         {
             hitbox.Width = 35;
             hitbox.Height = 35;
 
-            Vector2 hitboxOffset;
             switch (ComboIndex)
             {
                 case 2:
@@ -374,10 +387,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                     hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
                     break;
             }
-
-            spriteCenter = new Vector2(hitbox.X + (hitbox.Width / 2f), hitbox.Y + (hitbox.Height / 2f));
-
-            base.ModifyDamageHitbox(ref hitbox);
         }
 
         Vector2 positionOffset;
@@ -398,7 +407,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             Projectile.Center = player.RotatedRelativePoint(player.MountedCenter);
         }
 
-        public override bool PreDraw(ref Color lightColor)
+        public sealed override bool PreDraw(ref Color lightColor)
         {
             HandleWeaponDrawing(lightColor);
 

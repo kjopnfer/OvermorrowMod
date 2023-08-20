@@ -7,11 +7,11 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
-    public class Knife : ModDagger<Knife_Held, Knife_Thrown>
+    public class Windrunner : ModDagger<Windrunner_Held, Windrunner_Thrown>
     {
         public override void SafeSetDefaults()
         {
-            Item.damage = 10;
+            Item.damage = 23;
             Item.knockBack = 2f;
             Item.useAnimation = 12;
             Item.useTime = 12;
@@ -25,14 +25,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         }
     }
 
-    public class Knife_Held : HeldDagger
+    public class Windrunner_Held : HeldDagger
     {
-        public override int ParentItem => ModContent.ItemType<Knife>();
-        public override int ThrownProjectile => ModContent.ProjectileType<Knife_Thrown>();
-        public override void SafeSetDefaults()
-        {
-            base.SafeSetDefaults();
-        }
+        public override int ParentItem => ModContent.ItemType<Windrunner>();
+        public override int ThrownProjectile => ModContent.ProjectileType<Windrunner_Thrown>();
 
         public override void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset)
         {
@@ -63,15 +59,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             switch (ComboIndex)
             {
                 case 2:
-                    //hitbox.Height = 45;
                     hitboxOffset = positionOffset.RotatedBy(Projectile.rotation);
 
                     hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
                     hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
                     break;
                 default:
-                    //hitbox.Width = 60;
-
                     hitboxOffset = new Vector2(25, -5 * player.direction).RotatedBy(Projectile.rotation);
                     hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
                     hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
@@ -80,8 +73,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         }
     }
 
-    public class Knife_Thrown : ThrownDagger
+    public class Windrunner_Thrown : ThrownDagger
     {
-        public override int ParentItem => ModContent.ItemType<Knife>();        
+        public override int ParentItem => ModContent.ItemType<Windrunner>();
     }
 }
