@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using OvermorrowMod.Core;
+using Terraria.Graphics.Effects;
 using ReLogic.Content;
 using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
@@ -43,14 +44,30 @@ namespace OvermorrowMod.Common.Players
         public int BearTrapCounter = 0;
 
         #endregion
+        
         public bool atomBuff;
         public bool smolBoi;
+
+        //UV Biome
+        public List<UVBubble> UVBubbles = new List<UVBubble>();
+        public class UVBubble
+        {
+            public Vector2 Position;
+            public float Radius;
+            public UVBubble(Vector2 position, float radius)
+            {
+                Position = position;
+                Radius = radius;
+            }
+        }
+
+        // Misc
+        public int IorichGuardianEnergy = 0;
+        public int PlatformTimer = 0;
 
         public Vector2 AltarCoordinates;
         public bool UIToggled = false;
         public bool StoleArtifact = false;
-
-        public int PlatformTimer = 0;
 
         public override void ResetEffects()
         {
@@ -67,6 +84,11 @@ namespace OvermorrowMod.Common.Players
 
             atomBuff = false;
             smolBoi = false;
+            // windBuff = false;
+
+            DashShadow = false;
+
+            UVBubbles.Clear();
         }
 
         public override IEnumerable<Item> AddStartingItems(bool mediumCoreDeath)
@@ -89,7 +111,21 @@ namespace OvermorrowMod.Common.Players
         // Example of how to replace cursor texture to remember for later
         public override void PostUpdateMiscEffects()
         {
-            if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
+            for (int i = 0; i < 6; i++)
+            {
+
+                // activate shadre
+                if (MathHelper.Clamp(UVBubbles.Count- 1, 0, 5) < i || UVBubbles.Count == 0)
+                {
+                    if (Main.netMode != NetmodeID.Server && Filters.Scene[$"UVShader{i}"].IsActive())
+                    {
+                        Filters.Scene[$"UVShader{i}"].GetShader().UseColor(0f, 0f, 0f).UseTargetPosition(Vector2.Zero);
+                        Filters.Scene[$"UVShader{i}"].Deactivate();
+                    }
+                }
+            }
+
+            /*if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
             {
                 Asset<Texture2D> emptyTexture = ModContent.Request<Texture2D>(AssetDirectory.Empty);
                 Asset<Texture2D> cursor0 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_0");
@@ -113,7 +149,34 @@ namespace OvermorrowMod.Common.Players
                     TextureAssets.Cursors[11] = cursor11;
                     TextureAssets.Cursors[12] = cursor12;
                 }
-            }
+            }*/
+        }
+
+        public override void OnEnterWorld(Player player)
+        {
+            //if (!player.name.ToLower().Contains("frankfires")) // THIS IS SO FUCKING ANNOYTINGhUFHURFHI
+            //    OvermorrowModSystem.Instance.ScreenColor.SetDarkness(0, 60, 60, true);
+
+            // Manually apply them because the random reroll doesn't seem to work half the time
+            /*int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);*/
+
+            base.OnEnterWorld(player);
         }
 
         private int FindFlaskBuff()
@@ -215,6 +278,16 @@ namespace OvermorrowMod.Common.Players
         public override void PostUpdate()
         {
 
+        }
+
+        public bool DashShadow = false;
+        public override void PostUpdateEquips()
+        {
+            if (DashShadow)
+            {
+                Player.eocDash = 50;
+                Player.armorEffectDrawShadowEOCShield = true;
+            }
         }
 
         private bool CheckOnGround()
