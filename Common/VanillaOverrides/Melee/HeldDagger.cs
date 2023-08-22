@@ -289,8 +289,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             Vector2 spritePositionOffset = Vector2.Zero;
             Vector2 dualWieldOffset = Vector2.Zero;
             float rotationOffset = 0f;
+            float scaleFactor = DualWieldFlag == 1 ? 0.9f : 1f;
 
-            SetWeaponDrawing(ref spritePositionOffset, ref dualWieldOffset, ref rotationOffset);
+            SetWeaponDrawing(ref spritePositionOffset, ref dualWieldOffset, ref rotationOffset, ref scaleFactor);
 
             float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 5f), 0, 1);
 
@@ -301,30 +302,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
             Color lerpColor = Color.Lerp(lightColor, Color.White, flashProgress);
 
-            float scaleFactor = DualWieldFlag == 1 ? 0.9f : 1f;
             Main.spriteBatch.Draw(texture, spriteCenter + spritePositionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation + rotationOffset, texture.Size() / 2f, Projectile.scale * scaleFactor, spriteEffects, 1);
         }
 
-        public virtual void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset)
-        {
-            switch (ComboIndex)
-            {
-                case -1: // The throwing index
-                    spritePositionOffset = new Vector2(6, 0).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(120 * player.direction);
-                    break;
-                case 0:
-                    dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -4) : Vector2.Zero;
-                    spritePositionOffset = new Vector2(-16 + dualWieldOffset.X, (12 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
-                    break;
-                case 1:
-                    dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -14) : Vector2.Zero;
-                    spritePositionOffset = new Vector2(-8 + dualWieldOffset.X, (12 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(-45 * player.direction);
-                    break;
-            }
-        }
+        public virtual void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset, ref float scaleFactor) { }
 
         public float swingAngle = 0;
         private void HandleArmDrawing()
@@ -361,33 +342,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         {
             Vector2 hitboxOffset = Vector2.Zero;
             SetDamageHitbox(positionOffset, ref hitboxOffset, ref hitbox);
-         
+
             spriteCenter = new Vector2(hitbox.X + (hitbox.Width / 2f), hitbox.Y + (hitbox.Height / 2f));
         }
 
-        public virtual void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox)
-        {
-            hitbox.Width = 35;
-            hitbox.Height = 35;
-
-            switch (ComboIndex)
-            {
-                case 2:
-                    //hitbox.Height = 45;
-                    hitboxOffset = positionOffset.RotatedBy(Projectile.rotation);
-
-                    hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
-                    hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
-                    break;
-                default:
-                    //hitbox.Width = 60;
-
-                    hitboxOffset = new Vector2(25, -5 * player.direction).RotatedBy(Projectile.rotation);
-                    hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
-                    hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
-                    break;
-            }
-        }
+        public virtual void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox) { }
 
         Vector2 positionOffset;
         private void HandleWeaponUse()

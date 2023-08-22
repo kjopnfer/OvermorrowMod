@@ -34,7 +34,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             base.SafeSetDefaults();
         }
 
-        public override void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset)
+        public override void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset, ref float scaleFactor)
         {
             switch (ComboIndex)
             {

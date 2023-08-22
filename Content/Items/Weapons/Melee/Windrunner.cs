@@ -30,23 +30,20 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override int ParentItem => ModContent.ItemType<Windrunner>();
         public override int ThrownProjectile => ModContent.ProjectileType<Windrunner_Thrown>();
 
-        public override void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset)
+        public override void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset, ref float scaleFactor)
         {
+            scaleFactor = DualWieldFlag == 1 ? 0.8f : 1f;
+
             switch (ComboIndex)
             {
                 case -1: // The throwing index
                     spritePositionOffset = new Vector2(6, 0).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(120 * player.direction);
+                    rotationOffset = MathHelper.ToRadians(-145 * player.direction);
                     break;
                 case 0:
                     dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -4) : Vector2.Zero;
-                    spritePositionOffset = new Vector2(-16 + dualWieldOffset.X, (12 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
-                    break;
-                case 1:
-                    dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -14) : Vector2.Zero;
-                    spritePositionOffset = new Vector2(-8 + dualWieldOffset.X, (12 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(-45 * player.direction);
+                    spritePositionOffset = new Vector2(-12 + dualWieldOffset.X, (22 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
+                    rotationOffset = MathHelper.ToRadians(135 * player.direction);
                     break;
             }
         }
