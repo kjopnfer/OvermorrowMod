@@ -45,6 +45,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     spritePositionOffset = new Vector2(-12 + dualWieldOffset.X, (22 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
                     rotationOffset = MathHelper.ToRadians(135 * player.direction);
                     break;
+                case 1:
+                    dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -4) : Vector2.Zero;
+                    spritePositionOffset = new Vector2(12 + dualWieldOffset.X, (2 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
+                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
+                    break;
             }
         }
 
@@ -55,7 +60,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             switch (ComboIndex)
             {
-                case 2:
+                case 1:
                     hitboxOffset = positionOffset.RotatedBy(Projectile.rotation);
 
                     hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);

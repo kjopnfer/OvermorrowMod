@@ -7,7 +7,6 @@ using Terraria.GameContent;
 using Terraria.Audio;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
-using Terraria.DataStructures;
 using System.IO;
 using System;
 
@@ -97,15 +96,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 AICounter++;
                 switch (ComboIndex)
                 {
-                    case 0:
+                    case 0: // Overhead Stab
                         positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(Projectile.rotation);
                         swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                         break;
+
                     case 2:
-                        float xOffset = MathHelper.Lerp(20, 6, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
-                        positionOffset = new Vector2(xOffset, 0);
+                        //float xOffset = MathHelper.Lerp(20, 6, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        //positionOffset = new Vector2(xOffset, 0);
                         break;
-                    case -1:
+                    case -1: // Throwing Dagger Index
                         swingAngle = MathHelper.Lerp(0, 105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                         break;
                     default:
@@ -124,7 +124,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 switch (ComboIndex)
                 {
                     case 1:
-                        return 10;
+                        return 18;
                     default:
                         return DualWieldFlag == 1 ? 5 : 15;
                 }
@@ -139,6 +139,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 {
                     case -1:
                         return 4;
+                    case 1:
+                        return 24;
                     default:
                         return DualWieldFlag == 1 ? 10 : 5;
                 }
@@ -149,7 +151,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         {
             get
             {
-                return ComboIndex == -1 ? 4 : 10;
+                switch (ComboIndex)
+                {
+                    case 1: return 12;
+                    default: return ComboIndex == -1 ? 4 : 10;
+                }
             }
         }
 
@@ -171,21 +177,21 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             // Position
             switch (ComboIndex)
             {
-                case 2:
+                case 1:
                     float xOffset = 0f;
                     if (AICounter <= backTime)
-                        xOffset = MathHelper.Lerp(20, 6, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        xOffset = MathHelper.Lerp(8, 4, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
                     if (AICounter > backTime && AICounter <= backTime + forwardTime)
                     {
                         if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
 
                         inSwingState = true;
-                        xOffset = MathHelper.Lerp(6, 32, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        xOffset = MathHelper.Lerp(4, 24, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                     }
 
                     if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
-                        xOffset = MathHelper.Lerp(32, 12, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        xOffset = MathHelper.Lerp(24, 6, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
                     positionOffset = new Vector2(xOffset, 0);
                     break;
@@ -245,7 +251,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                         swingAngle = MathHelper.Lerp(-75, -25, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
                     }
                     break;
-
+                case 1:
+                    break;
                 default:
                     if (AICounter <= backTime)
                         swingAngle = MathHelper.Lerp(-45, -105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
@@ -316,9 +323,51 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
             float staffRotation = player.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
             Projectile.rotation = staffRotation;
+            float backRotation = player.direction == -1 ? -150 : -30;
 
             switch (ComboIndex)
             {
+                case 1: // Stab
+                    if (AICounter < backTime + 2)
+                    {
+                        float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        if (progress < 50)
+                        {
+                            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(-90));
+                        }
+                        else
+                        {
+                            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(-90));
+                        }
+                    }
+
+                    if (justReleasedWeapon) // For some reason the arm resets while holding the staff back
+                    {
+                        if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                        {
+                            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
+                        }
+
+                        if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+                        {
+                            float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                            if (progress < 50)
+                            {
+                                player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(-90));
+                            }
+                            else
+                            {
+                                player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(-90));
+                            }
+                        }
+                    }
+
+                    break;
                 default:
                     if (DualWieldFlag == 1)
                         player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));

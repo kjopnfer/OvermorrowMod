@@ -1,10 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
-using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
-using OvermorrowMod.Core;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -43,7 +39,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             attackIndex++;
             if (attackIndex > 1) attackIndex = 0;
 
-            attackIndex = 0;
+            attackIndex = 1;
             if (player.altFunctionUse == 2)
                 Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, -1);
             else
@@ -52,10 +48,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
                 Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex, 0f);
 
-                float invertedAttackIndex = 0;
-                //float invertedAttackIndex = attackIndex == 1 ? 0 : 1;
                 if (dualWieldFlag)
-                    Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, invertedAttackIndex, 1f);
+                    Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex, 1f);
             }
 
             return false;
