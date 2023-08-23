@@ -20,6 +20,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         // I don't know if there is a different way to do this
         public abstract int ParentItem { get; }
         public abstract int ThrownProjectile { get; }
+        public bool isDualWielding => player.HeldItem.type == ParentItem && player.HeldItem.stack == 2 && player.ownedProjectileCounts[ThrownProjectile] < 1;
 
         public override bool? CanHitNPC(NPC target) => !target.friendly && inSwingState;
 
@@ -116,7 +117,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         }
 
 
-        float backTime
+        protected float backTime
         {
             get
             {
@@ -130,7 +131,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             }
         }
 
-        float forwardTime
+        protected float forwardTime
         {
             get
             {
@@ -146,7 +147,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             }
         }
 
-        float holdTime
+        protected float holdTime
         {
             get
             {
@@ -198,7 +199,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                         if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
 
                         float stabCounter = AICounter - backTime - 1;
-
                         if (stabCounter == 0) Projectile.rotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
                         OnDaggerStab(stabCounter);
 

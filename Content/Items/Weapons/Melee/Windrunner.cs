@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Melee;
 using OvermorrowMod.Core;
 using Terraria;
@@ -54,19 +55,36 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
         }
 
+        Projectile stabProjectile = null;
         public override void OnDaggerStab(float stabCounter)
         {
             float rotation = Main.LocalPlayer.DirectionTo(Main.MouseWorld).ToRotation();
+            float stabSpeed = isDualWielding ? 12f : 8f;
+
             if (stabCounter == 0 && DualWieldFlag != 1)
             {
+                Main.NewText("spawn");
                 Main.LocalPlayer.velocity = new Vector2(2, 0).RotatedBy(rotation);
-                Main.NewText("run");
-                Projectile.NewProjectile(null, player.Center, Vector2.UnitX.RotatedBy(rotation) * 8, ModContent.ProjectileType<Windrunner_Stab>(), 0, 0f, Projectile.owner);
+
+                float projectileTime = forwardTime;
+                Main.NewText("forward time: " + forwardTime);
+                stabProjectile = Projectile.NewProjectileDirect(null, player.Center, Vector2.UnitX.RotatedBy(rotation) * stabSpeed, ModContent.ProjectileType<Windrunner_Stab>(), 0, 0f, Projectile.owner, projectileTime);
             }
+
+            player.armorEffectDrawShadow = true;
+            player.armorEffectDrawShadowEOCShield = true;
         }
 
         public override void OnDaggerStabHit()
         {
+            Main.NewText("stab hit");
+            if (stabProjectile != null)
+            {
+                player.velocity *= -0.5f;
+                stabProjectile.velocity *= -0.5f;
+                stabProjectile.Kill();
+                Main.NewText("uhh");
+            }
         }
 
         public override void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox)
@@ -105,17 +123,41 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.width = Main.player[Projectile.owner].width;
             Projectile.height = Main.player[Projectile.owner].height;
 
-            Projectile.timeLeft = 16;
             Projectile.friendly = true;
-            Projectile.extraUpdates = 2;
+            //Projectile.extraUpdates = 1;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            Projectile.timeLeft = (int)Projectile.ai[0];
+            base.OnSpawn(source);
         }
 
         public override void AI()
         {
+            if (Main.rand.NextBool())
+            {
+                for (int i = 0; i < Main.rand.Next(1, 2); i++)
+                {
+                    Vector2 positionOffset = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 4;
+                    float randomScale = Main.rand.NextFloat(0.25f, 0.45f);
+                    Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity) * 8f;
+
+                    Color color = Color.White;
+                    Particle.CreateParticle(Particle.ParticleType<WhiteSpark>(), Projectile.Center + positionOffset, RandomVelocity, color, 1, randomScale);
+                }
+            }
+
             Player player = Main.player[Projectile.owner];
             player.Center = Projectile.Center;
             player.velocity = Projectile.velocity;
 
+            if (Projectile.ai[1]++ > Projectile.ai[0] * 0.5f)
+                Projectile.velocity *= 0.95f;
+
+            Vector2 center = Projectile.Center;
+            float stepSpeed = 1f;
+            Collision.StepUp(ref center, ref Projectile.velocity, Projectile.width, Projectile.height, ref stepSpeed, ref Projectile.gfxOffY);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

@@ -34,6 +34,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
 
         public int attackIndex = 1;
+        bool isDualWielding => Item.stack == 2 && Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < 1;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             attackIndex++;
@@ -44,11 +45,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, -1);
             else
             {
-                bool dualWieldFlag = Item.stack == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < 1;
-
                 Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex, 0f);
 
-                if (dualWieldFlag)
+                if (isDualWielding)
                     Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex, 1f);
             }
 
