@@ -12,6 +12,7 @@ using System;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Melee
 {
+    // This entire file is just fucking garbage and I don't care anymore
     public abstract partial class HeldDagger : ModProjectile
     {
         public override string Texture => AssetDirectory.Empty;
@@ -69,6 +70,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         public ref float DualWieldFlag => ref Projectile.ai[1];
         public ref float AICounter => ref Projectile.ai[2];
 
+        public enum AttackIndex
+        {
+            Throw = -1,
+            Slash = 0,
+            Stab = 1,
+        }
+
         public sealed override void AI()
         {
             if (player.active && player.HeldItem.type == ParentItem) Projectile.timeLeft = 10;
@@ -96,16 +104,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 AICounter++;
                 switch (ComboIndex)
                 {
-                    case 0: // Overhead Stab
-                        positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(Projectile.rotation);
-                        swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
-                        break;
-
-                    case 2:
-                        //float xOffset = MathHelper.Lerp(20, 6, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
-                        //positionOffset = new Vector2(xOffset, 0);
-                        break;
-                    case -1: // Throwing Dagger Index
+                    case (int)AttackIndex.Throw: // Throwing Dagger Index
                         swingAngle = MathHelper.Lerp(0, 105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                         break;
                     default:
@@ -164,6 +163,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         private bool justReleasedWeapon = false;
         private bool inSwingState = false;
         private Vector2 lastMousePosition;
+
+        // For some stupid reason the player arbitrarily decides to just turn during stabs
+        // This forces the player into one direction until the projectile is done
+        private int lockedDirection = 1;
         private void HandleWeaponRelease()
         {
             // On weapon release is when we execute the attack animation
@@ -177,7 +180,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             // Position
             switch (ComboIndex)
             {
-                case 1:
+                case (int)AttackIndex.Stab:
+                    if (AICounter == 0)
+                    {
+                        if (Main.MouseWorld.X > player.Center.X) lockedDirection = 1;
+                        else lockedDirection = -1;
+                    }
+
+                    player.direction = lockedDirection;
+
                     float xOffset = 0f;
                     if (AICounter <= backTime)
                         xOffset = MathHelper.Lerp(8, 4, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
@@ -185,6 +196,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                     if (AICounter > backTime && AICounter <= backTime + forwardTime)
                     {
                         if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
+
+                        float stabCounter = AICounter - backTime - 1;
+
+                        if (stabCounter == 0) Projectile.rotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
+                        OnDaggerStab(stabCounter);
 
                         inSwingState = true;
                         xOffset = MathHelper.Lerp(4, 24, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
@@ -205,7 +221,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             // Angle
             switch (ComboIndex)
             {
-                case -1:
+                case (int)AttackIndex.Throw:
                     if (AICounter <= backTime)
                         swingAngle = MathHelper.Lerp(0, 105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
@@ -233,7 +249,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                         Projectile.Kill();
                     }
                     break;
-                case 0:
+                case (int)AttackIndex.Slash:
                     if (AICounter <= backTime)
                         swingAngle = MathHelper.Lerp(-45, 95, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
@@ -285,6 +301,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             }
         }
 
+        /// <summary>
+        /// Whenever the player executes a stab. For on hit effects, use OnDaggerStabHit
+        /// </summary>
+        /// <param name="stabCounter"></param>
+        public virtual void OnDaggerStab(float stabCounter) { }
+
         int flashCounter = 0;
         Vector2 spriteOffset = Vector2.Zero;
         Vector2 spriteCenter = Vector2.Zero;
@@ -321,13 +343,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             Projectile.spriteDirection = mousePosition.X < player.Center.X ? -1 : 1;
             player.direction = Projectile.spriteDirection;
 
-            float staffRotation = player.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
-            Projectile.rotation = staffRotation;
+            if (ComboIndex != (int)AttackIndex.Stab || !inSwingState)
+            {
+                float staffRotation = player.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
+                Projectile.rotation = staffRotation;
+            }
+
             float backRotation = player.direction == -1 ? -150 : -30;
 
             switch (ComboIndex)
             {
-                case 1: // Stab
+                case (int)AttackIndex.Stab: // Stab
                     if (AICounter < backTime + 2)
                     {
                         float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
@@ -414,6 +440,22 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
             Projectile.Center = player.RotatedRelativePoint(player.MountedCenter);
         }
+
+        public sealed override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (ComboIndex == (int)AttackIndex.Stab)
+            {
+                if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                    OnDaggerStabHit();
+            }
+
+            base.OnHitNPC(target, hit, damageDone);
+        }
+
+        /// <summary>
+        /// Whenever the player hits an NPC while stabbing
+        /// </summary>
+        public virtual void OnDaggerStabHit() { }
 
         public sealed override bool PreDraw(ref Color lightColor)
         {

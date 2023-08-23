@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Melee;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -53,6 +54,21 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
         }
 
+        public override void OnDaggerStab(float stabCounter)
+        {
+            float rotation = Main.LocalPlayer.DirectionTo(Main.MouseWorld).ToRotation();
+            if (stabCounter == 0 && DualWieldFlag != 1)
+            {
+                Main.LocalPlayer.velocity = new Vector2(2, 0).RotatedBy(rotation);
+                Main.NewText("run");
+                Projectile.NewProjectile(null, player.Center, Vector2.UnitX.RotatedBy(rotation) * 8, ModContent.ProjectileType<Windrunner_Stab>(), 0, 0f, Projectile.owner);
+            }
+        }
+
+        public override void OnDaggerStabHit()
+        {
+        }
+
         public override void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox)
         {
             hitbox.Width = 35;
@@ -78,5 +94,46 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
     public class Windrunner_Thrown : ThrownDagger
     {
         public override int ParentItem => ModContent.ItemType<Windrunner>();
+    }
+
+    public class Windrunner_Stab : ModProjectile
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public override bool? CanDamage() => false;
+        public override void SetDefaults()
+        {
+            Projectile.width = Main.player[Projectile.owner].width;
+            Projectile.height = Main.player[Projectile.owner].height;
+
+            Projectile.timeLeft = 16;
+            Projectile.friendly = true;
+            Projectile.extraUpdates = 2;
+        }
+
+        public override void AI()
+        {
+            Player player = Main.player[Projectile.owner];
+            player.Center = Projectile.Center;
+            player.velocity = Projectile.velocity;
+
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            base.OnHitNPC(target, hit, damageDone);
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            return base.OnTileCollide(oldVelocity);
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            Player player = Main.player[Projectile.owner];
+            player.velocity = Projectile.velocity;
+
+            Main.NewText("die");
+        }
     }
 }

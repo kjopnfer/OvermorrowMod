@@ -125,6 +125,7 @@ Mods: {
 			FakeGold.DisplayName: Fakeite
 			Windrunner_Held.DisplayName: Windrunner_ Held
 			Windrunner_Thrown.DisplayName: Windrunner_ Thrown
+			Windrunner_Stab.DisplayName: Windrunner_ Stab
 		}
 
 		NPCs: {
