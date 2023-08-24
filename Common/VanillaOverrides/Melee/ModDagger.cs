@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -9,6 +10,13 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Melee
 {
+    public enum DaggerAttack
+    {
+        Throw = -1,
+        Slash = 0,
+        Stab = 1,
+    }
+
     public abstract class ModDagger<HeldProjectile, ThrownProjectile> : ModItem 
         where HeldProjectile : HeldDagger 
         where ThrownProjectile : ThrownDagger
@@ -30,25 +38,27 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             SafeSetDefaults();
         }
 
+        public abstract List<DaggerAttack> AttackList { get; }
         public virtual void SafeSetDefaults() { }
 
 
-        public int attackIndex = 1;
+        public int attackIndex = 0;
         bool isDualWielding => Item.stack == 2 && Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < 1;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             attackIndex++;
-            if (attackIndex > 1) attackIndex = 0;
 
-            attackIndex = 1;
+            if (attackIndex > AttackList.Count - 1) attackIndex = 0;
+            float attack = (int)AttackList[attackIndex];
+
             if (player.altFunctionUse == 2)
-                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, -1);
+                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, (int)DaggerAttack.Throw);
             else
             {
-                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex, 0f);
+                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attack, 0f);
 
                 if (isDualWielding)
-                    Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex, 1f);
+                    Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attack, 1f);
             }
 
             return false;

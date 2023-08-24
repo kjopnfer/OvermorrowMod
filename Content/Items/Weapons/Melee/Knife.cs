@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Melee;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,6 +10,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
     public class Knife : ModDagger<Knife_Held, Knife_Thrown>
     {
+        public override List<DaggerAttack> AttackList => new List<DaggerAttack>() { DaggerAttack.Slash };
         public override void SafeSetDefaults()
         {
             Item.damage = 10;

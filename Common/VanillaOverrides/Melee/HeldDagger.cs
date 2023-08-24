@@ -71,13 +71,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         public ref float DualWieldFlag => ref Projectile.ai[1];
         public ref float AICounter => ref Projectile.ai[2];
 
-        public enum AttackIndex
-        {
-            Throw = -1,
-            Slash = 0,
-            Stab = 1,
-        }
-
         public sealed override void AI()
         {
             if (player.active && player.HeldItem.type == ParentItem) Projectile.timeLeft = 10;
@@ -105,7 +98,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 AICounter++;
                 switch (ComboIndex)
                 {
-                    case (int)AttackIndex.Throw: // Throwing Dagger Index
+                    case (int)DaggerAttack.Throw: // Throwing Dagger Index
                         swingAngle = MathHelper.Lerp(0, 105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                         break;
                     default:
@@ -181,7 +174,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             // Position
             switch (ComboIndex)
             {
-                case (int)AttackIndex.Stab:
+                case (int)DaggerAttack.Stab:
                     if (AICounter == 0)
                     {
                         if (Main.MouseWorld.X > player.Center.X) lockedDirection = 1;
@@ -221,7 +214,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             // Angle
             switch (ComboIndex)
             {
-                case (int)AttackIndex.Throw:
+                case (int)DaggerAttack.Throw:
                     if (AICounter <= backTime)
                         swingAngle = MathHelper.Lerp(0, 105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
@@ -249,7 +242,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                         Projectile.Kill();
                     }
                     break;
-                case (int)AttackIndex.Slash:
+                case (int)DaggerAttack.Slash:
                     if (AICounter <= backTime)
                         swingAngle = MathHelper.Lerp(-45, 95, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
@@ -343,7 +336,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             Projectile.spriteDirection = mousePosition.X < player.Center.X ? -1 : 1;
             player.direction = Projectile.spriteDirection;
 
-            if (ComboIndex != (int)AttackIndex.Stab || !inSwingState)
+            if (ComboIndex != (int)DaggerAttack.Stab || !inSwingState)
             {
                 float staffRotation = player.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
                 Projectile.rotation = staffRotation;
@@ -353,7 +346,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
             switch (ComboIndex)
             {
-                case (int)AttackIndex.Stab: // Stab
+                case (int)DaggerAttack.Stab: // Stab
                     if (AICounter < backTime + 2)
                     {
                         float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
@@ -443,10 +436,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
         public sealed override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (ComboIndex == (int)AttackIndex.Stab)
+            switch (ComboIndex)
             {
-                if (AICounter > backTime && AICounter <= backTime + forwardTime)
-                    OnDaggerStabHit();
+                case (int)DaggerAttack.Stab:
+                    if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                    {
+                        OnDaggerStabHit();
+                    }
+                    break;
+                case (int)DaggerAttack.Slash:
+                    OnDaggerSlashHit();
+                    break;
             }
 
             base.OnHitNPC(target, hit, damageDone);
@@ -456,6 +456,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         /// Whenever the player hits an NPC while stabbing
         /// </summary>
         public virtual void OnDaggerStabHit() { }
+
+        /// <summary>
+        /// Whenever the player hits an NPC while slashing
+        /// </summary>
+        public virtual void OnDaggerSlashHit() { }
 
         public sealed override bool PreDraw(ref Color lightColor)
         {

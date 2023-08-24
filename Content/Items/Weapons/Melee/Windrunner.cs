@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Melee;
 using OvermorrowMod.Core;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,9 +13,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
     public class Windrunner : ModDagger<Windrunner_Held, Windrunner_Thrown>
     {
+        public override List<DaggerAttack> AttackList => new List<DaggerAttack>() {
+            DaggerAttack.Slash, DaggerAttack.Slash, DaggerAttack.Stab, DaggerAttack.Slash,
+        };
+
         public override void SafeSetDefaults()
         {
-            Item.damage = 23;
+            Item.damage = 16;
             Item.knockBack = 2f;
             Item.useAnimation = 12;
             Item.useTime = 12;
@@ -62,14 +67,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             float rotation = Main.LocalPlayer.DirectionTo(Main.MouseWorld).ToRotation();
             float stabSpeed = isDualWielding ? 12f : 8f;
 
-            if (stabCounter == 0 && DualWieldFlag != 1)
+            if (stabCounter == 0 && DualWieldFlag != 1 && player.GetModPlayer<MeleePlayer>().WindrunnerCharge >= 5)
             {
-                Main.NewText("spawn");
                 Main.LocalPlayer.velocity = new Vector2(2, 0).RotatedBy(rotation);
 
                 float projectileTime = forwardTime;
-                Main.NewText("forward time: " + forwardTime);
                 stabProjectile = Projectile.NewProjectileDirect(null, player.Center, Vector2.UnitX.RotatedBy(rotation) * stabSpeed, ModContent.ProjectileType<Windrunner_Stab>(), 0, 0f, Projectile.owner, projectileTime);
+
+                player.GetModPlayer<MeleePlayer>().WindrunnerCharge -= 5;
             }
 
             player.armorEffectDrawShadow = true;
@@ -78,13 +83,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void OnDaggerStabHit()
         {
-            Main.NewText("stab hit");
             if (stabProjectile != null)
             {
                 player.velocity *= -0.5f;
                 stabProjectile.velocity *= -0.5f;
                 stabProjectile.Kill();
-                Main.NewText("uhh");
 
                 for (int i = 0; i < Main.rand.Next(12, 24); i++)
                 {
@@ -94,6 +97,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     dust.noGravity = true;
                 }
             }
+            else
+            {
+                player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
+            }
+        }
+
+        public override void OnDaggerSlashHit()
+        {
+            player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
         }
 
         public override void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox)
@@ -121,6 +133,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
     public class Windrunner_Thrown : ThrownDagger
     {
         public override int ParentItem => ModContent.ItemType<Windrunner>();
+        public override void OnThrownDaggerHit()
+        {
+            Player player = Main.player[Projectile.owner];
+            player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
+        }
     }
 
     public class Windrunner_Stab : ModProjectile
@@ -200,7 +217,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             Main.spriteBatch.Reload(BlendState.Additive);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail4").Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor * 0.45f, Projectile.velocity.ToRotation() + MathHelper.Pi, texture.Size() / 2f, new Vector2(0.5f, 0.35f), SpriteEffects.None, 1);
+            float progress = (Projectile.timeLeft + Projectile.ai[0] / 3f) / Projectile.ai[0];
+            float alpha = MathHelper.Lerp(0f, 0.55f, progress);
+            Main.NewText(progress);
+            if (Projectile.timeLeft > Projectile.ai[0] / 3f) alpha = 0.55f;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor * alpha, Projectile.velocity.ToRotation() + MathHelper.Pi, texture.Size() / 2f, new Vector2(0.5f, 0.35f), SpriteEffects.None, 1);
             Main.spriteBatch.Reload(BlendState.AlphaBlend);
 
             return base.PreDraw(ref lightColor);

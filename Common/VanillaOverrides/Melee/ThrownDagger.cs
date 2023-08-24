@@ -150,5 +150,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
             Projectile.timeLeft = 600;
         }
+
+        public virtual void OnThrownDaggerHit() { }
+        public sealed override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            OnThrownDaggerHit();
+
+            base.OnHitNPC(target, hit, damageDone);
+        }
     }
 }
