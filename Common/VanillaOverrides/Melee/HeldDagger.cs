@@ -302,7 +302,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         }
 
         /// <summary>
-        /// Whenever the player executes a stab. For on hit effects, use OnDaggerStabHit
+        /// Actively called while the player executes a stab. For on hit effects, use OnDaggerStabHit
         /// </summary>
         /// <param name="stabCounter"></param>
         public virtual void OnDaggerStab(float stabCounter) { }

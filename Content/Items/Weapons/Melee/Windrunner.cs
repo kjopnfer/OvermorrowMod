@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Melee;
 using OvermorrowMod.Core;
@@ -84,6 +85,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 stabProjectile.velocity *= -0.5f;
                 stabProjectile.Kill();
                 Main.NewText("uhh");
+
+                for (int i = 0; i < Main.rand.Next(12, 24); i++)
+                {
+                    Vector2 positionOffset = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 4;
+                    Vector2 RandomVelocity = Vector2.UnitX.RotatedBy(player.velocity.ToRotation()) * -Main.rand.Next(12, 16);
+                    Dust dust = Main.dust[Dust.NewDust(Projectile.Center + positionOffset, 1, 1, DustID.Smoke, RandomVelocity.X, RandomVelocity.Y, 0, new Color(255, 255, 255), 1f)];
+                    dust.noGravity = true;
+                }
             }
         }
 
@@ -148,6 +157,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 }
             }
 
+            for (int i = 0; i < Main.rand.Next(1, 2); i++)
+            {
+                Vector2 positionOffset = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 4;
+                Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity) * 12f;
+                Dust dust = Main.dust[Dust.NewDust(Projectile.Center + positionOffset, 1, 1, DustID.Smoke, RandomVelocity.X, RandomVelocity.Y, 0, new Color(255, 255, 255), 1f)];
+                dust.noGravity = true;
+            }
+
+
             Player player = Main.player[Projectile.owner];
             player.Center = Projectile.Center;
             player.velocity = Projectile.velocity;
@@ -176,6 +194,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             player.velocity = Projectile.velocity;
 
             Main.NewText("die");
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Main.spriteBatch.Reload(BlendState.Additive);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail4").Value;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor * 0.45f, Projectile.velocity.ToRotation() + MathHelper.Pi, texture.Size() / 2f, new Vector2(0.5f, 0.35f), SpriteEffects.None, 1);
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+
+            return base.PreDraw(ref lightColor);
         }
     }
 }
