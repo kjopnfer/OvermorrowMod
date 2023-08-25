@@ -22,11 +22,12 @@ namespace OvermorrowMod.Common.BackgroundObjects
         public virtual string Texture => AssetDirectory.Empty;
         private Texture2D _texture => ModContent.Request<Texture2D>(Texture, ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
         public abstract (float, float) Size();
-
+        public virtual Vector2 DrawOffset => new Vector2(0, 0);
         public virtual void DrawObject(SpriteBatch spriteBatch)
         {
             Vector2 position = Position.ToVector2() * 16;
-            Vector2 drawOffset = new Vector2(0, _texture.Height / 2f - 16);
+            Vector2 textureOffset = new Vector2(Size().Item1 / 2f, Size().Item2 / 2f);
+            Vector2 drawOffset = new Vector2(0 + textureOffset.X + DrawOffset.X, _texture.Height / 2f + textureOffset.Y + DrawOffset.Y);
 
             spriteBatch.Draw(_texture, position - drawOffset - Main.screenPosition, null, Lighting.GetColor(Position.ToPoint()), 0, Vector2.Zero, 1, SpriteEffects.None, 0f);
         }

@@ -6,7 +6,7 @@ namespace OvermorrowMod.Common.BackgroundObjects
 {
     public class House : BaseBackgroundObject
     {
-        public override Texture2D Texture => AssetDirectory.Empty;
+        public override string Texture => AssetDirectory.Empty;
         public override bool BackgroundObjectTileCheck(int x, int y)
         {
             Tile tile = Main.tile[x, y];

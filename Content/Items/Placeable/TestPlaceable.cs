@@ -26,9 +26,9 @@ namespace OvermorrowMod.Content.Items.Placeable
             Item.useAnimation = 15;
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
+            Item.consumable = false;
             Item.value = 2000;
-            Item.createTile = TileType<BackgroundObjectTestTile>();
+            Item.createTile = TileType<BackgroundObjectTestTile2>();
         }
     }
 }
