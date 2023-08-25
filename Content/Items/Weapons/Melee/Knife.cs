@@ -25,6 +25,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Item.rare = ItemRarityID.White;
             Item.value = Item.sellPrice(0, 0, 0, 10);
         }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddRecipeGroup("IronBar", 8)
+                .AddTile(TileID.Anvils)
+                .Register();
+        }
     }
 
     public class Knife_Held : HeldDagger
