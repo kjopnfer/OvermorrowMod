@@ -875,12 +875,12 @@ Mods: {
 
 			Windrunner: {
 				DisplayName: Windrunner
-				Tooltip: 
-				'''
-				Stacks up to 2
-				Hit enemies to gain Wind Charge
-				On full charge, your next stab allows you to dash forward
-				'''
+				Tooltip:
+					'''
+					Stacks up to 2
+					Hit enemies to gain Wind Charge
+					On full charge, your next stab allows you to dash forward
+					'''
 			}
 		}
 
