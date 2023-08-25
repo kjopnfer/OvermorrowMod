@@ -62,7 +62,7 @@ namespace OvermorrowMod.Common
 
         public override bool CanRightClick(Item item)
         {
-            if (Main.mouseItem.ModItem is ReforgeStone)
+            /*if (Main.mouseItem.ModItem is ReforgeStone)
             {
                 OvermorrowGlobalItem globalItem = item.GetGlobalItem<OvermorrowGlobalItem>();
                 bool canApply = true;
@@ -174,7 +174,7 @@ namespace OvermorrowMod.Common
                     Main.mouseItem.TurnToAir();
                 }
             }
-
+            */
             return base.CanRightClick(item);
         }
 
@@ -245,7 +245,7 @@ namespace OvermorrowMod.Common
 
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            if (Main.mouseItem.ModItem is ReforgeStone && reforgeAnimation == 0) // In case the item goes out of range after reforging don't just black it out immediately
+            /*if (Main.mouseItem.ModItem is ReforgeStone && reforgeAnimation == 0) // In case the item goes out of range after reforging don't just black it out immediately
             {
                 drawInvalid = false;
 
@@ -291,7 +291,7 @@ namespace OvermorrowMod.Common
                     Main.spriteBatch.Reload(SpriteSortMode.Deferred);
                 }
             }
-
+            */
             base.PostDrawInInventory(item, spriteBatch, position, frame, drawColor, itemColor, origin, scale);
         }
 

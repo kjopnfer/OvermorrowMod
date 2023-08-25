@@ -93,7 +93,7 @@ namespace OvermorrowMod.Content.Items.Consumable
         }
     }
 
-    public class MeleeReforge : ReforgeStone
+    /*public class MeleeReforge : ReforgeStone
     {
         public override string Texture => AssetDirectory.Textures + "Items/Reforge_Melee_1";
         public override int GetRandomPrefix() => meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
@@ -154,4 +154,5 @@ namespace OvermorrowMod.Content.Items.Consumable
             DPSCeiling = 60;
         }
     }
+    */
 }

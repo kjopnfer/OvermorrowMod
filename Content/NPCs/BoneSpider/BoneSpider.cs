@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Items.Materials;
 using Terraria;
@@ -141,4 +141,4 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
             return spawnInfo.Player.ZoneDungeon ? 0.025f : 0f;
         }
     }
-}
+}*/

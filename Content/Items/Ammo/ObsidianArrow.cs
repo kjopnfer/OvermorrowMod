@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.Items.Ammo
 
 		public override void AddRecipes()
 		{
-			CreateRecipe(999)
+			CreateRecipe(5)
 				.AddIngredient(ItemID.WoodenArrow, 5)
 				.AddIngredient(ItemID.Obsidian, 1)
 				.AddTile(TileID.WorkBenches)

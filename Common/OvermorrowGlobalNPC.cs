@@ -85,10 +85,6 @@ namespace OvermorrowMod.Common
                 case NPCID.Harpy:
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HarpyLeg>(), 10));
                     break;
-                case NPCID.Drippler:
-                case NPCID.BloodZombie:
-                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MutatedFlesh>(), 3, 1, 3));
-                    break;
                 case NPCID.Zombie:
                 case NPCID.BigRainZombie:
                 case NPCID.BigSlimedZombie:
