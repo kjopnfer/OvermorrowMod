@@ -127,6 +127,8 @@ Mods: {
 			Windrunner_Thrown.DisplayName: Windrunner_ Thrown
 			Windrunner_Stab.DisplayName: Windrunner_ Stab
 			Windrunner_Charge.DisplayName: Windrunner_ Charge
+			AmethystSlicer_Held.DisplayName: Amethyst Slicer_ Held
+			AmethystSlicer_Thrown.DisplayName: Amethyst Slicer_ Thrown
 		}
 
 		NPCs: {
@@ -881,6 +883,11 @@ Mods: {
 					Hit enemies to gain Wind Charge
 					On full charge, your next stab allows you to dash forward
 					'''
+			}
+
+			AmethystSlicer: {
+				DisplayName: Amethyst Slicer
+				Tooltip: ""
 			}
 		}
 

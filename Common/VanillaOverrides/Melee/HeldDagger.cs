@@ -15,8 +15,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
     // This entire file is just fucking garbage and I don't care anymore
     public abstract partial class HeldDagger : ModProjectile
     {
-        public override string Texture => AssetDirectory.Empty;
-
         // I don't know if there is a different way to do this
         public abstract int ParentItem { get; }
         public abstract int ThrownProjectile { get; }
@@ -305,7 +303,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         Vector2 spriteCenter = Vector2.Zero;
         private void HandleWeaponDrawing(Color lightColor)
         {
-            Texture2D texture = TextureAssets.Item[ParentItem].Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
 
             Vector2 spritePositionOffset = Vector2.Zero;

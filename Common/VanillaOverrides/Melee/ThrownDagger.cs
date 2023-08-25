@@ -16,6 +16,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         public abstract int ParentItem { get; }
 
         public override bool? CanDamage() => !groundCollided;
+        public virtual Color IdleColor => Color.Orange;
 
         public sealed override void SetDefaults()
         {
@@ -109,10 +110,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 Main.spriteBatch.Reload(BlendState.Additive);
 
                 Texture2D outline = ModContent.Request<Texture2D>(AssetDirectory.Textures + "RingSolid").Value;
-                Main.spriteBatch.Draw(outline, Projectile.Center - Main.screenPosition, null, Color.Orange * alpha, Projectile.rotation, outline.Size() / 2f, 1f * 0.1f, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(outline, Projectile.Center - Main.screenPosition, null, IdleColor * alpha, Projectile.rotation, outline.Size() / 2f, 1f * 0.1f, SpriteEffects.None, 1);
 
                 outline = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05").Value;
-                Main.spriteBatch.Draw(outline, Projectile.Center - Main.screenPosition, null, Color.Orange * alpha, Projectile.rotation, outline.Size() / 2f, 1f * 0.5f, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(outline, Projectile.Center - Main.screenPosition, null, IdleColor * alpha, Projectile.rotation, outline.Size() / 2f, 1f * 0.5f, SpriteEffects.None, 1);
 
                 Main.spriteBatch.Reload(BlendState.AlphaBlend);
             }

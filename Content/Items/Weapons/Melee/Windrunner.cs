@@ -69,19 +69,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             switch (ComboIndex)
             {
-                case -1: // The throwing index
+                case (int)DaggerAttack.Throw:
                     spritePositionOffset = new Vector2(6, 0).RotatedBy(Projectile.rotation);
                     rotationOffset = MathHelper.ToRadians(-145 * player.direction);
                     break;
-                case 0:
+                case (int)DaggerAttack.Slash:
                     dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -4) : Vector2.Zero;
                     spritePositionOffset = new Vector2(-12 + dualWieldOffset.X, (22 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(135 * player.direction);
+                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
                     break;
-                case 1:
+                case (int)DaggerAttack.Stab:
                     dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -4) : Vector2.Zero;
                     spritePositionOffset = new Vector2(12 + dualWieldOffset.X, (2 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
+                    rotationOffset = MathHelper.ToRadians(-45 * player.direction);
                     break;
             }
         }
