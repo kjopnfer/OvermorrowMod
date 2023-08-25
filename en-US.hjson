@@ -126,6 +126,7 @@ Mods: {
 			Windrunner_Held.DisplayName: Windrunner_ Held
 			Windrunner_Thrown.DisplayName: Windrunner_ Thrown
 			Windrunner_Stab.DisplayName: Windrunner_ Stab
+			Windrunner_Charge.DisplayName: Windrunner_ Charge
 		}
 
 		NPCs: {
@@ -874,7 +875,12 @@ Mods: {
 
 			Windrunner: {
 				DisplayName: Windrunner
-				Tooltip: ""
+				Tooltip: 
+				'''
+				Stacks up to 2
+				Hit enemies to gain Wind Charge
+				On full charge, your next stab allows you to dash forward
+				'''
 			}
 		}
 

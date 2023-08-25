@@ -17,6 +17,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             DaggerAttack.Slash, DaggerAttack.Slash, DaggerAttack.Stab, DaggerAttack.Slash,
         };
 
+        public override void HoldItem(Player player)
+        {
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<Windrunner_Charge>()] < 1)
+            {
+                Projectile.NewProjectile(null, player.Center, Vector2.Zero, ModContent.ProjectileType<Windrunner_Charge>(), 0, 0f, player.whoAmI);
+            }
+        }
+
         public override void SafeSetDefaults()
         {
             Item.damage = 16;
@@ -74,11 +82,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 float projectileTime = forwardTime;
                 stabProjectile = Projectile.NewProjectileDirect(null, player.Center, Vector2.UnitX.RotatedBy(rotation) * stabSpeed, ModContent.ProjectileType<Windrunner_Stab>(), 0, 0f, Projectile.owner, projectileTime);
 
-                player.GetModPlayer<MeleePlayer>().WindrunnerCharge -= 5;
+                player.GetModPlayer<MeleePlayer>().WindrunnerCharge = 0;
             }
-
-            player.armorEffectDrawShadow = true;
-            player.armorEffectDrawShadowEOCShield = true;
         }
 
         public override void OnDaggerStabHit()
@@ -99,13 +104,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
             else
             {
-                player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
+                if (player.GetModPlayer<MeleePlayer>().WindrunnerCharge < 5) player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
             }
         }
 
         public override void OnDaggerSlashHit()
         {
-            player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
+            if (player.GetModPlayer<MeleePlayer>().WindrunnerCharge < 5) player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
         }
 
         public override void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox)
@@ -136,7 +141,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override void OnThrownDaggerHit()
         {
             Player player = Main.player[Projectile.owner];
-            player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
+            if (player.GetModPlayer<MeleePlayer>().WindrunnerCharge < 5) player.GetModPlayer<MeleePlayer>().WindrunnerCharge++;
         }
     }
 
@@ -161,6 +166,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void AI()
         {
+            Player player = Main.player[Projectile.owner];
+            player.armorEffectDrawShadow = true;
+            player.armorEffectDrawShadowEOCShield = true;
+
             if (Main.rand.NextBool())
             {
                 for (int i = 0; i < Main.rand.Next(1, 2); i++)
@@ -182,13 +191,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 dust.noGravity = true;
             }
 
-
-            Player player = Main.player[Projectile.owner];
             player.Center = Projectile.Center;
             player.velocity = Projectile.velocity;
 
-            if (Projectile.ai[1]++ > Projectile.ai[0] * 0.5f)
-                Projectile.velocity *= 0.95f;
+            if (Projectile.ai[1]++ > Projectile.ai[0] * 0.5f) Projectile.velocity *= 0.95f;
 
             Vector2 center = Projectile.Center;
             float stepSpeed = 1f;
@@ -209,8 +215,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
             player.velocity = Projectile.velocity;
-
-            Main.NewText("die");
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -219,10 +223,55 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail4").Value;
             float progress = (Projectile.timeLeft + Projectile.ai[0] / 3f) / Projectile.ai[0];
             float alpha = MathHelper.Lerp(0f, 0.55f, progress);
-            Main.NewText(progress);
+
             if (Projectile.timeLeft > Projectile.ai[0] / 3f) alpha = 0.55f;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor * alpha, Projectile.velocity.ToRotation() + MathHelper.Pi, texture.Size() / 2f, new Vector2(0.5f, 0.35f), SpriteEffects.None, 1);
             Main.spriteBatch.Reload(BlendState.AlphaBlend);
+
+            return base.PreDraw(ref lightColor);
+        }
+    }
+
+    public class Windrunner_Charge : ModProjectile
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public override bool? CanDamage() => false;
+        public override void SetDefaults()
+        {
+            Projectile.width = Main.player[Projectile.owner].width;
+            Projectile.height = Main.player[Projectile.owner].height;
+
+            Projectile.friendly = true;
+            Projectile.tileCollide = false;
+        }
+
+        float rotationSpeed;
+        float chargeRotation;
+        public override void AI()
+        {
+            Player player = Main.player[Projectile.owner];
+            MeleePlayer modPlayer = player.GetModPlayer<MeleePlayer>();
+
+            if (player.HeldItem.type == ModContent.ItemType<Windrunner>()) Projectile.timeLeft = 5;
+            Projectile.Center = player.Center;
+            rotationSpeed = MathHelper.Lerp(1f, 3f, Utils.Clamp(modPlayer.WindrunnerCharge, 0, 5f) / 5f);
+            chargeRotation += MathHelper.ToRadians(rotationSpeed);
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Player player = Main.player[Projectile.owner];
+            MeleePlayer modPlayer = player.GetModPlayer<MeleePlayer>();
+
+            if (modPlayer.WindrunnerCharge > 0)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "twirl_01").Value;
+                float alpha = MathHelper.Lerp(0, 0.25f, Utils.Clamp(modPlayer.WindrunnerCharge, 0, 5) / 5f);
+                if (modPlayer.WindrunnerCharge >= 5) alpha = 0.5f;
+
+                DrawData textureLayer = new DrawData(texture, player.Center - Main.screenPosition, null, Color.White * alpha, chargeRotation, texture.Size() / 2f, 0.25f, SpriteEffects.FlipVertically, 1);
+                textureLayer.Draw(Main.spriteBatch);
+            }
 
             return base.PreDraw(ref lightColor);
         }
