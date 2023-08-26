@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -23,6 +25,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.AmethystSlicer
             Projectile.localNPCHitCooldown = 20;
         }
 
+        public ref float FlashFlag => ref Projectile.ai[1];
         public ref float AICounter => ref Projectile.ai[2];
         public override void AI()
         {
@@ -45,18 +48,41 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.AmethystSlicer
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Melee + "AmethystSlicer/AmethystShard_" + Projectile.ai[0]).Value;
+
+            Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            if (FlashFlag == 1)
+            {
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                float progress = Utils.Clamp(AICounter, 0, 120f) / 120f;
+                effect.Parameters["WhiteoutColor"].SetValue(new Color(231, 164, 255).ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(progress);
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
+            }
+
             float alpha = 1f;
-
             if (Projectile.timeLeft < 60f) alpha = MathHelper.Lerp(1f, 0f, 1 - Projectile.timeLeft / 60f);
+            
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor * alpha, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
+            
+            Main.spriteBatch.Reload(SpriteSortMode.Deferred);
 
-            if (AICounter == 120 && Projectile.ai[1] == 1)
+            if (AICounter == 120 && FlashFlag == 1)
             {
                 for (int i = 0; i < 3; i++)
                 {
                     Vector2 positionOffset = Vector2.UnitX * Main.rand.NextFloat(-1.5f, 1.5f) * 16;
                     Projectile.NewProjectile(null, Projectile.Center + positionOffset, Vector2.Zero, ModContent.ProjectileType<AmethystCrystal>(), Projectile.damage, 0f, Projectile.owner);
                 }
+
+                for (int i = 0; i < Main.rand.Next(2, 4); i++)
+                {
+                    float randomScale = Main.rand.NextFloat(0.1f, 0.15f);
+                    Color color = Color.MediumPurple;
+                    Particle.CreateParticle(Particle.ParticleType<Pulse>(), Projectile.Center, Vector2.Zero, color, 1, randomScale);
+                }
+
+                Projectile.Kill();
             }
 
             return base.PreDraw(ref lightColor);
@@ -100,6 +126,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.AmethystSlicer
             AICounter++;
             Tile tile = Framing.GetTileSafely((int)(Projectile.Center.X * 16f), (int)(Projectile.Center.Y * 16f));
             if (AICounter < delayTime && !tile.HasTile) Projectile.velocity.X += 0.25f;
+        }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            Vector2 offset = Vector2.UnitY * MathHelper.Lerp(0, -4f, Utils.Clamp(AICounter - delayTime, 0f, 20f) / 20f);
+            Vector2 start = Projectile.Center;
+            Vector2 end = start + Vector2.UnitY.RotatedBy(rotation) * MathHelper.Lerp(0, -4f, Utils.Clamp(AICounter - delayTime, 0f, 20f) / 20f);
+
+            float width = 22;
+            float dumb = 0;
+
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, width, ref dumb);
         }
 
         public override bool PreDraw(ref Color lightColor)
