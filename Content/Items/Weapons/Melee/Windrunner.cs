@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             {
                 case (int)DaggerAttack.Throw:
                     spritePositionOffset = new Vector2(6, 0).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(-145 * player.direction);
+                    rotationOffset = MathHelper.ToRadians(-235 * player.direction);
                     break;
                 case (int)DaggerAttack.Slash:
                     dualWieldOffset = DualWieldFlag == 1 ? new Vector2(4, -4) : Vector2.Zero;

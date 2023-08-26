@@ -129,6 +129,8 @@ Mods: {
 			Windrunner_Charge.DisplayName: Windrunner_ Charge
 			AmethystSlicer_Held.DisplayName: Amethyst Slicer_ Held
 			AmethystSlicer_Thrown.DisplayName: Amethyst Slicer_ Thrown
+			AmethystSlicer_Shards.DisplayName: Amethyst Slicer_ Shards
+			AmethystCrystal.DisplayName: Amethyst Crystal
 		}
 
 		NPCs: {
@@ -887,7 +889,12 @@ Mods: {
 
 			AmethystSlicer: {
 				DisplayName: Amethyst Slicer
-				Tooltip: ""
+				Tooltip:
+					'''
+					Stacks up to 2
+					{Keyword:Alt}: Throw the Dagger, breaking into shards on hit
+					{Keyword:Alt} {Keyword:Focus}: Shards grow crystals on tile contact
+					'''
 			}
 		}
 

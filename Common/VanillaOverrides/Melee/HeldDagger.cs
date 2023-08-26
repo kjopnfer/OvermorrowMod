@@ -43,7 +43,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (HoldCounter >= heavySwingThreshold)
+            if (HoldCounter >= ThrowFlashThreshold)
             {
                 modifiers.SourceDamage *= 1.5f;
                 modifiers.Knockback *= 2;
@@ -83,13 +83,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         }
 
         public int maxHoldCount = 60;
+        public bool aboveFlashThreshold => HoldCounter > ThrowFlashThreshold;
         /// <summary>
         /// Executed whenever the player holds down left mouse, used to draw the weapon moving back or any other prep effects.
         /// </summary>
         private void HandleWeaponHold()
         {
             if (HoldCounter < maxHoldCount) HoldCounter++;
-            if (HoldCounter > heavySwingThreshold && flashCounter <= 15) flashCounter++;
+            if (HoldCounter > ThrowFlashThreshold && flashCounter <= 15) flashCounter++;
 
             if (AICounter <= backTime)
             {
@@ -150,7 +151,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             }
         }
 
-        int heavySwingThreshold = 15;
+        public virtual int ThrowFlashThreshold => 15;
 
         private bool justReleasedWeapon = false;
         private bool inSwingState = false;
@@ -235,7 +236,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                         Vector2 throwVelocity = Vector2.Normalize(Projectile.DirectionTo(Main.MouseWorld));
                         Projectile proj = Projectile.NewProjectileDirect(null, Projectile.Center, throwVelocity * 10, ThrownProjectile, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.rotation);
                         proj.CritChance = Projectile.CritChance;
-                        if (HoldCounter >= heavySwingThreshold) proj.CritChance += 20;
+
+                        ThrownDagger thrownDagger = proj.ModProjectile as ThrownDagger;
+                        thrownDagger.isFocusShot = aboveFlashThreshold;
+
+                        if (HoldCounter >= ThrowFlashThreshold) proj.CritChance += 20;
 
                         Projectile.Kill();
                     }

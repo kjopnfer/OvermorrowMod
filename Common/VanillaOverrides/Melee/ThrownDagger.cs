@@ -17,7 +17,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
         public override bool? CanDamage() => !groundCollided;
         public virtual Color IdleColor => Color.Orange;
-
         public sealed override void SetDefaults()
         {
             Projectile.width = Projectile.height = 2; // Make the hitbox small to prevent hitting the ground too early
@@ -34,6 +33,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
             SafeSetDefaults();
         }
+
+        public bool isFocusShot = false;
+        protected bool canBePickedUp = true;
+        protected bool canShowDagger = true;
 
         public virtual void SafeSetDefaults() { }
 
@@ -94,7 +97,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
                 foreach (Player player in Main.player)
                 {
                     if (player.whoAmI != Projectile.owner) continue;
-                    if (player.Hitbox.Intersects(Projectile.Hitbox)) Projectile.Kill();
+                    if (player.Hitbox.Intersects(Projectile.Hitbox) && canBePickedUp) Projectile.Kill();
                 }
             }
 
@@ -103,6 +106,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
+            if (!canShowDagger) return false;
+
             float activeAlpha = MathHelper.Lerp(0f, 1f, Utils.Clamp(Projectile.timeLeft, 0, 60f) / 60f);
             if (groundCollided)
             {
@@ -128,7 +133,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
         bool groundCollided = false;
         Vector2 oldPosition;
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public sealed override bool OnTileCollide(Vector2 oldVelocity)
         {
             if (!groundCollided && Projectile.velocity.Y > 0)
             {
@@ -142,9 +147,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             return false;
         }
 
+        /// <summary>
+        /// Used to handle any events before the bounce takes place.
+        /// Return false to prevent the default bounce effect from occurring.
+        /// </summary>
+        public virtual bool PreHandleCollisionBounce() { return true; }
+
         private void HandleCollisionBounce()
         {
-            if (groundCollided) return;
+            if (groundCollided || !PreHandleCollisionBounce()) return;
 
             groundCollided = true;
             Projectile.velocity.X *= 0.5f;
