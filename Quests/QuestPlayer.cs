@@ -35,6 +35,17 @@ namespace OvermorrowMod.Quests
             Quests.State.AddQuest(this, quest);
         }
 
+        /// <summary>
+        /// Checks whether the player has completed the given quest before
+        /// </summary>
+        /// <typeparam name="ModQuest"></typeparam>
+        /// <returns></returns>
+        public bool HasCompletedQuest<ModQuest>() where ModQuest : BaseQuest
+        {
+            var completedQuests = Quests.State.GetPerPlayerQuests(this).Where(q => q.Quest is ModQuest).Where(q => q.Completed);
+            return completedQuests.Count() > 0;
+        }
+
         public BaseQuestState QuestByNPC(int npcId)
         {
             return CurrentQuests.FirstOrDefault(q => npcId == q.Quest.QuestGiver);

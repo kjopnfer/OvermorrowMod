@@ -2,6 +2,9 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Core;
+using OvermorrowMod.Quests;
+using OvermorrowMod.Quests.ModQuests;
+using System.Linq;
 using System.Xml;
 using Terraria;
 using Terraria.ID;
@@ -14,6 +17,8 @@ namespace OvermorrowMod.Common.Detours
         public static void GUIChatDrawInner(Terraria.On_Main.orig_GUIChatDrawInner orig, Main self)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+
             if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -27,6 +32,13 @@ namespace OvermorrowMod.Common.Detours
                 // TODO: This is dogshit someone fix this
                 if (npc.type == NPCID.Guide)
                 {
+                    if (questPlayer.HasCompletedQuest<GuideCampfire>())
+                    {
+                        orig(self);
+                        return;
+                    }
+                    else Main.NewText("no");
+
                     //text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp_0.xml"));
                     doc.LoadXml(text);
