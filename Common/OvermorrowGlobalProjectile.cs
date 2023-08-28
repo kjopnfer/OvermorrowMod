@@ -297,11 +297,6 @@ namespace OvermorrowMod.Common
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
-            if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
-            {
-                SpawnPracticeTargetFail(player);
-            }
-
             if (Farlander && !FarlanderHit)
             {
                 gunPlayer.FarlanderSpeedBoost = 0;
@@ -342,5 +337,6 @@ namespace OvermorrowMod.Common
 
             base.GrappleRetreatSpeed(projectile, player, ref speed);
         }
+
     }
 }
