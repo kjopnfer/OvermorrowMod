@@ -106,7 +106,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
-            if (player.HeldItem.type != ParentItem || !player.active)
+            if (player.HeldItem.type != ParentItem || !player.active || player.dead)
                 Projectile.Kill();
             else
                 Projectile.timeLeft = 5;
