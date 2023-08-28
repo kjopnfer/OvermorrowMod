@@ -202,7 +202,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     // NPC is too high up from the player, move downwards
                     if (NPC.Center.Y <= player.Center.Y - (16 * 5))
                     {
-                        Main.NewText("wtf!!!!!!!!");
                         if (NPC.velocity.Y <= 2f) NPC.velocity.Y += 0.1f;
 
                         // Prevent the NPC from moving in a straight line when the y velocity stays the same
@@ -212,8 +211,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     else
                     {
-                        Main.NewText("wtf???");
-
 
                         /*if (flySpeedY <= -2)
                         {
@@ -231,7 +228,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }*/
                     if (TRay.CastLength(NPC.Center, Vector2.UnitY, 128) < 128)
                     {
-                        Main.NewText("go up");
                         NPC.velocity.Y -= 0.1f;
                         flySpeedY -= 0.1f;
                     }
@@ -372,7 +368,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             //NPC.velocity.X = flySpeedX;
             //NPC.velocity.Y = flySpeedY;
 
-            Main.NewText("flyspeed: [" + flySpeedX + ", " + flySpeedY + "] vs velocity: [" + NPC.velocity.X + ", " + NPC.velocity.Y + "]");
+            //Main.NewText("flyspeed: [" + flySpeedX + ", " + flySpeedY + "] vs velocity: [" + NPC.velocity.X + ", " + NPC.velocity.Y + "]");
         }
 
         public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
@@ -430,7 +426,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     frameTimer++;
                     if (frameTimer % frameRate == 0)
                     {
-                        if (frame < 7)
+                        if (frame < 5)
                             frame++;
                         else
                             frame = 0;
