@@ -279,8 +279,6 @@ namespace OvermorrowMod.Content.Tiles.Underground
             // Therefore, for each even tunnel, make it ID - 1, and then for each odd tunnel make it ID + 1
             te.PairedTunnel = TrollWorld.TunnelCounter % 2 == 0 ? te.TunnelID - 1 : te.TunnelID + 1;
 
-            Main.NewText("placed tunnel, my id is:" + te.TunnelID + " my pair is:" + te.PairedTunnel);
-
             return id;
         }
 

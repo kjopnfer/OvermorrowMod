@@ -196,7 +196,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (latchCounter > 0 && AICounter++ % 3 == 0) latchCounter -= Main.rand.Next(1, 3);
                     if (latchCounter < 0) latchCounter = 0;
 
-                    //Main.NewText(latchCounter);
                     if (latchCounter >= 25 || player.wet || player.HasBuff(BuffID.OnFire) || latchPlayer.statLife <= 0)
                     {
                         NPC.velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 8;

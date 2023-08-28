@@ -68,7 +68,6 @@ namespace OvermorrowMod.Quests
                                 RequirementCompleteAction(clause.ID);
                             }
                         }
-                        //Main.NewText(clause.ID + " " + clause.IsCompleted(this, quest));
                     }
 
                 }

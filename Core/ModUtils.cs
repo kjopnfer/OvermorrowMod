@@ -606,8 +606,6 @@ namespace OvermorrowMod.Core
                     Item item = player.inventory[i];
                     if (item.type == ItemID.None || item.ammo != ammoID) continue;
 
-                    //Main.NewText("Swapping " + i + " with " + (54 + j));
-
                     Item tempItem = ammoItem;
                     player.inventory[54 + j] = item;
                     player.inventory[i] = tempItem;

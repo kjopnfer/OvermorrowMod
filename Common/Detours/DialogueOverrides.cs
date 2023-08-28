@@ -37,7 +37,6 @@ namespace OvermorrowMod.Common.Detours
                         orig(self);
                         return;
                     }
-                    else Main.NewText("no");
 
                     //text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp_0.xml"));

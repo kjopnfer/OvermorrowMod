@@ -154,40 +154,7 @@ namespace OvermorrowMod.Content.UI.Tracker
 
     public class QuestTrackerPanel : DragableUIPanel
     {
-        // Code by Seraph
-        public void DrawNineSegmentTexturePanel(SpriteBatch spriteBatch, Texture2D texture, Rectangle dimensions, int cornerWidth, Color drawColor)
-        {
-            Rectangle cornerFrameTopLeft = new Rectangle(0, 0, cornerWidth, cornerWidth);
-            Rectangle cornerFrameBottomLeft = new Rectangle(0, texture.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle cornerFrameTopRight = new Rectangle(texture.Width - cornerWidth, 0, cornerWidth, cornerWidth);
-            Rectangle cornerFrameBottomRight = new Rectangle(texture.Width - cornerWidth, texture.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle sideFrameTop = new Rectangle(cornerWidth, 0, texture.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideFrameBottom = new Rectangle(cornerWidth, texture.Height - cornerWidth, texture.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideFrameLeft = new Rectangle(0, cornerWidth, cornerWidth, texture.Height - (cornerWidth * 2));
-            Rectangle sideFrameRight = new Rectangle(texture.Width - cornerWidth, cornerWidth, cornerWidth, texture.Height - (cornerWidth * 2));
-            Rectangle centreFrame = new Rectangle(cornerWidth, cornerWidth, texture.Width - (cornerWidth * 2), texture.Height - (cornerWidth * 2));
-
-            Rectangle cornerRectTopLeft = new Rectangle((int)dimensions.X, (int)dimensions.Y, cornerWidth, cornerWidth);
-            Rectangle cornerRectBottomLeft = new Rectangle((int)dimensions.X, (int)dimensions.Y + (int)dimensions.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle cornerRectTopRight = new Rectangle((int)dimensions.X + (int)dimensions.Width - cornerWidth, (int)dimensions.Y, cornerWidth, cornerWidth);
-            Rectangle cornerRectBottomRight = new Rectangle((int)dimensions.X + (int)dimensions.Width - cornerWidth, (int)dimensions.Y + (int)dimensions.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle sideRectTop = new Rectangle((int)dimensions.X + cornerWidth, (int)dimensions.Y, (int)dimensions.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideRectBottom = new Rectangle((int)dimensions.X + cornerWidth, (int)dimensions.Y + (int)dimensions.Height - cornerWidth, (int)dimensions.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideRectLeft = new Rectangle((int)dimensions.X, (int)dimensions.Y + cornerWidth, cornerWidth, (int)dimensions.Height - (cornerWidth * 2));
-            Rectangle sideRectRight = new Rectangle((int)dimensions.X + (int)dimensions.Width - cornerWidth, (int)dimensions.Y + cornerWidth, cornerWidth, (int)dimensions.Height - (cornerWidth * 2));
-            Rectangle centreRect = new Rectangle((int)dimensions.X + cornerWidth, (int)dimensions.Y + cornerWidth, (int)dimensions.Width - (cornerWidth * 2), (int)dimensions.Height - (cornerWidth * 2));
-
-            spriteBatch.Draw(texture, cornerRectTopLeft, cornerFrameTopLeft, drawColor);
-            spriteBatch.Draw(texture, cornerRectTopRight, cornerFrameTopRight, drawColor);
-            spriteBatch.Draw(texture, cornerRectBottomLeft, cornerFrameBottomLeft, drawColor);
-            spriteBatch.Draw(texture, cornerRectBottomRight, cornerFrameBottomRight, drawColor);
-            spriteBatch.Draw(texture, sideRectTop, sideFrameTop, drawColor);
-            spriteBatch.Draw(texture, sideRectBottom, sideFrameBottom, drawColor);
-            spriteBatch.Draw(texture, sideRectLeft, sideFrameLeft, drawColor);
-            spriteBatch.Draw(texture, sideRectRight, sideFrameRight, drawColor);
-            spriteBatch.Draw(texture, centreRect, centreFrame, drawColor);
-        }
-
+        
         private int drawHeight = 160;
         public override void Update(GameTime gameTime)
         {
@@ -198,9 +165,6 @@ namespace OvermorrowMod.Content.UI.Tracker
             if (Parent is UIQuestTrackerState state)
             {
                 Height.Pixels = drawHeight;
-                //if (state.questEntries.Count == 0) drawHeight = 160;
-                //else drawHeight = 160;
-                //Main.NewText(state.questEntries[0].Name);
             }
         }
 
@@ -224,7 +188,7 @@ namespace OvermorrowMod.Content.UI.Tracker
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
             //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.25f, 0.25f), 0, 0);
             //spriteBatch.Draw(texture, new Vector2(GetDimensions().X, GetDimensions().Y), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.7f, 0.25f), 0, 0);
-            DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - (Height.Pixels / 2)), 272, drawHeight), 35, Color.White * 0.6f);
+            ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - (Height.Pixels / 2)), 272, drawHeight), 35, Color.White * 0.6f);
 
             if (Parent is UIQuestTrackerState state)
             {

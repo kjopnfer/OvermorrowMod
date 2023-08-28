@@ -251,8 +251,6 @@ namespace OvermorrowMod.Common.Cutscenes
             }
             else
             {
-                //Main.NewText(Popup.DrawTimer + " / " + Popup.GetDrawTime());
-
                 if (Popup.DrawTimer < Popup.GetDrawTime()) // Draws the text for the specified time
                 {
                     if (Popup.DrawTimer == 0)

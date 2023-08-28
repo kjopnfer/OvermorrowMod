@@ -116,16 +116,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (AICase == (float)AIStates.Death)
             {
-                /*var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
-
-                deathShader.UseOpacity(1f);
-                if (AICounter > 30f)
-                {
-                    deathShader.UseOpacity(1f - (AICounter - 30f) / 90f);
-                    Main.NewText(1f - (AICounter - 30f) / 90f);
-                }
-
-                deathShader.Apply(null);*/
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 float progress = Utils.Clamp(AICounter, 0, 90) / 90f;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
@@ -265,8 +255,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (NPC.life <= 0)
             {
-                //Main.NewText("wtf");
-
                 int counter = 0;
 
                 var source = NPC.GetSource_Death();

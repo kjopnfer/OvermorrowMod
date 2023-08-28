@@ -29,7 +29,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             if (AICounter++ % 10 == 0)
             {
-                //Main.NewText("flip " + Direction);
                 Projectile.direction = (int)Direction * -1;
             }
         }

@@ -252,8 +252,6 @@ namespace OvermorrowMod.Content.NPCs.Bandits
                 #region Jump
                 case FrameType.Jump:
                     xFrame = 1;
-
-                    //Main.NewText("cring " + tempCounter + " / " + yFrame);
                     if (NPC.velocity.X != 0) NPC.direction = Math.Sign(NPC.velocity.X);
 
                     if (tempCounter++ == 0)

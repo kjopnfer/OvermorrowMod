@@ -22,16 +22,13 @@ namespace OvermorrowMod.Content.Tiles
         public override bool IsTileValidForEntity(int i, int j)
         {
             // valid tile does not get called for some reason
-            Main.NewText("valid tile");
             Tile tile = Main.tile[i, j];
             return tile.HasTile && tile.TileType == ModContent.TileType<GlowBlock>() && tile.TileFrameX == 0 && tile.TileFrameY == 0;
         }
 
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
-            // this only gets called when this is placed directly on top of a solid block for some reason
-            Main.NewText("i " + i + " j " + j + " t " + type + " s " + style + " d " + direction);
-
+         
             // i - 1 and j - 2 come from the fact that the origin of the tile is "new Point16(1, 2);", so we need to pass the coordinates back to the top left tile. If using a vanilla TileObjectData.Style, make sure you know the origin value.
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {

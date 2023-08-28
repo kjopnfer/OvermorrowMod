@@ -177,7 +177,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (node.Attributes["flag"] != null)
                 {
                     Main.LocalPlayer.GetModPlayer<DialoguePlayer>().DialogueFlags.Add(node.Attributes["flag"].Value);
-                    //Main.NewText(node.Attributes["flag"].Value);
                 }
 
                 if (node.Attributes["id"].Value == id) return node;

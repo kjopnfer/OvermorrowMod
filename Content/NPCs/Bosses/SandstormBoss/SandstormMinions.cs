@@ -165,7 +165,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             if (!IsDisabled)
             {
-                Main.NewText("I AM DEAD AMEN");
                 InitialPosition = NPC.Center;
 
                 NPC.noTileCollide = false;

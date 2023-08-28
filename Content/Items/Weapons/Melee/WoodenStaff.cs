@@ -275,9 +275,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 flashCounter = 0;
                 justReleasedWeapon = true;
                 lastMousePosition = Main.MouseWorld;
-
-                //if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
-                //if (HoldCounter >= heavySwingThreshold) Main.NewText("heavy attack");
             }
 
             // Position

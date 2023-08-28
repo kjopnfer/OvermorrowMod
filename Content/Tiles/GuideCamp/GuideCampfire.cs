@@ -73,7 +73,6 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
                     }
                 }
             }
-            //else Main.NewText("Campfire Tile Entity not found");
 
             return base.RightClick(i, j);
         }
@@ -164,7 +163,6 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
         {
             FireOn = !FireOn;
             flameCounter = 0;
-            Main.NewText("set state to " + FireOn);
 
             Main.LocalPlayer.GetModPlayer<QuestPlayer>().showCampfireArrow = false;
         }
