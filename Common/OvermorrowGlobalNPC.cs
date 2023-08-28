@@ -31,11 +31,11 @@ namespace OvermorrowMod.Common
 
         public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
-            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 0.25f;
+            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 1.25f;
         }
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
-            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 0.2f;
+            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 1.2f;
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
