@@ -71,6 +71,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
         public sealed override void AI()
         {
+            if (Main.myPlayer != player.whoAmI) return;
+            if (player.HeldItem.type != ParentItem || !player.active || player.dead)
+                Projectile.Kill();
+
             if (player.active && player.HeldItem.type == ParentItem) Projectile.timeLeft = 10;
 
             Projectile.width = Projectile.height = 40;

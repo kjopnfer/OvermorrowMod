@@ -125,6 +125,8 @@ namespace OvermorrowMod.Common
             {
                 npc.defense -= 8;
             }
+
+            if (npc.defense < 0) npc.defense = 0;
         }
 
         public override bool PreAI(NPC npc)
