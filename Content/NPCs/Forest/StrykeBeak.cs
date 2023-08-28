@@ -222,7 +222,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     // Nudge the NPC off the ground if they are too close
                     /*if (TRay.CastLength(NPC.Center, Vector2.UnitY, 25) < 25)
                     {
-                        Main.NewText("go up");
                         NPC.velocity.Y -= 0.5f;
                         flySpeedY -= 0.5f;
                     }*/

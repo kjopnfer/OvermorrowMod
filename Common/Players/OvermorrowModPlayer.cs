@@ -233,12 +233,9 @@ namespace OvermorrowMod.Common.Players
         {
             if (OvermorrowModFile.BearTrapKey.JustPressed && BearTrap && BearTrapCounter > 0 && CheckOnGround())
             {
-                Main.NewText(CheckOnGround());
                 BearTrapCounter--;
 
                 Projectile.NewProjectile(new EntitySource_Misc("PlayerTrap"), Player.Center, Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.BearTrap.PlacedBearTrap>(), 0, 0f, Player.whoAmI, 0f);
-
-                //Main.NewText("pressed bear trap");
             }
 
             base.ProcessTriggers(triggersSet);

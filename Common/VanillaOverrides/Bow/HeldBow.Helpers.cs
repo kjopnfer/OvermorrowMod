@@ -72,7 +72,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                     return true;
                 }
             }
-            //if (LoadedArrowItemType == -1) Main.NewText("No ammo found.");
 
             return false;
         }

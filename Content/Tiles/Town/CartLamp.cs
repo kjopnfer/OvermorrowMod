@@ -48,7 +48,6 @@ namespace OvermorrowMod.Content.Tiles.Town
                 {
                     if (counter != 420)
                     {
-                        Main.NewText(counter);
                         counter++;
                     }
                     break;
@@ -57,7 +56,6 @@ namespace OvermorrowMod.Content.Tiles.Town
 
             if (counter == 420)
             {
-                Main.NewText("helo");
                 NPC.NewNPC(null, (int)LampPosition.X - 90, (int)LampPosition.Y, ModContent.NPCType<Cart>());
 
                 counter++;

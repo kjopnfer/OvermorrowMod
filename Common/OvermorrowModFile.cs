@@ -91,7 +91,7 @@ namespace OvermorrowMod.Common
             AmuletKey = KeybindLoader.RegisterKeybind(this, "Artemis Amulet Attack", "C");
             ToggleUI = KeybindLoader.RegisterKeybind(this, "Toggle UI", "R"); // This is for debugging
             AmmoSwapKey = KeybindLoader.RegisterKeybind(this, "Activate Ammo Swap", "Q");
-            BearTrapKey = KeybindLoader.RegisterKeybind(this, "Place Bear Trap", "T");
+            BearTrapKey = KeybindLoader.RegisterKeybind(this, "Place Bear Trap", "V");
 
             ShaderLoader.Load();
 
