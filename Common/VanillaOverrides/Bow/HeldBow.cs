@@ -250,13 +250,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         {
             if (drawCounter >= ModifiedChargeTime)
             {
+                if (flashCounter == 0) SoundEngine.PlaySound(SoundID.MaxMana);
                 if (flashCounter < 48 && !Main.gamePaused) flashCounter++;
             }
 
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
-
-
 
             if (LoadedArrowItemType == -1) return;
 

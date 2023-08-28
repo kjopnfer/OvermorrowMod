@@ -91,6 +91,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         {
             if (HoldCounter < maxHoldCount) HoldCounter++;
             if (HoldCounter > ThrowFlashThreshold && flashCounter <= 15) flashCounter++;
+            if (flashCounter == 5) SoundEngine.PlaySound(SoundID.MaxMana);
 
             if (AICounter <= backTime)
             {
