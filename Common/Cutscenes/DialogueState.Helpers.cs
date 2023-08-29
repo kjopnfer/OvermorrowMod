@@ -47,7 +47,9 @@ namespace OvermorrowMod.Common.Cutscenes
             QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
 
-            if (quest.CanHandInQuest(questPlayer, questState)) SetID("quest_complete");
+            // Check if the player is currently doing the quest or is ready to turn it in
+            // If ready, set the traverser to the quest complete chain
+            if (quest.CanHandInQuest(questPlayer, questState)) SetID("quest_complete"); 
             else SetID("quest_hint");
         }
 
@@ -127,8 +129,8 @@ namespace OvermorrowMod.Common.Cutscenes
             Color color = Color.White * 0.9f;
             texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
             float height_padding = 30;
-            int width = 660;
-            int height = 220;
+            int width = 600;
+            int height = 180;
             //Vector2 position = new Vector2(GetDimensions().X, GetDimensions().Center().Y - (height / 2));
             Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight / 3f - height / 2f);
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, width, height);
@@ -160,9 +162,13 @@ namespace OvermorrowMod.Common.Cutscenes
             Rectangle rightBorderRectangle = new Rectangle((int)topRight.X + 44, (int)topRight.Y + topLeftBorder.Height - 20, 4, height - (52 * 2) + 18);
             spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorderRectangle, TextureAssets.MagicPixel.Value.Frame(), color);
             #endregion
-            Texture2D speaker = player.GetDialogue().speakerBody;
+
+            #region Face
+            //Texture2D speaker = player.GetDialogue().speakerBody;
+            Texture2D speaker = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue/Orvyn").Value;
             Vector2 offset = new Vector2(-200, -20);
-            //spriteBatch.Draw(speaker, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, 0, 0);
+            spriteBatch.Draw(speaker, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, 0, 0);
+            #endregion
         }
     }
 }

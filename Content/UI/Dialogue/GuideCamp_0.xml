@@ -5,7 +5,7 @@
 			<Text time="60">RIP, looks like my fire got put out, wanna help me start it again?</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" action="quest">Fine.</Option>
+			<Option link="exit" icon="quest" action="quest">Fine.</Option>
 		</Options>
 	</DialogueNode>
 
@@ -16,15 +16,15 @@
 		</Dialogue>
 	</DialogueNode>
 
-	<DialogueNode id="quest_rewards">
+	<DialogueNode id="quest_complete">
 		<Dialogue>
 			<Text time="60">You catch on pretty fast. I think that sums up everything I had to tell you...</Text>
 			<Text time="30">What are you planning to do next?</Text>
 		</Dialogue>
 		<Options>
-			<Option link="quest_complete_monster">Take on a powerful monster</Option>
-			<Option link="quest_complete_biome">Discover an uncharted biome</Option>
-			<Option link="quest_complete_build">Build a cozy place to live</Option>
+			<Option icon="chest" link="quest_complete_monster">Take on a powerful monster</Option>
+			<Option icon="chest" link="quest_complete_biome">Discover an uncharted biome</Option>
+			<Option icon="chest" link="quest_complete_build">Build a cozy place to live</Option>
 		</Options>
 	</DialogueNode>
 
@@ -34,7 +34,7 @@
 			<Text time="45">Maybe look for a [caravan merchant] or someone who can confirm the rumors.</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" action="quest_complete">Turn In</Option>
+			<Option link="exit" icon="chest" action="quest_complete">Turn In</Option>
 		</Options>
 	</DialogueNode>
 
@@ -45,7 +45,7 @@
 			<Text time="60">Regardless, you'll have to get some better gear before you try anything like that. I don't get out much these days so why don't you borrow these for now. The rest you'll have to find on your own.</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" action="quest_complete">Turn In</Option>
+			<Option link="exit" icon="chest" action="quest_complete">Turn In</Option>
 		</Options>
 	</DialogueNode>
 
@@ -64,7 +64,7 @@
 			<Text time="60">"I'm sure whatever you build it will be great. Stay safe out there!"</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" action="quest_complete">Turn In</Option>
+			<Option link="exit" action="quest_complete" icon="chest">Turn In</Option>
 		</Options>
 	</DialogueNode>
 </Dialogue>

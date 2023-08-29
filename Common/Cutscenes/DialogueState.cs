@@ -189,13 +189,13 @@ namespace OvermorrowMod.Common.Cutscenes
             switch (optionNumber)
             {
                 case 1:
-                    return screenPosition + new Vector2(-300, 20);
+                    return screenPosition + new Vector2(-300, -25);
                 case 2:
-                    return screenPosition + new Vector2(0, 25);
+                    return screenPosition + new Vector2(-300, 50);
                 case 3:
-                    return screenPosition + new Vector2(-300, 150);
+                    return screenPosition + new Vector2(-300, 125);
                 case 4:
-                    return screenPosition + new Vector2(0, 150);
+                    return screenPosition + new Vector2(-300, 200);
             }
 
             return new Vector2(0, 0);
@@ -261,7 +261,7 @@ namespace OvermorrowMod.Common.Cutscenes
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
 
             float MAX_LENGTH = 400;
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f) + new Vector2(-150, -200), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f) + new Vector2(-125, -180), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
         }
     }
 
@@ -308,6 +308,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
     public class OptionButton : UIElement
     {
+        private string icon;
         private string displayText;
         private string linkID;
         private string action;
@@ -316,14 +317,16 @@ namespace OvermorrowMod.Common.Cutscenes
         private string itemName;
         private int stack;
 
-        public OptionButton(string displayText, string linkID, string action)
+        public OptionButton(string icon, string displayText, string linkID, string action)
         {
+            this.icon = icon;
             this.displayText = displayText;
             this.linkID = linkID;
             this.action = action;
         }
 
-        /// <summary>
+        // TODO: Make these not stupid
+        /*/// <summary>
         /// <para>Used to handle button with a vanilla item action. Vanilla uses static ids for their items which can be passed directly.</para> 
         /// For modded items, the name of the file must be used instead.
         /// </summary>
@@ -355,7 +358,7 @@ namespace OvermorrowMod.Common.Cutscenes
             this.itemID = -1;
             this.stack = stack;
             this.action = "item";
-        }
+        }*/
 
         public string GetText() => displayText;
 
@@ -380,6 +383,23 @@ namespace OvermorrowMod.Common.Cutscenes
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, (int)Width.Pixels, (int)height);
 
             ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
+
+            Texture2D dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon").Value;
+            switch (icon)
+            {
+                case "quest":
+                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon").Value;
+                    break;
+                case "chest":
+                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon").Value;
+                    break;
+                case "sword":
+                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_SwordIcon").Value;
+                    break;
+            }
+
+            spriteBatch.Draw(dialogueIcon, pos + new Vector2(dialogueIcon.Width + 12, dialogueIcon.Height + 10), null, Color.White, 0f, texture.Size() / 2f, 1f, 0, 0);
+
 
             Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(64, 12), Color.White);
         }

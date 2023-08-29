@@ -122,6 +122,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                         // click on button, open shop, exit dialogue
 
+                        var icon = option.Attributes["icon"] == null ? "chat" : option.Attributes["icon"].Value;
 
                         if (option.Attributes["action"] != null)
                         {
@@ -130,7 +131,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                 case "item":
                                     if (option.Attributes["item-type"].Value != null)
                                     {
-                                        var itemID = option.Attributes["item-type"].Value;
+                                        /*var itemID = option.Attributes["item-type"].Value;
                                         var isNumber = int.TryParse(itemID, out _);
 
                                         int itemStack = option.Attributes["item-stack"] != null ? int.Parse(option.Attributes["item-stack"].Value) : 1;
@@ -142,7 +143,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                         else // Otherwise, it's modded so don't parse.
                                         {
                                             optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, itemID, itemStack));
-                                        }
+                                        }*/
                                     }
                                     break;
                                 case "marker":
@@ -152,14 +153,14 @@ namespace OvermorrowMod.Common.Cutscenes
                                     }
                                     break;
                                 default:
-                                    optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, option.Attributes["action"].Value));
+                                    optionButtons.Add(new OptionButton(icon, option.InnerText, option.Attributes["link"].Value, option.Attributes["action"].Value));
                                     break;
                             }
                         }
                         else if (option.Attributes["link"] != null)
                         {
-                            Main.NewText(option.Attributes["link"].Value);
-                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, "none"));
+                            Main.NewText(icon + " / " + option.Attributes["link"].Value);
+                            optionButtons.Add(new OptionButton(icon, option.InnerText, option.Attributes["link"].Value, "none"));
                         }
                     }
                 }
