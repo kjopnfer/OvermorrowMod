@@ -72,7 +72,8 @@ namespace OvermorrowMod.Common
             //sb.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * proj.ai[1]);
             //sb.End();
 
-            foreach (NPC npc in Main.npc)
+            // Screen Blackout Effect
+            /*foreach (NPC npc in Main.npc)
             {
                 if (npc.type == NPCID.EyeofCthulhu && npc.active)
                 {
@@ -85,7 +86,7 @@ namespace OvermorrowMod.Common
                     //Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, 0, Vector2.Zero);
                     //sb.End();
                 }
-            }
+            }*/
 
             base.PostDrawTiles();
         }
