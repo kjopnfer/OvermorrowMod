@@ -126,7 +126,7 @@ namespace OvermorrowMod.Common.Cutscenes
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
             //spriteBatch.Draw(texture, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f), null, Color.White * 0.75f, 0, texture.Size() / 2f, new Vector2(1.25f, 1), 0, 0);
 
-            Color color = Color.White * 0.9f;
+            //Color color = Color.White * 0.9f;
             texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
             float height_padding = 30;
             int width = 600;
@@ -135,9 +135,11 @@ namespace OvermorrowMod.Common.Cutscenes
             Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight / 3f - height / 2f);
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, width, height);
 
-            ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
+            //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
+            Color color = new Color(28, 31, 77);
+            Utils.DrawInvBG(spriteBatch, drawRectangle, color * 0.925f);
 
-            #region Left Side
+            /*#region Left Side
             Texture2D topLeftBorder = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_Border_TopLeft").Value;
             Vector2 topLeft = position - new Vector2(4, 4);
             spriteBatch.Draw(topLeftBorder, topLeft + topLeftBorder.Size() / 2f, null, color, 0, topLeftBorder.Size() / 2f, 1f, 0, 0);
@@ -161,7 +163,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             Rectangle rightBorderRectangle = new Rectangle((int)topRight.X + 44, (int)topRight.Y + topLeftBorder.Height - 20, 4, height - (52 * 2) + 18);
             spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorderRectangle, TextureAssets.MagicPixel.Value.Frame(), color);
-            #endregion
+            #endregion*/
 
             #region Face
             //Texture2D speaker = player.GetDialogue().speakerBody;

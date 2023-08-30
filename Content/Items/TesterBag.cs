@@ -5,6 +5,8 @@ using OvermorrowMod.Content.Items.Accessories.BearTrap;
 using OvermorrowMod.Content.Items.Accessories.CapturedMirage;
 using OvermorrowMod.Content.Items.Accessories.PracticeTarget;
 using OvermorrowMod.Content.Items.Ammo;
+using OvermorrowMod.Content.Items.Weapons.Melee;
+using OvermorrowMod.Content.Items.Weapons.Melee.AmethystSlicer;
 using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher;
 using Terraria;
@@ -69,6 +71,11 @@ namespace OvermorrowMod.Content.Items
             player.QuickSpawnItem(null, ItemID.Revolver);
             player.QuickSpawnItem(null, ItemID.TheUndertaker);
             player.QuickSpawnItem(null, ModContent.ItemType<WildEye>());
+
+            player.QuickSpawnItem(null, ModContent.ItemType<Knife>());
+            player.QuickSpawnItem(null, ModContent.ItemType<Windrunner>(), 2);
+            player.QuickSpawnItem(null, ModContent.ItemType<AmethystSlicer>(), 2);
+
         }
     }
 }

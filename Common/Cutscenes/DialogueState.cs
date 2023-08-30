@@ -110,7 +110,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
                     {
                         canInteract = true;
-                        ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
+                        ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 250, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
                     }
                 }
 
@@ -137,7 +137,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
                         Vector2 position = OptionPosition(optionNumber);
-                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 400, 45, this);
+                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 375, 45, this);
 
                         optionNumber++;
                     }
@@ -191,11 +191,11 @@ namespace OvermorrowMod.Common.Cutscenes
                 case 1:
                     return screenPosition + new Vector2(-300, -25);
                 case 2:
-                    return screenPosition + new Vector2(-300, 50);
+                    return screenPosition + new Vector2(-300, 35);
                 case 3:
-                    return screenPosition + new Vector2(-300, 125);
+                    return screenPosition + new Vector2(-300, 95);
                 case 4:
-                    return screenPosition + new Vector2(-300, 200);
+                    return screenPosition + new Vector2(-300, 155);
             }
 
             return new Vector2(0, 0);
@@ -367,10 +367,13 @@ namespace OvermorrowMod.Common.Cutscenes
             Vector2 pos = GetDimensions().ToRectangle().TopLeft();
             bool isHovering = ContainsPoint(Main.MouseScreen);
 
+            Color color = new Color(22, 25, 62);
+
             if (isHovering)
             {
                 Main.LocalPlayer.mouseInterface = true;
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
+                color = new Color(32, 35, 78);
+                //spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
             //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
@@ -378,11 +381,12 @@ namespace OvermorrowMod.Common.Cutscenes
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
 
             float height_padding = 30;
-            float height = Height.Pixels + height_padding;
+            float height = Height.Pixels/* + height_padding*/;
             Vector2 position = new Vector2(GetDimensions().X, GetDimensions().Center().Y - (height / 2));
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, (int)Width.Pixels, (int)height);
 
-            ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
+            //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
+            Utils.DrawInvBG(Main.spriteBatch, drawRectangle, color * 0.925f);
 
             Texture2D dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon").Value;
             switch (icon)

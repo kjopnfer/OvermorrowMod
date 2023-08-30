@@ -49,19 +49,19 @@
 		</Options>
 	</DialogueNode>
 
-	<DialogueNode id="quest_complete_biome">
+	<DialogueNode id="quest_complete_build">
 		<Dialogue>
 			<Text time="60">Ah, settling down are we? You think you could find a place for these in that fancy new home of ours? Things start to get heavy after so many years.</Text>
 			<Text time="60">Don't get excited, it won't be anything too fancy</Text>
 		</Dialogue>
 		<Options>
-			<Option link="quest_complete_biome_end">I'll make them the best storage space you've ever seen</Option>
+			<Option link="quest_complete_build_end">I'll make them the best storage space you've ever seen</Option>
 		</Options>
 	</DialogueNode>
 
-	<DialogueNode id="quest_complete_biome_end">
+	<DialogueNode id="quest_complete_build_end">
 		<Dialogue>
-			<Text time="60">"I'm sure whatever you build it will be great. Stay safe out there!"</Text>
+			<Text time="60">I'm sure whatever you build it will be great. Stay safe out there!</Text>
 		</Dialogue>
 		<Options>
 			<Option link="exit" action="quest_complete" icon="chest">Turn In</Option>
