@@ -51,6 +51,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public int interactDelay = 0;
 
         public bool hasInitialized = false;
+        float arrowOffset;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -98,25 +99,19 @@ namespace OvermorrowMod.Common.Cutscenes
                 // Draw the continue icon if there is more text to be read
                 if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
                 {
-                    Main.NewText("yea");
-
                     Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
-
                     Vector2 arrowPosition = new Vector2(Main.screenWidth / 2f + 265, Main.screenHeight / 3f + 50);
-                    //float xOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
+                    
                     arrowOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(continueButtonCounter++ / 20f) / 2 + 0.5f));
-                    Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, 10 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
+                    spriteBatch.Draw(texture, arrowPosition + new Vector2(0, 10 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
 
                     canInteract = true;
-                    //Vector2 arrowPosition = new Vector2(Main.screenWidth / 2f + 250, Main.screenHeight / 2f - 75);
-                    //ModUtils.AddElement(new NextButton(), (int)arrowPosition.X, (int)arrowPosition.Y, 50, 25, this);
                 }
             }
 
             base.Draw(spriteBatch);
         }
 
-        float arrowOffset;
         public override void Update(GameTime gameTime)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -269,47 +264,6 @@ namespace OvermorrowMod.Common.Cutscenes
             float MAX_LENGTH = 400;
             Vector2 offsets = new Vector2(-125, -60);
             ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offsets, Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
-        }
-    }
-
-    /// <summary>
-    /// Literally just an arrow that bobs up and down.
-    /// </summary>
-    public class NextButton : UIElement
-    {
-        public NextButton() { }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-            bool isHovering = ContainsPoint(Main.MouseScreen);
-
-            if (isHovering)
-                Main.LocalPlayer.mouseInterface = true;
-
-
-            if (Parent is DialogueState parent)
-            {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
-
-                float xOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
-                spriteBatch.Draw(texture, pos + new Vector2(20, 10 + xOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
-            }
-        }
-
-        public override void LeftMouseDown(UIMouseEvent evt)
-        {
-            SoundEngine.PlaySound(SoundID.MenuTick);
-
-            // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent is DialogueState parent)
-            {
-                DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-
-                player.GetDialogue().IncrementText();
-                parent.ResetTimers();
-                parent.shouldRedraw = true;
-            }
         }
     }
 
