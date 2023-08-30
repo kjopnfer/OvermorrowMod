@@ -131,8 +131,8 @@ namespace OvermorrowMod.Common.Cutscenes
             float height_padding = 30;
             int width = 600;
             int height = 180;
-            //Vector2 position = new Vector2(GetDimensions().X, GetDimensions().Center().Y - (height / 2));
-            Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight / 3f - height / 2f);
+            //Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight - height - 25);
+            Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight / 3f - height / 2);
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, width, height);
 
             //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);

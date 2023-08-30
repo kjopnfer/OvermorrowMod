@@ -184,21 +184,10 @@ namespace OvermorrowMod.Common.Cutscenes
         /// </summary>
         private Vector2 OptionPosition(int optionNumber)
         {
-            Vector2 screenPosition = new Vector2(Main.screenWidth, Main.screenHeight) / 2f;
+            Vector2 screenPosition = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f);
+            Vector2 offsets = new Vector2(600, 180) / 2f; // This is the size of the dialogue box
 
-            switch (optionNumber)
-            {
-                case 1:
-                    return screenPosition + new Vector2(-300, -25);
-                case 2:
-                    return screenPosition + new Vector2(-300, 35);
-                case 3:
-                    return screenPosition + new Vector2(-300, 95);
-                case 4:
-                    return screenPosition + new Vector2(-300, 155);
-            }
-
-            return new Vector2(0, 0);
+            return screenPosition + offsets + new Vector2(-600, -35 + (60 * optionNumber - 1));
         }
 
         /// <summary>
