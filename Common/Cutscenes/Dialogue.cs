@@ -159,7 +159,7 @@ namespace OvermorrowMod.Common.Cutscenes
                         }
                         else if (option.Attributes["link"] != null)
                         {
-                            Main.NewText(icon + " / " + option.Attributes["link"].Value);
+                            //Main.NewText(icon + " / " + option.Attributes["link"].Value);
                             optionButtons.Add(new OptionButton(icon, option.InnerText, option.Attributes["link"].Value, "none"));
                         }
                     }

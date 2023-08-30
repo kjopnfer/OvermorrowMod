@@ -86,9 +86,37 @@ namespace OvermorrowMod.Common.Cutscenes
                 DrawText(player, spriteBatch, new Vector2(0, 0));
             }
 
+
+            // Handles the drawing of the UI after the dialogue has finished drawing
+            if (DrawTimer >= player.GetDialogue().drawTime)
+            {
+                Dialogue dialogue = player.GetDialogue();
+
+                var npc = Main.npc[Main.LocalPlayer.talkNPC];
+                var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+                // Draw the continue icon if there is more text to be read
+                if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                {
+                    Main.NewText("yea");
+
+                    Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
+
+                    Vector2 arrowPosition = new Vector2(Main.screenWidth / 2f + 265, Main.screenHeight / 3f + 50);
+                    //float xOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
+                    arrowOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(continueButtonCounter++ / 20f) / 2 + 0.5f));
+                    Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, 10 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
+
+                    canInteract = true;
+                    //Vector2 arrowPosition = new Vector2(Main.screenWidth / 2f + 250, Main.screenHeight / 2f - 75);
+                    //ModUtils.AddElement(new NextButton(), (int)arrowPosition.X, (int)arrowPosition.Y, 50, 25, this);
+                }
+            }
+
             base.Draw(spriteBatch);
         }
 
+        float arrowOffset;
         public override void Update(GameTime gameTime)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -96,23 +124,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (dialogue == null) return;
 
-            if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            if (Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
                 this.RemoveAllChildren(); // Removes the options and then readds the elements back
                 canInteract = true;
 
-                // Handles the drawing of the UI after the dialogue has finished drawing
-                if (DrawTimer >= player.GetDialogue().drawTime)
-                {
-                    var npc = Main.npc[Main.LocalPlayer.talkNPC];
-                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-
-                    if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
-                    {
-                        canInteract = true;
-                        ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 250, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
-                    }
-                }
+                
 
                 //Main.NewText(dialogue.GetTextIteration() + " / " + (dialogue.GetTextListLength() - 1));
 
@@ -250,7 +267,8 @@ namespace OvermorrowMod.Common.Cutscenes
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
 
             float MAX_LENGTH = 400;
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f) + new Vector2(-125, -180), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
+            Vector2 offsets = new Vector2(-125, -60);
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offsets, Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
         }
     }
 
