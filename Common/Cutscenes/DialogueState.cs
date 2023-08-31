@@ -228,7 +228,7 @@ namespace OvermorrowMod.Common.Cutscenes
                         builder.Append("[c/34c9eb:");
                         break;             
                     case '{':
-                        openCurlyBrackets++;
+                        openSquareBrackets++;
                         builder.Append("[c/f8595f:");
                         break;
                     case ']':
@@ -236,36 +236,16 @@ namespace OvermorrowMod.Common.Cutscenes
                         builder.Append(character);
                         break;
                     case '}':
-                        closedCurlyBrackets++;
+                        closedSquareBrackets++;
                         builder.Append("]");
                         break;
                     default:
                         builder.Append(character);
                         break;
                 }
-                /*if (character == '[') // Insert the hex tag if an opening bracket is found
-                {
-                    //builder.Append("[c/" + player.GetDialogue().bracketColor + ":");
-                    builder.Append("[c/34c9eb:");
-                    numOpen++;
-                }
-                else
-                {
-                    if (character == ']')
-                    {
-                        numClose++;
-                    }
-
-                    builder.Append(character);
-                }*/
             }
 
             if (openSquareBrackets != closedSquareBrackets)
-            {
-                builder.Append(']');
-            }
-
-            if (openCurlyBrackets != closedCurlyBrackets)
             {
                 builder.Append(']');
             }
@@ -278,10 +258,10 @@ namespace OvermorrowMod.Common.Cutscenes
                 builder.Replace(hexTag, "[c/34c9eb: ]");
             }
 
-            hexTag = "[c/FFA500:]";
-            if (builder.ToString().Contains("[c/FFA500:]"))
+            hexTag = "[c/f8595f:]";
+            if (builder.ToString().Contains("[c/f8595f:]"))
             {
-                builder.Replace(hexTag, "[c/FFA500: ]");
+                builder.Replace(hexTag, "[c/f8595f: ]");
             }
 
             displayText = builder.ToString();

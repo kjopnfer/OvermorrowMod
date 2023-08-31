@@ -40,7 +40,7 @@
 	<DialogueNode id="quest_complete_biome">
 		<Dialogue>
 			<Text time="180">Quite the explorer you are! Well if uncharted biomes are what you're looking for you couldn't have come to a better place.</Text>
-			<Text time="60">There's a place they call the {Crimson} that no adventurer dares enter.</Text>
+			<Text time="90">There's a place they call the {Crimson} that no adventurer dares enter.</Text>
 			<Text time="240">Regardless, you'll have to get some better gear before you try anything like that. I don't get out much these days so why don't you borrow these for now. The rest you'll have to find on your own.</Text>
 		</Dialogue>
 		<Options>
