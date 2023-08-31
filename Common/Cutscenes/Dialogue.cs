@@ -12,20 +12,17 @@ namespace OvermorrowMod.Common.Cutscenes
         public string displayText;
         public int drawTime;
 
-        public string bracketColor;
         public XmlDocument xmlDoc;
 
         private XmlNodeList textList;
 
         private int textIterator = 0;
 
-        public Dialogue(Texture2D speakerBody, string displayText, int drawTime, string bracketColor, XmlDocument xmlDoc)
+        public Dialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
         {
             this.speakerBody = speakerBody;
             this.displayText = displayText;
             this.drawTime = drawTime;
-
-            this.bracketColor = bracketColor;
             this.xmlDoc = xmlDoc;
 
             UpdateList("start");
@@ -88,12 +85,6 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 string value = node.Attributes["time"].Value;
                 drawTime = int.Parse(value);
-            }
-
-            if (node.Attributes["color"] != null)
-            {
-                string value = node.Attributes["color"].Value;
-                bracketColor = value;
             }
 
             return node.InnerText;

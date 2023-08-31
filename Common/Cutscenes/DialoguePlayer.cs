@@ -70,7 +70,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
         {
-            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, new Color(52, 201, 235).Hex3(), xmlDoc);
+            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, xmlDoc);
         }
 
         public void SetDialogue(Dialogue dialogue) => CurrentDialogue = dialogue;

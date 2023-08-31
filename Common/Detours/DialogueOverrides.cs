@@ -39,7 +39,7 @@ namespace OvermorrowMod.Common.Detours
                     }
 
                     //text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
-                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp_0.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp.xml"));
                     doc.LoadXml(text);
 
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);

@@ -87,10 +87,9 @@ namespace OvermorrowMod.Common.Cutscenes
                 DrawText(player, spriteBatch, new Vector2(0, 0));
             }
 
-
             // Handles the drawing of the UI after the dialogue has finished drawing
             if (DrawTimer >= player.GetDialogue().drawTime)
-            {
+            {                    
                 Dialogue dialogue = player.GetDialogue();
 
                 var npc = Main.npc[Main.LocalPlayer.talkNPC];
@@ -202,6 +201,94 @@ namespace OvermorrowMod.Common.Cutscenes
             return screenPosition + offsets + new Vector2(-600, -35 + (60 * optionNumber - 1));
         }
 
+        private string ParseColoredText(string text)
+        {
+            string displayText = text;
+
+            // The number of opening brackets MUST be the same as the number of closing brackets
+            int numOpen = 0;
+            int numClose = 0;
+
+            int openSquareBrackets = 0;
+            int closedSquareBrackets = 0;
+
+            int openCurlyBrackets = 0;
+            int closedCurlyBrackets = 0;
+
+            // Create a new string, adding in hex tags whenever an opening bracket is found
+            var builder = new StringBuilder();
+            //builder.Append("    "); // Appends a tab to the beginning of the string
+
+            foreach (var character in displayText)
+            {
+                switch (character)
+                {
+                    case '[':
+                        openSquareBrackets++;
+                        builder.Append("[c/34c9eb:");
+                        break;             
+                    case '{':
+                        openCurlyBrackets++;
+                        builder.Append("[c/f8595f:");
+                        break;
+                    case ']':
+                        closedSquareBrackets++;
+                        builder.Append(character);
+                        break;
+                    case '}':
+                        closedCurlyBrackets++;
+                        builder.Append("]");
+                        break;
+                    default:
+                        builder.Append(character);
+                        break;
+                }
+                /*if (character == '[') // Insert the hex tag if an opening bracket is found
+                {
+                    //builder.Append("[c/" + player.GetDialogue().bracketColor + ":");
+                    builder.Append("[c/34c9eb:");
+                    numOpen++;
+                }
+                else
+                {
+                    if (character == ']')
+                    {
+                        numClose++;
+                    }
+
+                    builder.Append(character);
+                }*/
+            }
+
+            if (openSquareBrackets != closedSquareBrackets)
+            {
+                builder.Append(']');
+            }
+
+            if (openCurlyBrackets != closedCurlyBrackets)
+            {
+                builder.Append(']');
+            }
+
+            // Final check for if the tag has two brackets but no characters inbetween which does weird things
+            //var hexTag = "[c/" + player.GetDialogue().bracketColor + ":]";
+            var hexTag = "[c/34c9eb:]";
+            if (builder.ToString().Contains("[c/34c9eb:]") )
+            {
+                builder.Replace(hexTag, "[c/34c9eb: ]");
+            }
+
+            hexTag = "[c/FFA500:]";
+            if (builder.ToString().Contains("[c/FFA500:]"))
+            {
+                builder.Replace(hexTag, "[c/FFA500: ]");
+            }
+
+            displayText = builder.ToString();
+
+            return displayText;
+        }
+
         /// <summary>
         /// Handles drawing the text for the UI
         /// </summary>
@@ -213,52 +300,7 @@ namespace OvermorrowMod.Common.Cutscenes
             string text = player.GetDialogue().GetText();
             int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText().Length, DrawTimer / (float)player.GetDialogue().drawTime);
 
-            var displayText = text.Substring(0, progress);
-
-            // If for some reason there are no colors specified don't parse the brackets
-            if (player.GetDialogue().bracketColor != null)
-            {
-                // The number of opening brackets MUST be the same as the number of closing brackets
-                int numOpen = 0;
-                int numClose = 0;
-
-                // Create a new string, adding in hex tags whenever an opening bracket is found
-                var builder = new StringBuilder();
-                builder.Append("    "); // Appends to the beginning of the string
-
-                foreach (var character in displayText)
-                {
-                    if (character == '[') // Insert the hex tag if an opening bracket is found
-                    {
-                        builder.Append("[c/" + player.GetDialogue().bracketColor + ":");
-                        numOpen++;
-                    }
-                    else
-                    {
-                        if (character == ']')
-                        {
-                            numClose++;
-                        }
-
-                        builder.Append(character);
-                    }
-                }
-
-                if (numOpen != numClose)
-                {
-                    builder.Append(']');
-                }
-
-                // Final check for if the tag has two brackets but no characters inbetween
-                var hexTag = "[c/" + player.GetDialogue().bracketColor + ":]";
-                if (builder.ToString().Contains(hexTag))
-                {
-                    builder.Replace(hexTag, "[c/" + player.GetDialogue().bracketColor + ": ]");
-                }
-
-                displayText = builder.ToString();
-            }
-
+            var displayText = ParseColoredText(text.Substring(0, progress));
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
 
             float MAX_LENGTH = 400;
