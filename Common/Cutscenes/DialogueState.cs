@@ -89,7 +89,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             // Handles the drawing of the UI after the dialogue has finished drawing
             if (DrawTimer >= player.GetDialogue().drawTime)
-            {                    
+            {
                 Dialogue dialogue = player.GetDialogue();
 
                 var npc = Main.npc[Main.LocalPlayer.talkNPC];
@@ -100,7 +100,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
                     Vector2 arrowPosition = new Vector2(Main.screenWidth / 2f + 265, Main.screenHeight / 3f + 50);
-                    
+
                     arrowOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(continueButtonCounter++ / 20f) / 2 + 0.5f));
                     spriteBatch.Draw(texture, arrowPosition + new Vector2(0, 10 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
 
@@ -122,10 +122,6 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 this.RemoveAllChildren(); // Removes the options and then readds the elements back
                 canInteract = true;
-
-                
-
-                //Main.NewText(dialogue.GetTextIteration() + " / " + (dialogue.GetTextListLength() - 1));
 
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
@@ -182,8 +178,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
                         ExitText();
-                    else            
-                        AdvanceText();          
+                    else
+                        AdvanceText();
                 }
             }
 
@@ -226,7 +222,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     case '[':
                         openSquareBrackets++;
                         builder.Append("[c/34c9eb:");
-                        break;             
+                        break;
                     case '{':
                         openSquareBrackets++;
                         builder.Append("[c/f8595f:");
@@ -251,9 +247,8 @@ namespace OvermorrowMod.Common.Cutscenes
             }
 
             // Final check for if the tag has two brackets but no characters inbetween which does weird things
-            //var hexTag = "[c/" + player.GetDialogue().bracketColor + ":]";
             var hexTag = "[c/34c9eb:]";
-            if (builder.ToString().Contains("[c/34c9eb:]") )
+            if (builder.ToString().Contains("[c/34c9eb:]"))
             {
                 builder.Replace(hexTag, "[c/34c9eb: ]");
             }
@@ -296,9 +291,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private string linkID;
         private string action;
 
-        private int itemID;
-        private string itemName;
-        private int stack;
+        public int rewardIndex = -1;
 
         public OptionButton(string icon, string displayText, string linkID, string action)
         {
@@ -306,42 +299,7 @@ namespace OvermorrowMod.Common.Cutscenes
             this.displayText = displayText;
             this.linkID = linkID;
             this.action = action;
-        }
-
-        // TODO: Make these not stupid
-        /*/// <summary>
-        /// <para>Used to handle button with a vanilla item action. Vanilla uses static ids for their items which can be passed directly.</para> 
-        /// For modded items, the name of the file must be used instead.
-        /// </summary>
-        /// <param name="displayText">The text displayed on the dialogue option.</param>
-        /// <param name="itemID">The STATIC ID for the vanilla item.</param>
-        /// <param name="stack">The number of items given, defaults to 1.</param>
-        public OptionButton(string displayText, string linkID, int itemID, int stack = 1)
-        {
-            this.displayText = displayText;
-            this.linkID = linkID;
-            this.itemID = itemID;
-            this.itemName = null;
-            this.stack = stack;
-            this.action = "item";
-        }
-
-        /// <summary>
-        /// <para>Used to handle button with a modded item action. Modded items can be found by their file name string.</para> 
-        /// For vanilla items, the id of the item must be used instead.
-        /// </summary>
-        /// <param name="displayText">The text displayed on the dialogue option.</param>
-        /// <param name="itemName">The FILE NAME for the modded item.</param>
-        /// <param name="stack">The number of items given, defaults to 1.</param>
-        public OptionButton(string displayText, string linkID, string itemName, int stack = 1)
-        {
-            this.displayText = displayText;
-            this.linkID = linkID;
-            this.itemName = itemName;
-            this.itemID = -1;
-            this.stack = stack;
-            this.action = "item";
-        }*/
+        }        
 
         public string GetText() => displayText;
 
@@ -386,8 +344,6 @@ namespace OvermorrowMod.Common.Cutscenes
             }
 
             spriteBatch.Draw(dialogueIcon, pos + new Vector2(dialogueIcon.Width + 12, dialogueIcon.Height + 10), null, Color.White, 0f, texture.Size() / 2f, 1f, 0, 0);
-
-
             Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(64, 12), Color.White);
         }
 
@@ -425,7 +381,6 @@ namespace OvermorrowMod.Common.Cutscenes
             SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            //if (Parent.Parent is DialogueState parent)
             if (Parent is DialogueState parent)
             {
                 parent.ResetTimers();
@@ -441,13 +396,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
                     switch (action)
                     {
-                        case "item":
-                            if (itemID != -1 && itemName == null)
-                                Main.LocalPlayer.QuickSpawnItem(null, itemID, stack);
-                            else if (itemName != null && itemID == -1)
-                                Main.LocalPlayer.QuickSpawnItem(null, OvermorrowModFile.Instance.Find<ModItem>(itemName).Type, stack);
-                            //Main.LocalPlayer.SetTalkNPC(-1);
-                            break;
                         case "marker":
                             break;
                         case "shop":
@@ -493,7 +441,14 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest_complete":
                             var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
-                            questPlayer.CompleteQuest(quest.QuestID);
+                            if (true) // If the quest doesn't offer a choose your own reward, use default behavior
+                            {
+                                questPlayer.CompleteQuest(quest.QuestID);
+                            }
+                            else // Provide the index of the reward to the method
+                            {
+                                questPlayer.CompleteQuest(quest.QuestID, 0);
+                            }
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
                             {
