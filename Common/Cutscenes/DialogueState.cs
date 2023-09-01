@@ -299,7 +299,7 @@ namespace OvermorrowMod.Common.Cutscenes
             this.displayText = displayText;
             this.linkID = linkID;
             this.action = action;
-        }        
+        }
 
         public string GetText() => displayText;
 
@@ -441,14 +441,10 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest_complete":
                             var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
-                            if (true) // If the quest doesn't offer a choose your own reward, use default behavior
-                            {
+                            if (rewardIndex == -1) // If the quest doesn't offer a choose your own reward, use default behavior
                                 questPlayer.CompleteQuest(quest.QuestID);
-                            }
-                            else // Provide the index of the reward to the method
-                            {
-                                questPlayer.CompleteQuest(quest.QuestID, 0);
-                            }
+                            else // Otherwise, provide the index of the reward to the method
+                                questPlayer.CompleteQuest(quest.QuestID, rewardIndex);
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
                             {

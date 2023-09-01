@@ -29,7 +29,26 @@ namespace OvermorrowMod.Quests.ModQuests
             };
             Rewards = new[]
             {
-                new ItemReward(ItemID.DirtBlock, 1)
+                new ChooseReward(
+                    new ItemReward[]
+                    {
+                        new ItemReward(ItemID.DirtBlock, 1),
+                        new ItemReward(ItemID.AaronsHelmet, 1),
+                    }
+                ),
+                new ChooseReward(
+                    new ItemReward[]
+                    {
+                        new ItemReward(ItemID.ArcheryPotion, 1),
+                        new ItemReward(ItemID.DaedalusStormbow, 1),
+                    }
+                ),
+                new ChooseReward(
+                    new ItemReward[]
+                    {
+                        new ItemReward(ItemID.Swordfish, 1),
+                    }
+                ),
             };
 
             QuestDialogue.Add("Give me 20 wood, then go on a trip, and finally come back and giving me a gold coin.");

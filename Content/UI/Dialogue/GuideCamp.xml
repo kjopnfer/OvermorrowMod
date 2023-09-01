@@ -33,7 +33,7 @@
 			<Text time="60">Maybe look for a [caravan merchant] or someone who can confirm the rumors.</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" icon="chest" action="quest_complete">Turn In</Option>
+			<Option link="exit" icon="chest" rewardIndex="0" action="quest_complete">Turn In</Option>
 		</Options>
 	</DialogueNode>
 
@@ -44,7 +44,7 @@
 			<Text time="240">Regardless, you'll have to get some better gear before you try anything like that. I don't get out much these days so why don't you borrow these for now. The rest you'll have to find on your own.</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" icon="chest" action="quest_complete">Turn In</Option>
+			<Option link="exit" icon="chest" rewardIndex="1" action="quest_complete">Turn In</Option>
 		</Options>
 	</DialogueNode>
 
@@ -63,7 +63,7 @@
 			<Text time="60">I'm sure whatever you build it will be great. Stay safe out there!</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" action="quest_complete" icon="chest">Turn In</Option>
+			<Option link="exit" icon="chest" rewardIndex="2" action="quest_complete">Turn In</Option>
 		</Options>
 	</DialogueNode>
 </Dialogue>

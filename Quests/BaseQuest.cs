@@ -77,6 +77,12 @@ namespace OvermorrowMod.Quests
             }
         }
 
+        private void GiveRewards(Player player, int rewardIndex)
+        {
+            var choice = Rewards.ToList()[rewardIndex];
+            choice.Give(player);
+        }
+
         /// <summary>
         /// Resets the kill count of the NPC within the Dictionary after completion
         /// </summary>
@@ -101,6 +107,22 @@ namespace OvermorrowMod.Quests
                 ResetEffects(player);
                 GiveRewards(player);
             }
+            Quests.State.CompleteQuest(modPlayer, this);
+        }
+
+        public void CompleteQuest(Player player, bool success, int rewardIndex)
+        {
+            var modPlayer = player.GetModPlayer<QuestPlayer>();
+            if (Quests.State.HasCompletedQuest(modPlayer, this)) success = false;
+            var state = Quests.State.GetActiveQuestState(modPlayer, this);
+            if (state == null) success = false;
+
+            if (success) // Use a different version which takes the index
+            {
+                ResetEffects(player);
+                GiveRewards(player, rewardIndex);
+            }
+
             Quests.State.CompleteQuest(modPlayer, this);
         }
 

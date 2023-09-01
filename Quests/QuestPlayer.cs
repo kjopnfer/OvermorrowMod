@@ -63,6 +63,21 @@ namespace OvermorrowMod.Quests
             quest.Quest.CompleteQuest(Player, true);
         }
 
+        /// <summary>
+        /// For choose your own reward type turn ins
+        /// </summary>
+        public void CompleteQuest(string questId, int rewardIndex)
+        {
+            var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
+            // Should not happen!
+            if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
+            // Send message to server if the quest is being completed for the current player
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == Player)
+                NetworkMessageHandler.Quests.CompleteQuest(-1, -1, questId);
+
+            quest.Quest.CompleteQuest(Player, true, rewardIndex);
+        }
+
         public void TickQuestRequirements(string questId)
         {
             var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
