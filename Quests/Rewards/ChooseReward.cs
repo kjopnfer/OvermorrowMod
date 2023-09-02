@@ -10,9 +10,11 @@ namespace OvermorrowMod.Quests.Rewards
     {
         public string Description => throw new System.NotImplementedException();
         protected IQuestReward[] Choices { get; }
+        public string ID { get; }
 
-        public ChooseReward(IQuestReward[] choices)
+        public ChooseReward(string id, IQuestReward[] choices)
         {
+            ID = id;
             Choices = choices;
         }
 

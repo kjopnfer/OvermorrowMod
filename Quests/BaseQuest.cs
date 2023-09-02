@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.Rewards;
 using OvermorrowMod.Quests.State;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,10 +78,10 @@ namespace OvermorrowMod.Quests
             }
         }
 
-        private void GiveRewards(Player player, int rewardIndex)
+        private void GiveRewards(Player player, string rewardIndex)
         {
-            var choice = Rewards.ToList()[rewardIndex];
-            choice.Give(player);
+            var choice = Rewards.OfType<ChooseReward>().Where(reward => reward.ID == rewardIndex).ToList();
+            choice[0].Give(player);
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace OvermorrowMod.Quests
             Quests.State.CompleteQuest(modPlayer, this);
         }
 
-        public void CompleteQuest(Player player, bool success, int rewardIndex)
+        public void CompleteQuest(Player player, bool success, string rewardIndex)
         {
             var modPlayer = player.GetModPlayer<QuestPlayer>();
             if (Quests.State.HasCompletedQuest(modPlayer, this)) success = false;

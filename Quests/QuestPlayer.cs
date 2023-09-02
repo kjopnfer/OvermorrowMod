@@ -64,9 +64,9 @@ namespace OvermorrowMod.Quests
         }
 
         /// <summary>
-        /// For choose your own reward type turn ins
+        /// For choose your own reward type turn-ins
         /// </summary>
-        public void CompleteQuest(string questId, int rewardIndex)
+        public void CompleteQuest(string questId, string rewardIndex)
         {
             var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
             // Should not happen!

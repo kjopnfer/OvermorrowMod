@@ -129,10 +129,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                     break;
                                 case "quest_complete":
                                     if (option.Attributes["rewardIndex"] != null)
-                                    {
-                                        bool validIndex = int.TryParse(option.Attributes["rewardIndex"].Value, out int index);
-                                        if (validIndex) button.rewardIndex = index;
-                                    }
+                                        button.rewardIndex = option.Attributes["rewardIndex"].Value;
                                     break;
                             }
 

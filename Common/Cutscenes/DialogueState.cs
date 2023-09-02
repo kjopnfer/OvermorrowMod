@@ -143,7 +143,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
-                        Vector2 position = OptionPosition(optionNumber);
+                        Vector2 position = GetOptionPosition(optionNumber);
                         ModUtils.AddElement(button, (int)position.X, (int)position.Y, 375, 45, this);
 
                         optionNumber++;
@@ -187,84 +187,6 @@ namespace OvermorrowMod.Common.Cutscenes
         }
 
         /// <summary>
-        /// Determines the position that the Option button will be drawn at based on the id.
-        /// </summary>
-        private Vector2 OptionPosition(int optionNumber)
-        {
-            Vector2 screenPosition = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f);
-            Vector2 offsets = new Vector2(600, 180) / 2f; // This is the size of the dialogue box
-
-            return screenPosition + offsets + new Vector2(-600, -35 + (60 * optionNumber - 1));
-        }
-
-        private string ParseColoredText(string text)
-        {
-            string displayText = text;
-
-            // The number of opening brackets MUST be the same as the number of closing brackets
-            int numOpen = 0;
-            int numClose = 0;
-
-            int openSquareBrackets = 0;
-            int closedSquareBrackets = 0;
-
-            int openCurlyBrackets = 0;
-            int closedCurlyBrackets = 0;
-
-            // Create a new string, adding in hex tags whenever an opening bracket is found
-            var builder = new StringBuilder();
-            //builder.Append("    "); // Appends a tab to the beginning of the string
-
-            foreach (var character in displayText)
-            {
-                switch (character)
-                {
-                    case '[':
-                        openSquareBrackets++;
-                        builder.Append("[c/34c9eb:");
-                        break;
-                    case '{':
-                        openSquareBrackets++;
-                        builder.Append("[c/f8595f:");
-                        break;
-                    case ']':
-                        closedSquareBrackets++;
-                        builder.Append(character);
-                        break;
-                    case '}':
-                        closedSquareBrackets++;
-                        builder.Append("]");
-                        break;
-                    default:
-                        builder.Append(character);
-                        break;
-                }
-            }
-
-            if (openSquareBrackets != closedSquareBrackets)
-            {
-                builder.Append(']');
-            }
-
-            // Final check for if the tag has two brackets but no characters inbetween which does weird things
-            var hexTag = "[c/34c9eb:]";
-            if (builder.ToString().Contains("[c/34c9eb:]"))
-            {
-                builder.Replace(hexTag, "[c/34c9eb: ]");
-            }
-
-            hexTag = "[c/f8595f:]";
-            if (builder.ToString().Contains("[c/f8595f:]"))
-            {
-                builder.Replace(hexTag, "[c/f8595f: ]");
-            }
-
-            displayText = builder.ToString();
-
-            return displayText;
-        }
-
-        /// <summary>
         /// Handles drawing the text for the UI
         /// </summary>
         private void DrawText(DialoguePlayer player, SpriteBatch spriteBatch, Vector2 textPosition)
@@ -291,7 +213,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private string linkID;
         private string action;
 
-        public int rewardIndex = -1;
+        public string rewardIndex = "none";
 
         public OptionButton(string icon, string displayText, string linkID, string action)
         {
@@ -441,10 +363,10 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest_complete":
                             var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
-                            if (rewardIndex == -1) // If the quest doesn't offer a choose your own reward, use default behavior
-                                questPlayer.CompleteQuest(quest.QuestID);
-                            else // Otherwise, provide the index of the reward to the method
+                            if (rewardIndex != "none") // Provide the index of the reward to the method 
                                 questPlayer.CompleteQuest(quest.QuestID, rewardIndex);
+                            else  // If the quest doesn't offer a choose your own reward, use default behavior
+                                questPlayer.CompleteQuest(quest.QuestID);
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
                             {

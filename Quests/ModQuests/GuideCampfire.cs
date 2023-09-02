@@ -1,9 +1,11 @@
 using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Quests.ModQuests
 {
@@ -30,13 +32,14 @@ namespace OvermorrowMod.Quests.ModQuests
             Rewards = new[]
             {
                 new ChooseReward(
+                    "monster_reward",
                     new ItemReward[]
                     {
-                        new ItemReward(ItemID.DirtBlock, 1),
-                        new ItemReward(ItemID.AaronsHelmet, 1),
+                        new ItemReward(ModContent.ItemType<OldWhetstone>()),
                     }
                 ),
                 new ChooseReward(
+                    "biome_reward",
                     new ItemReward[]
                     {
                         new ItemReward(ItemID.ArcheryPotion, 1),
@@ -44,6 +47,7 @@ namespace OvermorrowMod.Quests.ModQuests
                     }
                 ),
                 new ChooseReward(
+                    "build_reward",
                     new ItemReward[]
                     {
                         new ItemReward(ItemID.Swordfish, 1),

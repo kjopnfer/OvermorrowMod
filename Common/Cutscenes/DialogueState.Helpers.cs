@@ -105,6 +105,84 @@ namespace OvermorrowMod.Common.Cutscenes
         }
 
         /// <summary>
+        /// Determines the position that the Option button will be drawn at based on the id.
+        /// </summary>
+        private Vector2 GetOptionPosition(int optionNumber)
+        {
+            Vector2 screenPosition = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f);
+            Vector2 offsets = new Vector2(600, 180) / 2f; // This is the size of the dialogue box
+
+            return screenPosition + offsets + new Vector2(-600, -35 + (60 * optionNumber - 1));
+        }
+
+        /// <summary>
+        /// Adds cyan or orange chat tags to the given string whenever the appropriate bracket types are found
+        /// </summary>
+        /// <returns>The input string with chat tags inserted</returns>
+        private string ParseColoredText(string text)
+        {
+            string displayText = text;
+
+            // The number of opening brackets MUST be the same as the number of closing brackets
+            int openSquareBrackets = 0;
+            int closedSquareBrackets = 0;
+
+            int openCurlyBrackets = 0;
+            int closedCurlyBrackets = 0;
+
+            // Create a new string, adding in hex tags whenever an opening bracket is found
+            var builder = new StringBuilder();
+            //builder.Append("    "); // Appends a tab to the beginning of the string
+
+            foreach (var character in displayText)
+            {
+                switch (character)
+                {
+                    case '[':
+                        openSquareBrackets++;
+                        builder.Append("[c/34c9eb:");
+                        break;
+                    case '{':
+                        openSquareBrackets++;
+                        builder.Append("[c/f8595f:");
+                        break;
+                    case ']':
+                        closedSquareBrackets++;
+                        builder.Append(character);
+                        break;
+                    case '}':
+                        closedSquareBrackets++;
+                        builder.Append("]");
+                        break;
+                    default:
+                        builder.Append(character);
+                        break;
+                }
+            }
+
+            if (openSquareBrackets != closedSquareBrackets)         
+                builder.Append(']');
+            
+            // Final check for if the tag has two brackets but no characters inbetween which does weird things
+            var hexTag = "[c/34c9eb:]";
+            if (builder.ToString().Contains("[c/34c9eb:]"))
+            {
+                builder.Replace(hexTag, "[c/34c9eb: ]");
+            }
+
+            hexTag = "[c/f8595f:]";
+            if (builder.ToString().Contains("[c/f8595f:]"))
+            {
+                builder.Replace(hexTag, "[c/f8595f: ]");
+            }
+
+            displayText = builder.ToString();
+
+            return displayText;
+        }
+
+
+        /// <summary>
         /// Exits the conversation with the NPC and resets UI counters
         /// </summary>
         public void ExitText()
