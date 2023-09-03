@@ -1,5 +1,6 @@
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Content.Items.Accessories;
+using OvermorrowMod.Content.Items.Quest;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
@@ -36,14 +37,15 @@ namespace OvermorrowMod.Quests.ModQuests
                     new ItemReward[]
                     {
                         new ItemReward(ModContent.ItemType<OldWhetstone>()),
+                        new ItemReward(ModContent.ItemType<WarmAmulet>()),
                     }
                 ),
                 new ChooseReward(
                     "biome_reward",
                     new ItemReward[]
                     {
-                        new ItemReward(ItemID.ArcheryPotion, 1),
-                        new ItemReward(ItemID.DaedalusStormbow, 1),
+                        new ItemReward(ModContent.ItemType<SimpleScabbard>()),
+                        new ItemReward(ModContent.ItemType<WarmAmulet>()),
                     }
                 ),
                 new ChooseReward(
@@ -51,6 +53,7 @@ namespace OvermorrowMod.Quests.ModQuests
                     new ItemReward[]
                     {
                         new ItemReward(ItemID.Swordfish, 1),
+                        new ItemReward(ModContent.ItemType<WarmAmulet>()),
                     }
                 ),
             };

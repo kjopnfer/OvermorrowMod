@@ -896,6 +896,21 @@ Mods: {
 					{Keyword:Alt} {Keyword:Focus}: Shards grow crystals on tile contact
 					'''
 			}
+
+			OldWhetstone: {
+				DisplayName: Old Whetstone
+				Tooltip: Increased critical strike chance proportionate to max health
+			}
+
+			SimpleScabbard: {
+				DisplayName: Simple Scabbard
+				Tooltip: ""
+			}
+
+			WarmAmulet: {
+				DisplayName: Warm Amulet
+				Tooltip: ""
+			}
 		}
 
 		Biomes: {
