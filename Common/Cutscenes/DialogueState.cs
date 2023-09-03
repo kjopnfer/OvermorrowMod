@@ -32,6 +32,8 @@ namespace OvermorrowMod.Common.Cutscenes
         private DummyPanel DrawSpace = new DummyPanel();
         private UIText Text = new UIText("");
 
+        private Vector2 _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) - new Vector2(600, 180) / 2f;
+
         /// <summary>
         /// The starting ID of the dialogue that the XML traverser starts at
         /// </summary>
@@ -53,8 +55,12 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool hasInitialized = false;
         float arrowOffset;
 
+        private const float PANEL_WIDTH = 300;
+        private const float PANEL_HEIGHT = 90;
         public override void Draw(SpriteBatch spriteBatch)
         {
+            _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight - PANEL_HEIGHT) - new Vector2(PANEL_WIDTH, PANEL_HEIGHT + 69);
+
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
             if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
@@ -201,8 +207,8 @@ namespace OvermorrowMod.Common.Cutscenes
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
 
             float MAX_LENGTH = 400;
-            Vector2 offsets = new Vector2(-125, -60);
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offsets, Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
+            Vector2 offsets = new Vector2(PANEL_WIDTH - 112, 24);
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, _dialogueAnchor + offsets, Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
         }
     }
 

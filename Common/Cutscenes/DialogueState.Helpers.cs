@@ -112,7 +112,7 @@ namespace OvermorrowMod.Common.Cutscenes
             Vector2 screenPosition = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f);
             Vector2 offsets = new Vector2(600, 180) / 2f; // This is the size of the dialogue box
 
-            return screenPosition + offsets + new Vector2(-600, -35 + (60 * optionNumber - 1));
+            return _dialogueAnchor + new Vector2(PANEL_WIDTH, -12 - (60 * optionNumber - 1));
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace OvermorrowMod.Common.Cutscenes
             int width = 600;
             int height = 180;
             //Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight - height - 25);
-            Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight / 3f - height / 2);
+            Vector2 position = _dialogueAnchor;
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, width, height);
 
             //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
@@ -246,8 +246,8 @@ namespace OvermorrowMod.Common.Cutscenes
             #region Face
             //Texture2D speaker = player.GetDialogue().speakerBody;
             Texture2D speaker = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue/Orvyn").Value;
-            Vector2 offset = new Vector2(-200, -20);
-            spriteBatch.Draw(speaker, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, 0, 0);
+            Vector2 offset = new Vector2(8, 0);
+            spriteBatch.Draw(speaker, _dialogueAnchor + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, SpriteEffects.FlipHorizontally, 0);
             #endregion
         }
     }
