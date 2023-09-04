@@ -22,15 +22,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
         public override bool? CanBeHitByProjectile(Projectile projectile) => true;*/
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            switch (AIState)
-            {
-                case (int)AICase.Dive:
-                    return AICounter >= 60 && AICounter <= 120;
-                case (int)AICase.Grab:
-                    return AICounter >= 30;
-                default:
-                    return false;
-            }
+            return activeHitboxCount > 0;
         }
 
         //public override bool CanHitPlayer(Player target, ref int cooldownSlot) => canHitPlayer;
@@ -42,7 +34,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
         public override void SetDefaults()
         {
-            NPC.width = 32;
+            NPC.width = 64;
             NPC.height = 38;
             NPC.damage = 20;
             NPC.defense = 6;
@@ -92,6 +84,10 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
         float grabOffset;
 
+        /// <summary>
+        /// Used to determine when the hitbox can damage the player. Also allows for extra damage frames inbetween AICases.
+        /// </summary>
+        int activeHitboxCount = 0;
         public override void AI()
         {
             switch (AIState)
@@ -184,6 +180,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     break;
                 case (int)AICase.Angry:
+                    if (activeHitboxCount > 0) activeHitboxCount--;
+
                     frameRate = 5;
                     NPC.TargetClosest();
 
@@ -258,6 +256,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     break;
                 case (int)AICase.Dive:
+                    activeHitboxCount = 20;
                     frameRate = 3;
 
                     NPC.velocity = Vector2.Zero;
@@ -292,6 +291,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     break;
                 case (int)AICase.Grab:
+                    activeHitboxCount = 60;
+
                     if (AICounter++ == 0)
                     {
                         grabOffset = Main.rand.Next(4, 6) * -32;
@@ -432,6 +433,11 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     break;
             }
+        }
+
+        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox)
+        {
+            return base.ModifyCollisionData(victimHitbox, ref immunityCooldownSlot, ref damageMultiplier, ref npcHitbox);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
