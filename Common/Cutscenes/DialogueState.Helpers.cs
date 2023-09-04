@@ -112,7 +112,7 @@ namespace OvermorrowMod.Common.Cutscenes
             Vector2 screenPosition = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f);
             Vector2 offsets = new Vector2(600, 180) / 2f; // This is the size of the dialogue box
 
-            return _dialogueAnchor + new Vector2(PANEL_WIDTH, -12 - (60 * optionNumber - 1));
+            return _dialogueAnchor + new Vector2(PANEL_WIDTH + 60, -2 - (60 * optionNumber - 1));
         }
 
         /// <summary>

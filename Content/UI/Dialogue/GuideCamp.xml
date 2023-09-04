@@ -31,6 +31,7 @@
 		<Dialogue>
 			<Text time="180">A monster eh? I have heard of some {giant floating eye} terrorizing travelers at night...</Text>
 			<Text time="60">Maybe look for a [caravan merchant] or someone who can confirm the rumors.</Text>
+			<Text time="240">Regardless, you'll have to get some better gear before you try anything like that. I don't get out much these days so why don't you borrow these for now. The rest you'll have to find on your own.</Text>
 		</Dialogue>
 		<Options>
 			<Option link="exit" icon="chest" rewardIndex="monster_reward" action="quest_complete">Turn In</Option>

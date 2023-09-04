@@ -59,7 +59,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private const float PANEL_HEIGHT = 90;
         public override void Draw(SpriteBatch spriteBatch)
         {
-            _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight - PANEL_HEIGHT) - new Vector2(PANEL_WIDTH, PANEL_HEIGHT + 69);
+            _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight - PANEL_HEIGHT) - new Vector2(PANEL_WIDTH, PANEL_HEIGHT + 35);
 
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
@@ -105,10 +105,11 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
                 {
                     Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
-                    Vector2 arrowPosition = new Vector2(Main.screenWidth / 2f + 265, Main.screenHeight / 3f + 50);
+                    Vector2 arrowPosition = _dialogueAnchor;
 
                     arrowOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(continueButtonCounter++ / 20f) / 2 + 0.5f));
-                    spriteBatch.Draw(texture, arrowPosition + new Vector2(0, 10 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
+                    Vector2 panelOffset = new Vector2(PANEL_WIDTH, PANEL_HEIGHT) * 2;
+                    spriteBatch.Draw(texture, arrowPosition + panelOffset + new Vector2(-24, -24 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
 
                     canInteract = true;
                 }
