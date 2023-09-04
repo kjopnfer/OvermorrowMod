@@ -1,21 +1,18 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Biomes;
-using OvermorrowMod.Content.Items.Accessories;
+using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 
 namespace OvermorrowMod.Content.NPCs.Forest
 {
-    public class StrykeBeak : ModNPC
+    public class StrykeBeak : OvermorrowNPC
     {
         private const int MAX_FRAMES = 8;
         /*public override bool? CanBeHitByItem(Player player, Item item) => true;
@@ -67,11 +64,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
             Dive = 2,
             Grab = 3,
         }
-
-        public ref float AIState => ref NPC.ai[0];
-        public ref float AICounter => ref NPC.ai[1];
-
-        Player player => Main.player[NPC.target];
 
         float flySpeedX = 2;
         float flySpeedY = 0;
@@ -397,8 +389,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
             //flySpeedY += Utils.Clamp(projectile.velocity.Y * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
         }
 
-        private int frame = 0;
-        private int frameTimer = 0;
         public override void FindFrame(int frameHeight)
         {
             NPC.spriteDirection = NPC.direction;
