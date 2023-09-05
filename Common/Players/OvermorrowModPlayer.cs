@@ -78,7 +78,7 @@ namespace OvermorrowMod.Common.Players
         {
             //Player.lifeRegenTime = 300;
             //Player.GetModPlayer<OvermorrowModPlayer>().natur
-            Main.NewText("RT: " + Player.lifeRegenTime + " / RC:"  + Player.lifeRegenCount +  " / R: " + Player.lifeRegen);
+            //Main.NewText("RT: " + Player.lifeRegenTime + " / RC:"  + Player.lifeRegenCount +  " / R: " + Player.lifeRegen);
             base.UpdateLifeRegen();
         }
 

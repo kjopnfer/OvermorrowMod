@@ -324,6 +324,7 @@ namespace OvermorrowMod.Core
         {
             return player.GetModPlayer<OvermorrowModPlayer>();
         }
+
         public static void SafeSetParameter(this Effect effect, string name, float value)
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);

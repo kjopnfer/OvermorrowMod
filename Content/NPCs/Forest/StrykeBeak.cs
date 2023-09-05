@@ -15,21 +15,13 @@ namespace OvermorrowMod.Content.NPCs.Forest
     public class StrykeBeak : OvermorrowNPC
     {
         private const int MAX_FRAMES = 8;
-        /*public override bool? CanBeHitByItem(Player player, Item item) => true;
-        public override bool? CanBeHitByProjectile(Projectile projectile) => true;*/
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            return activeHitboxCount > 0;
-        }
-
-        //public override bool CanHitPlayer(Player target, ref int cooldownSlot) => canHitPlayer;
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Red Strykebeak");
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             NPC.width = 64;
             NPC.height = 38;
@@ -37,7 +29,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
             NPC.defense = 6;
             NPC.lifeMax = 200;
             //NPC.friendly = true;
-            NPC.aiStyle = -1;
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit28;
             NPC.DeathSound = SoundID.NPCDeath31;
@@ -61,8 +52,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
             Hit = -1,
             Idle = 0,
             Angry = 1,
-            Dive = 2,
-            Grab = 3,
+            Dash = 2,
+            Dive = 3,
         }
 
         float flySpeedX = 2;
@@ -74,12 +65,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
         Vector2 diveStartPosition;
         Vector2 diveTargetPosition;
 
-        float grabOffset;
+        float diveOffset;
 
-        /// <summary>
-        /// Used to determine when the hitbox can damage the player. Also allows for extra damage frames inbetween AICases.
-        /// </summary>
-        int activeHitboxCount = 0;
         public override void AI()
         {
             switch (AIState)
@@ -175,22 +162,23 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     if (activeHitboxCount > 0) activeHitboxCount--;
 
                     frameRate = 5;
-                    NPC.TargetClosest();
+                    //NPC.TargetClosest();
+                    FaceTarget();
 
-                    if (NPC.Center.X >= player.Center.X)
+                    if (NPC.Center.X >= target.Center.X)
                     {
                         if (NPC.velocity.X >= -2) NPC.velocity.X -= 0.05f;
                         if (flySpeedX >= -2) flySpeedX -= 0.1f;
                     }
 
-                    if (NPC.Center.X <= player.Center.X)
+                    if (NPC.Center.X <= target.Center.X)
                     {
                         if (NPC.velocity.X <= 2) NPC.velocity.X += 0.05f;
                         if (flySpeedX <= 2) flySpeedX += 0.1f;
                     }
 
-                    // NPC is too high up from the player, move downwards
-                    if (NPC.Center.Y <= player.Center.Y - (16 * 5))
+                    // NPC is too high up from the target, move downwards
+                    if (NPC.Center.Y <= target.Center.Y - (16 * 5))
                     {
                         if (NPC.velocity.Y <= 2f) NPC.velocity.Y += 0.1f;
 
@@ -231,23 +219,23 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         flySpeedY -= 0.5f;
                     }
 
-                    float xDistance = Math.Abs(NPC.Center.X - player.Center.X);
+                    float xDistance = Math.Abs(NPC.Center.X - target.Center.X);
                     bool xDistanceCheck = xDistance < 200;
-                    bool yDistanceCheck = Math.Abs(NPC.Center.Y - player.Center.Y) < 100;
+                    bool yDistanceCheck = Math.Abs(NPC.Center.Y - target.Center.Y) < 100;
 
-                    if (xDistanceCheck && yDistanceCheck && Collision.CanHitLine(player.Center, 1, 1, NPC.Center, 1, 1))
+                    if (xDistanceCheck && yDistanceCheck && Collision.CanHitLine(target.Center, 1, 1, NPC.Center, 1, 1))
                     {
                         aggroDelay--;
                         if (aggroDelay <= 0)
                         {
                             if (xDistance < 32)
-                                AIState = (int)AICase.Grab;
-                            else
                                 AIState = (int)AICase.Dive;
+                            else
+                                AIState = (int)AICase.Dash;
                         }
                     }
                     break;
-                case (int)AICase.Dive:
+                case (int)AICase.Dash:
                     activeHitboxCount = 20;
                     frameRate = 3;
 
@@ -261,7 +249,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     {
                         float randomOffset = Main.rand.Next(0, 5) * 32;
                         diveStartPosition = NPC.Center;
-                        diveTargetPosition = player.Center + new Vector2(randomOffset * NPC.direction, 0);
+                        diveTargetPosition = target.Center + new Vector2(randomOffset * NPC.direction, 0);
 
                         NPC.netUpdate = true;
                     }
@@ -282,19 +270,19 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         aggroDelay = 60;
                     }
                     break;
-                case (int)AICase.Grab:
+                case (int)AICase.Dive:
                     activeHitboxCount = 60;
 
                     if (AICounter++ == 0)
                     {
-                        grabOffset = Main.rand.Next(4, 6) * -32;
+                        diveOffset = Main.rand.Next(4, 6) * -32;
                         NPC.netUpdate = true;
                     }
 
                     if (AICounter < 30)
                     {
                         diveStartPosition = NPC.Center;
-                        diveTargetPosition = player.Center + new Vector2(0, grabOffset);
+                        diveTargetPosition = target.Center + new Vector2(0, diveOffset);
 
                         if (NPC.Center.X >= diveTargetPosition.X)
                         {
@@ -378,6 +366,13 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
         public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
+            if (target == null)
+            {
+                Entity ownerEntity = projectile.GlobalProjectile().ownerEntity;
+                target = ownerEntity;
+                Main.NewText("does not have a target");
+            }
+
             if (AIState == (int)AICase.Idle)
             {
                 NPC.friendly = false;
@@ -398,7 +393,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
             switch (AIState)
             {
-                case (int)AICase.Grab:
+                case (int)AICase.Dive:
                     if (AICounter >= 30) frame = 0;
                     else
                     {

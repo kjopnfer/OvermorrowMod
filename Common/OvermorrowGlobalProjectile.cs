@@ -94,7 +94,7 @@ namespace OvermorrowMod.Common
                 modifiers.CritDamage *= 1.1f;
             }
 
-            
+
             #endregion
 
             #region Accessories
@@ -155,8 +155,19 @@ namespace OvermorrowMod.Common
             #endregion
         }
 
+        public Entity ownerEntity { get; private set; }
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
+            if (source is EntitySource_Parent parent)
+            {
+                ownerEntity = parent.Entity;
+                /*if (parent.Entity is NPC npc)
+                    Main.NewText("from npc " + npc.FullName);
+
+                if (parent.Entity is Player player)
+                    Main.NewText("from player " + player.name);*/
+            }
+
             if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
             {
                 if (gun.GetWeaponType() != GunType.None) SourceGunType = gun.GetWeaponType();
