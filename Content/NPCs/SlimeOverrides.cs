@@ -82,6 +82,7 @@ namespace OvermorrowMod.Content.NPCs
                     Player player = Main.player[npc.target];
                     if (!player.active) npc.target = 255;
 
+                    Main.NewText(npc.velocity.ToString());
                     npc.velocity.X *= 0.98f;
                     Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 
@@ -93,8 +94,11 @@ namespace OvermorrowMod.Content.NPCs
                         case (int)AICase.Idle:
                             Main.NewText("idle");
 
-                            if (AICounter == 1) npc.velocity.X = 0.1f * idleJumpDirection;
-                            if (npc.collideY) AICounter++;
+                            if (npc.collideY)
+                            {
+                                if (AICounter == 1) npc.velocity.X = 0.1f * idleJumpDirection;
+                                AICounter++;
+                            }
 
                             if (FrameCounter++ >= 40) FrameCounter = 1;
 
@@ -164,11 +168,11 @@ namespace OvermorrowMod.Content.NPCs
 
                             // Sometimes the NPC gets stuck on weird blocks or ledges and only ends up jumping straight up
                             // This nudges the NPC while in midair to get over these obstacles
-                            if (npc.velocity.X == 0 && AICounter >= 5) npc.velocity.X = 2 * idleJumpDirection;
+                            //if (npc.velocity.X == 0 && AICounter >= 5) npc.velocity.X = 2 * idleJumpDirection;
 
                             if (npc.collideY && AICounter >= 15)
                             {
-                                if (npc.velocity.X != 0) npc.velocity.X = 0;
+                                //if (npc.velocity.X != 0) npc.velocity.X = 0;
 
                                 AIState = (int)AICase.Land;
                                 AICounter = 0;
@@ -179,6 +183,7 @@ namespace OvermorrowMod.Content.NPCs
                         #region Land
                         case (int)AICase.Land:
                             Main.NewText("land");
+                            if (npc.collideY) npc.velocity.X = 0;
 
                             if (AICounter++ >= 10)
                             {
