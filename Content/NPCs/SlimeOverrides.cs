@@ -67,10 +67,11 @@ namespace OvermorrowMod.Content.NPCs
             Land = 3,
         }
 
-        // ai[0] is AI State
-        // ai[2] is not used because for some reason vanilla decides to stick whatever bonus drop in here
-        // ai[2] is AI Counter
-        // ai[3] is an AI Cycle (how many times the NPC has run through a state)
+        private float AIState = 0;
+        private float AICycles = 0;
+        private float AICounter = 0;
+        private float FrameCounter = 0;
+
         public override bool PreAI(NPC npc)
         {
             if (npc.type == NPCID.BlueSlime)
@@ -81,65 +82,112 @@ namespace OvermorrowMod.Content.NPCs
                     Player player = Main.player[npc.target];
                     if (!player.active) npc.target = 255;
 
-                    switch (npc.ai[0])
+                    npc.velocity.X *= 0.98f;
+                    Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+
+                    //Main.NewText("collideX: " + npc.collideX + " collideY: " + npc.collideY + " fC: " + FrameCounter + " aC: " + AICounter);
+
+                    switch (AIState)
                     {
+                        #region Idle
                         case (int)AICase.Idle:
-                            if (npc.ai[2] == 1) npc.velocity.X = 0.1f * idleJumpDirection;
+                            Main.NewText("idle");
 
-                            if (npc.ai[2]++ >= 40)
+                            if (AICounter == 1) npc.velocity.X = 0.1f * idleJumpDirection;
+                            if (npc.collideY) AICounter++;
+
+                            if (FrameCounter++ >= 40) FrameCounter = 1;
+
+                            if (AICounter++ >= 40)
                             {
-                                npc.velocity.X = 0;
-                                npc.ai[2] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                if (npc.collideY) npc.velocity.X = 0;
 
-                                if (npc.ai[3]++ >= 3)
+                                AICounter = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                //FrameCounter = 1;
+                                if (AICycles++ >= 3)
                                 {
-                                    npc.ai[0] = (int)AICase.PreJump;
-                                    npc.ai[2] = 0;
-                                    npc.ai[3] = 0;
+                                    AIState = (int)AICase.PreJump;
+                                    AICounter = 0;
+                                    FrameCounter = 0;
+                                    AICycles = 0;
                                 }
                             }
                             break;
+                        #endregion
+                        #region PreJump
                         case (int)AICase.PreJump:
                             int bounceRate = 1;
-                            if (npc.ai[3] >= 4) bounceRate = 2;
+                            if (AICycles >= 4) bounceRate = 2;
 
-                            npc.ai[2] += bounceRate;
+                            Tile bottomLeftTile = Main.tile[(int)npc.Hitbox.BottomLeft().X / 16, (int)npc.Hitbox.BottomLeft().Y / 16];
+                            Tile bottomRightTile = Main.tile[(int)npc.Hitbox.BottomRight().X / 16, (int)npc.Hitbox.BottomRight().Y / 16];
 
-                            if (npc.ai[2] >= 12)
+                            bool checkOnSlope = (bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType]);
+
+                            Main.NewText("prejump " + npc.collideY + " / " + checkOnSlope);
+
+                            if (npc.collideY || checkOnSlope)
                             {
-                                npc.ai[2] = 0;
-                                if (npc.ai[3]++ >= 8)
+                                AICounter += bounceRate;
+                            }
+
+
+                            // These are for weird slopes that don't trigger the collision code normally
+
+                            if (npc.velocity.X != 0) npc.velocity.X *= 0.98f;
+
+                            FrameCounter += bounceRate;
+
+                            if (AICounter >= 12)
+                            {
+                                AICounter = 0;
+                                FrameCounter = 0;
+
+                                if (AICycles++ >= 8)
                                 {
-                                    npc.ai[0] = (int)AICase.Jump;
-                                    npc.ai[3] = 0;
+                                    AIState = (int)AICase.Jump;
+                                    AICycles = 0;
                                 }
                             }
                             break;
+                        #endregion
+                        #region Jump
                         case (int)AICase.Jump:
+                            Main.NewText("jump");
+
                             if (npc.target != 255) idleJumpDirection = player.Center.X > npc.Center.X ? 1 : -1;
 
-                            if (npc.ai[2]++ == 0)
+                            if (AICounter++ == 0)
                                 npc.velocity = new Vector2(2 * idleJumpDirection, -7);
+
+                            FrameCounter++;
 
                             // Sometimes the NPC gets stuck on weird blocks or ledges and only ends up jumping straight up
                             // This nudges the NPC while in midair to get over these obstacles
-                            if (npc.velocity.X == 0 && npc.ai[2] >= 5) npc.velocity.X = 2 * idleJumpDirection;
+                            if (npc.velocity.X == 0 && AICounter >= 5) npc.velocity.X = 2 * idleJumpDirection;
 
-                            if (npc.collideY && npc.ai[2] >= 15)
+                            if (npc.collideY && AICounter >= 15)
                             {
                                 if (npc.velocity.X != 0) npc.velocity.X = 0;
 
-                                npc.ai[0] = (int)AICase.Land;
-                                npc.ai[2] = 0;
+                                AIState = (int)AICase.Land;
+                                AICounter = 0;
+                                FrameCounter = 0;
                             }
                             break;
+                        #endregion
+                        #region Land
                         case (int)AICase.Land:
-                            if (npc.ai[2]++ >= 10)
+                            Main.NewText("land");
+
+                            if (AICounter++ >= 10)
                             {
-                                npc.ai[0] = (int)AICase.Idle;
-                                npc.ai[2] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                AIState = (int)AICase.Idle;
+                                AICounter = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                FrameCounter = 1;
                             }
                             break;
+                            #endregion
                     }
 
                     // Allow the vanilla AI to run ONCE, after which the condition
@@ -156,15 +204,18 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
+                if (npc.netID == NPCID.BlueSlime)
+                {
+                    npc.lifeMax = npc.life = 600;
+                }
+
                 // During the singular run instance, reset ai0 to be 0
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    if (npc.ai[0] < 0) npc.ai[0] = 0;
+                    if (AIState < 0) AIState = 0;
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
-                    npc.lifeMax = 30;
-                    npc.life = 30;
-
+                    npc.lifeMax = npc.life = 600;
                     idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }
             }
@@ -176,8 +227,7 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
-                    npc.TargetClosest();
+                if (npc.netID == NPCID.GreenSlime) npc.TargetClosest();
             }
         }
 
@@ -185,8 +235,7 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
-                    npc.TargetClosest();
+                if (npc.netID == NPCID.GreenSlime) npc.TargetClosest();
             }
         }
 
@@ -196,6 +245,10 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (npc.netID == NPCID.GreenSlime)
                 {
+                    binaryWriter.Write(AIState);
+                    binaryWriter.Write(AICycles);
+                    binaryWriter.Write(AICounter);
+                    binaryWriter.Write(FrameCounter);
                 }
             }
         }
@@ -206,14 +259,16 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (npc.netID == NPCID.GreenSlime)
                 {
+                    AIState = binaryReader.ReadInt32();
+                    AICycles = binaryReader.ReadInt32();
+                    AICounter = binaryReader.ReadInt32();
+                    FrameCounter = binaryReader.ReadInt32();
                 }
             }
         }
 
         int xFrame = 1;
         int yFrame = 2;
-        int frameCounter;
-        int frameTimer;
 
         private const int MAX_FRAMES = 6;
         private const int FRAME_HEIGHT = 36;
@@ -227,25 +282,25 @@ namespace OvermorrowMod.Content.NPCs
                 {
                     npc.direction = idleJumpDirection;
 
-                    switch (npc.ai[0])
+                    switch (AIState)
                     {
                         case (int)AICase.Idle:
                             xFrame = 0;
-                            if (npc.ai[2] % 8 == 0)
+                            if (FrameCounter % 8 == 0)
                                 yFrame++;
 
                             // For SOME FUCKING REASON THIS KEEPS HAPPENING
                             if (yFrame > 5) yFrame = 5;
 
-                            if (npc.ai[2] >= 40) yFrame = 0;
+                            if (FrameCounter >= 40) yFrame = 0;
                             break;
                         case (int)AICase.PreJump:
                             xFrame = 1;
 
-                            if (npc.ai[2] == 0 || npc.ai[2] >= 12)
+                            if (FrameCounter == 0 || FrameCounter >= 12)
                                 yFrame = 2;
 
-                            if (npc.ai[2] == 6)
+                            if (FrameCounter == 6)
                                 yFrame = 1;
                             break;
                         case (int)AICase.Jump:
