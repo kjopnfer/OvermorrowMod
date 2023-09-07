@@ -97,7 +97,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 Main.LocalPlayer.velocity = new Vector2(2, 0).RotatedBy(rotation);
 
                 float projectileTime = forwardTime;
-                stabProjectile = Projectile.NewProjectileDirect(null, player.Center, Vector2.UnitX.RotatedBy(rotation) * stabSpeed, ModContent.ProjectileType<Windrunner_Stab>(), 0, 0f, Projectile.owner, projectileTime);
+                stabProjectile = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), player.Center, Vector2.UnitX.RotatedBy(rotation) * stabSpeed, ModContent.ProjectileType<Windrunner_Stab>(), 0, 0f, Projectile.owner, projectileTime);
 
                 player.GetModPlayer<MeleePlayer>().WindrunnerCharge = 0;
             }

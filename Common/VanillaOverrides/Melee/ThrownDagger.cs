@@ -42,12 +42,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
 
         public override void AI()
         {
-            Tile bottomLeftTile = Main.tile[(int)Projectile.Hitbox.BottomLeft().X / 16, (int)Projectile.Hitbox.BottomLeft().Y / 16];
-            Tile bottomRightTile = Main.tile[(int)Projectile.Hitbox.BottomRight().X / 16, (int)Projectile.Hitbox.BottomRight().Y / 16];
-
             // These are for weird slopes that don't trigger the collision code normally
-            if ((bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) ||
-                (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType])) HandleCollisionBounce();
+            if (ModUtils.CheckEntityBottomSlopeCollision(Projectile)) HandleCollisionBounce();
 
             if (Projectile.ai[0] == 0)
             {

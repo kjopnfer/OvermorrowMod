@@ -20,6 +20,14 @@ namespace OvermorrowMod.Core
 {
     public static partial class ModUtils
     {
+        public static bool CheckEntityBottomSlopeCollision(Entity entity)
+        {
+            Tile bottomLeftTile = Main.tile[(int)entity.Hitbox.BottomLeft().X / 16, (int)entity.Hitbox.BottomLeft().Y / 16];
+            Tile bottomRightTile = Main.tile[(int)entity.Hitbox.BottomRight().X / 16, (int)entity.Hitbox.BottomRight().Y / 16];
+
+            return (bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType]);
+        }
+
         public static OvermorrowGlobalProjectile GlobalProjectile(this Projectile projectile)
         {
             return projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>();

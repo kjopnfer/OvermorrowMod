@@ -123,20 +123,12 @@ namespace OvermorrowMod.Content.NPCs
                             int bounceRate = 1;
                             if (AICycles >= 4) bounceRate = 2;
 
-                            Tile bottomLeftTile = Main.tile[(int)npc.Hitbox.BottomLeft().X / 16, (int)npc.Hitbox.BottomLeft().Y / 16];
-                            Tile bottomRightTile = Main.tile[(int)npc.Hitbox.BottomRight().X / 16, (int)npc.Hitbox.BottomRight().Y / 16];
+                            Main.NewText("prejump " + npc.collideY + " / " + ModUtils.CheckEntityBottomSlopeCollision(npc));
 
-                            bool checkOnSlope = (bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType]);
-
-                            Main.NewText("prejump " + npc.collideY + " / " + checkOnSlope);
-
-                            if (npc.collideY || checkOnSlope)
+                            if (npc.collideY || ModUtils.CheckEntityBottomSlopeCollision(npc))
                             {
                                 AICounter += bounceRate;
                             }
-
-
-                            // These are for weird slopes that don't trigger the collision code normally
 
                             if (npc.velocity.X != 0) npc.velocity.X *= 0.98f;
 

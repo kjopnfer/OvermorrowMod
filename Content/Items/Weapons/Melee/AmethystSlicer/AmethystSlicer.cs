@@ -112,7 +112,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.AmethystSlicer
             {
                 float focusFlag = isFocusShot ? 1 : 0;
                 float velocity = Main.rand.Next(3, 6);
-                Projectile.NewProjectile(null, Projectile.Center, Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * velocity, ModContent.ProjectileType<AmethystSlicer_Shards>(), (int)(Projectile.damage / 2f), 0f, Projectile.owner, variant, focusFlag);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * velocity, ModContent.ProjectileType<AmethystSlicer_Shards>(), (int)(Projectile.damage / 2f), 0f, Projectile.owner, variant, focusFlag);
             }
 
             for (int i = 0; i < 9; i++)
