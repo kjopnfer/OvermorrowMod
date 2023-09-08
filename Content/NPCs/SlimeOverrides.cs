@@ -15,13 +15,12 @@ using Terraria.Audio;
 using OvermorrowMod.Common.Particles;
 using Terraria.ModLoader.IO;
 using System.IO;
+using OvermorrowMod.Common.VanillaOverrides;
 
 namespace OvermorrowMod.Content.NPCs
 {
-    public class SlimeOverrides : GlobalNPC
+    public class SlimeOverrides : VanillaNPCOverride
     {
-        public override bool InstancePerEntity => true;
-
         public override bool? CanBeHitByItem(NPC npc, Player player, Item item)
         {
             return base.CanBeHitByItem(npc, player, item);
@@ -34,28 +33,13 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void SetDefaults(NPC npc)
         {
-            if (npc.type == NPCID.BlueSlime)
-            {
-                if (npc.netID == NPCID.GreenSlime)
-                {
-                    npc.lifeMax = 30;
-                }
-            }
+            // This doesn't do anything
         }
 
         int idleJumpDirection = 1;
         public override void OnSpawn(NPC npc, IEntitySource source)
         {
             // This shit doesn't run
-            if (npc.type == NPCID.BlueSlime)
-            {
-
-                if (npc.netID == NPCID.GreenSlime)
-                {
-                    npc.lifeMax = 30;
-                }
-            }
-
             base.OnSpawn(npc, source);
         }
 
@@ -66,6 +50,11 @@ namespace OvermorrowMod.Content.NPCs
             Jump = 2,
             Land = 3,
         }
+
+        List<int> SlimeOverrideIDs = new List<int>()
+        {
+            NPCID.GreenSlime, NPCID.BlueSlime, NPCID.RedSlime, NPCID.PurpleSlime, NPCID.YellowSlime, NPCID.BlackSlime, NPCID.JungleSlime, NPCID.Pinky
+        };
 
         private float AIState = 0;
         private float AICycles = 0;
@@ -78,11 +67,8 @@ namespace OvermorrowMod.Content.NPCs
             if (npc.type == NPCID.BlueSlime)
             {
                 // This is so stupid why would Red do this
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
-                    Player player = Main.player[npc.target];
-                    if (!player.active) npc.target = 255;
-
                     npc.velocity.X *= 0.98f;
                     float moveSpeed = 0.1f * idleJumpDirection;
                     Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
@@ -97,14 +83,16 @@ namespace OvermorrowMod.Content.NPCs
 
                             if (npc.collideY)
                             {
-                                if (AICounter == 1 && npc.velocity.X == 0) npc.velocity.X = moveSpeed;
-                                AICounter++;
+                                if (AICounter == 1 && npc.velocity.X == 0)
+                                {
+                                    npc.velocity.X = moveSpeed;
+                                    AICounter++;
+                                }
 
                                 if (!oldCollision)
                                 {
                                     npc.velocity.X = moveSpeed;
                                 }
-
                             }
 
                             if (FrameCounter++ >= 40) FrameCounter = 1;
@@ -162,8 +150,8 @@ namespace OvermorrowMod.Content.NPCs
                         #endregion
                         #region Jump
                         case (int)AICase.Jump:
-                            if (npc.target != 255) idleJumpDirection = player.Center.X > npc.Center.X ? 1 : -1;
-
+                            if (target != null) idleJumpDirection = target.Center.X > npc.Center.X ? 1 : -1;
+                            
                             if (AICounter++ == 0)
                                 npc.velocity = new Vector2(2 * idleJumpDirection, -7);
 
@@ -193,7 +181,7 @@ namespace OvermorrowMod.Content.NPCs
                             if (AICounter++ >= 10)
                             {
                                 AIState = (int)AICase.Idle;
-                                AICounter = 1; 
+                                AICounter = 1;
                                 FrameCounter = 1; // Set the FrameCounter to 1 so it doesnt immediately change frames when set to 0
                             }
                             break;
@@ -216,18 +204,13 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.BlueSlime)
-                {
-                    //npc.lifeMax = npc.life = 100;
-                }
-
                 // During the singular run instance, reset ai0 to be 0
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     if (AIState < 0) AIState = 0;
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
-                    npc.lifeMax = npc.life = 100;
+                    npc.lifeMax = npc.life = 100000;
                     idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }
             }
@@ -239,7 +222,13 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime) npc.TargetClosest();
+                if (SlimeOverrideIDs.Contains(npc.netID))
+                {
+                    if (target == null)
+                    {
+                        target = Main.player[player.whoAmI];
+                    }
+                }
             }
         }
 
@@ -247,7 +236,14 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime) npc.TargetClosest();
+                if (SlimeOverrideIDs.Contains(npc.netID))
+                {
+                    if (target == null)
+                    {
+                        Entity ownerEntity = projectile.GlobalProjectile().ownerEntity;
+                        target = ownerEntity;
+                    }
+                }
             }
         }
 
@@ -255,7 +251,7 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     binaryWriter.Write(AIState);
                     binaryWriter.Write(AICycles);
@@ -269,7 +265,7 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     AIState = binaryReader.ReadInt32();
                     AICycles = binaryReader.ReadInt32();
@@ -290,7 +286,7 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     npc.direction = idleJumpDirection;
 
@@ -338,7 +334,7 @@ namespace OvermorrowMod.Content.NPCs
                 var spriteEffects = npc.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 Rectangle drawRectangle = new Rectangle(xFrame * FRAME_WIDTH, yFrame * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
 
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     Color color = npc.color * Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                     float alpha = npc.alpha / 255f;

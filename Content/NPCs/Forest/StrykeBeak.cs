@@ -370,7 +370,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
             {
                 Entity ownerEntity = projectile.GlobalProjectile().ownerEntity;
                 target = ownerEntity;
-                Main.NewText("does not have a target");
             }
 
             if (AIState == (int)AICase.Idle)
