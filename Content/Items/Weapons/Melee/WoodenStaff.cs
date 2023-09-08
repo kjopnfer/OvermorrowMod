@@ -140,7 +140,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         private int _hitDelay = 0;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            _hitDelay = 4;
+            //_hitDelay = 4;
         }
 
         /// <summary>
@@ -479,13 +479,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
         }
 
+        // WIP: The collision doesn't properly detect sometimes
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            Vector2 start = Projectile.Center;
-            Vector2 end = start + Vector2.UnitX.RotatedBy(Projectile.rotation) * 50;
+            return base.Colliding(projHitbox, targetHitbox);
+            /*Vector2 start = Projectile.Center;
+            Vector2 end = start + Vector2.UnitX.RotatedBy(Projectile.rotation) * 45;
             float collisionPoint = 0f; // Don't need that variable, but required as parameter
             float collisionWidth = 6f;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, collisionWidth, ref collisionPoint);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, collisionWidth, ref collisionPoint);*/
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)

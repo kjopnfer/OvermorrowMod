@@ -72,6 +72,7 @@ namespace OvermorrowMod.Content.NPCs
         private float AICounter = 0;
         private float FrameCounter = 0;
 
+        private bool oldCollision = true;
         public override bool PreAI(NPC npc)
         {
             if (npc.type == NPCID.BlueSlime)
@@ -82,8 +83,8 @@ namespace OvermorrowMod.Content.NPCs
                     Player player = Main.player[npc.target];
                     if (!player.active) npc.target = 255;
 
-                    Main.NewText(npc.velocity.ToString());
                     npc.velocity.X *= 0.98f;
+                    float moveSpeed = 0.1f * idleJumpDirection;
                     Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 
                     //Main.NewText("collideX: " + npc.collideX + " collideY: " + npc.collideY + " fC: " + FrameCounter + " aC: " + AICounter);
@@ -92,24 +93,32 @@ namespace OvermorrowMod.Content.NPCs
                     {
                         #region Idle
                         case (int)AICase.Idle:
-                            Main.NewText("idle");
+                            //Main.NewText("idle " + npc.collideY + ", velocity:" + npc.velocity.ToString());
 
                             if (npc.collideY)
                             {
-                                if (AICounter == 1) npc.velocity.X = 0.1f * idleJumpDirection;
+                                if (AICounter == 1 && npc.velocity.X == 0) npc.velocity.X = moveSpeed;
                                 AICounter++;
+
+                                if (!oldCollision)
+                                {
+                                    npc.velocity.X = moveSpeed;
+                                }
+
                             }
 
                             if (FrameCounter++ >= 40) FrameCounter = 1;
 
                             if (AICounter++ >= 40)
                             {
-                                if (npc.collideY) npc.velocity.X = 0;
+                                if (npc.collideY) npc.velocity.X = moveSpeed;
 
                                 AICounter = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
                                 //FrameCounter = 1;
                                 if (AICycles++ >= 3)
                                 {
+                                    if (npc.collideY) npc.velocity.X = 0;
+
                                     AIState = (int)AICase.PreJump;
                                     AICounter = 0;
                                     FrameCounter = 0;
@@ -123,14 +132,18 @@ namespace OvermorrowMod.Content.NPCs
                             int bounceRate = 1;
                             if (AICycles >= 4) bounceRate = 2;
 
-                            Main.NewText("prejump " + npc.collideY + " / " + ModUtils.CheckEntityBottomSlopeCollision(npc));
+                            //Main.NewText("prejump " + npc.collideY + " / " + ModUtils.CheckEntityBottomSlopeCollision(npc));
 
                             if (npc.collideY || ModUtils.CheckEntityBottomSlopeCollision(npc))
                             {
                                 AICounter += bounceRate;
                             }
 
-                            if (npc.velocity.X != 0) npc.velocity.X *= 0.98f;
+                            // Prevent the NPC from sliding after being hit into the air and landing
+                            if (npc.collideY && npc.velocity.X != 0 && npc.oldVelocity.X != 0)
+                            {
+                                npc.velocity.X = 0;
+                            }
 
                             FrameCounter += bounceRate;
 
@@ -149,8 +162,6 @@ namespace OvermorrowMod.Content.NPCs
                         #endregion
                         #region Jump
                         case (int)AICase.Jump:
-                            Main.NewText("jump");
-
                             if (npc.target != 255) idleJumpDirection = player.Center.X > npc.Center.X ? 1 : -1;
 
                             if (AICounter++ == 0)
@@ -174,18 +185,22 @@ namespace OvermorrowMod.Content.NPCs
                         #endregion
                         #region Land
                         case (int)AICase.Land:
-                            Main.NewText("land");
-                            if (npc.collideY) npc.velocity.X = 0;
+                            if (npc.collideY && npc.velocity.X != 0 && npc.oldVelocity.X != 0)
+                            {
+                                npc.velocity.X = 0;
+                            }
 
                             if (AICounter++ >= 10)
                             {
                                 AIState = (int)AICase.Idle;
-                                AICounter = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
-                                FrameCounter = 1;
+                                AICounter = 1; 
+                                FrameCounter = 1; // Set the FrameCounter to 1 so it doesnt immediately change frames when set to 0
                             }
                             break;
                             #endregion
                     }
+
+                    oldCollision = npc.collideY;
 
                     // Allow the vanilla AI to run ONCE, after which the condition
                     // will no longer be true after being assigned a bonus drop (which will never be 0)
@@ -203,7 +218,7 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (npc.netID == NPCID.BlueSlime)
                 {
-                    npc.lifeMax = npc.life = 600;
+                    //npc.lifeMax = npc.life = 100;
                 }
 
                 // During the singular run instance, reset ai0 to be 0
@@ -212,7 +227,7 @@ namespace OvermorrowMod.Content.NPCs
                     if (AIState < 0) AIState = 0;
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
-                    npc.lifeMax = npc.life = 600;
+                    npc.lifeMax = npc.life = 100;
                     idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }
             }
