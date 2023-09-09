@@ -7,6 +7,7 @@ using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,6 +20,11 @@ namespace OvermorrowMod.Content.NPCs.Forest
         {
             // DisplayName.SetDefault("Red Strykebeak");
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
+            {
+                Velocity = 1f
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
         public override void SafeSetDefaults()
@@ -36,6 +42,17 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
             // knockBackResist is the multiplier applied to the knockback the NPC receives when it takes damage
             NPC.knockBackResist = 0.5f;
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
+
+                new FlavorTextBestiaryInfoElement("Preying on large forest insects, Strykebeaks are social creatures that live in colonies under a Matriarch. If they are found carrying away food, you can be sure they're heading back to their nest.")
+            });
         }
 
         public int idleDirection;

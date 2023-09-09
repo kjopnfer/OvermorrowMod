@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.NPCs
                     npc.velocity.X *= 0.98f;
                     float moveSpeed = 0.25f * idleJumpDirection;
                     Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
-
+                    //Collision.StepDown(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, true);
                     //Main.NewText("collideX: " + npc.collideX + " collideY: " + npc.collideY + " fC: " + FrameCounter + " aC: " + AICounter);
                     if (npc.wet && AIState != (int)AICase.Swim)
                     {
