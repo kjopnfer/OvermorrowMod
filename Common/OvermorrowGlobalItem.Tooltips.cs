@@ -562,8 +562,6 @@ namespace OvermorrowMod.Common
             if (type != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", $"[c/FAD5A5:{type} Type]"));
 
-            Main.NewText(item.IsBow());
-
             if (!CheckInVanity(tooltips))
             {
                 switch (item.type)

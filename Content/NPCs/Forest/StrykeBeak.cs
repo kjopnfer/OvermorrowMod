@@ -22,7 +22,9 @@ namespace OvermorrowMod.Content.NPCs.Forest
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
             {
-                Velocity = 1f
+                Position = new Vector2(8, 16),
+                PortraitPositionXOverride = 8,
+                PortraitPositionYOverride = 18,
             };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
@@ -38,7 +40,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit28;
             NPC.DeathSound = SoundID.NPCDeath31;
-            NPC.value = 60f;
+            NPC.value = Item.buyPrice(silver: 1, copper: 30);
 
             // knockBackResist is the multiplier applied to the knockback the NPC receives when it takes damage
             NPC.knockBackResist = 0.5f;
@@ -403,6 +405,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
         public override void FindFrame(int frameHeight)
         {
             NPC.spriteDirection = NPC.direction;
+            if (NPC.IsABestiaryIconDummy) NPC.direction = -1;
             NPC.frame.Y = frameHeight * frame;
 
             if (Main.gamePaused) return;
@@ -444,10 +447,10 @@ namespace OvermorrowMod.Content.NPCs.Forest
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            var spriteEffects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
-            return false;
+            return NPC.IsABestiaryIconDummy;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
