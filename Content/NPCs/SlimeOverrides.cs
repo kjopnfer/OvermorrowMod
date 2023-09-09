@@ -440,7 +440,7 @@ namespace OvermorrowMod.Content.NPCs
                     }
 
                     spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
-                    return false;
+                    return npc.IsABestiaryIconDummy;
                 }
             }
 

@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
 
-                new FlavorTextBestiaryInfoElement("Preying on large forest insects, Strykebeaks are social creatures that live in colonies under a Matriarch. If they are found carrying away food, you can be sure they're heading back to their nest.")
+                new FlavorTextBestiaryInfoElement("Strykebeaks are large social birds that live in colonies under a Matriarch. Preying on large forest insects, their dive bombs are particularly effective against hard shells.")
             });
         }
 
