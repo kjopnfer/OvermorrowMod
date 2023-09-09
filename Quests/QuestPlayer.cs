@@ -116,6 +116,7 @@ namespace OvermorrowMod.Quests
             AutoCompleteRequirements();
         }
 
+        // TODO: Why did I write it like this, uncringe this
         /// <summary>
         /// Determines whether the player has an active Quest of the specified name.
         /// <para>Based off of the internal class name for the Quest.</para>

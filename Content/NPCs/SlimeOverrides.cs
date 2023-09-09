@@ -49,6 +49,7 @@ namespace OvermorrowMod.Content.NPCs
             PreJump = 1,
             Jump = 2,
             Land = 3,
+            Swim = 4,
         }
 
         List<int> SlimeOverrideIDs = new List<int>()
@@ -70,10 +71,17 @@ namespace OvermorrowMod.Content.NPCs
                 if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     npc.velocity.X *= 0.98f;
-                    float moveSpeed = 0.1f * idleJumpDirection;
+                    float moveSpeed = 0.25f * idleJumpDirection;
                     Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 
                     //Main.NewText("collideX: " + npc.collideX + " collideY: " + npc.collideY + " fC: " + FrameCounter + " aC: " + AICounter);
+                    if (npc.wet && AIState != (int)AICase.Swim)
+                    {
+                        AICounter = 0;
+                        FrameCounter = 0;
+                        AICycles = 0;
+                        AIState = (int)AICase.Swim;
+                    }
 
                     switch (AIState)
                     {
@@ -103,7 +111,7 @@ namespace OvermorrowMod.Content.NPCs
 
                                 AICounter = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
                                 //FrameCounter = 1;
-                                if (AICycles++ >= 3)
+                                if (AICycles++ >= 5)
                                 {
                                     if (npc.collideY) npc.velocity.X = 0;
 
@@ -151,7 +159,7 @@ namespace OvermorrowMod.Content.NPCs
                         #region Jump
                         case (int)AICase.Jump:
                             if (target != null) idleJumpDirection = target.Center.X > npc.Center.X ? 1 : -1;
-                            
+
                             if (AICounter++ == 0)
                                 npc.velocity = new Vector2(2 * idleJumpDirection, -7);
 
@@ -159,7 +167,7 @@ namespace OvermorrowMod.Content.NPCs
 
                             // Sometimes the NPC gets stuck on weird blocks or ledges and only ends up jumping straight up
                             // This nudges the NPC while in midair to get over these obstacles
-                            //if (npc.velocity.X == 0 && AICounter >= 5) npc.velocity.X = 2 * idleJumpDirection;
+                            if (npc.velocity.X == 0 && AICounter >= 5) npc.velocity.X = 2 * idleJumpDirection;
 
                             if (npc.collideY && AICounter >= 15)
                             {
@@ -185,7 +193,39 @@ namespace OvermorrowMod.Content.NPCs
                                 FrameCounter = 1; // Set the FrameCounter to 1 so it doesnt immediately change frames when set to 0
                             }
                             break;
-                            #endregion
+                        #endregion
+                        #region Swim
+                        case (int)AICase.Swim:
+                            if (npc.wet)
+                            {
+                                if (npc.collideY)
+                                {
+                                    npc.velocity.Y = -2f;
+                                }
+
+                                if (npc.velocity.Y > 2f)
+                                {
+                                    npc.velocity.Y *= 0.9f;
+                                }
+
+                                npc.velocity.Y -= 0.5f;
+                                if (npc.velocity.Y < -4f)
+                                {
+                                    npc.velocity.Y = -4f;
+                                }
+                            }
+
+                            npc.velocity.X = moveSpeed * 5f;
+
+                            if (npc.collideY && !npc.wet)
+                            {
+                                AIState = (int)AICase.Idle;
+                            }
+                            break;
+                        #endregion
+                        default:
+                            break;
+
                     }
 
                     oldCollision = npc.collideY;
@@ -318,6 +358,10 @@ namespace OvermorrowMod.Content.NPCs
                         case (int)AICase.Land:
                             xFrame = 1;
                             yFrame = 1;
+                            break;
+                        case (int)AICase.Swim:
+                            xFrame = 1;
+                            yFrame = npc.wet ? 2 : 0;
                             break;
                     }
                 }
