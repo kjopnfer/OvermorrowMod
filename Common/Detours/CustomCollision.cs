@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Players;
-using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -37,11 +36,6 @@ namespace OvermorrowMod.Common.Detours
 
                             if (self == Main.LocalPlayer)
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
-
-                            if (npc.type == ModContent.NPCType<Pillar>())
-                            {
-                                self.Hurt(PlayerDeathReason.ByCustomReason(self.name + " had an obelisk stuck up their ass"), 20, -1);
-                            }
 
                             orig(self);
                         }

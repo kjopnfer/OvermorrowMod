@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.Graphics.Effects;
 using OvermorrowMod.Common;
@@ -290,15 +290,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (child.ai[3] == (float)VortexEye.AIStates.Death)
             {
-                /*var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
-
-                deathShader.UseOpacity(1f);
-                if (child.ai[1] > 30f)
-                {
-                    deathShader.UseOpacity(1f - (child.ai[1] - 30f) / 90f);
-                }
-
-                deathShader.Apply(null);*/
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 float progress = Utils.Clamp(child.ai[1], 0, 90) / 90f;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
@@ -510,3 +501,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         }
     }
 }
+*/

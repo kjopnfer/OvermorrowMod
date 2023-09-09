@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.NPCs.RockCrawler;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.Audio;
@@ -36,7 +35,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            NPC.NewNPC(new EntitySource_TileBreak(i, j), i * 16, j * 16, ModContent.NPCType<RockCrawler>());
+            //NPC.NewNPC(new EntitySource_TileBreak(i, j), i * 16, j * 16, ModContent.NPCType<RockCrawler>());
             SoundEngine.PlaySound(SoundID.NPCDeath1);
         }
 

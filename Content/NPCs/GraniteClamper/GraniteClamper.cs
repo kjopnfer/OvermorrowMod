@@ -1,4 +1,4 @@
-using Terraria;
+/*using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -46,4 +46,4 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
 
 
     }
-}
+}*/

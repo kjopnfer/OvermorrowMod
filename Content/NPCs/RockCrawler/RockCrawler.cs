@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using Terraria;
@@ -142,4 +142,4 @@ namespace OvermorrowMod.Content.NPCs.RockCrawler
             //Main.spriteBatch.Draw(glow, npc.Center + new Vector2(0, (TEXTURE_HEIGHT / 2 * MAX_FRAMES) + 4 - (TEXTURE_HEIGHT / 2)) - Main.screenPosition, drawRectangle, color, npc.rotation, origin, 1f, SpriteEffects.None, 0f);
         }
     }
-}
+}*/

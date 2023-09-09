@@ -5,7 +5,6 @@ using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
-using OvermorrowMod.Content.NPCs.CaveFish;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -49,7 +48,7 @@ namespace OvermorrowMod.Common
             if (player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()))
             {
                 pool.Clear();
-                pool.Add(ModContent.NPCType<CaveFish>(), .10f);
+                //pool.Add(ModContent.NPCType<CaveFish>(), .10f);
             }
         }
 

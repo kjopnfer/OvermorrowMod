@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs.Carts
     {
         public List<Item> shopItems = new List<Item>();
         public override bool CheckActive() => false;
-        public override bool CanTownNPCSpawn(int numTownNPCs)/* tModPorter Suggestion: Copy the implementation of NPC.SpawnAllowed_Merchant in vanilla if you to count money, and be sure to set a flag when unlocked, so you don't count every tick. */ => false;
+        public override bool CanTownNPCSpawn(int numTownNPCs) => false;
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Merchant Cart");
@@ -66,17 +66,6 @@ namespace OvermorrowMod.Content.NPCs.Carts
         {
             var itemIDs = new List<int>();
 
-            // For each slot we add a switch case to determine what should go in that slot
-            /*switch (Main.rand.Next(2))
-            {
-                case 0:
-                    itemIds.Add(ModContent.ItemType<ExampleItem>());
-                    break;
-                default:
-                    itemIds.Add(ModContent.ItemType<ExampleSoul>());
-                    break;
-            }*/
-
             itemIDs.Add(ItemID.Banana);
             itemIDs.Add(ItemID.Banana);
             itemIDs.Add(ItemID.AcidDye);
@@ -113,3 +102,4 @@ namespace OvermorrowMod.Content.NPCs.Carts
         }
     }
 }
+*/

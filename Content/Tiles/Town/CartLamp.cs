@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.NPCs.Carts;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -56,7 +55,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 
             if (counter == 420)
             {
-                NPC.NewNPC(null, (int)LampPosition.X - 90, (int)LampPosition.Y, ModContent.NPCType<Cart>());
+                //NPC.NewNPC(null, (int)LampPosition.X - 90, (int)LampPosition.Y, ModContent.NPCType<Cart>());
 
                 counter++;
             }

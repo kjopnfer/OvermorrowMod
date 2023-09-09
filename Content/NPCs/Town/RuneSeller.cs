@@ -1,4 +1,4 @@
-using OvermorrowMod.Content.Items.Pets;
+/*using OvermorrowMod.Content.Items.Pets;
 using OvermorrowMod.Content.Projectiles.NPCs.Town;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +13,6 @@ namespace OvermorrowMod.Content.NPCs.Town
     public class RuneSeller : ModNPC // This NPC is outdated
     {
         public override string Texture => "OvermorrowMod/Content/NPCs/Town/RuneSeller";
-
-        /* public override bool Autoload(ref string name)
-        {
-            name = "Rune Merchant";
-            return Mod.Properties.Autoload;
-        } */
 
         public override void SetStaticDefaults()
         {
@@ -47,7 +41,7 @@ namespace OvermorrowMod.Content.NPCs.Town
             AnimationType = NPCID.Guide;
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs)/* tModPorter Suggestion: Copy the implementation of NPC.SpawnAllowed_Merchant in vanilla if you to count money, and be sure to set a flag when unlocked, so you don't count every tick. */
+        public override bool CanTownNPCSpawn(int numTownNPCs)
         {
             // EoW or BoC
             return NPC.downedBoss2 && Main.player.Any(x => x.active);
@@ -81,15 +75,6 @@ namespace OvermorrowMod.Content.NPCs.Town
         public override void AddShops()
         {
             base.AddShops();
-        }
-
-        public override void ModifyActiveShop(string shopName, Item[] items)
-        {
-            /*shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
-            nextSlot++;*/
         }
 
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
@@ -131,4 +116,4 @@ namespace OvermorrowMod.Content.NPCs.Town
             randomOffset = 2f;
         }
     }
-}
+}*/
