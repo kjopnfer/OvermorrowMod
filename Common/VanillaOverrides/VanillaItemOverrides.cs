@@ -75,7 +75,8 @@ namespace OvermorrowMod.Common.VanillaOverrides
         {
             if (player.CheckArmorEquipped(ItemID.CowboyJacket) && item.DamageType == DamageClass.Ranged)
             {
-                if (item.GetWeaponType() == GunType.Revolver)
+                //if (item.GetWeaponType() == GunType.Revolver)
+                if (item.IsWeaponType(WeaponID.Revolver))
                     crit += 10f;
                 else
                     crit += 5f;

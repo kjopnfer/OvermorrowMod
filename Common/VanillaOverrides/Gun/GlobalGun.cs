@@ -59,12 +59,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
+            /*int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             if (GunType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + " Type]"));
 
             if (MeleeType.ToString() != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));*/
 
             base.ModifyTooltips(item, tooltips);
         }
@@ -79,7 +79,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 item.noUseGraphic = true;
                 item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
 
-                GunType = gun.WeaponType;
+                //GunType = gun.WeaponType;
             }
 
             if (item.type == ItemID.Handgun) item.useTime = item.useAnimation = 18;

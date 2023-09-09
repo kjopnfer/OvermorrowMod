@@ -40,7 +40,7 @@ namespace OvermorrowMod.Common
         private int UndertakerCounter = 0;
         private bool WildEyeCrit = false;
 
-        public GunType SourceGunType = GunType.None;
+        public WeaponID SourceGunType = WeaponID.None;
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
@@ -168,9 +168,9 @@ namespace OvermorrowMod.Common
                     Main.NewText("from player " + player.name);*/
             }
 
-            if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
+            if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item item)
             {
-                if (gun.GetWeaponType() != GunType.None) SourceGunType = gun.GetWeaponType();
+                if (item.IsGun()) SourceGunType = item.GetWeaponTypeID();
             }
 
 
@@ -285,7 +285,7 @@ namespace OvermorrowMod.Common
                 }
             }
 
-            if (player.GetModPlayer<GunPlayer>().CowBoySet && hit.Crit && SourceGunType == GunType.Revolver)
+            if (player.GetModPlayer<GunPlayer>().CowBoySet && hit.Crit && SourceGunType == WeaponID.Revolver)
             {
                 NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
                 if (closestNPC != null)

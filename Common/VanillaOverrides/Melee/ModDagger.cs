@@ -33,8 +33,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
             Item.noMelee = true;
             Item.maxStack = 2;
             Item.shoot = ModContent.ProjectileType<HeldProjectile>();
-            Item.GetGlobalItem<GlobalGun>().MeleeType = MeleeType.Dagger;
+            //Item.GetGlobalItem<GlobalGun>().MeleeType = MeleeType.Dagger;
 
+            WeaponType.IsDagger[Type] = true;
             SafeSetDefaults();
         }
 
