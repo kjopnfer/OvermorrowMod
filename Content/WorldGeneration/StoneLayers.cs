@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.NPCs.Shades;
 using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.Underground;
 using OvermorrowMod.Core;
@@ -665,11 +664,11 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
 
             // Spawns and saves the Shade Orb, these need to be added into the list so that they load properly
-            Vector2 SpawnPosition = (new Vector2(x + 17, y + 17) * 16) + new Vector2(8, 8);
+            /*Vector2 SpawnPosition = (new Vector2(x + 17, y + 17) * 16) + new Vector2(8, 8);
             int npc = NPC.NewNPC(Entity.GetSource_NaturalSpawn(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<ShadeOrb>());
 
             OvermorrowWorld.SavedShades.Add(npc);
-            OvermorrowWorld.ShadePositions.Add(Main.npc[npc].Center);
+            OvermorrowWorld.ShadePositions.Add(Main.npc[npc].Center);*/
 
             #endregion
 

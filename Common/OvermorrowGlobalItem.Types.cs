@@ -44,7 +44,7 @@ namespace OvermorrowMod.Common
         public static bool[] IsSwarmbow = ItemID.Sets.Factory.CreateBoolSet(ItemID.BeesKnees, ItemID.HellwingBow);
         public static bool[] IsStormbow = ItemID.Sets.Factory.CreateBoolSet(ItemID.DaedalusStormbow, ItemID.BloodRainBow);
 
-        public static bool[] IsRevolver = ItemID.Sets.Factory.CreateBoolSet(ItemID.Revolver);
+        public static bool[] IsRevolver = ItemID.Sets.Factory.CreateBoolSet(ItemID.Revolver, ItemID.TheUndertaker);
 
         /// <summary>
         /// This shit does NOT work
@@ -72,35 +72,20 @@ namespace OvermorrowMod.Common
 
         public static bool IsGun(this Item item)
         {
-            var ids = Enum.GetValues(typeof(WeaponID));
-            foreach (var id in ids)
+            return item.GetWeaponTypeID() switch
             {
-                return id switch
-                {
-                    6 => IsRevolver[item.type],
-                    _ => false
-                };
-            }
-
-            return false;
+                WeaponID.Revolver => true,
+                _ => false
+            };
         }
 
         public static bool IsBow(this Item item)
         {
-            var ids = Enum.GetValues(typeof(WeaponID));
-            foreach (var id in ids)
+            return item.GetWeaponTypeID() switch
             {
-                return id switch
-                {
-                    1 => IsShortbow[item.type],
-                    2 => IsLongbow[item.type],
-                    3 => IsSwarmbow[item.type],
-                    4 => IsStormbow[item.type],
-                    _ => false
-                };
-            }
-
-            return false;
+                WeaponID.Shortbow or WeaponID.Longbow or WeaponID.Swarmbow or WeaponID.Stormbow => true,
+                _ => false
+            };
         }
 
         public static bool IsWeaponType(this Item item, int weaponID)

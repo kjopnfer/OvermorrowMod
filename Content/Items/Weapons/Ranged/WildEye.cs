@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Core;
@@ -181,6 +182,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             Item.rare = ItemRarityID.Orange;
             Item.useTime = 22;
             Item.useAnimation = 22;
+
+            WeaponType.IsRevolver[Type] = true;
         }
     }
 }
