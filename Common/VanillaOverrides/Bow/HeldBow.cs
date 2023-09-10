@@ -276,7 +276,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             Color lerpColor = Color.Lerp(color, Color.White, flashProgress);
 
+            Main.instance.LoadProjectile(LoadedArrowType);
             Texture2D texture = TextureAssets.Projectile[LoadedArrowType].Value;
+
             Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, lerpColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);
