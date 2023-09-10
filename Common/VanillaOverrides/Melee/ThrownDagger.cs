@@ -43,7 +43,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Melee
         public override void AI()
         {
             // These are for weird slopes that don't trigger the collision code normally
-            if (ModUtils.CheckEntityBottomSlopeCollision(Projectile)) HandleCollisionBounce();
+            if (Projectile.CheckEntityBottomSlopeCollision()) HandleCollisionBounce();
 
             if (Projectile.ai[0] == 0)
             {

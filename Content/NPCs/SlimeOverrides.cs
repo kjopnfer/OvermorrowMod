@@ -130,7 +130,7 @@ namespace OvermorrowMod.Content.NPCs
 
                             //Main.NewText("prejump " + npc.collideY + " / " + ModUtils.CheckEntityBottomSlopeCollision(npc));
 
-                            if (npc.collideY || ModUtils.CheckEntityBottomSlopeCollision(npc))
+                            if (npc.collideY || npc.CheckEntityBottomSlopeCollision())
                             {
                                 AICounter += bounceRate;
                             }
@@ -250,7 +250,7 @@ namespace OvermorrowMod.Content.NPCs
                     if (AIState < 0) AIState = 0;
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
-                    npc.lifeMax = npc.life = 100000;
+                    //npc.lifeMax = npc.life = 100;
                     idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }
             }
@@ -324,10 +324,15 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void FindFrame(NPC npc, int frameHeight)
         {
+            // For some reason, SOMETHING is being called that messes with the frames if I use npc.frame.
+            // Therefore, I have to manually do them myself using my own counters.
+            // Vanilla can go fuck itself.
+
             if (npc.type == NPCID.BlueSlime)
             {
                 if (SlimeOverrideIDs.Contains(npc.netID))
                 {
+                    //Main.NewText(npc.frameCounter + " " + npc.frame.Y);
                     npc.direction = idleJumpDirection;
 
                     switch (AIState)
@@ -364,6 +369,8 @@ namespace OvermorrowMod.Content.NPCs
                             yFrame = npc.wet ? 2 : 0;
                             break;
                     }
+
+                    return;
                 }
             }
 
@@ -436,10 +443,10 @@ namespace OvermorrowMod.Content.NPCs
                         }
 
                         float drawDirection = npc.direction == 0 ? 1 : -1;
-                        spriteBatch.Draw(bonusDrop, npc.Center + new Vector2(drawOffset * drawDirection, 0) - Main.screenPosition, null, Color.White, npc.rotation, bonusDrop.Size() / 2, dropScale, SpriteEffects.None, 0);
+                        spriteBatch.Draw(bonusDrop, npc.Center + new Vector2(drawOffset * drawDirection, 0) - screenPos, null, Color.White, npc.rotation, bonusDrop.Size() / 2, dropScale, SpriteEffects.None, 0);
                     }
 
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
+                    spriteBatch.Draw(texture, npc.Center - screenPos, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
                     return npc.IsABestiaryIconDummy;
                 }
             }

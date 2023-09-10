@@ -173,7 +173,7 @@ Mods: {
 			}
 
 			CaveFish.DisplayName: Sullen Angler
-			StrykeBeak.DisplayName: Red Strykebeak
+			StrykeBeak.DisplayName: Strykebeak
 			GraniteClamper.DisplayName: Granite Clamper
 
 			Mercenary: {
@@ -293,6 +293,7 @@ Mods: {
 			Ruin2.DisplayName: Ruin2
 			Ruin3.DisplayName: Ruin3
 			Spin.DisplayName: Spin
+			BlueThrasher.DisplayName: Blue Thrasher
 		}
 
 		Items: {

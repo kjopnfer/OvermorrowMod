@@ -18,7 +18,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
         private const int MAX_FRAMES = 8;
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Red Strykebeak");
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
             {
