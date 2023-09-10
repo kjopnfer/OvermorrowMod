@@ -825,9 +825,9 @@ Mods: {
 				Tooltip:
 					'''
 					Launches high velocity shards that stick to blocks
+					Starts with 0 ammo and does not reload
 					{Keyword:Passive}: Gain 1 shard on Critical Hit
 					{Keyword:Alt}: Activate all unarmed shards
-					Starts with 0 ammo and does not reload
 					'''
 			}
 

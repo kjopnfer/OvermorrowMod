@@ -22,9 +22,12 @@ namespace OvermorrowMod.Content.NPCs.Forest
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
             {
-                Position = new Vector2(8, 16),
-                PortraitPositionXOverride = 8,
-                PortraitPositionYOverride = 18,
+                // The small one
+                Position = new Vector2(16, 8),
+
+                // The big image
+                PortraitPositionXOverride = 16,
+                PortraitPositionYOverride = 12,
             };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
@@ -405,10 +408,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
         public override void FindFrame(int frameHeight)
         {
             NPC.spriteDirection = NPC.direction;
-            if (NPC.IsABestiaryIconDummy) NPC.direction = -1;
-            NPC.frame.Y = frameHeight * frame;
-
-            if (Main.gamePaused) return;
 
             switch (AIState)
             {
@@ -416,24 +415,24 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     if (AICounter >= 30) frame = 0;
                     else
                     {
-                        frameTimer++;
-                        if (frameTimer % frameRate == 0)
+                        NPC.frameCounter++;
+                        if (NPC.frameCounter % frameRate == 0)
                         {
-                            if (frame < 7)
-                                frame++;
+                            if (NPC.frame.Y < 7 * frameHeight)
+                                NPC.frame.Y += frameHeight;
                             else
-                                frame = 0;
+                                NPC.frame.Y = 0;
                         }
                     }
                     break;
                 default:
-                    frameTimer++;
-                    if (frameTimer % frameRate == 0)
+                    NPC.frameCounter++;
+                    if (NPC.frameCounter % frameRate == 0)
                     {
-                        if (frame < 5)
-                            frame++;
+                        if (NPC.frame.Y < 5 * frameHeight)
+                            NPC.frame.Y += frameHeight;
                         else
-                            frame = 0;
+                            NPC.frame.Y = 0;
                     }
                     break;
             }
@@ -448,9 +447,9 @@ namespace OvermorrowMod.Content.NPCs.Forest
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(texture, NPC.Center - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
-            return NPC.IsABestiaryIconDummy;
+            return false;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
