@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.NPCs
@@ -20,6 +21,14 @@ namespace OvermorrowMod.Common.NPCs
         public override string Texture => AssetDirectory.Empty;
         public override bool? CanBeHitByItem(Player player, Item item) => false;
         public override bool? CanBeHitByProjectile(Projectile projectile) => false;
+        public override void SetStaticDefaults()
+        {
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
+            {
+                Hide = true,
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
+        }
         public override void SetDefaults()
         {
             NPC.friendly = true;

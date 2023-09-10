@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Cutscenes;
-using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.ModQuests;
@@ -51,7 +50,7 @@ namespace OvermorrowMod.Common.Detours
 
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
                 }*/
-                else if (npc.type == ModContent.NPCType<TownKid>())
+                /*else if (npc.type == ModContent.NPCType<TownKid>())
                 {
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
                     doc.LoadXml(text);
@@ -100,7 +99,7 @@ namespace OvermorrowMod.Common.Detours
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
-                }
+                }*/
                 else
                 {
                     orig(self);

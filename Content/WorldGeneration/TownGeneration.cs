@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
