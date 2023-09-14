@@ -39,6 +39,17 @@ namespace OvermorrowMod.Core
 
         #region Vanilla Code Adaptions
         // Adapted from Mod of Redemption
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="vector">The position for the NPC to move towards</param>
+        /// <param name="moveInterval">The rate of increase for the NPC's speed</param>
+        /// <param name="moveSpeed">The maximum movement speed of the NPC</param>
+        /// <param name="maxJumpTilesX">The max number of tiles it can jump across</param>
+        /// <param name="maxJumpTilesY">The max number of tiles it can jump over</param>
+        /// <param name="jumpUpPlatforms">Whether or not the NPC can jump up platforms</param>
+        /// <param name="target"></param>
         public static void HorizontallyMove(this NPC npc, Vector2 vector, float moveInterval, float moveSpeed,
             int maxJumpTilesX, int maxJumpTilesY, bool jumpUpPlatforms, Entity target = null)
         {
