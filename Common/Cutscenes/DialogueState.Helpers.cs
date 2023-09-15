@@ -112,7 +112,7 @@ namespace OvermorrowMod.Common.Cutscenes
             Vector2 screenPosition = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f);
             Vector2 offsets = new Vector2(600, 180) / 2f; // This is the size of the dialogue box
 
-            return _dialogueAnchor + new Vector2(PANEL_WIDTH + 60, -2 - (60 * optionNumber - 1));
+            return _dialogueAnchor + new Vector2(PANEL_WIDTH + 130, -15 - (60 * optionNumber - 1));
         }
 
         /// <summary>
@@ -207,11 +207,11 @@ namespace OvermorrowMod.Common.Cutscenes
             //Color color = Color.White * 0.9f;
             texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
             //float height_padding = 30;
-            int width = 600;
-            int height = 180;
+            int width = 720;
+            int height = 190;
             //Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight - height - 25);
             Vector2 position = _dialogueAnchor;
-            Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, width, height);
+            Rectangle drawRectangle = new Rectangle((int)position.X + 20, (int)position.Y - 10, width, height);
 
             //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
             Color color = new Color(28, 31, 77);
@@ -249,7 +249,7 @@ namespace OvermorrowMod.Common.Cutscenes
             Texture2D speaker = player.GetDialogue().GetPortrait();
             if (speaker != null)
             {
-                Vector2 offset = new Vector2(speaker.Width / 2f, 30f);
+                Vector2 offset = new Vector2(speaker.Width / 2f + 5, 30f);
                 spriteBatch.Draw(speaker, _dialogueAnchor + offset, null, Color.White, 0, speaker.Size() / 2f, 1.25f, SpriteEffects.None, 0);
             }
             #endregion

@@ -59,7 +59,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private const float PANEL_HEIGHT = 90;
         public override void Draw(SpriteBatch spriteBatch)
         {
-            _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight - PANEL_HEIGHT) - new Vector2(PANEL_WIDTH, PANEL_HEIGHT + 35);
+            _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight - PANEL_HEIGHT) - new Vector2(PANEL_WIDTH + 80, PANEL_HEIGHT + 35);
 
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
@@ -108,7 +108,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     Vector2 arrowPosition = _dialogueAnchor;
 
                     arrowOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(continueButtonCounter++ / 20f) / 2 + 0.5f));
-                    Vector2 panelOffset = new Vector2(PANEL_WIDTH, PANEL_HEIGHT) * 2;
+                    Vector2 panelOffset = new Vector2(PANEL_WIDTH + 75, PANEL_HEIGHT) * 2;
                     spriteBatch.Draw(texture, arrowPosition + panelOffset + new Vector2(-24, -24 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
 
                     canInteract = true;
@@ -207,9 +207,9 @@ namespace OvermorrowMod.Common.Cutscenes
             var displayText = ParseColoredText(text.Substring(0, progress));
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
 
-            float MAX_LENGTH = 400;
+            float MAX_LENGTH = 500;
             Vector2 offsets = new Vector2(PANEL_WIDTH - 112, 24);
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, _dialogueAnchor + offsets, Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, _dialogueAnchor + offsets, Color.White, 0f, Vector2.Zero, Vector2.One * 1.1f, out var hoveredSnippet, MAX_LENGTH);
         }
     }
 
@@ -246,9 +246,9 @@ namespace OvermorrowMod.Common.Cutscenes
                 //spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
-            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
-            //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White * 0.75f, 0, texture.Size() / 2f, new Vector2(0.55f, 0.5f), 0, 0);
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TEMP").Value;
+            spriteBatch.Draw(texture, GetDimensions().Center() + new Vector2(40, 0), null, Color.White * 0.75f, 0, texture.Size() / 2f, 1f, 0, 0);
+            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
 
             //float height_padding = 30;
             float height = Height.Pixels/* + height_padding*/;
@@ -256,7 +256,7 @@ namespace OvermorrowMod.Common.Cutscenes
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, (int)Width.Pixels, (int)height);
 
             //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
-            Utils.DrawInvBG(Main.spriteBatch, drawRectangle, color * 0.925f);
+            //Utils.DrawInvBG(Main.spriteBatch, drawRectangle, color * 0.925f);
 
             Texture2D dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon").Value;
             switch (icon)
@@ -272,7 +272,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     break;
             }
 
-            spriteBatch.Draw(dialogueIcon, pos + new Vector2(dialogueIcon.Width + 12, dialogueIcon.Height + 10), null, Color.White, 0f, texture.Size() / 2f, 1f, 0, 0);
+            spriteBatch.Draw(dialogueIcon, pos + new Vector2(dialogueIcon.Width - 6, dialogueIcon.Height - 8), null, Color.White, 0f, dialogueIcon.Size() / 2f, 1f, 0, 0);
             Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(64, 12), Color.White);
         }
 
