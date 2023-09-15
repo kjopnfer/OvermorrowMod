@@ -20,7 +20,6 @@ namespace OvermorrowMod.Common.Detours
 
             if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                 XmlDocument doc = new XmlDocument();
 
@@ -41,7 +40,7 @@ namespace OvermorrowMod.Common.Detours
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp.xml"));
                     doc.LoadXml(text);
 
-                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                    player.SetDialogue(npc.GetChat(), 20, doc);
                 }
                 /*else if (npc.type == NPCID.Merchant)
                 {

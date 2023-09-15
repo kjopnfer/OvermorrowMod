@@ -2,13 +2,13 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Xml;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ModLoader;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
     public class Dialogue
     {
-        public Texture2D speakerBody;
-
         public string displayText;
         public int drawTime;
 
@@ -18,9 +18,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private int textIterator = 0;
 
-        public Dialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
+        public Dialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
-            this.speakerBody = speakerBody;
             this.displayText = displayText;
             this.drawTime = drawTime;
             this.xmlDoc = xmlDoc;
@@ -88,6 +87,18 @@ namespace OvermorrowMod.Common.Cutscenes
             }
 
             return node.InnerText;
+        }
+
+        public Texture2D GetPortrait()
+        {
+            XmlNode node = textList[textIterator];
+            if (node.Attributes["portrait"] != null)
+            {
+                string textureName = node.Attributes["portrait"].Value;
+                return ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/" + textureName).Value;
+            }
+
+            return null;
         }
 
         public List<OptionButton> GetOptions(string id)

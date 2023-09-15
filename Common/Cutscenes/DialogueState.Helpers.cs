@@ -127,8 +127,8 @@ namespace OvermorrowMod.Common.Cutscenes
             int openSquareBrackets = 0;
             int closedSquareBrackets = 0;
 
-            int openCurlyBrackets = 0;
-            int closedCurlyBrackets = 0;
+            //int openCurlyBrackets = 0;
+            //int closedCurlyBrackets = 0;
 
             // Create a new string, adding in hex tags whenever an opening bracket is found
             var builder = new StringBuilder();
@@ -206,7 +206,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             //Color color = Color.White * 0.9f;
             texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
-            float height_padding = 30;
+            //float height_padding = 30;
             int width = 600;
             int height = 180;
             //Vector2 position = new Vector2(Main.screenWidth / 2f - width / 2f, Main.screenHeight - height - 25);
@@ -245,9 +245,13 @@ namespace OvermorrowMod.Common.Cutscenes
 
             #region Face
             //Texture2D speaker = player.GetDialogue().speakerBody;
-            Texture2D speaker = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue/Orvyn").Value;
-            Vector2 offset = new Vector2(8, 0);
-            spriteBatch.Draw(speaker, _dialogueAnchor + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, SpriteEffects.FlipHorizontally, 0);
+            //Texture2D speaker = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide").Value;
+            Texture2D speaker = player.GetDialogue().GetPortrait();
+            if (speaker != null)
+            {
+                Vector2 offset = new Vector2(speaker.Width / 2f, 30f);
+                spriteBatch.Draw(speaker, _dialogueAnchor + offset, null, Color.White, 0, speaker.Size() / 2f, 1.25f, SpriteEffects.None, 0);
+            }
             #endregion
         }
     }

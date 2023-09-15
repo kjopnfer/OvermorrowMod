@@ -68,9 +68,9 @@ namespace OvermorrowMod.Common.Cutscenes
                 PopupStates.Add(id, new PopupState(new Popup(xmlDoc)));
         }
 
-        public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
+        public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
-            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, xmlDoc);
+            CurrentDialogue = new Dialogue(displayText, drawTime, xmlDoc);
         }
 
         public void SetDialogue(Dialogue dialogue) => CurrentDialogue = dialogue;

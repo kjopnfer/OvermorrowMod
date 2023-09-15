@@ -250,7 +250,7 @@ namespace OvermorrowMod.Common.Cutscenes
             //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White * 0.75f, 0, texture.Size() / 2f, new Vector2(0.55f, 0.5f), 0, 0);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
 
-            float height_padding = 30;
+            //float height_padding = 30;
             float height = Height.Pixels/* + height_padding*/;
             Vector2 position = new Vector2(GetDimensions().X, GetDimensions().Center().Y - (height / 2));
             Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, (int)Width.Pixels, (int)height);
