@@ -43,11 +43,13 @@ namespace OvermorrowMod.Content.UI.Tracker
                 BaseQuest quest = questState.Quest;
 
                 List<QuestObjective> objectives = new List<QuestObjective>();
+                //bool canTurnIn = quest.TryUpdateQuestRequirements(questPlayer, questState);
+                bool canTurnIn = true;
                 foreach (var task in quest.Requirements)
                 {
                     if (task is OrRequirement orRequirement)
                     {
-                        objectives.Add(AddOrQuestObjective(orRequirement, questPlayer, questState));
+                        objectives.Add(CreateOrQuestObjective(orRequirement, questPlayer, questState));
                     }
 
                     if (task is ChainRequirement chainRequirement)
@@ -55,22 +57,23 @@ namespace OvermorrowMod.Content.UI.Tracker
                         foreach (var completedClause in chainRequirement.AllClauses)
                         {
                             if (!completedClause.IsCompleted(questPlayer, questState)) continue;
-                            objectives.Add(AddQuestObjective(completedClause, questPlayer, questState));
+                            objectives.Add(CreateQuestObjective(completedClause, questPlayer, questState));
                         }
 
                         foreach (var chainRequirementClause in chainRequirement.GetActiveClauses(questPlayer, questState))
                         {
-                            objectives.Add(AddQuestObjective(chainRequirementClause, questPlayer, questState));
+                            objectives.Add(CreateQuestObjective(chainRequirementClause, questPlayer, questState));
                         }
                     }
                     else
                     {
-                        objectives.Add(AddQuestObjective(task, questPlayer, questState));
+                        objectives.Add(CreateQuestObjective(task, questPlayer, questState));
                     }
 
+                    // If any task is not completed, the quest cannot be turned in
+                    if (!task.IsCompleted(questPlayer, questState)) canTurnIn = false;
                 }
 
-                bool canTurnIn = quest.TryUpdateQuestRequirements(questPlayer, questState);
                 questEntries.Add(new QuestEntry(quest.QuestName, objectives, canTurnIn));
             }
 
@@ -81,7 +84,7 @@ namespace OvermorrowMod.Content.UI.Tracker
             base.Update(gameTime);
         }
 
-        private QuestObjective AddOrQuestObjective(OrRequirement orRequirement, QuestPlayer questPlayer, BaseQuestState questState)
+        private QuestObjective CreateOrQuestObjective(OrRequirement orRequirement, QuestPlayer questPlayer, BaseQuestState questState)
         {
             int progress = 0;
             int amount = 0;
@@ -117,7 +120,13 @@ namespace OvermorrowMod.Content.UI.Tracker
             return new QuestObjective(progress, amount, description);
         }
 
-        private QuestObjective AddQuestObjective(IQuestRequirement requirementClause, QuestPlayer questPlayer, BaseQuestState questState)
+        /// <summary>
+        /// Creates the Quest Objective and determines whether or not it has been completed
+        /// </summary>
+        /// <param name="requirementClause"></param>
+        /// <param name="questPlayer"></param>
+        /// <param name="questState"></param>
+        private QuestObjective CreateQuestObjective(IQuestRequirement requirementClause, QuestPlayer questPlayer, BaseQuestState questState)
         {
             int progress = 0;
             int amount = 0;
@@ -233,12 +242,15 @@ namespace OvermorrowMod.Content.UI.Tracker
                             objectiveCount++;
 
                             string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
-                            if (objective.IsCompleted) objectiveText = "    " + objective.Description;
+
+                            // Add spacing in the description for the check mark
+                            if (objective.IsCompleted) objectiveText = "    " + objective.Description; 
 
                             Color textColor = objective.IsCompleted ? new Color(127, 255, 212) : Color.White;
                             TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, textColor).ToArray();
                             ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
 
+                            // Add checkbox if completed
                             if (objective.IsCompleted)
                             {
                                 Vector2 checkBoxOffset = new Vector2(8, 8);

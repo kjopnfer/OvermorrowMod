@@ -380,8 +380,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
                 AIState = (int)AICase.Angry;
                 AICounter = 0;
 
-                //flySpeedX += knockback;
-                //flySpeedY += knockback;
+                target = player;
             }
         }
 
@@ -398,6 +397,13 @@ namespace OvermorrowMod.Content.NPCs.Forest
                 NPC.friendly = false;
                 AIState = (int)AICase.Angry;
                 AICounter = 0;
+
+                // For some fucking reason if the target has no value then get the nearest player
+                if (target == null)
+                {
+                    NPC.TargetClosest();
+                    target = Main.player[NPC.target];
+                }
             }
 
             //flySpeedX += Utils.Clamp(projectile.velocity.X * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);

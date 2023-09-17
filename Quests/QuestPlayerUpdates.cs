@@ -62,6 +62,8 @@ namespace OvermorrowMod.Quests
                     {
                         if (clause is ItemRequirement || clause is MiscRequirement)
                         {
+                            //Main.NewText(clause.ID + " canHandIn: " + clause.CanHandInRequirement(this, questState) + " isCompleted: " + clause.IsCompleted(this, questState));
+
                             if (clause.CanHandInRequirement(this, questState) && !clause.IsCompleted(this, questState))
                             {
                                 clause.TryCompleteRequirement(this, questState);

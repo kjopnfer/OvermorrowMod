@@ -25,7 +25,7 @@ namespace OvermorrowMod.Quests.ModQuests
                     {
                         new ItemRequirement("axe", ItemID.CopperAxe, 1, "Retrieve the Axe from the Stump", false),
                         new ItemRequirement("wood", ItemID.Wood, 10, "Obtain 10 Wood", false),
-                        new ItemRequirement("gel", ItemID.Gel, 2, "Obtain 2 Gel", false),
+                        new ItemRequirement("gel", ItemID.Gel, 1, "Obtain 1 Gel", false),
                         new ItemRequirement("torches", ItemID.Torch, 3, "Obtain 3 Torches", false),
                         new MiscRequirement("campfire", "Relight the Campfire"),
                     }, "chain")

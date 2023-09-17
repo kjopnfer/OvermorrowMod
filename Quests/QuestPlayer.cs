@@ -91,8 +91,8 @@ namespace OvermorrowMod.Quests
         {
             tag["questStates"] = Quests.State.GetPerPlayerQuests(this).ToList();
             tag["PlayerUUID"] = PlayerUUID;
-            tag["grabbedAxe"] = grabbedAxe;
-            tag["showCampfireArrow"] = showCampfireArrow;
+            //tag["grabbedAxe"] = grabbedAxe;
+            //tag["showCampfireArrow"] = showCampfireArrow;
 
             base.SaveData(tag);
         }

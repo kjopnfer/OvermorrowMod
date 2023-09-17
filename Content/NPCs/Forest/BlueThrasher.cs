@@ -73,6 +73,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             Fly = 1,
             Wall = 2,
         }
+
         public override void AI()
         {
             float moveSpeed = 0.5f;
@@ -146,6 +147,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
+            return 0f;
             return spawnInfo.Player.ZonePurity && Main.dayTime ? 0.2f : 0f;
         }
     }

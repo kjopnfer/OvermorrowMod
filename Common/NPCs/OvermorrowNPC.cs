@@ -33,6 +33,8 @@ namespace OvermorrowMod.Common.NPCs
         public virtual void SafeSetDefaults() { }
         public void FaceTarget()
         {
+            if (target == null) return;
+
             if (target.Center.X < NPC.Center.X) NPC.direction = -1;
             else NPC.direction = 1;
         }

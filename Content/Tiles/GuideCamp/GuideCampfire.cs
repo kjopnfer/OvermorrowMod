@@ -126,7 +126,6 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
-
                 if (questPlayer.FindActiveQuest("GuideCampfire") && questPlayer.showCampfireArrow)
                 {
                     Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
