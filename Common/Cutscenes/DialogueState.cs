@@ -108,8 +108,8 @@ namespace OvermorrowMod.Common.Cutscenes
                     Vector2 arrowPosition = _dialogueAnchor;
 
                     arrowOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(continueButtonCounter++ / 20f) / 2 + 0.5f));
-                    Vector2 panelOffset = new Vector2(PANEL_WIDTH + 75, PANEL_HEIGHT) * 2;
-                    spriteBatch.Draw(texture, arrowPosition + panelOffset + new Vector2(-24, -24 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
+                    Vector2 panelOffset = new Vector2(PANEL_WIDTH + 65, PANEL_HEIGHT) * 2;
+                    spriteBatch.Draw(texture, arrowPosition + panelOffset + new Vector2(-24, -28 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
 
                     canInteract = true;
                 }

@@ -15,9 +15,10 @@ namespace OvermorrowMod.Quests
         public bool grabbedAxe = false;
         public bool showCampfireArrow = false;
 
+        // TODO: Make this not cringe by putting them in the Quest or Requirements or something
         private void RequirementCompleteAction(string id)
         {
-            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            DialoguePlayer dialoguePlayer = Player.GetModPlayer<DialoguePlayer>();
 
             switch (id)
             {
@@ -71,9 +72,7 @@ namespace OvermorrowMod.Quests
                             }
                         }
                     }
-
                 }
-
             }
 
             if (FindActiveQuest("GuideCampfire"))

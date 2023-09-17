@@ -38,19 +38,44 @@ namespace OvermorrowMod.Core
 
 
         #region Vanilla Code Adaptions
+        /// <summary>
+        /// Moves the npc to a Vector2.
+        /// The lower the turnResistance, the less time it takes to adjust direction.
+        /// Example: npc.MoveToPlayer(new Vector2(100, 0), 10, 14);
+        /// toPlayer makes the vector consider the player.Center for you.
+        /// </summary>
+        public static void FlyTo(this NPC npc, Vector2 targetPosition, float speed, float turnResistance = 10f, bool reverse = false)
+        {
+            Vector2 move = targetPosition - npc.Center;
+            float magnitude = Magnitude(move);
+            if (magnitude > speed)
+            {
+                move *= speed / magnitude;
+            }
+
+            move = ((reverse ? -npc.velocity : npc.velocity) * turnResistance + move) / (turnResistance + 1f);
+            magnitude = Magnitude(move);
+            if (magnitude > speed)
+            {
+                move *= speed / magnitude;
+            }
+
+            npc.velocity = reverse ? -move : move;
+        }
+
         // Adapted from Mod of Redemption
         /// <summary>
         /// 
         /// </summary>
         /// <param name="npc"></param>
-        /// <param name="vector">The position for the NPC to move towards</param>
+        /// <param name="targetPosition">The position for the NPC to move towards</param>
         /// <param name="moveInterval">The rate of increase for the NPC's speed</param>
         /// <param name="moveSpeed">The maximum movement speed of the NPC</param>
         /// <param name="maxJumpTilesX">The max number of tiles it can jump across</param>
         /// <param name="maxJumpTilesY">The max number of tiles it can jump over</param>
         /// <param name="jumpUpPlatforms">Whether or not the NPC can jump up platforms</param>
         /// <param name="target"></param>
-        public static void HorizontallyMove(this NPC npc, Vector2 vector, float moveInterval, float moveSpeed,
+        public static void HorizontallyMove(this NPC npc, Vector2 targetPosition, float moveInterval, float moveSpeed,
             int maxJumpTilesX, int maxJumpTilesY, bool jumpUpPlatforms, Entity target = null)
         {
             // If velocity is less than -1 or greater than 1...
@@ -61,7 +86,7 @@ namespace OvermorrowMod.Core
                     npc.velocity *= 0.8f;
                 }
             }
-            else if (npc.velocity.X < moveSpeed && vector.X > npc.Center.X) 
+            else if (npc.velocity.X < moveSpeed && targetPosition.X > npc.Center.X) 
             {
                 if (npc.confused && !npc.boss)
                 {
@@ -80,7 +105,7 @@ namespace OvermorrowMod.Core
                     }
                 }
             }
-            else if (npc.velocity.X > -moveSpeed && vector.X < npc.Center.X) 
+            else if (npc.velocity.X > -moveSpeed && targetPosition.X < npc.Center.X) 
             {
                 if (npc.confused && !npc.boss)
                 {

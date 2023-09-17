@@ -43,7 +43,7 @@ namespace OvermorrowMod.Content.UI.Tracker
                 BaseQuest quest = questState.Quest;
 
                 List<QuestObjective> objectives = new List<QuestObjective>();
-                //bool canTurnIn = quest.TryUpdateQuestRequirements(questPlayer, questState);
+
                 bool canTurnIn = true;
                 foreach (var task in quest.Requirements)
                 {
