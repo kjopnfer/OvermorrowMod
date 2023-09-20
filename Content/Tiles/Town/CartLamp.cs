@@ -1,9 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.NPCs.Carts;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -27,8 +27,8 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Reaper Buff Station Thing");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Reaper Buff Station Thing");
             AddMapEntry(Color.Red, name);
         }
     }
@@ -47,7 +47,6 @@ namespace OvermorrowMod.Content.Tiles.Town
                 {
                     if (counter != 420)
                     {
-                        Main.NewText(counter);
                         counter++;
                     }
                     break;
@@ -56,8 +55,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 
             if (counter == 420)
             {
-                Main.NewText("helo");
-                NPC.NewNPC(null, (int)LampPosition.X - 90, (int)LampPosition.Y, ModContent.NPCType<Cart>());
+                //NPC.NewNPC(null, (int)LampPosition.X - 90, (int)LampPosition.Y, ModContent.NPCType<Cart>());
 
                 counter++;
             }

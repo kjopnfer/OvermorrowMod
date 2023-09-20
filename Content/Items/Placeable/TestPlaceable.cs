@@ -8,10 +8,11 @@ namespace OvermorrowMod.Content.Items.Placeable
 {
     public class TestPlaceable : ModItem
     {
-        public override string Texture => AssetDirectory.Textures + "ChainKnife";
+        public override string Texture => AssetDirectory.Resprites + "ChainKnife";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test Placeable");
+            // DisplayName.SetDefault("Test Placeable");
+            // Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
         }
 
         public override void SetDefaults()
@@ -26,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Placeable
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 2000;
-            Item.createTile = TileType<PottedPlants>();
+            Item.createTile = TileType<SojournFlag>();
         }
     }
 }

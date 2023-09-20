@@ -23,20 +23,18 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
         {
             float result = 1;
 
-            foreach (Element incomingElement in incomingElements)
+            /*foreach (Element incomingElement in incomingElements)
             {
                 if (elementalWeakness.Contains(incomingElement))
                 {
-                    Main.NewText("dealing MORE DAMAGE");
                     result += 0.5f;
                 }
 
                 if (elementalResistance.Contains(incomingElement))
                 {
-                    Main.NewText("dealing LESS DAMAGE");
                     result -= 0.5f;
                 }
-            }
+            }*/
 
             return result < 0 ? 0 : result;
         }

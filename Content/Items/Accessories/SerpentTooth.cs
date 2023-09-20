@@ -1,4 +1,3 @@
-using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
 using Terraria;
 using Terraria.ID;
@@ -10,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Infernal Fang");
-            Tooltip.SetDefault("Increases all damage by 5");
+            // DisplayName.SetDefault("Infernal Fang");
+            // Tooltip.SetDefault("Increases all damage by {Increase:5}");
         }
 
         public override void SetDefaults()

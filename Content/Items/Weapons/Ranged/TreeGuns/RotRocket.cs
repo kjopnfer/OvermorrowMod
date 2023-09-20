@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rot Rocket");
-            Tooltip.SetDefault("'Or \"Rotket\" for short'");
+            // DisplayName.SetDefault("Rot Rocket");
+            // Tooltip.SetDefault("'Or \"Rotket\" for short'");
         }
 
         public override void SetDefaults()

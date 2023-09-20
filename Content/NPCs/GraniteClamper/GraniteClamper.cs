@@ -1,4 +1,4 @@
-using Terraria;
+/*using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Granite Clamper");
+            // DisplayName.SetDefault("Granite Clamper");
         }
         int timer = 0;
 
@@ -46,4 +46,4 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
 
 
     }
-}
+}*/

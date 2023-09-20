@@ -8,15 +8,15 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Stale Bread");
-            Tooltip.SetDefault("Increases max life by 10");
+            // DisplayName.SetDefault("Stale Bread");
+            // Tooltip.SetDefault("Increases max life by {Increase:10}");
         }
 
         public override void SetDefaults()
         {
             Item.accessory = true;
-            Item.width = 26;
-            Item.height = 24;
+            Item.width = 30;
+            Item.height = 30;
             Item.rare = ItemRarityID.Blue;
             Item.value = Item.sellPrice(0, 0, 15, 0);
         }

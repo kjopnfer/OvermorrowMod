@@ -11,8 +11,7 @@ namespace OvermorrowMod.Common.Players
             Eye = 1
         }
 
-        private bool holdPosition;
-        private int holdCounter = 0;
+        private int holdCounter;
         private Vector2 focusTo;
         private int holdCameraLength;
         private float towardsLength;
@@ -109,7 +108,6 @@ namespace OvermorrowMod.Common.Players
 
                     if (CameraCounter >= 1f)
                     {
-                        holdPosition = true;
                         MoveTowards = false;
 
                         CameraCounter = 0;

@@ -11,8 +11,8 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Erudite Damage Talisman");
-            Tooltip.SetDefault("Increases all damage by 2");
+            // DisplayName.SetDefault("Erudite Damage Talisman");
+            // Tooltip.SetDefault("Increases all damage by {Increase:2}");
         }
 
         public override void SetDefaults()

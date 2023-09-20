@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -22,9 +23,9 @@ namespace OvermorrowMod.Content.Tiles
             TileObjectData.newTile.WaterDeath = false;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 18 };
             TileObjectData.addTile(Type);
-            ModTranslation name = CreateMapEntryName();
+            LocalizedText name = CreateMapEntryName();
             MinPick = 45;
-            name.SetDefault("Hero's Altar");
+            // name.SetDefault("Hero's Altar");
             AddMapEntry(new Color(253, 221, 3), name);
         }
 

@@ -10,8 +10,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Erudite Ore");
-            Tooltip.SetDefault("Used to craft uncraftable items\n'A peculiar ore enriched with knowledge'");
+            // DisplayName.SetDefault("Erudite Ore");
+            // Tooltip.SetDefault("Used to craft uncraftable items\n'A peculiar ore enriched with knowledge'");
         }
 
         public override void SetDefaults()

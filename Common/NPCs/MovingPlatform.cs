@@ -7,7 +7,7 @@ namespace OvermorrowMod.Common.NPCs
 {
     public abstract class MovingPlatform : CollideableNPC
     {
-        public override void SetStaticDefaults() => DisplayName.SetDefault("");
+        // public override void SetStaticDefaults() => DisplayName.SetDefault("");
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override bool? CanBeHitByProjectile(Projectile projectile) => false;
         public override bool? CanBeHitByItem(Player player, Item item) => false;

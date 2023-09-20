@@ -13,7 +13,7 @@ public class Ember : CustomParticle
     public float maxTime = Main.rand.Next(4, 7) * 10;
     public override void OnSpawn()
     {
-        particle.customData[1] = Main.rand.NextFloat(0.2f, 0.3f);
+        particle.customData[1] = particle.customData[1] != 0 ? particle.customData[1] : Main.rand.NextFloat(0.2f, 0.3f);
         particle.alpha = 0f;
         particle.scale = particle.customData[1];
     }

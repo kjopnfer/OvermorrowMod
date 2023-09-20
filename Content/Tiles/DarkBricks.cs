@@ -12,7 +12,6 @@ namespace OvermorrowMod.Content.Tiles
             Main.tileMergeDirt[Type] = false;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.DarkBricks>();
             MineResist = 2f;
             AddMapEntry(new Color(79, 86, 97));
         }

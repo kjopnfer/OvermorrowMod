@@ -1,4 +1,4 @@
-using OvermorrowMod.Content.Items.Pets;
+/*using OvermorrowMod.Content.Items.Pets;
 using OvermorrowMod.Content.Projectiles.NPCs.Town;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +10,13 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.NPCs.Town
 {
     [AutoloadHead]
-    public class RuneSeller : ModNPC
+    public class RuneSeller : ModNPC // This NPC is outdated
     {
         public override string Texture => "OvermorrowMod/Content/NPCs/Town/RuneSeller";
 
-        /* public override bool Autoload(ref string name)
-        {
-            name = "Rune Merchant";
-            return Mod.Properties.Autoload;
-        } */
-
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rune Merchant");
+            // DisplayName.SetDefault("Rune Merchant");
             Main.npcFrameCount[NPC.type] = 26;
             NPCID.Sets.ExtraFramesCount[NPC.type] = 9;
             NPCID.Sets.AttackFrameCount[NPC.type] = 4;
@@ -47,7 +41,7 @@ namespace OvermorrowMod.Content.NPCs.Town
             AnimationType = NPCID.Guide;
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money)
+        public override bool CanTownNPCSpawn(int numTownNPCs)
         {
             // EoW or BoC
             return NPC.downedBoss2 && Main.player.Any(x => x.active);
@@ -78,21 +72,14 @@ namespace OvermorrowMod.Content.NPCs.Town
             return Main.rand.Next(dialogue);
         }
 
-        public override void SetupShop(Chest shop, ref int nextSlot)
+        public override void AddShops()
         {
-            shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
-            nextSlot++;
+            base.AddShops();
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
-            if (firstButton)
-            {
-                shop = true;
-            }
+           
         }
 
         public override void SetChatButtons(ref string button, ref string button2)
@@ -129,4 +116,4 @@ namespace OvermorrowMod.Content.NPCs.Town
             randomOffset = 2f;
         }
     }
-}
+}*/

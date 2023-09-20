@@ -14,7 +14,7 @@ using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Quests
 {
-    public class QuestPlayer : ModPlayer
+    public partial class QuestPlayer : ModPlayer
     {
         public string PlayerUUID { get; private set; } = Guid.NewGuid().ToString();
 
@@ -35,6 +35,17 @@ namespace OvermorrowMod.Quests
             Quests.State.AddQuest(this, quest);
         }
 
+        /// <summary>
+        /// Checks whether the player has completed the given quest before
+        /// </summary>
+        /// <typeparam name="ModQuest"></typeparam>
+        /// <returns></returns>
+        public bool HasCompletedQuest<ModQuest>() where ModQuest : BaseQuest
+        {
+            var completedQuests = Quests.State.GetPerPlayerQuests(this).Where(q => q.Quest is ModQuest).Where(q => q.Completed);
+            return completedQuests.Count() > 0;
+        }
+
         public BaseQuestState QuestByNPC(int npcId)
         {
             return CurrentQuests.FirstOrDefault(q => npcId == q.Quest.QuestGiver);
@@ -52,6 +63,21 @@ namespace OvermorrowMod.Quests
             quest.Quest.CompleteQuest(Player, true);
         }
 
+        /// <summary>
+        /// For choose your own reward type turn-ins
+        /// </summary>
+        public void CompleteQuest(string questId, string rewardIndex)
+        {
+            var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
+            // Should not happen!
+            if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
+            // Send message to server if the quest is being completed for the current player
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == Player)
+                NetworkMessageHandler.Quests.CompleteQuest(-1, -1, questId);
+
+            quest.Quest.CompleteQuest(Player, true, rewardIndex);
+        }
+
         public void TickQuestRequirements(string questId)
         {
             var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
@@ -65,11 +91,17 @@ namespace OvermorrowMod.Quests
         {
             tag["questStates"] = Quests.State.GetPerPlayerQuests(this).ToList();
             tag["PlayerUUID"] = PlayerUUID;
+            //tag["grabbedAxe"] = grabbedAxe;
+            //tag["showCampfireArrow"] = showCampfireArrow;
+
             base.SaveData(tag);
         }
 
         public override void LoadData(TagCompound tag)
         {
+            grabbedAxe = tag.GetBool("grabbedAxe");
+            showCampfireArrow = tag.GetBool("showCampfireArrow");
+
             PlayerUUID = tag.GetString("PlayerUUID");
             if (PlayerUUID == null) PlayerUUID = Guid.NewGuid().ToString();
 
@@ -80,25 +112,24 @@ namespace OvermorrowMod.Quests
         private int markerCounter = 0;
         public override void PreUpdate()
         {
-            foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(this))
+            UpdateTravelMarkers();
+            AutoCompleteRequirements();
+        }
+
+        // TODO: Why did I write it like this, uncringe this
+        /// <summary>
+        /// Determines whether the player has an active Quest of the specified name.
+        /// <para>Based off of the internal class name for the Quest.</para>
+        /// </summary>
+        public bool FindActiveQuest(string name)
+        {
+            foreach (var quest in CurrentQuests)
             {
-                if (!req.IsCompleted)
-                {
-                    if (markerCounter % 30 == 0)
-                    {
-                        Particle.CreateParticle(Particle.ParticleType<Pulse>(), (req.Requirement as TravelRequirement).Location * 16f,
-                            Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
-                    }
-
-                    if (Player.active && Player.Distance((req.Requirement as TravelRequirement).Location * 16) < 50)
-                    {
-                        req.IsCompleted = true;
-                    }
-                }
+                string questID = quest.Quest.QuestID.Split("OvermorrowMod.Quests.ModQuests.")[1];
+                if (questID == name) return true;
             }
-            markerCounter++;
 
-            base.PreUpdate();
+            return false;
         }
     }
 }

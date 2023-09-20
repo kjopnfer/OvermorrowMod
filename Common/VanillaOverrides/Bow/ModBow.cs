@@ -12,7 +12,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test Held Bow");
+            // DisplayName.SetDefault("Test Held Bow");
         }
 
         public virtual void SafeSetDefaults() { }
@@ -44,7 +44,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Gamer Bow");
+            // DisplayName.SetDefault("The Gamer Bow");
+            // Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
         }
 
         public override void SafeSetDefaults()

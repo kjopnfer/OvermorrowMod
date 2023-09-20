@@ -13,6 +13,10 @@ using Terraria.UI;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.TilePiles;
+using System;
+
+using static Terraria.ModLoader.ModContent;
+using OvermorrowMod.Content.Tiles.Town;
 
 namespace OvermorrowMod.Common
 {
@@ -49,6 +53,17 @@ namespace OvermorrowMod.Common
             }
         }
 
+        public static int SojournTiles;
+        public override void TileCountsAvailable(ReadOnlySpan<int> tileCounts)
+        {
+            SojournTiles = tileCounts[TileType<CastleBrick>()] + tileCounts[TileType<DarkCastleBrick>()] + tileCounts[TileType<CastlePlatform>()] + tileCounts[TileType<CastleRoof>()];
+        }
+
+        public override void ResetNearbyTileEffects()
+        {
+            SojournTiles = 0;
+        }
+
         public override void PostDrawTiles()
         {
             SpriteBatch sb = Main.spriteBatch;
@@ -57,7 +72,8 @@ namespace OvermorrowMod.Common
             //sb.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * proj.ai[1]);
             //sb.End();
 
-            foreach (NPC npc in Main.npc)
+            // Screen Blackout Effect
+            /*foreach (NPC npc in Main.npc)
             {
                 if (npc.type == NPCID.EyeofCthulhu && npc.active)
                 {
@@ -70,7 +86,7 @@ namespace OvermorrowMod.Common
                     //Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, 0, Vector2.Zero);
                     //sb.End();
                 }
-            }
+            }*/
 
             base.PostDrawTiles();
         }

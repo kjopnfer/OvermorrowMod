@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
@@ -87,4 +87,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, drawRectangle, Color.White * progress, Projectile.rotation, drawRectangle.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
         }
     }
-}
+}*/

@@ -28,7 +28,6 @@ namespace OvermorrowMod.Content.Tiles.Underground
 
             MinPick = 55;
             MineResist = 3f;
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.CrunchyStone>();
 
             AddMapEntry(new Color(79, 86, 97));
         }

@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Content.NPCs.Shades;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -89,14 +88,14 @@ namespace OvermorrowMod.Common
             ShadePositions.Clear();
 
             // Save active NPCs and their current positions into the list
-            foreach (NPC npc in Main.npc)
+            /*foreach (NPC npc in Main.npc)
             {
                 if (npc.active && npc != null && npc.ModNPC is ShadeOrb)
                 {
                     SavedShades.Add(npc.type);
                     ShadePositions.Add(npc.position);
                 }
-            }
+            }*/
             #endregion
 
             tag["downed"] = downed;

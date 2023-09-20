@@ -1,11 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.NPCs.RockCrawler;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -28,14 +28,14 @@ namespace OvermorrowMod.Content.Tiles.Underground
 
             DustType = DustID.Stone;
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Crawler Egg");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Crawler Egg");
             AddMapEntry(new Color(49, 201, 221), name);
         }
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            NPC.NewNPC(new EntitySource_TileBreak(i, j), i * 16, j * 16, ModContent.NPCType<RockCrawler>());
+            //NPC.NewNPC(new EntitySource_TileBreak(i, j), i * 16, j * 16, ModContent.NPCType<RockCrawler>());
             SoundEngine.PlaySound(SoundID.NPCDeath1);
         }
 

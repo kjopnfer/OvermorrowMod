@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Soulfire");
+            // DisplayName.SetDefault("Soulfire");
             Main.projFrames[Projectile.type] = 4;
         }
 

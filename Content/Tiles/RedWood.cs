@@ -13,7 +13,6 @@ namespace OvermorrowMod.Content.Tiles
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
 
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.RedWood>();
             MineResist = 2f;
             AddMapEntry(new Color(92, 64, 51));
         }

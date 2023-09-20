@@ -10,7 +10,7 @@ using Terraria.DataStructures;
 
 namespace OvermorrowMod.Content.NPCs.Mercenary
 {
-    public partial class Mercenary : ModNPC
+    public abstract partial class Mercenary : ModNPC
     {
         #region Adjustable Values
         /// <summary>
@@ -137,7 +137,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public void ExtendTimer(int minutes) { hireTime += minutes + 1; hireTimer += 3600 * minutes; }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault(MercenaryName);
+            // DisplayName.SetDefault(MercenaryName);
             Main.npcFrameCount[NPC.type] = MaxFrames();
         }
 
@@ -683,13 +683,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             if (hiredBy != -1) button2 = $"{hireTime} minutes";
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             if (firstButton)
             {
                 //Hires (if possible) and extends the hired duration by 10 minutes if a gold is spent
                 Player player = Main.LocalPlayer;
-                if (player.CanBuyItem(10000))
+                if (player.CanAfford(10000))
                 {
                     if (hiredBy == -1)
                         hiredBy = player.whoAmI;

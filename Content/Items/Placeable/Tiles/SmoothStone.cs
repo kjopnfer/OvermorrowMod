@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Tiles
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gabbro");
+            // DisplayName.SetDefault("Gabbro");
         }
 
         public override void SetDefaults()

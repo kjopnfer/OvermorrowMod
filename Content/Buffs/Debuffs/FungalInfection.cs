@@ -8,15 +8,10 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fungal Infection");
+            // DisplayName.SetDefault("Fungal Infection");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = false;
             Main.buffNoSave[Type] = true;
-        }
-
-        public override void Update(NPC npc, ref int buffIndex)
-        {
-            npc.GetGlobalNPC<OvermorrowGlobalNPC>().FungiInfection = true;
         }
     }
 }

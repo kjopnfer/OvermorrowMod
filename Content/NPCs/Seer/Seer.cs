@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Core;
@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.NPCs.Seer
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Seer");
+            // DisplayName.SetDefault("Seer");
 
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
             {
@@ -104,7 +104,8 @@ namespace OvermorrowMod.Content.NPCs.Seer
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.Player.ZoneOverworldHeight && !Main.dayTime ? SpawnCondition.OverworldNightMonster.Chance * 0.17f : 0f;
+            return 0f;
+            //return spawnInfo.Player.ZoneOverworldHeight && !Main.dayTime ? SpawnCondition.OverworldNightMonster.Chance * 0.17f : 0f;
         }
     }
 
@@ -160,4 +161,4 @@ namespace OvermorrowMod.Content.NPCs.Seer
             return false;
         }
     }
-}
+}*/

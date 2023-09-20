@@ -8,10 +8,10 @@ namespace OvermorrowMod.Common
     {
         public override bool? Active(InfoDisplay currentDisplay)
         {
-            foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active)
+            /*foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active)
             {
                 return false;
-            }
+            }*/
            
             return base.Active(currentDisplay);
         }

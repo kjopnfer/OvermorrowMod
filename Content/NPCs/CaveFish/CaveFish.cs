@@ -1,4 +1,4 @@
-using OvermorrowMod.Content.Biomes;
+/*using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Items.Accessories;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.CaveFish
         protected bool bounces = true;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sullen Angler");
+            // DisplayName.SetDefault("Sullen Angler");
             Main.npcFrameCount[NPC.type] = 4;
         }
 
@@ -257,4 +257,4 @@ namespace OvermorrowMod.Content.NPCs.CaveFish
             return spawnInfo.Player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.05f : 0f;
         }
     }
-}
+}*/

@@ -31,7 +31,6 @@ namespace OvermorrowMod.Content.Tiles.Underground
 
             MinPick = 55;
             MineResist = 2f;
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.SmoothStone>();
 
             AddMapEntry(new Color(100, 83, 83));
         }

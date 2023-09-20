@@ -1,4 +1,4 @@
-﻿using OvermorrowMod.Quests.Requirements;
+﻿/*using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
 using System.Linq;
 using Terraria;
@@ -52,4 +52,4 @@ namespace OvermorrowMod.Quests.ModQuests
             return npc == null || npc.homeless;
         }
     }
-}
+}*/

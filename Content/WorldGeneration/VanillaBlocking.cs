@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.NPCs.Shades;
 using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.Underground;
 using OvermorrowMod.Core;
@@ -22,7 +21,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 {
     public class VanillaBlocking : ModSystem
     {
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sand"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
@@ -79,6 +78,15 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
             PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Oasis"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Living Trees"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Temple"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
             int DungeonIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dungeon"));

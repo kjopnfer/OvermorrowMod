@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.Rewards;
 using OvermorrowMod.Quests.State;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,6 +78,12 @@ namespace OvermorrowMod.Quests
             }
         }
 
+        private void GiveRewards(Player player, string rewardIndex)
+        {
+            var choice = Rewards.OfType<ChooseReward>().Where(reward => reward.ID == rewardIndex).ToList();
+            choice[0].Give(player);
+        }
+
         /// <summary>
         /// Resets the kill count of the NPC within the Dictionary after completion
         /// </summary>
@@ -100,8 +107,23 @@ namespace OvermorrowMod.Quests
             {
                 ResetEffects(player);
                 GiveRewards(player);
-                Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);
             }
+            Quests.State.CompleteQuest(modPlayer, this);
+        }
+
+        public void CompleteQuest(Player player, bool success, string rewardIndex)
+        {
+            var modPlayer = player.GetModPlayer<QuestPlayer>();
+            if (Quests.State.HasCompletedQuest(modPlayer, this)) success = false;
+            var state = Quests.State.GetActiveQuestState(modPlayer, this);
+            if (state == null) success = false;
+
+            if (success) // Use a different version which takes the index
+            {
+                ResetEffects(player);
+                GiveRewards(player, rewardIndex);
+            }
+
             Quests.State.CompleteQuest(modPlayer, this);
         }
 

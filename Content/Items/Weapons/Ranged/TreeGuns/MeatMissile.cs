@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Meat Missile");
+            // DisplayName.SetDefault("Meat Missile");
         }
 
         public override void SetDefaults()

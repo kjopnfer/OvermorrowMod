@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Tiles.Ambient
@@ -9,8 +10,8 @@ namespace OvermorrowMod.Content.Tiles.Ambient
     {
         public override void SetStaticDefaults()
         {
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Blue Crystal");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Blue Crystal");
             Main.tileSolid[Type] = false;
             Main.tileSpelunker[Type] = true;
             Main.tileBlockLight[Type] = true;

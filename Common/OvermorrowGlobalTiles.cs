@@ -15,7 +15,8 @@ namespace OvermorrowMod.Common
             base.PlaceInWorld(i, j, type, item);
         }
 
-        public override bool Drop(int i, int j, int type)
+        // This is outdated
+        /*public override void Drop(int i, int j, int type)
         {
             SharedAIState.State2x2.Invalidate(i, j);
             if (Main.netMode != NetmodeID.MultiplayerClient && !WorldGen.noTileActions && !WorldGen.gen)
@@ -53,8 +54,6 @@ namespace OvermorrowMod.Common
                     }
                 }
             }
-
-            return base.Drop(i, j, type);
-        }
+        }*/
     }
 }

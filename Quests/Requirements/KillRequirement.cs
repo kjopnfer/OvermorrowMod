@@ -10,20 +10,22 @@ namespace OvermorrowMod.Quests.Requirements
     public class KillRequirement : IQuestRequirement
     {
         public List<int> NPCTypes { get; }
-        public int TargetNumber { get; }
+        public readonly int amount;
+        public readonly string description;
 
         public string ID { get; }
 
-        public KillRequirement(List<int> type, int amount, string id)
+        public KillRequirement(List<int> type, int amount, string description, string id)
         {
             if (amount <= 0) throw new ArgumentException($"Invalid amount: {amount}");
             NPCTypes = type;
-            TargetNumber = amount;
+            this.amount = amount;
+            this.description = description;
             ID = id;
         }
 
         // I don't know how to show each of the required types, lol
-        public string Description => $"#{TargetNumber} from any of {string.Join(", ", NPCTypes.Select(typ => Lang.GetNPCNameValue(typ)))}";
+        public string Description => $"#{amount} from any of {string.Join(", ", NPCTypes.Select(typ => Lang.GetNPCNameValue(typ)))}";
 
         public bool TryCompleteRequirement(QuestPlayer player, BaseQuestState state)
         {
@@ -42,6 +44,19 @@ namespace OvermorrowMod.Quests.Requirements
             return new KillRequirementState(this);
         }
 
+        public int GetCurrentKilled(QuestPlayer player, BaseQuestState state)
+        {
+            int stack = 0;
+
+            var reqState = state.GetRequirementState(this) as KillRequirementState;
+            foreach (int id in NPCTypes)
+            {
+                if (reqState.NumKilled.TryGetValue(id, out int value)) stack += value;
+            }
+
+            return stack;
+        }
+
         public bool CanHandInRequirement(QuestPlayer player, BaseQuestState state)
         {
             // Since this is completed by an external trigger, it can never be handed in.
@@ -52,7 +67,7 @@ namespace OvermorrowMod.Quests.Requirements
         {
             var reqState = state.GetRequirementState(this) as KillRequirementState;
 
-            int remaining = TargetNumber;
+            int remaining = amount;
             foreach (int id in NPCTypes)
             {
                 if (reqState.NumKilled.TryGetValue(id, out int value)) remaining -= value;

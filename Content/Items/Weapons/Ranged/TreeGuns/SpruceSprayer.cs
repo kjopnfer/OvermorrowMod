@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Spruce Sprayer");
-            Tooltip.SetDefault("'This wasn't what I meant by wanting to spruce things up'");
+            // DisplayName.SetDefault("Spruce Sprayer");
+            // Tooltip.SetDefault("'This wasn't what I meant by wanting to spruce things up'");
         }
         public override void SetDefaults()
         {

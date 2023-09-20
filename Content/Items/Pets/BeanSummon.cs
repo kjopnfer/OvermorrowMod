@@ -12,8 +12,8 @@ namespace OvermorrowMod.Content.Items.Pets
         public override void SetStaticDefaults()
         {
             // DisplayName and Tooltip are automatically set from the .lang files, but below is how it is done normally.
-            DisplayName.SetDefault("Keepsake Chain");
-            Tooltip.SetDefault("Summons a miniature Rune Merchant to travel with you");
+            // DisplayName.SetDefault("Keepsake Chain");
+            // Tooltip.SetDefault("Summons a miniature Rune Merchant to travel with you");
         }
 
         public override void SetDefaults()

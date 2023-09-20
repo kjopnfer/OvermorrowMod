@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
@@ -43,8 +44,8 @@ namespace OvermorrowMod.Content.Tiles.Underground
             //animationFrameHeight = 126;
             MinPick = 1;
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Troll Toll");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Troll Toll");
             AddMapEntry(new Color(24, 23, 23), name);
         }
 
@@ -277,8 +278,6 @@ namespace OvermorrowMod.Content.Tiles.Underground
             // If the tunnel's ID is 0, then the next tunnel is 1. Their paired tunnel is the previous tunnel, so ID - 1.
             // Therefore, for each even tunnel, make it ID - 1, and then for each odd tunnel make it ID + 1
             te.PairedTunnel = TrollWorld.TunnelCounter % 2 == 0 ? te.TunnelID - 1 : te.TunnelID + 1;
-
-            Main.NewText("placed tunnel, my id is:" + te.TunnelID + " my pair is:" + te.PairedTunnel);
 
             return id;
         }

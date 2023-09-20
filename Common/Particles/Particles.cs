@@ -84,21 +84,28 @@ namespace OvermorrowMod.Common.Particles
 
     public class Smoke : CustomParticle
     {
-        float maxTime = 420;
+        float maxTime = 60;
+        int smokeVariant = 0;
+        float scaleRate = 0.005f;
+
+        // customData[0] = startScale
+        // customData[1] = maxTime
+        // customData[2] = alpha
+        // customData[3] = scaleRate
+
         public override void OnSpawn()
         {
-            particle.color = Color.Lerp(Color.Purple, Color.Violet, particle.scale);
-            particle.customData[0] = Main.rand.Next(3, 6);
-            if (Main.rand.NextBool(3))
-            {
-                particle.customData[0] *= 2;
-            }
+            maxTime = 30;
+            if (particle.customData[1] != 0) maxTime = particle.customData[1];
+            if (particle.customData[3] != 0) scaleRate = particle.customData[3];
 
             particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
-            particle.scale = 0;
+            particle.scale = particle.customData[0];
+            smokeVariant = Main.rand.Next(1, 8);
         }
         public override void Update()
         {
+
             if (particle.activeTime > maxTime) particle.Kill();
             /*if (particle.activeTime < 10)
             {
@@ -113,23 +120,25 @@ namespace OvermorrowMod.Common.Particles
                 particle.alpha = 1f - progress;
             }*/
 
-            float progress = (float)(particle.activeTime) / maxTime;
+            float progress = particle.activeTime / (float)maxTime;
             //particle.scale = MathHelper.Lerp(0f, particle.customData[0], progress);
-            particle.scale += 0.05f;
+            particle.scale += scaleRate;
             particle.alpha = 1f - progress;
 
-            particle.rotation += 0.06f;
-            particle.velocity.Y -= 0.05f;
+            particle.rotation += 0.04f;
+            particle.velocity.Y -= 0.03f;
         }
+
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Reload(BlendState.Additive);
+            float alpha = particle.customData[2] != 0 ? particle.customData[2] : 1;
 
-            Texture2D texture = Particle.GetTexture(particle.type);
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "smoke_0" + smokeVariant).Value;
+            //Color color = Color.Lerp(Color.Orange, Color.Black, particle.activeTime / maxTime);
+            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha * alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
 
-            spriteBatch.Reload(BlendState.AlphaBlend);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
         }
     }
     public class Smoke2 : CustomParticle
@@ -230,38 +239,6 @@ namespace OvermorrowMod.Common.Particles
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-        }
-    }
-
-    public class Orb : CustomParticle
-    {
-        float maxTime = 120;
-        public override void OnSpawn()
-        {
-            particle.color = Color.Lerp(Color.Yellow, Color.Orange, particle.scale);
-
-            particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
-            maxTime = particle.customData[0];
-        }
-        public override void Update()
-        {
-            if (particle.activeTime > maxTime) particle.Kill();
-            float progress = (float)(particle.activeTime) / maxTime;
-
-            particle.alpha = 1f - progress;
-            particle.rotation += 0.06f;
-            particle.velocity *= 0.98f;
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Reload(BlendState.Additive);
-
-            Texture2D texture = Particle.GetTexture(particle.type);
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale / 2, SpriteEffects.None, 0f);
-
-            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
 
@@ -540,7 +517,7 @@ namespace OvermorrowMod.Common.Particles
         }
     }
 
-    public class Shockwave : CustomParticle
+    /*public class Shockwave : CustomParticle
     {
         public override string Texture => AssetDirectory.Textures + "Perlin";
         public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
@@ -589,5 +566,5 @@ namespace OvermorrowMod.Common.Particles
             // restart spritebatch again so effect doesnt continue to be applied
             spriteBatch.Reload(SpriteSortMode.Deferred);
         }
-    }
+    }*/
 }

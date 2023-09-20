@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Popup>
-	<Text npcPortrait="Guide" drawTime="120" displayTime="120" bracketColorR="255" bracketColorG="0" bracketColorB="0">[I am in misery.]</Text>
-	<Text npcPortrait="Guide" drawTime="120" displayTime="120" bracketColorR="255" bracketColorG="0" bracketColorB="0">[There ain't nobody who can comfort me.]</Text>
-	<Text npcPortrait="Guide" drawTime="120" displayTime="120" bracketColorR="255" bracketColorG="0" bracketColorB="0">[Why won't you answer me?]</Text>
-</Popup>

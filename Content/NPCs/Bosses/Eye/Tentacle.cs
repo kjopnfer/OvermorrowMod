@@ -170,7 +170,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool ShouldUpdatePosition() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Color Tentacle");
+            // DisplayName.SetDefault("Color Tentacle");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 

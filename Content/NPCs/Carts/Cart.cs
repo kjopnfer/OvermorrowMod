@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,10 +15,10 @@ namespace OvermorrowMod.Content.NPCs.Carts
     {
         public List<Item> shopItems = new List<Item>();
         public override bool CheckActive() => false;
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money) => false;
+        public override bool CanTownNPCSpawn(int numTownNPCs) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Merchant Cart");
+            // DisplayName.SetDefault("Merchant Cart");
             NPCID.Sets.ActsLikeTownNPC[Type] = true;
         }
 
@@ -39,12 +39,9 @@ namespace OvermorrowMod.Content.NPCs.Carts
             button = Language.GetTextValue("LegacyInterface.28");
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
-            if (firstButton)
-            {
-                shop = true;
-            }
+            
         }
 
         public override string GetChat()
@@ -68,17 +65,6 @@ namespace OvermorrowMod.Content.NPCs.Carts
         public void SetupInventory()
         {
             var itemIDs = new List<int>();
-
-            // For each slot we add a switch case to determine what should go in that slot
-            /*switch (Main.rand.Next(2))
-            {
-                case 0:
-                    itemIds.Add(ModContent.ItemType<ExampleItem>());
-                    break;
-                default:
-                    itemIds.Add(ModContent.ItemType<ExampleSoul>());
-                    break;
-            }*/
 
             itemIDs.Add(ItemID.Banana);
             itemIDs.Add(ItemID.Banana);
@@ -107,16 +93,13 @@ namespace OvermorrowMod.Content.NPCs.Carts
             shopItems = tag.Get<List<Item>>("shopItems");
         }
 
-        public override void SetupShop(Chest shop, ref int nextSlot)
+        public override void AddShops()
         {
-            shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ItemID.Banana);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ItemID.AcidDye);
-            nextSlot++;
+            var shop = new NPCShop(Type)
+                .Add(ItemID.ChainKnife)
+                .Add(ItemID.Banana)
+                .Add(ItemID.AcidDye);
         }
     }
 }
+*/

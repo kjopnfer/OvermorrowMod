@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override string Texture => AssetDirectory.Boss + "Eye/EyeStalk";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test");
+            // DisplayName.SetDefault("Test");
         }
 
         public override void SetDefaults()
@@ -144,4 +144,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             return base.PreDraw(ref lightColor);
         }
     }
-}
+}*/
