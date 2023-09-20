@@ -53,7 +53,7 @@ namespace OvermorrowMod.Common
 
             Terraria.On_Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
             Main.OnPreDraw += TileOverlay.Main_OnPreDraw;
-            Terraria.On_Main.Update += TileOverlay.Main_Update;
+            //Terraria.On_Main.Update += TileOverlay.Main_Update;
         }
 
         public static void Unload()
@@ -96,7 +96,7 @@ namespace OvermorrowMod.Common
 
             Terraria.On_Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
             Main.OnPreDraw -= TileOverlay.Main_OnPreDraw;
-            Terraria.On_Main.Update -= TileOverlay.Main_Update;
+            //Terraria.On_Main.Update -= TileOverlay.Main_Update;
 
             TileOverlay.projTarget = null;
         }
