@@ -252,21 +252,21 @@ namespace OvermorrowMod.Content.WorldGeneration
             var logger = OvermorrowModFile.Instance.Logger;
 
             float maxHeightOffset = -5;
-            float maxDepthOffset = 20;
+            float maxDepthOffset = 5;
 
-            // Base Terrain
+            // Surface Terrain
             FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
             noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
             noise.SetFractalOctaves(8);
             noise.SetFractalLacunarity(2f);
 
-            noise.SetFrequency(0.015f);
+            noise.SetFrequency(0.025f);
 
             FastNoiseLite noise2 = new FastNoiseLite(WorldGen._genRandSeed);
             noise2.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
             noise2.SetFractalOctaves(2);
             noise2.SetFractalLacunarity(3f);
-            noise2.SetFrequency(0.005f);
+            noise2.SetFrequency(0.025f);
 
             int seed = Main.rand.Next(-10000, 10000);
             float heightMultiplier = 2f;
@@ -276,9 +276,10 @@ namespace OvermorrowMod.Content.WorldGeneration
                 int yPosition = (int)(Main.worldSurface - 45 + yOffset);
 
                 float height = noise.GetNoise((x + seed) * 0.005f, seed * 0.005f) * heightMultiplier;
-                for (int y = yPosition; y < Main.maxTilesY; y++)
+                for (int y = yPosition; y < Main.worldSurface; y++)
                 {
-                    if (noise.GetNoise(x, y) >= noise2.GetNoise(x, y)) WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
+                    //if (noise.GetNoise(x, y) >= noise2.GetNoise(x, y)) WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
                 }
             }
 
