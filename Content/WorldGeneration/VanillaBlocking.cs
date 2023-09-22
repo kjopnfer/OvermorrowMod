@@ -243,18 +243,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-        private void TestGenerateTerrainBase(GenerationProgress progress, GameConfiguration config)
+        private void GenerateSlopes()
         {
-            //RemoveDirt();
+            // Amplitude
+            float maxHeightOffset = -15;
+            float maxDepthOffset = 15;
 
-            // TODO: MAKE AREAS FLATTER
-
-            var logger = OvermorrowModFile.Instance.Logger;
-
-            float maxHeightOffset = -5;
-            float maxDepthOffset = 5;
-
-            // Surface Terrain
             FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
             noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
             noise.SetFractalOctaves(8);
@@ -266,7 +260,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             noise2.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
             noise2.SetFractalOctaves(2);
             noise2.SetFractalLacunarity(3f);
-            noise2.SetFrequency(0.025f);
+            noise2.SetFrequency(0.001f);
 
             int seed = Main.rand.Next(-10000, 10000);
             float heightMultiplier = 2f;
@@ -282,16 +276,60 @@ namespace OvermorrowMod.Content.WorldGeneration
                     //if (noise.GetNoise(x, y) >= noise2.GetNoise(x, y)) WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
                 }
             }
+        }
+
+        private void TestGenerateTerrainBase(GenerationProgress progress, GameConfiguration config)
+        {
+            //RemoveDirt();
+
+            // TODO: MAKE AREAS FLATTER
+
+            var logger = OvermorrowModFile.Instance.Logger;
+
+            
+
+            // Surface Terrain
+            FastNoiseLite amplitudeNoise = new FastNoiseLite(WorldGen._genRandSeed);
+            amplitudeNoise.SetNoiseType(FastNoiseLite.NoiseType.Value);
+            amplitudeNoise.SetFractalOctaves(8);
+            amplitudeNoise.SetFractalLacunarity(2f);
+            amplitudeNoise.SetFrequency(0.015f);
+
+            FastNoiseLite noise2 = new FastNoiseLite(WorldGen._genRandSeed);
+            noise2.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+            noise2.SetFractalOctaves(5);
+            noise2.SetFractalLacunarity(4f);
+            noise2.SetFrequency(0.005f);
+            noise2.SetFractalGain(0.1f);
+            //noise2.SetDomainWarpType(FastNoiseLite.DomainWarpType.BasicGrid);
+            //noise2.SetDomainWarpAmp(2);
+
+            //int maxHeightOffset = 0;
+            //int maxDepthOffset = 25;
+            int maxAmplitude = 25;
+            for (int x = 0; x < Main.maxTilesX; x++)
+            {
+                int yOffset = (int)MathHelper.Lerp(0, maxAmplitude, Math.Abs(amplitudeNoise.GetNoise(x, 0)));
+                int yPosition = (int)(Main.worldSurface - 45 + yOffset);
+
+                for (int y = yPosition; y < Main.worldSurface; y++)
+                {
+                    WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
+                    //if (noise2.GetNoise(x, y) > 0) WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
+                }
+            }
+            //GenerateSlopes();
+
 
             return;
             //noise.SetFrequency(0.015f);
-            noise.SetFractalGain(2.5f);
-            noise.SetFractalOctaves(8);
-            noise.SetFractalLacunarity(2f);
+            //noise.SetFractalGain(2.5f);
+            //noise.SetFractalOctaves(8);
+            //noise.SetFractalLacunarity(2f);
             //noise.SetFractalWeightedStrength(1f);
 
             // Rolling hill type shit
-            for (int i = 0; i < Main.maxTilesX; i++)
+            /*for (int i = 0; i < Main.maxTilesX; i++)
             {
                 //WorldGen.PlaceTile(i, (int)(200 + MathHelper.Lerp(-100, 100, noise.GetNoise(i, 0))), TileID.ObsidianBrick);
                 int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0));
