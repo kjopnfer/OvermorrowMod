@@ -278,48 +278,77 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-        private void TestGenerateTerrainBase(GenerationProgress progress, GameConfiguration config)
+        private float EaseInElastic(float x)
         {
-            //RemoveDirt();
+            const float c4 = (float)((2 * Math.PI) / 3);
 
-            // TODO: MAKE AREAS FLATTER
+            return (float)(x == 0
+              ? 0
+              : x == 1
+              ? 1
+              : -Math.Pow(2, 10 * x - 10) * Math.Sin((x * 10 - 10.75) * c4));
+        }
 
-            var logger = OvermorrowModFile.Instance.Logger;
-
-            
-
+        // Peaks are rounded, general terrain is smoother
+        private void GenerateSurface()
+        {
             // Surface Terrain
             FastNoiseLite amplitudeNoise = new FastNoiseLite(WorldGen._genRandSeed);
             amplitudeNoise.SetNoiseType(FastNoiseLite.NoiseType.Value);
             amplitudeNoise.SetFractalOctaves(8);
             amplitudeNoise.SetFractalLacunarity(2f);
-            amplitudeNoise.SetFrequency(0.015f);
+            amplitudeNoise.SetFrequency(0.01f);
 
             FastNoiseLite noise2 = new FastNoiseLite(WorldGen._genRandSeed);
-            noise2.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-            noise2.SetFractalOctaves(5);
+            noise2.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
+            noise2.SetFractalOctaves(6);
             noise2.SetFractalLacunarity(4f);
-            noise2.SetFrequency(0.005f);
+            noise2.SetFrequency(0.025f);
             noise2.SetFractalGain(0.1f);
-            //noise2.SetDomainWarpType(FastNoiseLite.DomainWarpType.BasicGrid);
-            //noise2.SetDomainWarpAmp(2);
+            noise2.SetDomainWarpType(FastNoiseLite.DomainWarpType.BasicGrid);
+            noise2.SetDomainWarpAmp(2);
 
             //int maxHeightOffset = 0;
             //int maxDepthOffset = 25;
-            int maxAmplitude = 25;
+            //int maxAmplitude = 25;
             for (int x = 0; x < Main.maxTilesX; x++)
             {
-                int yOffset = (int)MathHelper.Lerp(0, maxAmplitude, Math.Abs(amplitudeNoise.GetNoise(x, 0)));
-                int yPosition = (int)(Main.worldSurface - 45 + yOffset);
+                int maxAmplitude = (int)MathHelper.Lerp(25, 75, Math.Abs(noise2.GetNoise(x, 0)));
+                //int whatever = (int)MathHelper.Lerp(-5, 0, Math.Abs(noise2.GetNoise(x + 8, 0)));
+                int whatever = 0;
 
-                for (int y = yPosition; y < Main.worldSurface; y++)
+                int yOffset = (int)MathHelper.Lerp(0, maxAmplitude, Math.Abs(amplitudeNoise.GetNoise(x, 0)));
+                int yPosition = (int)(Main.worldSurface - 45 - yOffset);
+
+                for (int y = yPosition + whatever; y < Main.worldSurface; y++)
                 {
                     WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
                     //if (noise2.GetNoise(x, y) > 0) WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
                 }
             }
-            //GenerateSlopes();
+        }
 
+        private void TestGenerateTerrainBase(GenerationProgress progress, GameConfiguration config)
+        {
+            //RemoveDirt();
+            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
+            noise.SetFractalOctaves(6);
+            noise.SetFractalLacunarity(4f);
+            noise.SetFrequency(0.025f);
+            noise.SetFractalGain(0.1f);
+
+            var logger = OvermorrowModFile.Instance.Logger;
+
+            Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.worldSurface);
+            Vector2 endPoint = startPoint + new Vector2(150, 150);
+
+            //float degrees = MathHelper.Lerp(-90, 90, noise.GetNoise();
+            WorldGen.PlaceTile((int)startPoint.X, (int)startPoint.Y, TileID.ObsidianBrick, true, true);
+            WorldGen.PlaceTile((int)endPoint.X, (int)endPoint.Y, TileID.ObsidianBrick, true, true);
+
+            PerlinWorm worm = new PerlinWorm(startPoint, endPoint);
+            worm.Update();
 
             return;
             //noise.SetFrequency(0.015f);
@@ -463,6 +492,63 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                     if (noise.GetNoise(i, j) < -0.1f) WorldGen.KillTile(i, j);
                 }
+            }
+        }
+    }
+
+    public class PerlinWorm
+    {
+        private Vector2 direction;
+        private Vector2 position;
+        private Vector2 endPosition;
+        public float weight = 0.6f;
+        public PerlinWorm(Vector2 startPosition, Vector2 endPosition)
+        {
+            position = startPosition;
+            this.endPosition = endPosition;
+        }
+
+        public Vector2 MoveTowardsEndpoint()
+        {
+            var logger = OvermorrowModFile.Instance.Logger;
+
+            Vector2 direction = GetDirection();
+            var directionToEndpoint = Vector2.Normalize(endPosition - position);
+            //var endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
+            var endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
+
+            position += endDirection;
+
+            return position;
+        }
+
+        private Vector2 GetDirection()
+        {
+            var logger = OvermorrowModFile.Instance.Logger;
+
+            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
+            noise.SetFractalOctaves(6);
+            noise.SetFractalLacunarity(4f);
+            noise.SetFrequency(0.025f);
+            noise.SetFractalGain(0.1f);
+
+            float degrees = MathHelper.Lerp(-90, 90, noise.GetNoise(position.X, position.Y));
+            direction = Vector2.One.RotatedBy(degrees);
+
+            return direction;
+        }
+
+        public void Update()
+        {
+            int maxTries = 300;
+            while (Vector2.Distance(endPosition, position) > 1 && maxTries > 0)
+            {
+                MoveTowardsEndpoint();
+
+                var logger = OvermorrowModFile.Instance.Logger;
+                WorldGen.PlaceTile((int)position.X, (int)position.Y, TileID.ObsidianBrick, true, true);
+                maxTries--;
             }
         }
     }
