@@ -341,14 +341,25 @@ namespace OvermorrowMod.Content.WorldGeneration
             var logger = OvermorrowModFile.Instance.Logger;
 
             Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.worldSurface);
-            Vector2 endPoint = startPoint + new Vector2(150, 150);
+            Vector2 endPoint = startPoint + new Vector2(300, 150);
 
             //float degrees = MathHelper.Lerp(-90, 90, noise.GetNoise();
             WorldGen.PlaceTile((int)startPoint.X, (int)startPoint.Y, TileID.ObsidianBrick, true, true);
-            WorldGen.PlaceTile((int)endPoint.X, (int)endPoint.Y, TileID.ObsidianBrick, true, true);
+            //WorldGen.digTunnel((int)startPoint.X, (int)startPoint.Y, 0, 0, 1, 35, false);
+            ShapeData slimeShapeData = new ShapeData();
+            float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
+            WorldUtils.Gen(new Point((int)startPoint.X, (int)startPoint.Y), new Shapes.Slime(48, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
 
             PerlinWorm worm = new PerlinWorm(startPoint, endPoint);
             worm.Update();
+
+            PerlinWorm worm2 = new PerlinWorm(endPoint, endPoint + new Vector2(240, -250));
+            worm2.Update();
+
+            WorldGen.PlaceTile((int)endPoint.X, (int)endPoint.Y, TileID.Adamantite, true, true);
+            //WorldGen.digTunnel((int)endPoint.X, (int)endPoint.Y, 0, 0, 1, 35, false);
+            WorldUtils.Gen(new Point((int)endPoint.X, (int)endPoint.Y), new Shapes.Slime(34, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
+
 
             return;
             //noise.SetFrequency(0.015f);
@@ -541,13 +552,14 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public void Update()
         {
-            int maxTries = 300;
+            int maxTries = 600;
             while (Vector2.Distance(endPosition, position) > 1 && maxTries > 0)
             {
                 MoveTowardsEndpoint();
 
                 var logger = OvermorrowModFile.Instance.Logger;
                 WorldGen.PlaceTile((int)position.X, (int)position.Y, TileID.ObsidianBrick, true, true);
+                WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, Main.rand.Next(7, 15), false);
                 maxTries--;
             }
         }
