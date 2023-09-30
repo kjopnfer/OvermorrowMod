@@ -36,6 +36,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (TerrainIndex != -1)
             {
                 tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain Base", TestGenerateTerrainBase));
+                tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain Tunnels", TestGenerateTunnels));
                 //tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain Base 2", TestGenerateTerrainLayer));
 
                 //tasks.Insert(TerrainIndex + 3, new PassLegacy("Test Terrain Tunnels", TestGenerateTerrainTunnels));
@@ -133,116 +134,6 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-
-        private void TestGenerateTerrain(GenerationProgress progress, GameConfiguration config)
-        {
-            //RemoveDirt();
-
-            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
-            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-            noise.SetFractalType(FastNoiseLite.FractalType.FBm);
-            /*noise.SetFrequency(0.03f);
-            noise.SetFractalOctaves(1);
-            noise.SetFractalLacunarity(2f);
-            noise.SetFractalGain(0.5f);
-            noise.SetFractalWeightedStrength(1f);*/
-
-            noise.SetFrequency(0.03f);
-            for (int i = 0; i < Main.maxTilesX; i++)
-            {
-                //noise.SetFrequency(MathHelper.Lerp(0.005f, 0.005f, Utils.Clamp(i, 0, Main.maxTilesX) / (float)Main.maxTilesX));
-                noise.SetFractalOctaves(5);
-                noise.SetFractalLacunarity(2f);
-                noise.SetFractalGain(1f);
-                noise.SetFractalWeightedStrength(MathHelper.Lerp(1f, 1.4f, Utils.Clamp(i, 0, Main.maxTilesX) / (float)Main.maxTilesX));
-
-                for (int j = 0; j < Main.maxTilesY; j++)
-                {
-                    if (noise.GetNoise(i, j) < 0f) WorldGen.PlaceTile(i, j, TileID.ObsidianBrick, true, true);
-                    //if (noise.GetNoise(i, j) < 0f) WorldGen.KillTile(i, j);
-                }
-            }
-
-            /*noise.SetNoiseType(FastNoiseLite.NoiseType.Value);
-
-            for (int i = 0; i < Main.maxTilesX; i++)
-            {
-                noise.SetFrequency(MathHelper.Lerp(0.02f, 0.02f, Utils.Clamp(i, 0, Main.maxTilesX) / (float)Main.maxTilesX));
-                noise.SetFractalOctaves(5);
-                noise.SetFractalLacunarity(2f);
-                noise.SetFractalGain(1f);
-                noise.SetFractalWeightedStrength(MathHelper.Lerp(1f, 1f, Utils.Clamp(i, 0, Main.maxTilesX) / (float)Main.maxTilesX));
-
-                for (int j = 0; j < Main.maxTilesY; j++)
-                {
-                    if (noise.GetNoise(i, j) < 0f) WorldGen.PlaceTile(i, j, TileID.Dirt);
-                }
-            }*/
-        }
-
-        private void TestGenerateTerrainTunnels(GenerationProgress progress, GameConfiguration config)
-        {
-            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
-            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-            noise.SetFractalType(FastNoiseLite.FractalType.PingPong);
-            noise.SetFrequency(0.005f);
-            noise.SetFractalOctaves(5);
-            noise.SetFractalLacunarity(2f);
-            noise.SetFractalGain(0f);
-            noise.SetFractalWeightedStrength(1f);
-            noise.SetFractalPingPongStrength(2f);
-            noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.BasicGrid);
-            noise.SetDomainWarpAmp(100f);
-
-            for (int i = 0; i < Main.maxTilesX; i++)
-            {
-                for (int j = 0; j < Main.rockLayer - 20; j++)
-                {
-                    if (noise.GetNoise(i, j) < -0.9f) WorldGen.digTunnel(i, j, 0, 0, 1, Main.rand.Next(1, 7));
-                }
-            }
-        }
-
-        private void TestGenerateTerrainLayer(GenerationProgress progress, GameConfiguration config)
-        {
-            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
-            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-            noise.SetFrequency(0.01f);
-            noise.SetFractalOctaves(1);
-            noise.SetFractalLacunarity(2f);
-            noise.SetFractalGain(0.5f);
-            noise.SetFractalWeightedStrength(1f);
-
-            float maxHeightOffset = -10;
-            float maxDepthOffset = 30;
-
-            FastNoiseLite noise2 = new FastNoiseLite(WorldGen._genRandSeed + 4);
-            noise2.SetFrequency(0.005f);
-
-            for (int i = 0; i < Main.maxTilesX; i++)
-            {
-                //WorldGen.PlaceTile(i, (int)(200 + MathHelper.Lerp(-100, 100, noise.GetNoise(i, 0))), TileID.ObsidianBrick);
-                int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0)) - 15;
-                int yPosition = Main.maxTilesY / 4 + yOffset;
-                //WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
-
-                if (noise2.GetNoise(i, 0) < 0)
-                    WorldGen.TileRunner(i, yPosition, Main.rand.Next(25, 40), 1, TileID.Dirt, true);
-            }
-
-            noise.SetFrequency(0.01f);
-            noise.SetSeed(WorldGen._genRandSeed + 1);
-            for (int i = 0; i < Main.maxTilesX; i++)
-            {
-                //WorldGen.PlaceTile(i, (int)(200 + MathHelper.Lerp(-100, 100, noise.GetNoise(i, 0))), TileID.ObsidianBrick);
-                int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0)) - 50;
-                int yPosition = Main.maxTilesY / 4 + yOffset;
-
-                if (noise2.GetNoise(i, 0) < 0)
-                    WorldGen.TileRunner(i, yPosition, MathHelper.Lerp(9, 20, noise2.GetNoise(i, 0) / -1f), 1, TileID.Dirt, true);
-            }
-        }
-
         private void GenerateSlopes()
         {
             // Amplitude
@@ -310,7 +201,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 int xPosition = (int)(xStart - 45 - xOffset);
                 for (int x = xPosition; x < xStart; x++)
                 {
-                    WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
+                    WorldGen.PlaceTile(x, y, ModContent.TileType<SmoothStone>(), true, true);
                 }
 
                 cliffPositionX = xPosition;
@@ -355,14 +246,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 float yHeight = x < xOffsetTiles + xOrigin ? yOrigin : (float)Main.worldSurface;
                 //logger.Error(x + " / " + xOffsetTiles);
 
-    
+
 
                 for (int y = yPosition; y <= yHeight; y++)
                 {
-                    WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.Dirt, true, true);
                 }
-
-                
             }
         }
 
@@ -543,37 +432,31 @@ namespace OvermorrowMod.Content.WorldGeneration
             }*/
         }
 
-
-        private void TestGenerateCaves(GenerationProgress progress, GameConfiguration config)
+        private void TestGenerateTunnels(GenerationProgress progress, GameConfiguration config)
         {
-            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
-            noise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
-            noise.SetFractalOctaves(6);
-            noise.SetFractalLacunarity(4f);
-            noise.SetFrequency(0.025f);
-            noise.SetFractalGain(0.1f);
 
             var logger = OvermorrowModFile.Instance.Logger;
 
-            Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.worldSurface);
-            Vector2 endPoint = startPoint + new Vector2(300, 150);
+            Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.worldSurface + 50);
+            Vector2 endPoint = startPoint + new Vector2(300, 0);
+            for (int i = 0; i < 8; i++)
+            {
+                PerlinWorm worm = new PerlinWorm(startPoint, endPoint);
+                worm.Run(out Vector2 lastPosition);
 
-            //float degrees = MathHelper.Lerp(-90, 90, noise.GetNoise();
-            WorldGen.PlaceTile((int)startPoint.X, (int)startPoint.Y, TileID.ObsidianBrick, true, true);
-            //WorldGen.digTunnel((int)startPoint.X, (int)startPoint.Y, 0, 0, 1, 35, false);
-            ShapeData slimeShapeData = new ShapeData();
+                startPoint = lastPosition;
+                endPoint = startPoint + new Vector2(300 * (i + 1), 0);
+            }
+
+            
+            /*ShapeData slimeShapeData = new ShapeData();
             float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
             WorldUtils.Gen(new Point((int)startPoint.X, (int)startPoint.Y), new Shapes.Slime(48, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
 
-            PerlinWorm worm = new PerlinWorm(startPoint, endPoint);
-            worm.Update();
-
             PerlinWorm worm2 = new PerlinWorm(endPoint, endPoint + new Vector2(240, -250));
-            worm2.Update();
-
-            WorldGen.PlaceTile((int)endPoint.X, (int)endPoint.Y, TileID.Adamantite, true, true);
-            //WorldGen.digTunnel((int)endPoint.X, (int)endPoint.Y, 0, 0, 1, 35, false);
+            worm2.Run();
             WorldUtils.Gen(new Point((int)endPoint.X, (int)endPoint.Y), new Shapes.Slime(34, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
+            */
         }
 
         public class PerlinWorm
@@ -581,12 +464,15 @@ namespace OvermorrowMod.Content.WorldGeneration
             private Vector2 direction;
             private Vector2 position;
             private Vector2 endPosition;
+
             public float weight = 0.6f;
+
             public PerlinWorm(Vector2 startPosition, Vector2 endPosition)
             {
                 position = startPosition;
                 this.endPosition = endPosition;
             }
+
 
             public Vector2 MoveTowardsEndpoint()
             {
@@ -619,18 +505,20 @@ namespace OvermorrowMod.Content.WorldGeneration
                 return direction;
             }
 
-            public void Update()
+            public void Run(out Vector2 lastPosition)
             {
-                int maxTries = 600;
+                int maxTries = 1000;
                 while (Vector2.Distance(endPosition, position) > 1 && maxTries > 0)
                 {
                     MoveTowardsEndpoint();
 
                     var logger = OvermorrowModFile.Instance.Logger;
                     WorldGen.PlaceTile((int)position.X, (int)position.Y, TileID.ObsidianBrick, true, true);
-                    WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, Main.rand.Next(7, 15), false);
+                    WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, Main.rand.Next(4, 9), false);
                     maxTries--;
                 }
+
+                lastPosition = position;
             }
         }
     }

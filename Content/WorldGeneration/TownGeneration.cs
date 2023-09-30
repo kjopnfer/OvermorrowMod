@@ -34,7 +34,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
-            int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Wavy Caves"));
+            /*int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Wavy Caves"));
             if (TerrainIndex != -1)
             {
                 tasks.Insert(TerrainIndex + 1, new PassLegacy("Sojourn Base", GenerateTownFoundation));
@@ -44,7 +44,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (BiomeIndex != -1)
             {
                 tasks.Insert(BiomeIndex + 1, new PassLegacy("Sojourn Town", GenerateTown));
-            }
+            }*/
         }
 
         private void GenerateTownFoundation(GenerationProgress progress, GameConfiguration config)
