@@ -444,8 +444,15 @@ namespace OvermorrowMod.Content.WorldGeneration
                 PerlinWorm worm = new PerlinWorm(startPoint, endPoint);
                 worm.Run(out Vector2 lastPosition);
 
+                if (Main.rand.NextBool(4))
+                {
+                    Vector2 branchEndpoint = startPoint + new Vector2(300, 0).RotateRandom(MathHelper.PiOver2);
+                    PerlinWorm branchWorm = new PerlinWorm(startPoint, branchEndpoint);
+                    branchWorm.Run(out Vector2 lastBranchPosition);
+                }
+
                 startPoint = lastPosition;
-                endPoint = startPoint + new Vector2(300 * (i + 1), 0);
+                endPoint = startPoint + new Vector2(300, 0).RotateRandom(MathHelper.PiOver2);
             }
 
             
@@ -480,7 +487,6 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                 Vector2 direction = GetDirection();
                 var directionToEndpoint = Vector2.Normalize(endPosition - position);
-                //var endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
                 var endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
 
                 position += endDirection;
@@ -513,7 +519,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     MoveTowardsEndpoint();
 
                     var logger = OvermorrowModFile.Instance.Logger;
-                    WorldGen.PlaceTile((int)position.X, (int)position.Y, TileID.ObsidianBrick, true, true);
+                    //WorldGen.PlaceTile((int)position.X, (int)position.Y, TileID.ObsidianBrick, true, true);
                     WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, Main.rand.Next(4, 9), false);
                     maxTries--;
                 }
