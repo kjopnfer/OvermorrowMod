@@ -245,7 +245,7 @@ namespace OvermorrowMod.Common
             }
         }
 
-        public override void Kill(Projectile projectile, int timeLeft)
+        public override void OnKill(Projectile projectile, int timeLeft)
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
@@ -260,8 +260,6 @@ namespace OvermorrowMod.Common
             {
                 gunPlayer.FarlanderSpeedBoost = 0;
             }
-
-            base.Kill(projectile, timeLeft);
         }
 
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
