@@ -519,11 +519,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             base.ModifyDamageHitbox(ref hitbox);
         }
 
-        public override void Kill(int timeLeft)
-        {
-            base.Kill(timeLeft);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             HandleWeaponDrawing(lightColor);
