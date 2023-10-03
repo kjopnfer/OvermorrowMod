@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Common.WorldGeneration;
 using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.Underground;
 using OvermorrowMod.Core;
@@ -315,7 +316,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             //RemoveDirt();
             GenerateSurface();
-            GenerateCliff();
+            //GenerateCliff();
 
             return;
             //noise.SetFrequency(0.015f);
@@ -437,25 +438,24 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             var logger = OvermorrowModFile.Instance.Logger;
 
-            Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.worldSurface + 50);
+            Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.rockLayer + 50);
             Vector2 endPoint = startPoint + new Vector2(300, 0);
-            for (int i = 0; i < 8; i++)
-            {
-                PerlinWorm worm = new PerlinWorm(startPoint, endPoint);
-                worm.Run(out Vector2 lastPosition);
+            int repeat = 8;
 
-                if (Main.rand.NextBool(4))
-                {
-                    Vector2 branchEndpoint = startPoint + new Vector2(300, 0).RotateRandom(MathHelper.PiOver2);
-                    PerlinWorm branchWorm = new PerlinWorm(startPoint, branchEndpoint);
-                    branchWorm.Run(out Vector2 lastBranchPosition);
-                }
+            SurfaceWormBuilder worm = new SurfaceWormBuilder(startPoint, endPoint, repeat);
+            worm.Run(out Vector2 lastPosition);
+
+
+            /*for (int i = 0; i < 8; i++)
+            {
+                SurfaceWormBuilder worm = new SurfaceWormBuilder(startPoint, endPoint, 8);
+                worm.Run(out Vector2 lastPosition);
 
                 startPoint = lastPosition;
                 endPoint = startPoint + new Vector2(300, 0).RotateRandom(MathHelper.PiOver2);
-            }
+            }*/
 
-            
+
             /*ShapeData slimeShapeData = new ShapeData();
             float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
             WorldUtils.Gen(new Point((int)startPoint.X, (int)startPoint.Y), new Shapes.Slime(48, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
@@ -466,66 +466,70 @@ namespace OvermorrowMod.Content.WorldGeneration
             */
         }
 
-        public class PerlinWorm
+    }
+
+    public class SurfaceWormBuilder : PerlinWorm
+    {
+        public int repeatWorm = 0;
+
+        public SurfaceWormBuilder(Vector2 startPosition, Vector2 endPosition, int repeatWorm = 1) : base(startPosition, endPosition)
         {
-            private Vector2 direction;
-            private Vector2 position;
-            private Vector2 endPosition;
+            this.repeatWorm = repeatWorm;
+        }
 
-            public float weight = 0.6f;
 
-            public PerlinWorm(Vector2 startPosition, Vector2 endPosition)
+        private bool endBranch = false;
+        public int endDistance = 300;
+        public override void OnRunStart(Vector2 position)
+        {
+            var logger = OvermorrowModFile.Instance.Logger;
+            logger.Error("run: " + repeatWorm);
+
+            endBranch = repeatWorm > 1;
+
+            /*if (Main.rand.NextBool(branchChance))
             {
-                position = startPosition;
-                this.endPosition = endPosition;
-            }
+                Vector2 branchEndpoint = position + new Vector2(endDistance, 0).RotateRandom(MathHelper.Pi);
+                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint);
+                //branchWorm.branchChance = branchChance * 2;
+                branchWorm.Run(out Vector2 lastBranchPosition);
+            }*/
+        }
 
+        public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
+        {
+            float progress = Utils.Clamp((currentIteration) / (maxTries * 0.2f), 0, 1);
 
-            public Vector2 MoveTowardsEndpoint()
+            //logger.Error("create minSize: " + minSize + " maxSize: " + maxSize);
+
+            int size = Main.rand.Next(4, 9);
+            if (!endBranch)
             {
-                var logger = OvermorrowModFile.Instance.Logger;
-
-                Vector2 direction = GetDirection();
-                var directionToEndpoint = Vector2.Normalize(endPosition - position);
-                var endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
-
-                position += endDirection;
-
-                return position;
-            }
-
-            private Vector2 GetDirection()
-            {
-                var logger = OvermorrowModFile.Instance.Logger;
-
-                FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
-                noise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
-                noise.SetFractalOctaves(6);
-                noise.SetFractalLacunarity(4f);
-                noise.SetFrequency(0.025f);
-                noise.SetFractalGain(0.1f);
-
-                float degrees = MathHelper.Lerp(-90, 90, noise.GetNoise(position.X, position.Y));
-                direction = Vector2.One.RotatedBy(degrees);
-
-                return direction;
-            }
-
-            public void Run(out Vector2 lastPosition)
-            {
-                int maxTries = 1000;
-                while (Vector2.Distance(endPosition, position) > 1 && maxTries > 0)
+                if (currentIteration > maxTries * 0.2f)
                 {
-                    MoveTowardsEndpoint();
+                    int minSize = (int)MathHelper.Lerp(4, 1, progress);
+                    int maxSize = (int)MathHelper.Lerp(9, 3, progress);
 
-                    var logger = OvermorrowModFile.Instance.Logger;
-                    //WorldGen.PlaceTile((int)position.X, (int)position.Y, TileID.ObsidianBrick, true, true);
-                    WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, Main.rand.Next(4, 9), false);
-                    maxTries--;
+                    size = Main.rand.Next(minSize, maxSize);
                 }
-
-                lastPosition = position;
             }
+
+
+            WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, size, false);
+        }
+
+        public override void OnRunEnd(Vector2 position)
+        {
+            if (repeatWorm > 1)
+            {
+                Vector2 branchEndpoint = position + new Vector2(endDistance, 0).RotateRandom(MathHelper.Pi);
+
+                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint, --repeatWorm);
+                //branchWorm.branchChance = branchChance * 2;
+                branchWorm.Run(out Vector2 lastBranchPosition);
+            }
+
+            base.OnRunEnd(position);
         }
     }
 }
