@@ -479,14 +479,21 @@ namespace OvermorrowMod.Content.WorldGeneration
 
 
         private bool endBranch = false;
-        public int endDistance = 300;
+        public int endDistance = 500;
         public override void OnRunStart(Vector2 position)
         {
             var logger = OvermorrowModFile.Instance.Logger;
             logger.Error("run: " + repeatWorm);
 
             endBranch = repeatWorm > 1;
+            if (Main.rand.NextBool(3))
+            {
+                Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
 
+                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint, Main.rand.Next(1, 5));
+                //branchWorm.branchChance = branchChance * 2;
+                branchWorm.Run(out Vector2 lastBranchPosition);
+            }
             /*if (Main.rand.NextBool(branchChance))
             {
                 Vector2 branchEndpoint = position + new Vector2(endDistance, 0).RotateRandom(MathHelper.Pi);
@@ -501,16 +508,19 @@ namespace OvermorrowMod.Content.WorldGeneration
             float progress = Utils.Clamp((currentIteration) / (maxTries * 0.2f), 0, 1);
 
             //logger.Error("create minSize: " + minSize + " maxSize: " + maxSize);
+            int minSize = (int)MathHelper.Lerp(4, 1, progress);
+            int maxSize = (int)MathHelper.Lerp(9, 3, progress);
 
             int size = Main.rand.Next(4, 9);
+
             if (!endBranch)
             {
+                size = Main.rand.Next(minSize, maxSize);
+
                 if (currentIteration > maxTries * 0.2f)
                 {
-                    int minSize = (int)MathHelper.Lerp(4, 1, progress);
-                    int maxSize = (int)MathHelper.Lerp(9, 3, progress);
 
-                    size = Main.rand.Next(minSize, maxSize);
+
                 }
             }
 
@@ -522,7 +532,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             if (repeatWorm > 1)
             {
-                Vector2 branchEndpoint = position + new Vector2(endDistance, 0).RotateRandom(MathHelper.Pi);
+                Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
 
                 SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint, --repeatWorm);
                 //branchWorm.branchChance = branchChance * 2;
