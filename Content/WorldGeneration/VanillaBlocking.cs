@@ -315,7 +315,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         private void TestGenerateTerrainBase(GenerationProgress progress, GameConfiguration config)
         {
             //RemoveDirt();
-            GenerateSurface();
+            //GenerateSurface();
             //GenerateCliff();
 
             return;
@@ -438,13 +438,19 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             var logger = OvermorrowModFile.Instance.Logger;
 
-            Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.rockLayer + 50);
+            Vector2 startPoint = new Vector2(Main.maxTilesX / 2f, (float)Main.worldSurface + 150);
             Vector2 endPoint = startPoint + new Vector2(300, 0);
             int repeat = 8;
 
-            SurfaceWormBuilder worm = new SurfaceWormBuilder(startPoint, endPoint, repeat);
-            worm.Run(out Vector2 lastPosition);
+            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
+            noise.SetFractalOctaves(1);
+            noise.SetFractalLacunarity(1f);
+            noise.SetFrequency(0.015f);
+            noise.SetFractalGain(0.1f);
 
+            SurfaceWormBuilder worm = new SurfaceWormBuilder(startPoint, endPoint, noise, repeat);
+            worm.Run(out Vector2 lastPosition);
 
             /*for (int i = 0; i < 8; i++)
             {
@@ -472,50 +478,43 @@ namespace OvermorrowMod.Content.WorldGeneration
     {
         public int repeatWorm = 0;
 
-        public SurfaceWormBuilder(Vector2 startPosition, Vector2 endPosition, int repeatWorm = 1) : base(startPosition, endPosition)
+        public SurfaceWormBuilder(Vector2 startPosition, Vector2 endPosition, FastNoiseLite noise, int repeatWorm = 1) : base(startPosition, endPosition, noise)
         {
             this.repeatWorm = repeatWorm;
         }
 
 
         private bool endBranch = false;
-        public int endDistance = 500;
+        public int endDistance = 200;
         public override void OnRunStart(Vector2 position)
         {
             var logger = OvermorrowModFile.Instance.Logger;
             logger.Error("run: " + repeatWorm);
 
             endBranch = repeatWorm > 1;
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(5))
             {
                 Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
 
-                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint, Main.rand.Next(1, 5));
-                //branchWorm.branchChance = branchChance * 2;
-                branchWorm.Run(out Vector2 lastBranchPosition);
+                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint, noise, Main.rand.Next(1, 5));
+                branchWorm.weight = Main.rand.NextFloat(0.2f, 0.4f);
+                //branchWorm.Run(out Vector2 lastBranchPosition);
             }
-            /*if (Main.rand.NextBool(branchChance))
-            {
-                Vector2 branchEndpoint = position + new Vector2(endDistance, 0).RotateRandom(MathHelper.Pi);
-                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint);
-                //branchWorm.branchChance = branchChance * 2;
-                branchWorm.Run(out Vector2 lastBranchPosition);
-            }*/
         }
 
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
         {
-            float progress = Utils.Clamp((currentIteration) / (maxTries * 0.2f), 0, 1);
-
-            //logger.Error("create minSize: " + minSize + " maxSize: " + maxSize);
-            int minSize = (int)MathHelper.Lerp(4, 1, progress);
-            int maxSize = (int)MathHelper.Lerp(9, 3, progress);
-
             int size = Main.rand.Next(4, 9);
 
             if (!endBranch)
             {
-                size = Main.rand.Next(minSize, maxSize);
+                float progress = Utils.Clamp((currentIteration) / (maxTries * 0.2f), 0, 1);
+
+                //logger.Error("create minSize: " + minSize + " maxSize: " + maxSize);
+                int minSize = (int)MathHelper.Lerp(4, 2, progress);
+                int maxSize = (int)MathHelper.Lerp(9, 5, progress);
+
+                //size = Main.rand.Next(minSize, maxSize);
 
                 if (currentIteration > maxTries * 0.2f)
                 {
@@ -532,9 +531,20 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             if (repeatWorm > 1)
             {
-                Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
+                //Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
 
-                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint, --repeatWorm);
+                Vector2 branchEndpoint = position + new Vector2(endDistance, 0).RotateRandom(MathHelper.TwoPi);
+
+                ShapeData slimeShapeData = new ShapeData();
+                float xScale = 0.4f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
+                float yScale = Main.rand.NextFloat(0.6f, 0.8f);
+                int radius = Main.rand.Next(32, 48);
+
+                if (Framing.GetTileSafely((int)branchEndpoint.X, (int)branchEndpoint.Y).HasTile)
+                    WorldUtils.Gen(new Point((int)branchEndpoint.X, (int)branchEndpoint.Y), new Shapes.Slime(radius, xScale, yScale), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
+
+                SurfaceWormBuilder branchWorm = new SurfaceWormBuilder(position, branchEndpoint, noise, --repeatWorm);
+                weight = Main.rand.NextFloat(0.4f, 0.6f);
                 //branchWorm.branchChance = branchChance * 2;
                 branchWorm.Run(out Vector2 lastBranchPosition);
             }
