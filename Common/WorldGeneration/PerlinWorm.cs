@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 
 namespace OvermorrowMod.Common.WorldGeneration
@@ -6,8 +7,9 @@ namespace OvermorrowMod.Common.WorldGeneration
     public class PerlinWorm
     {
         private Vector2 direction;
-        private Vector2 position;
-        private Vector2 endPosition;
+        private Vector2 currentPosition;
+        protected Vector2 startPosition;
+        protected Vector2 endPosition;
 
         protected FastNoiseLite noise;
 
@@ -19,7 +21,8 @@ namespace OvermorrowMod.Common.WorldGeneration
 
         public PerlinWorm(Vector2 startPosition, Vector2 endPosition, FastNoiseLite noise)
         {
-            position = startPosition;
+            currentPosition = startPosition;
+            this.startPosition = startPosition;
             this.endPosition = endPosition;
             this.noise = noise;
         }
@@ -29,19 +32,22 @@ namespace OvermorrowMod.Common.WorldGeneration
             var logger = OvermorrowModFile.Instance.Logger;
 
             Vector2 direction = GetDirection();
-            var directionToEndpoint = Vector2.Normalize(endPosition - position);
+            var directionToEndpoint = Vector2.Normalize(endPosition - currentPosition);
             var endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
 
-            position += endDirection;
+            currentPosition += endDirection;
 
-            return position;
+            return currentPosition;
         }
 
         private Vector2 GetDirection()
         {
             var logger = OvermorrowModFile.Instance.Logger;
 
-            float degrees = MathHelper.Lerp(-90, 90, noise.GetNoise(position.X, position.Y));
+            // Increasing turn amount makes it more jagged, decreasing it makes it smoother
+            float turnAmount = 45; // 45
+            float scale = 0.4f;
+            float degrees = MathHelper.Lerp(-turnAmount, turnAmount, noise.GetNoise(currentPosition.X, currentPosition.Y) * scale);
             direction = Vector2.One.RotatedBy(degrees);
 
             return direction;
@@ -60,21 +66,21 @@ namespace OvermorrowMod.Common.WorldGeneration
         protected int maxTries = 1000;
         public void Run(out Vector2 lastPosition)
         {
-            OnRunStart(position);
+            OnRunStart(currentPosition);
 
             int currentIteration = 0;
-            while (Vector2.Distance(endPosition, position) > 1 && currentIteration < maxTries)
+            while (Vector2.Distance(endPosition, currentPosition) > 1 && currentIteration < maxTries)
             {
                 MoveTowardsEndpoint();
 
                 var logger = OvermorrowModFile.Instance.Logger;
-                RunAction(position, endPosition, currentIteration);
+                RunAction(currentPosition, endPosition, currentIteration);
                 //WorldGen.PlaceTile((int)position.X, (int)position.Y, TileID.ObsidianBrick, true, true);
                 currentIteration++;
             }
 
-            lastPosition = position;
-            OnRunEnd(position);
+            lastPosition = currentPosition;
+            OnRunEnd(currentPosition);
         }
     }
 }
