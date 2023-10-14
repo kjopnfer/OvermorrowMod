@@ -561,7 +561,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             // Fill in tiles below
             ushort tileType = TileID.Dirt;
-            int runnerBlock = 10; // Don't use TileRunner for 10 tiles, which would make the surface more jagged
+            int runnerBlock = 20; // Don't use TileRunner for 10 tiles, which would make the surface more jagged
+            //int runnerBlock = 1;
             for (int y = (int)position.Y; y < Main.rockLayer; y++)
             {
                 if (Framing.GetTileSafely((int)position.X, y).HasTile) continue;
@@ -569,7 +570,20 @@ namespace OvermorrowMod.Content.WorldGeneration
                 if (runnerBlock > 0)
                 {
                     runnerBlock--;
-                    if (withinBounds) WorldGen.PlaceTile((int)position.X, y, tileType, true, true);
+
+                    int yOffset = 0;
+                    if (runnerBlock == 20)
+                    {
+                        if (Framing.GetTileSafely((int)position.X - 1, (int)position.Y - 1).HasTile) yOffset--;
+                        
+                        bool checkOrphanTile = !Framing.GetTileSafely((int)position.X - 1, (int)position.Y).HasTile ||
+                        !Framing.GetTileSafely((int)position.X - 1, (int)position.Y - 1).HasTile ||
+                        !Framing.GetTileSafely((int)position.X, (int)position.Y - 1).HasTile;
+
+                        if (checkOrphanTile) yOffset++;
+                    }
+
+                    if (withinBounds) WorldGen.PlaceTile((int)position.X, y + yOffset, tileType, true, true);
                 }
                 else
                 {
@@ -621,7 +635,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 branchWorm.Run(out _);
 
                 SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, 50), branchEndpoint + new Vector2(0, 50), noise);
-                tunnel.Run(out _);
+                //tunnel.Run(out _);
             }
 
             base.OnRunEnd(position);
@@ -643,7 +657,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         public int endDistance = 300;
         public override void OnRunStart(Vector2 position)
         {
-            
+
 
             endBranch = repeatWorm > 1;
             /*if (Main.rand.NextBool(5))
