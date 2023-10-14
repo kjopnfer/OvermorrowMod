@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             //RemovePass(tasks, "Terrain");
 
             //RemovePass(tasks, "Tunnels");
-            //RemovePass(tasks, "Mount Caves");
+            RemovePass(tasks, "Mount Caves");
             RemovePass(tasks, "Small Holes");
             //RemovePass(tasks, "Surface Caves");
             //RemovePass(tasks, "Dirt Layer Caves");
@@ -517,14 +517,14 @@ namespace OvermorrowMod.Content.WorldGeneration
             logger.Error("run: " + repeatWorm);
 
             endBranch = repeatWorm > 1;
-            if (Main.rand.NextBool(5))
+            /*if (Main.rand.NextBool(5))
             {
                 Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
 
                 SurfaceTunneler branchWorm = new SurfaceTunneler(position, branchEndpoint, noise, Main.rand.Next(1, 5));
                 branchWorm.weight = Main.rand.NextFloat(0.2f, 0.4f);
                 //branchWorm.Run(out Vector2 lastBranchPosition);
-            }
+            }*/
         }
 
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
@@ -550,23 +550,32 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Vector2 tileLocation = new Vector2((int)position.X, (int)position.Y);
             bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
-            if (withinBounds) WorldGen.PlaceTile((int)tileLocation.X, (int)tileLocation.Y, TileID.ObsidianBrick, true, true);
-
+            //if (withinBounds) WorldGen.PlaceTile((int)tileLocation.X, (int)tileLocation.Y, TileID.ObsidianBrick, true, true);
 
             //size = Main.rand.Next(2, 4);
 
             // Top part of the terrain
             //WorldGen.TileRunner((int)position.X, (int)position.Y, size, 1, TileID.ObsidianBrick, true);
 
-            WorldGen.TileRunner((int)position.X, (int)position.Y, size, 1, TileID.Dirt, true);
+            //WorldGen.TileRunner((int)position.X, (int)position.Y, size, 1, TileID.Dirt, true);
 
             // Fill in tiles below
+            ushort tileType = TileID.Dirt;
+            int runnerBlock = 10; // Don't use TileRunner for 10 tiles, which would make the surface more jagged
             for (int y = (int)position.Y; y < Main.rockLayer; y++)
             {
-                if (Framing.GetTileSafely((int)position.X, y).TileType == TileID.ObsidianBrick) continue;
+                if (Framing.GetTileSafely((int)position.X, y).HasTile) continue;
 
-                //WorldGen.TileRunner((int)position.X, y, size, 1, TileID.ObsidianBrick, true);
-                WorldGen.TileRunner((int)position.X, y, size, 1, TileID.Dirt, true);
+                if (runnerBlock > 0)
+                {
+                    runnerBlock--;
+                    if (withinBounds) WorldGen.PlaceTile((int)position.X, y, tileType, true, true);
+                }
+                else
+                {
+                    WorldGen.TileRunner((int)position.X, y, size, 1, tileType, true);
+                }
+                //WorldGen.TileRunner((int)position.X, y, size, 1, TileID.Dirt, true);
 
                 //WorldGen.PlaceTile((int)position.X, y, TileID.ObsidianBrick, true, true);
                 //if (noise2.GetNoise(x, y) > 0) WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
@@ -605,10 +614,14 @@ namespace OvermorrowMod.Content.WorldGeneration
                 //    WorldUtils.Gen(new Point((int)branchEndpoint.X, (int)branchEndpoint.Y), new Shapes.Slime(radius, xScale, yScale), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
 
                 SurfaceBuilder branchWorm = new SurfaceBuilder(position, branchEndpoint, noise, --repeatWorm);
+                //branchWorm.weight = Main.rand.NextFloat(0.6f, 0.8f);
                 //weight = Main.rand.NextFloat(0.2f, 0.6f);
                 //weight = 0.6f;
                 //branchWorm.branchChance = branchChance * 2;
                 branchWorm.Run(out _);
+
+                SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, 50), branchEndpoint + new Vector2(0, 50), noise);
+                tunnel.Run(out _);
             }
 
             base.OnRunEnd(position);
@@ -627,26 +640,25 @@ namespace OvermorrowMod.Content.WorldGeneration
 
 
         private bool endBranch = false;
-        public int endDistance = 200;
+        public int endDistance = 300;
         public override void OnRunStart(Vector2 position)
         {
-            var logger = OvermorrowModFile.Instance.Logger;
-            logger.Error("run: " + repeatWorm);
+            
 
             endBranch = repeatWorm > 1;
-            if (Main.rand.NextBool(5))
+            /*if (Main.rand.NextBool(5))
             {
                 Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
 
                 SurfaceTunneler branchWorm = new SurfaceTunneler(position, branchEndpoint, noise, Main.rand.Next(1, 5));
                 branchWorm.weight = Main.rand.NextFloat(0.2f, 0.4f);
                 //branchWorm.Run(out Vector2 lastBranchPosition);
-            }
+            }*/
         }
 
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
         {
-            int size = Main.rand.Next(4, 9);
+            int size = Main.rand.Next(2, 6);
 
             if (!endBranch)
             {
@@ -674,6 +686,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (repeatWorm > 1)
             {
                 //Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
+                var logger = OvermorrowModFile.Instance.Logger;
+                logger.Error("run tunnel: " + repeatWorm);
 
                 Vector2 branchEndpoint = endPosition + new Vector2(endDistance * 0.5f, 0);
 
@@ -685,11 +699,11 @@ namespace OvermorrowMod.Content.WorldGeneration
                 //if (Framing.GetTileSafely((int)branchEndpoint.X, (int)branchEndpoint.Y).HasTile)
                 //    WorldUtils.Gen(new Point((int)branchEndpoint.X, (int)branchEndpoint.Y), new Shapes.Slime(radius, xScale, yScale), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
 
-                SurfaceTunneler branchWorm = new SurfaceTunneler(position, branchEndpoint, noise, --repeatWorm);
+                /*SurfaceTunneler branchWorm = new SurfaceTunneler(position, branchEndpoint, noise, --repeatWorm);
                 //weight = Main.rand.NextFloat(0.2f, 0.6f);
-                weight = 0.2f;
+                branchWorm.weight = 0.4f;
                 //branchWorm.branchChance = branchChance * 2;
-                branchWorm.Run(out Vector2 lastBranchPosition);
+                branchWorm.Run(out Vector2 lastBranchPosition);*/
             }
 
             base.OnRunEnd(position);

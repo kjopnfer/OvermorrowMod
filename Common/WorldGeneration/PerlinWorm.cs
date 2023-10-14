@@ -88,9 +88,9 @@ namespace OvermorrowMod.Common.WorldGeneration
 
             // Increasing turn amount makes it more jagged, decreasing it makes it smoother
             float turnAmount = 90; // 45
-            float scale = 1f; // 0.4
+            float scale = 0.6f; // 0.4
 
-            float degrees = MathHelper.Lerp(-turnAmount * invertDirection, turnAmount * invertDirection, noise.GetNoise(currentPosition.X, currentPosition.Y) * scale);
+            float degrees = MathHelper.Lerp(-turnAmount, turnAmount, noise.GetNoise(currentPosition.X, currentPosition.Y) * scale);
             direction = Vector2.One.RotatedBy(degrees);
 
             // if fail invert noise value?
