@@ -529,7 +529,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
         {
-            int size = Main.rand.Next(4, 9);
+            int size = 9;
 
             if (!endBranch)
             {
@@ -558,36 +558,44 @@ namespace OvermorrowMod.Content.WorldGeneration
             //WorldGen.TileRunner((int)position.X, (int)position.Y, size, 1, TileID.ObsidianBrick, true);
 
             //WorldGen.TileRunner((int)position.X, (int)position.Y, size, 1, TileID.Dirt, true);
+            var logger = OvermorrowModFile.Instance.Logger;
 
             // Fill in tiles below
             ushort tileType = TileID.Dirt;
             int runnerBlock = 20; // Don't use TileRunner for 10 tiles, which would make the surface more jagged
             //int runnerBlock = 1;
+
+            int yOffset = 0;
             for (int y = (int)position.Y; y < Main.rockLayer; y++)
             {
-                if (Framing.GetTileSafely((int)position.X, y).HasTile) continue;
+                if (Framing.GetTileSafely((int)position.X, y + yOffset).HasTile) continue;
 
                 if (runnerBlock > 0)
                 {
-                    runnerBlock--;
+                    bool checkOrphanTile = !Framing.GetTileSafely((int)position.X - 1, y).HasTile ||
+                        !Framing.GetTileSafely((int)position.X - 1, y - 1).HasTile ||
+                        !Framing.GetTileSafely((int)position.X, y - 1).HasTile;
 
-                    int yOffset = 0;
                     if (runnerBlock == 20)
                     {
-                        if (Framing.GetTileSafely((int)position.X - 1, (int)position.Y - 1).HasTile) yOffset--;
-                        
-                        bool checkOrphanTile = !Framing.GetTileSafely((int)position.X - 1, (int)position.Y).HasTile ||
-                        !Framing.GetTileSafely((int)position.X - 1, (int)position.Y - 1).HasTile ||
-                        !Framing.GetTileSafely((int)position.X, (int)position.Y - 1).HasTile;
 
-                        if (checkOrphanTile) yOffset++;
+                        // This makes the terrain smoother by removing any sudden 1 block holes
+                        if (Framing.GetTileSafely((int)position.X - 1, y - 1).HasTile)
+                        {
+                            //logger.Error("go up");
+                            yOffset--;
+                        }
+                        //else if (checkOrphanTile) yOffset++;
+
                     }
 
                     if (withinBounds) WorldGen.PlaceTile((int)position.X, y + yOffset, tileType, true, true);
+
+                    runnerBlock--;
                 }
                 else
                 {
-                    WorldGen.TileRunner((int)position.X, y, size, 1, tileType, true);
+                    WorldGen.TileRunner((int)position.X, y + yOffset, size, 1, tileType, true);
                 }
                 //WorldGen.TileRunner((int)position.X, y, size, 1, TileID.Dirt, true);
 
@@ -700,8 +708,6 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (repeatWorm > 1)
             {
                 //Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
-                var logger = OvermorrowModFile.Instance.Logger;
-                logger.Error("run tunnel: " + repeatWorm);
 
                 Vector2 branchEndpoint = endPosition + new Vector2(endDistance * 0.5f, 0);
 
