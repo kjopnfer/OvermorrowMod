@@ -35,50 +35,7 @@ namespace OvermorrowMod.Common.WorldGeneration
             var directionToEndpoint = Vector2.Normalize(endPosition - currentPosition);
             var endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
 
-            var newPosition = currentPosition + endDirection;
-            int fail = 0; // Regenerates a new noise function based on the seed
-
-            weight = 0.6f;
-            //if (RetryCondition(newPosition, fail)) return currentPosition;
-
-            /*while (RetryCondition(newPosition, fail))
-            {
-                direction = GetDirection();
-                directionToEndpoint = Vector2.Normalize(endPosition - currentPosition);
-                endDirection = Vector2.Normalize(direction * (1 - weight) + directionToEndpoint * weight);
-
-                newPosition = currentPosition + endDirection;
-                logger.Debug(newPosition);
-
-                fail++;
-            }*/
-
             return currentPosition += endDirection;
-        }
-
-        /// <summary>
-        /// Returns false by default.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="fail"></param>
-        /// <returns></returns>
-        private bool RetryCondition(Vector2 position, int fail)
-        {
-            if (position.Y > Main.worldSurface || position.Y < Main.worldSurface * 0.7f)
-            {
-                /*noise = new FastNoiseLite(WorldGen._genRandSeed + fail);
-                noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-                noise.SetFractalOctaves(6);
-                noise.SetFractalLacunarity(4);
-                noise.SetFrequency(0.025f);
-                noise.SetFractalGain(0.1f);*/
-
-                invertDirection *= -1;
-
-                return true;
-            }
-
-            return false;
         }
 
         int invertDirection = 1;
@@ -93,7 +50,6 @@ namespace OvermorrowMod.Common.WorldGeneration
             float degrees = MathHelper.Lerp(-turnAmount, turnAmount, noise.GetNoise(currentPosition.X, currentPosition.Y) * scale);
             direction = Vector2.One.RotatedBy(degrees);
 
-            // if fail invert noise value?
             return direction;
         }
 

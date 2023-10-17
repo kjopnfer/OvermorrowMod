@@ -517,14 +517,6 @@ namespace OvermorrowMod.Content.WorldGeneration
             logger.Error("run: " + repeatWorm);
 
             endBranch = repeatWorm > 1;
-            /*if (Main.rand.NextBool(5))
-            {
-                Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
-
-                SurfaceTunneler branchWorm = new SurfaceTunneler(position, branchEndpoint, noise, Main.rand.Next(1, 5));
-                branchWorm.weight = Main.rand.NextFloat(0.2f, 0.4f);
-                //branchWorm.Run(out Vector2 lastBranchPosition);
-            }*/
         }
 
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
@@ -550,14 +542,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Vector2 tileLocation = new Vector2((int)position.X, (int)position.Y);
             bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
-            //if (withinBounds) WorldGen.PlaceTile((int)tileLocation.X, (int)tileLocation.Y, TileID.ObsidianBrick, true, true);
-
-            //size = Main.rand.Next(2, 4);
 
             // Top part of the terrain
-            //WorldGen.TileRunner((int)position.X, (int)position.Y, size, 1, TileID.ObsidianBrick, true);
-
-            //WorldGen.TileRunner((int)position.X, (int)position.Y, size, 1, TileID.Dirt, true);
             var logger = OvermorrowModFile.Instance.Logger;
 
             // Fill in tiles below
@@ -597,26 +583,11 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     WorldGen.TileRunner((int)position.X, y + yOffset, size, 1, tileType, true);
                 }
-                //WorldGen.TileRunner((int)position.X, y, size, 1, TileID.Dirt, true);
-
-                //WorldGen.PlaceTile((int)position.X, y, TileID.ObsidianBrick, true, true);
-                //if (noise2.GetNoise(x, y) > 0) WorldGen.PlaceTile(x, y, TileID.ObsidianBrick, true, true);
             }
 
             Tile tile = Framing.GetTileSafely((int)tileLocation.X, (int)tileLocation.Y + 1);
             bool checkTileType = tile.TileType != TileID.ObsidianBrick;
-            /*while (tile.TileType != TileID.ObsidianBrick && withinBounds)
-            {
-                if (withinBounds)
-                    WorldGen.PlaceTile((int)tileLocation.X, (int)tileLocation.Y, TileID.ObsidianBrick, true, true);
-
-                tileLocation += Vector2.UnitY;
-                tile = Framing.GetTileSafely((int)tileLocation.X, (int)tileLocation.Y);
-                withinBounds = tileLocation.X > 0 && tileLocation.X < Main.maxTilesX && tileLocation.Y > 0 && tileLocation.Y < Main.maxTilesY;
-            }*/
-
-            //WorldGen.OreRunner((int)position.X, (int)position.Y, size, 1, TileID.ObsidianBrick);
-            //WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, size, false);
+        
         }
 
         public override void OnRunEnd(Vector2 position)
@@ -643,7 +614,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 branchWorm.Run(out _);
 
                 SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, 50), branchEndpoint + new Vector2(0, 50), noise);
-                //tunnel.Run(out _);
+                tunnel.Run(out _);
             }
 
             base.OnRunEnd(position);
