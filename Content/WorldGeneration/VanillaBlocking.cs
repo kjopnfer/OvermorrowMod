@@ -36,8 +36,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Terrain"));
             if (TerrainIndex != -1)
             {
-                tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain Base", TestGenerateTerrainBase));
-                tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain Tunnels", TestGenerateTunnels));
+                //tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain Base", TestGenerateTerrainBase));
+                tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain Tunnels", TestGenerateTunnels));
                 //tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain Base 2", TestGenerateTerrainLayer));
 
                 //tasks.Insert(TerrainIndex + 3, new PassLegacy("Test Terrain Tunnels", TestGenerateTerrainTunnels));
@@ -613,7 +613,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 //branchWorm.branchChance = branchChance * 2;
                 branchWorm.Run(out _);
 
-                SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, 50), branchEndpoint + new Vector2(0, 50), noise);
+                //SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, 50), branchEndpoint + new Vector2(0, 50), noise);
+                SurfaceTunneler tunnel = new SurfaceTunneler(startPosition, branchEndpoint, noise);
                 tunnel.Run(out _);
             }
 
@@ -628,6 +629,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public SurfaceTunneler(Vector2 startPosition, Vector2 endPosition, FastNoiseLite noise, int repeatWorm = 1) : base(startPosition, endPosition, noise)
         {
+            invertDirection = -1;
             this.repeatWorm = repeatWorm;
         }
 
@@ -636,8 +638,6 @@ namespace OvermorrowMod.Content.WorldGeneration
         public int endDistance = 300;
         public override void OnRunStart(Vector2 position)
         {
-
-
             endBranch = repeatWorm > 1;
             /*if (Main.rand.NextBool(5))
             {
@@ -671,7 +671,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
 
 
-            WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, size, false);
+            WorldGen.digTunnel((int)position.X, (int)position.Y + 50, 0, 0, 1, size, false);
         }
 
         public override void OnRunEnd(Vector2 position)

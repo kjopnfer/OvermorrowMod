@@ -38,7 +38,7 @@ namespace OvermorrowMod.Common.WorldGeneration
             return currentPosition += endDirection;
         }
 
-        int invertDirection = 1;
+        protected int invertDirection = 1;
         private Vector2 GetDirection()
         {
             var logger = OvermorrowModFile.Instance.Logger;
@@ -47,7 +47,7 @@ namespace OvermorrowMod.Common.WorldGeneration
             float turnAmount = 90; // 45
             float scale = 0.6f; // 0.4
 
-            float degrees = MathHelper.Lerp(-turnAmount, turnAmount, noise.GetNoise(currentPosition.X, currentPosition.Y) * scale);
+            float degrees = MathHelper.Lerp(-turnAmount * invertDirection, turnAmount * invertDirection, noise.GetNoise(currentPosition.X, currentPosition.Y) * scale);
             direction = Vector2.One.RotatedBy(degrees);
 
             return direction;
