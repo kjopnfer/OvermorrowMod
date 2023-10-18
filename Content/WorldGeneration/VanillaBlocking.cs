@@ -36,8 +36,9 @@ namespace OvermorrowMod.Content.WorldGeneration
             int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Terrain"));
             if (TerrainIndex != -1)
             {
-                //tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain Base", TestGenerateTerrainBase));
                 tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain Tunnels", TestGenerateTunnels));
+                tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain Base", TestGenerateTerrainBase));
+
                 //tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain Base 2", TestGenerateTerrainLayer));
 
                 //tasks.Insert(TerrainIndex + 3, new PassLegacy("Test Terrain Tunnels", TestGenerateTerrainTunnels));
@@ -209,7 +210,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 cliffPositionX = xPosition;
             }
 
-            GenerateCliffTop(cliffPositionX, (int)(Main.worldSurface * 0.5f));
+            //GenerateCliffTop(cliffPositionX, (int)(Main.worldSurface * 0.5f));
         }
 
         private void GenerateCliffTop(int xOrigin, int yOrigin)
@@ -442,7 +443,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             var logger = OvermorrowModFile.Instance.Logger;
 
-            Vector2 startPoint = new Vector2(0, (float)Main.worldSurface * 0.75f);
+            // Lerp from 0.7 to 0.9 back to 0.7
+            Vector2 startPoint = new Vector2(0, (float)Main.worldSurface * 0.6f);
             Vector2 endPoint = startPoint + new Vector2(300, 0);
             int repeat = 64;
 
@@ -470,29 +472,6 @@ namespace OvermorrowMod.Content.WorldGeneration
             SurfaceBuilder worm = new SurfaceBuilder(startPoint, endPoint, noise, repeat);
             worm.trueStartPoint = endPoint;
             worm.Run(out _);
-
-            //SurfaceTunneler tunneler = new SurfaceTunneler(startPoint + new Vector2(0, 25), endPoint, noise, repeat);
-            //tunneler.Run(out _);
-
-
-            /*for (int i = 0; i < 8; i++)
-            {
-                SurfaceWormBuilder worm = new SurfaceWormBuilder(startPoint, endPoint, 8);
-                worm.Run(out Vector2 lastPosition);
-
-                startPoint = lastPosition;
-                endPoint = startPoint + new Vector2(300, 0).RotateRandom(MathHelper.PiOver2);
-            }*/
-
-
-            /*ShapeData slimeShapeData = new ShapeData();
-            float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
-            WorldUtils.Gen(new Point((int)startPoint.X, (int)startPoint.Y), new Shapes.Slime(48, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-
-            PerlinWorm worm2 = new PerlinWorm(endPoint, endPoint + new Vector2(240, -250));
-            worm2.Run();
-            WorldUtils.Gen(new Point((int)endPoint.X, (int)endPoint.Y), new Shapes.Slime(34, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-            */
         }
 
     }
@@ -535,16 +514,25 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                 if (currentIteration > maxTries * 0.2f)
                 {
-
-
                 }
+            }
+
+            var logger = OvermorrowModFile.Instance.Logger;
+
+            // Make the middle spawn area flatter 
+            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4))
+            {
+                weight = 0.7f;
+            }
+            else
+            {
+                weight = 0.6f;
             }
 
             Vector2 tileLocation = new Vector2((int)position.X, (int)position.Y);
             bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
 
             // Top part of the terrain
-            var logger = OvermorrowModFile.Instance.Logger;
 
             // Fill in tiles below
             ushort tileType = TileID.Dirt;
@@ -587,14 +575,18 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Tile tile = Framing.GetTileSafely((int)tileLocation.X, (int)tileLocation.Y + 1);
             bool checkTileType = tile.TileType != TileID.ObsidianBrick;
-        
+
         }
 
         public override void OnRunEnd(Vector2 position)
         {
             if (repeatWorm > 1)
             {
-                Vector2 branchEndpoint = position + new Vector2(endDistance, 0);
+                int yOffset = 0;
+                if (position.X <= (Main.maxTilesX / 7 * 3)) yOffset = 15;
+                else if (position.X >= (Main.maxTilesX / 7 * 4)) yOffset = -15;
+
+                Vector2 branchEndpoint = position + new Vector2(endDistance, yOffset);
 
                 //Vector2 branchEndpoint = trueStartPoint + new Vector2(endDistance, 0);
 
@@ -607,15 +599,22 @@ namespace OvermorrowMod.Content.WorldGeneration
                 //    WorldUtils.Gen(new Point((int)branchEndpoint.X, (int)branchEndpoint.Y), new Shapes.Slime(radius, xScale, yScale), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
 
                 SurfaceBuilder branchWorm = new SurfaceBuilder(position, branchEndpoint, noise, --repeatWorm);
-                //branchWorm.weight = Main.rand.NextFloat(0.6f, 0.8f);
-                //weight = Main.rand.NextFloat(0.2f, 0.6f);
-                //weight = 0.6f;
-                //branchWorm.branchChance = branchChance * 2;
                 branchWorm.Run(out _);
 
+                /*if (branchEndpoint.X >= (Main.maxTilesX / 7 * 3) - 50 && branchEndpoint.X <= (Main.maxTilesX / 7 * 4))
+                {
+                    branchEndpoint += new Vector2(0, -25);
+                }
+
+                int startOffset = 0;
+                if (position.X >= (Main.maxTilesX / 7 * 4) - 25 && position.X <= (Main.maxTilesX / 7 * 4) + 50)
+                {
+                    startOffset = -100;
+                }
+
                 //SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, 50), branchEndpoint + new Vector2(0, 50), noise);
-                SurfaceTunneler tunnel = new SurfaceTunneler(startPosition, branchEndpoint, noise);
-                tunnel.Run(out _);
+                SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, startOffset), branchEndpoint, noise);
+                tunnel.Run(out _);*/
             }
 
             base.OnRunEnd(position);
@@ -653,6 +652,8 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             int size = Main.rand.Next(2, 6);
 
+
+
             if (!endBranch)
             {
                 float progress = Utils.Clamp((currentIteration) / (maxTries * 0.2f), 0, 1);
@@ -670,8 +671,17 @@ namespace OvermorrowMod.Content.WorldGeneration
                 }
             }
 
+            // Push the tunnels downwards so they don't intersect with the spawn
+            int yOffset = 50;
+            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4))
+            {
+                yOffset = 75;
+            }
+            else
+            {
+                WorldGen.digTunnel((int)position.X, (int)position.Y + yOffset, 0, 0, 1, size, false);
+            }
 
-            WorldGen.digTunnel((int)position.X, (int)position.Y + 50, 0, 0, 1, size, false);
         }
 
         public override void OnRunEnd(Vector2 position)
