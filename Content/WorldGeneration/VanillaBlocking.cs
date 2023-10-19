@@ -520,19 +520,11 @@ namespace OvermorrowMod.Content.WorldGeneration
             var logger = OvermorrowModFile.Instance.Logger;
 
             // Make the middle spawn area flatter 
-            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4))
-            {
-                weight = 0.7f;
-            }
-            else
-            {
-                weight = 0.6f;
-            }
+            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4)) weight = 0.7f;
+            else weight = 0.6f;
 
             Vector2 tileLocation = new Vector2((int)position.X, (int)position.Y);
             bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
-
-            // Top part of the terrain
 
             // Fill in tiles below
             ushort tileType = TileID.Dirt;
@@ -552,15 +544,12 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                     if (runnerBlock == 20)
                     {
-
                         // This makes the terrain smoother by removing any sudden 1 block holes
                         if (Framing.GetTileSafely((int)position.X - 1, y - 1).HasTile)
                         {
                             //logger.Error("go up");
                             yOffset--;
                         }
-                        //else if (checkOrphanTile) yOffset++;
-
                     }
 
                     if (withinBounds) WorldGen.PlaceTile((int)position.X, y + yOffset, tileType, true, true);
@@ -601,7 +590,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 SurfaceBuilder branchWorm = new SurfaceBuilder(position, branchEndpoint, noise, --repeatWorm);
                 branchWorm.Run(out _);
 
-                /*if (branchEndpoint.X >= (Main.maxTilesX / 7 * 3) - 50 && branchEndpoint.X <= (Main.maxTilesX / 7 * 4))
+                if (branchEndpoint.X >= (Main.maxTilesX / 7 * 3) - 50 && branchEndpoint.X <= (Main.maxTilesX / 7 * 4))
                 {
                     branchEndpoint += new Vector2(0, -25);
                 }
@@ -613,8 +602,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 }
 
                 //SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, 50), branchEndpoint + new Vector2(0, 50), noise);
-                SurfaceTunneler tunnel = new SurfaceTunneler(startPosition + new Vector2(0, startOffset), branchEndpoint, noise);
-                tunnel.Run(out _);*/
+                SurfaceTunneler tunnel = new SurfaceTunneler(startPosition, branchEndpoint, noise);
+                tunnel.Run(out _);
             }
 
             base.OnRunEnd(position);
@@ -637,15 +626,6 @@ namespace OvermorrowMod.Content.WorldGeneration
         public int endDistance = 300;
         public override void OnRunStart(Vector2 position)
         {
-            endBranch = repeatWorm > 1;
-            /*if (Main.rand.NextBool(5))
-            {
-                Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
-
-                SurfaceTunneler branchWorm = new SurfaceTunneler(position, branchEndpoint, noise, Main.rand.Next(1, 5));
-                branchWorm.weight = Main.rand.NextFloat(0.2f, 0.4f);
-                //branchWorm.Run(out Vector2 lastBranchPosition);
-            }*/
         }
 
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
@@ -671,16 +651,26 @@ namespace OvermorrowMod.Content.WorldGeneration
                 }
             }
 
+            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4)) weight = 0.7f;
+            else weight = 0.6f;
+
             // Push the tunnels downwards so they don't intersect with the spawn
-            int yOffset = 50;
+            int yOffset = 65;
             if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4))
             {
-                yOffset = 75;
+                // The distance between the flat area of the spawn
+                int totalDistance = (Main.maxTilesX / 7 * 4) - (Main.maxTilesX / 7 * 3);
+                //yOffset = (int)MathHelper.Lerp(45, 75, (position.X - Main.maxTilesX / 7 * 4) / totalDistance);
             }
             else
             {
-                WorldGen.digTunnel((int)position.X, (int)position.Y + yOffset, 0, 0, 1, size, false);
+                
+                int lerpOffset = (int)MathHelper.Lerp(75, 0, ModUtils.EaseInQuart(position.X / (Main.maxTilesX / 7 * 3)));
+                if (position.X >= (Main.maxTilesX / 7 * 4)) lerpOffset = (int)MathHelper.Lerp(0, 75, ModUtils.EaseOutQuart((position.X - Main.maxTilesX / 7 * 4) / Main.maxTilesX));
+                WorldGen.digTunnel((int)position.X, (int)position.Y + lerpOffset, 0, 0, 1, size, false);
+                //WorldGen.digTunnel((int)position.X, (int)position.Y + yOffset, 0, 0, 1, size, false);
             }
+
 
         }
 
