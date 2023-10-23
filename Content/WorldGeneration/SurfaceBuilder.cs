@@ -206,10 +206,27 @@ namespace OvermorrowMod.Content.WorldGeneration
             else
             {
 
-                int lerpOffset = (int)MathHelper.Lerp(75, 0, ModUtils.EaseInQuart(position.X / (Main.maxTilesX / 7 * 3)));
-                if (position.X >= (Main.maxTilesX / 7 * 4)) lerpOffset = (int)MathHelper.Lerp(0, 75, ModUtils.EaseOutQuart((position.X - Main.maxTilesX / 7 * 4) / Main.maxTilesX));
+                float progress = ModUtils.EaseInQuart(position.X / (Main.maxTilesX / 7 * 3));
+                int lerpOffset = (int)MathHelper.Lerp(75, 0, progress);
+                int branchProbability = (int)MathHelper.Lerp(1000, 550, progress);
+
+                if (position.X >= (Main.maxTilesX / 7 * 4))
+                {
+                    progress = ModUtils.EaseOutQuart((position.X - Main.maxTilesX / 7 * 4) / Main.maxTilesX);
+                    branchProbability = (int)MathHelper.Lerp(1000, 550, progress);
+                    lerpOffset = (int)MathHelper.Lerp(0, 75, progress);
+                }
+
                 WorldGen.digTunnel((int)position.X, (int)position.Y + lerpOffset, 0, 0, 1, size, false);
 
+                if (Main.rand.NextBool(300) && lerpOffset > 25)
+                {
+                    Vector2 branchEndpoint = position + new Vector2(0, lerpOffset) + new Vector2(0, yOffset).RotatedBy(MathHelper.PiOver2);
+
+                    SurfaceTunnelBranch branchWorm = new SurfaceTunnelBranch(position + new Vector2(0, lerpOffset), branchEndpoint, noise, Main.rand.Next(3, 5));
+                    branchWorm.toSurface = true;
+                    branchWorm.Run(out _);
+                }
                 //WorldGen.digTunnel((int)position.X, (int)position.Y + yOffset, 0, 0, 1, size, false);
             }
         }
@@ -220,37 +237,18 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 //if (Main.rand.NextBool(2))
                 {
-                    int lerpOffset = (int)MathHelper.Lerp(75, 0, ModUtils.EaseInQuart(position.X / (Main.maxTilesX / 7 * 3)));
+                    int lerpOffset = (int)MathHelper.Lerp(Main.rand.Next(50, 75), 0, ModUtils.EaseInQuart(position.X / (Main.maxTilesX / 7 * 3)));
                     if (position.X >= (Main.maxTilesX / 7 * 4)) lerpOffset = (int)MathHelper.Lerp(0, 75, ModUtils.EaseOutQuart((position.X - Main.maxTilesX / 7 * 4) / Main.maxTilesX));
 
-                    Vector2 branchEndpoint = position + new Vector2(0, lerpOffset) + new Vector2(0, 50).RotateRandom(MathHelper.Pi);
+                    //bool toSurface = Main.rand.NextBool() ? true : false;
+                    bool toSurface = false;
+                    int yOffset = toSurface ? -100 : 50;
+                    Vector2 branchEndpoint = position + new Vector2(0, lerpOffset) + new Vector2(0, yOffset).RotateRandom(MathHelper.Pi);
 
                     SurfaceTunnelBranch branchWorm = new SurfaceTunnelBranch(position + new Vector2(0, lerpOffset), branchEndpoint, noise, Main.rand.Next(2, 4));
+                    //branchWorm.toSurface = toSurface;
                     branchWorm.Run(out _);
                 }
-            }
-
-
-            if (repeatWorm > 1)
-            {
-                //Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
-
-                //Vector2 branchEndpoint = endPosition + new Vector2(endDistance * 0.5f, 0);
-
-                ShapeData slimeShapeData = new ShapeData();
-                float xScale = 0.4f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
-                float yScale = Main.rand.NextFloat(0.6f, 0.8f);
-                int radius = Main.rand.Next(32, 48);
-
-
-                //if (Framing.GetTileSafely((int)branchEndpoint.X, (int)branchEndpoint.Y).HasTile)
-                //    WorldUtils.Gen(new Point((int)branchEndpoint.X, (int)branchEndpoint.Y), new Shapes.Slime(radius, xScale, yScale), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-
-                /*SurfaceTunneler branchWorm = new SurfaceTunneler(position, branchEndpoint, noise, --repeatWorm);
-                //weight = Main.rand.NextFloat(0.2f, 0.6f);
-                branchWorm.weight = 0.4f;
-                //branchWorm.branchChance = branchChance * 2;
-                branchWorm.Run(out Vector2 lastBranchPosition);*/
             }
 
             base.OnRunEnd(position);
@@ -260,6 +258,7 @@ namespace OvermorrowMod.Content.WorldGeneration
     public class SurfaceTunnelBranch : PerlinWorm
     {
         public int repeatWorm = 0;
+        public bool toSurface = false;
         public SurfaceTunnelBranch(Vector2 startPosition, Vector2 endPosition, FastNoiseLite noise, int repeatWorm = 1) : base(startPosition, endPosition, noise)
         {
             invertDirection = -1;
@@ -270,6 +269,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
         {
             int size = Main.rand.Next(3, 7);
+            if (toSurface) size = Main.rand.Next(1, 4);
             //if (Vector2.Distance(position, endPosition) < 25) size = Main.rand.Next(8, 12);
 
             WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, size);
@@ -281,17 +281,24 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (repeatWorm > 1)
             {
                 //Vector2 branchEndpoint = position + new Vector2(endDistance * 0.5f, 0).RotateRandom(MathHelper.Pi);
+                int invert = toSurface ? -1 : -1;
+                int startBound = toSurface ? 75 : 50;
+                int endBound = toSurface ? 150 : 75;
 
-                Vector2 branchEndpoint = endPosition + new Vector2(endDistance, endDistance).RotateRandom(MathHelper.Pi);
+                Vector2 branchEndpoint = endPosition + new Vector2(Main.rand.Next(startBound, endBound) * invert, Main.rand.Next(startBound, endBound) * invert).RotateRandom(MathHelper.Pi);
+                if (toSurface) branchEndpoint = endPosition + new Vector2(Main.rand.Next(startBound, endBound) * invert, Main.rand.Next(startBound, endBound) * invert).RotatedBy(MathHelper.PiOver2);
+
                 SurfaceTunnelBranch branchWorm = new SurfaceTunnelBranch(position, branchEndpoint, noise, --repeatWorm);
                 //weight = Main.rand.NextFloat(0.2f, 0.6f);
                 //branchWorm.branchChance = branchChance * 2;
-                branchWorm.Run(out Vector2 lastBranchPosition);
+                branchWorm.toSurface = toSurface;
+                branchWorm.Run(out _);
             }
             else
             {
-                
+                if (toSurface) return;
 
+                // Creates an open chamber at the end of the run
                 bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
                 //WorldGen.digTunnel(position.X, position.Y, -8, 0, Main.rand.Next(20, 28), Main.rand.Next(4, 8), true);
                 if (withinBounds)
