@@ -61,7 +61,7 @@ namespace OvermorrowMod.Common.WorldGeneration
             //WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, Main.rand.Next(4, 9), false);
         }
 
-        public virtual void OnRunEnd(Vector2 position) { }
+        public virtual void OnRunEnd(Vector2 endPosition) { }
 
         protected int maxTries = 1000;
         public void Run(out Vector2 lastPosition)
