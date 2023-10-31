@@ -69,7 +69,7 @@ namespace OvermorrowMod.Common.WorldGeneration
             OnRunStart(currentPosition);
 
             int currentIteration = 0;
-            while (Vector2.Distance(endPosition, currentPosition) > 1 && currentIteration < maxTries)
+            while (Vector2.Distance(currentPosition, endPosition) > 1 && currentIteration < maxTries)
             {
                 MoveTowardsEndpoint();
 

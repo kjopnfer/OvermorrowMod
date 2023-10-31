@@ -44,6 +44,9 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
         {
+            bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
+            if (!withinBounds) return;
+
             int size = 9;
 
             if (!endBranch)
@@ -68,7 +71,6 @@ namespace OvermorrowMod.Content.WorldGeneration
             else weight = 0.6f;
 
             Vector2 tileLocation = new Vector2((int)position.X, (int)position.Y);
-            bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
 
             // Fill in tiles below
             ushort tileType = TileID.Dirt;
@@ -128,6 +130,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 float yScale = Main.rand.NextFloat(0.6f, 0.8f);
                 int radius = Main.rand.Next(32, 48);
 
+                //if (Framing.GetTileSafely((int)branchEndpoint.X, (int)branchEndpoint.Y).HasTile)
+                //    WorldUtils.Gen(new Point((int)branchEndpoint.X, (int)branchEndpoint.Y), new Shapes.Slime(radius, xScale, yScale), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
 
                 SurfaceBuilder branchWorm = new SurfaceBuilder(position, branchEndpoint, noise, --repeatWorm);
                 branchWorm.Run(out _);
@@ -135,9 +139,6 @@ namespace OvermorrowMod.Content.WorldGeneration
                 SurfaceTunneler tunnel = new SurfaceTunneler(startPosition, branchEndpoint, noise);
                 //SurfaceTunneler tunnel = new SurfaceTunneler(position, branchEndpoint, noise);
                 tunnel.Run(out _);
-
-                WorldGen.TileRunner((int)startPosition.X, (int)startPosition.Y, 32, 1, TileID.ObsidianBrick, true);
-                WorldGen.TileRunner((int)branchEndpoint.X, (int)branchEndpoint.Y, 32, 1, TileID.ObsidianBrick, true);
             }
 
             base.OnRunEnd(position);

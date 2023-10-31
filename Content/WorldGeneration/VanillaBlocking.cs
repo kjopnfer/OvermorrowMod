@@ -52,8 +52,9 @@ namespace OvermorrowMod.Content.WorldGeneration
             RemovePass(tasks, "Small Holes");
             //RemovePass(tasks, "Surface Caves");
             //RemovePass(tasks, "Dirt Layer Caves");
-            RemovePass(tasks, "Rock Layer Caves");
-            RemovePass(tasks, "Wavy Caves");
+
+            //RemovePass(tasks, "Rock Layer Caves");
+            //RemovePass(tasks, "Wavy Caves");
 
             RemovePass(tasks, "Ocean Sand");
             RemovePass(tasks, "Dunes");
@@ -68,7 +69,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             RemovePass(tasks, "Traps");
 
             // This crashes cause of no tunnels or something
-            RemovePass(tasks, "Granite");
+            //RemovePass(tasks, "Granite");
 
             // This forces an infinite loop, not sure what
             RemovePass(tasks, "Wall Variety");
