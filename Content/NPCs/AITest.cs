@@ -30,6 +30,11 @@ namespace OvermorrowMod.Content.NPCs
         {
             // DisplayName.SetDefault("Lil' Cubey");
             Main.npcFrameCount[Type] = 1;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
+            {
+                Hide = true,
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
         public override void SetDefaults()

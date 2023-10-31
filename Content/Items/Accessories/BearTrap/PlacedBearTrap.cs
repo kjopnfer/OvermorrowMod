@@ -91,14 +91,12 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (trappedNPC != null && trappedNPC.active)
             {
                 trappedNPC.GetGlobalNPC<OvermorrowGlobalNPC>().BearTrapped = false;
             }
-
-            base.Kill(timeLeft);
         }
 
         public override bool PreDraw(ref Color lightColor)

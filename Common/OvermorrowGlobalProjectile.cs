@@ -40,7 +40,7 @@ namespace OvermorrowMod.Common
         private int UndertakerCounter = 0;
         private bool WildEyeCrit = false;
 
-        public GunType SourceGunType = GunType.None;
+        public WeaponID SourceGunType = WeaponID.None;
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
@@ -94,7 +94,7 @@ namespace OvermorrowMod.Common
                 modifiers.CritDamage *= 1.1f;
             }
 
-            
+
             #endregion
 
             #region Accessories
@@ -155,11 +155,22 @@ namespace OvermorrowMod.Common
             #endregion
         }
 
+        public Entity ownerEntity { get; private set; }
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
-            if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
+            if (source is EntitySource_Parent parent)
             {
-                if (gun.GetWeaponType() != GunType.None) SourceGunType = gun.GetWeaponType();
+                ownerEntity = parent.Entity;
+                /*if (parent.Entity is NPC npc)
+                    Main.NewText("from npc " + npc.FullName);
+
+                if (parent.Entity is Player player)
+                    Main.NewText("from player " + player.name);*/
+            }
+
+            if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item item)
+            {
+                if (item.IsGun()) SourceGunType = item.GetWeaponTypeID();
             }
 
 
@@ -234,7 +245,7 @@ namespace OvermorrowMod.Common
             }
         }
 
-        public override void Kill(Projectile projectile, int timeLeft)
+        public override void OnKill(Projectile projectile, int timeLeft)
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
@@ -249,8 +260,6 @@ namespace OvermorrowMod.Common
             {
                 gunPlayer.FarlanderSpeedBoost = 0;
             }
-
-            base.Kill(projectile, timeLeft);
         }
 
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
@@ -274,7 +283,7 @@ namespace OvermorrowMod.Common
                 }
             }
 
-            if (player.GetModPlayer<GunPlayer>().CowBoySet && hit.Crit && SourceGunType == GunType.Revolver)
+            if (player.GetModPlayer<GunPlayer>().CowBoySet && hit.Crit && SourceGunType == WeaponID.Revolver)
             {
                 NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
                 if (closestNPC != null)
@@ -296,11 +305,6 @@ namespace OvermorrowMod.Common
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
-
-            if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
-            {
-                SpawnPracticeTargetFail(player);
-            }
 
             if (Farlander && !FarlanderHit)
             {
@@ -342,5 +346,6 @@ namespace OvermorrowMod.Common
 
             base.GrappleRetreatSpeed(projectile, player, ref speed);
         }
+
     }
 }

@@ -69,14 +69,14 @@ namespace OvermorrowMod.Common.VanillaOverrides
 
         public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
         {
-            //if (player.CheckArmorEquipped(ItemID.CowboyHat)) Main.NewText("a" + player.armor[0].ToString());
         }
 
         public override void ModifyWeaponCrit(Item item, Player player, ref float crit)
         {
             if (player.CheckArmorEquipped(ItemID.CowboyJacket) && item.DamageType == DamageClass.Ranged)
             {
-                if (item.GetWeaponType() == GunType.Revolver)
+                //if (item.GetWeaponType() == GunType.Revolver)
+                if (item.IsWeaponType(WeaponID.Revolver))
                     crit += 10f;
                 else
                     crit += 5f;
@@ -85,7 +85,6 @@ namespace OvermorrowMod.Common.VanillaOverrides
 
         public override void ModifyWeaponKnockback(Item item, Player player, ref StatModifier knockback)
         {
-            //Main.NewText("i" + player.armor[2].ToString());
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)

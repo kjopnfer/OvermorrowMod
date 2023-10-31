@@ -91,7 +91,7 @@ namespace OvermorrowMod.Common
             AmuletKey = KeybindLoader.RegisterKeybind(this, "Artemis Amulet Attack", "C");
             ToggleUI = KeybindLoader.RegisterKeybind(this, "Toggle UI", "R"); // This is for debugging
             AmmoSwapKey = KeybindLoader.RegisterKeybind(this, "Activate Ammo Swap", "Q");
-            BearTrapKey = KeybindLoader.RegisterKeybind(this, "Place Bear Trap", "T");
+            BearTrapKey = KeybindLoader.RegisterKeybind(this, "Place Bear Trap", "V");
 
             ShaderLoader.Load();
 
@@ -184,12 +184,15 @@ namespace OvermorrowMod.Common
 
         private void ReplaceVanillaTextures()
         {
+            TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Boomstick");
             TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "ChainKnife");
             TextureAssets.Item[ItemID.Handgun] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Handgun");
-            TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
             TextureAssets.Item[ItemID.Musket] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Musket");
             TextureAssets.Item[ItemID.Minishark] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Minishark");
-            TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Boomstick");
+            TextureAssets.Item[ItemID.PhoenixBlaster] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "PhoenixBlaster");
+            TextureAssets.Item[ItemID.QuadBarrelShotgun] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "QuadBarrel");
+            TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
+            TextureAssets.Item[ItemID.TheUndertaker] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Undertaker");
         }
 
         public override void Unload()

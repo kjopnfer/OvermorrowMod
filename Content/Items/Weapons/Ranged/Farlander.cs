@@ -60,7 +60,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void Kill(int timeLeft)
         {
-            //Main.NewText("death");
             AICounter = 0;
         }
 
@@ -139,8 +138,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             float chargeProgress = Utils.Clamp(gunPlayer.FarlanderCharge / 120f, 0, 1);
             float accuracy = MathHelper.Lerp(12, 0, chargeProgress);
 
-            //Main.NewText("accuracy: " + accuracy + " from " + chargeProgress + " -> " + gunPlayer.FarlanderCharge);
-
             Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(accuracy));
             int chargeDamage = (int)(chargeProgress == 1 ? damage * 1.5f : damage);
 
@@ -158,7 +155,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         {
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
             float chargeProgress = Utils.Clamp(gunPlayer.FarlanderCharge / 120f, 0, 1);
-            //Main.NewText(chargeProgress);
 
             if (ShotsFired < MaxShots) player.scope = true;
         }
@@ -183,8 +179,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
             if (shootCounter > maxShootTime - 9)
             {
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Reload(BlendState.Additive);
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
 
@@ -195,8 +190,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                 spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.09f, rotationSpriteEffects, 1);
                 spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.09f, rotationSpriteEffects, 1);
 
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
             }
         }
 

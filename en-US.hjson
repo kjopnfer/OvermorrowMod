@@ -123,6 +123,14 @@ Mods: {
 			TestFire.DisplayName: FIRE TEST
 			TestTileOverlay.DisplayName: SLIME TEST
 			FakeGold.DisplayName: Fakeite
+			Windrunner_Held.DisplayName: Windrunner_ Held
+			Windrunner_Thrown.DisplayName: Windrunner_ Thrown
+			Windrunner_Stab.DisplayName: Windrunner_ Stab
+			Windrunner_Charge.DisplayName: Windrunner_ Charge
+			AmethystSlicer_Held.DisplayName: Amethyst Slicer_ Held
+			AmethystSlicer_Thrown.DisplayName: Amethyst Slicer_ Thrown
+			AmethystSlicer_Shards.DisplayName: Amethyst Slicer_ Shards
+			AmethystCrystal.DisplayName: Amethyst Crystal
 		}
 
 		NPCs: {
@@ -165,7 +173,7 @@ Mods: {
 			}
 
 			CaveFish.DisplayName: Sullen Angler
-			StrykeBeak.DisplayName: Red Strykebeak
+			StrykeBeak.DisplayName: Strykebeak
 			GraniteClamper.DisplayName: Granite Clamper
 
 			Mercenary: {
@@ -285,6 +293,7 @@ Mods: {
 			Ruin2.DisplayName: Ruin2
 			Ruin3.DisplayName: Ruin3
 			Spin.DisplayName: Spin
+			BlueThrasher.DisplayName: Blue Thrasher
 		}
 
 		Items: {
@@ -784,6 +793,7 @@ Mods: {
 				DisplayName: Knife
 				Tooltip:
 					'''
+					Stacks up to 2
 					{Keyword:Alt}: Throw the knife. Hold down to increase {Keyword:Focus}
 					{Keyword:Focus}: Gain 20% increased critical strike chance
 					'''
@@ -816,9 +826,9 @@ Mods: {
 				Tooltip:
 					'''
 					Launches high velocity shards that stick to blocks
+					Starts with 0 ammo and does not reload
 					{Keyword:Passive}: Gain 1 shard on Critical Hit
 					{Keyword:Alt}: Activate all unarmed shards
-					Starts with 0 ammo and does not reload
 					'''
 			}
 
@@ -865,6 +875,41 @@ Mods: {
 
 			MonkeyStone_ShowItem: {
 				DisplayName: Monkey Stone_ Show Item
+				Tooltip: ""
+			}
+
+			Windrunner: {
+				DisplayName: Windrunner
+				Tooltip:
+					'''
+					Stacks up to 2
+					Hit enemies to gain Wind Charge
+					On full charge, your next stab allows you to dash forward
+					'''
+			}
+
+			AmethystSlicer: {
+				DisplayName: Amethyst Slicer
+				Tooltip:
+					'''
+					Stacks up to 2
+					{Keyword:Alt}: Throw the Dagger, breaking into shards on hit
+					{Keyword:Alt} {Keyword:Focus}: Shards grow crystals on tile contact
+					'''
+			}
+
+			OldWhetstone: {
+				DisplayName: Old Whetstone
+				Tooltip: Increased critical strike chance proportionate to max health
+			}
+
+			SimpleScabbard: {
+				DisplayName: Simple Scabbard
+				Tooltip: ""
+			}
+
+			WarmAmulet: {
+				DisplayName: Warm Amulet
 				Tooltip: ""
 			}
 		}

@@ -15,13 +15,12 @@ using Terraria.Audio;
 using OvermorrowMod.Common.Particles;
 using Terraria.ModLoader.IO;
 using System.IO;
+using OvermorrowMod.Common.VanillaOverrides;
 
 namespace OvermorrowMod.Content.NPCs
 {
-    public class SlimeOverrides : GlobalNPC
+    public class SlimeOverrides : VanillaNPCOverride
     {
-        public override bool InstancePerEntity => true;
-
         public override bool? CanBeHitByItem(NPC npc, Player player, Item item)
         {
             return base.CanBeHitByItem(npc, player, item);
@@ -34,28 +33,13 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void SetDefaults(NPC npc)
         {
-            if (npc.type == NPCID.BlueSlime)
-            {
-                if (npc.netID == NPCID.GreenSlime)
-                {
-                    npc.lifeMax = 30;
-                }
-            }
+            // This doesn't do anything
         }
 
         int idleJumpDirection = 1;
         public override void OnSpawn(NPC npc, IEntitySource source)
         {
             // This shit doesn't run
-            if (npc.type == NPCID.BlueSlime)
-            {
-
-                if (npc.netID == NPCID.GreenSlime)
-                {
-                    npc.lifeMax = 30;
-                }
-            }
-
             base.OnSpawn(npc, source);
         }
 
@@ -65,82 +49,186 @@ namespace OvermorrowMod.Content.NPCs
             PreJump = 1,
             Jump = 2,
             Land = 3,
+            Swim = 4,
         }
 
-        // ai[0] is AI State
-        // ai[2] is not used because for some reason vanilla decides to stick whatever bonus drop in here
-        // ai[2] is AI Counter
-        // ai[3] is an AI Cycle (how many times the NPC has run through a state)
+        List<int> SlimeOverrideIDs = new List<int>()
+        {
+            NPCID.GreenSlime, NPCID.BlueSlime, NPCID.RedSlime, NPCID.PurpleSlime, NPCID.YellowSlime, NPCID.BlackSlime, NPCID.JungleSlime, NPCID.Pinky
+        };
+
+        private float AIState = 0;
+        private float AICycles = 0;
+        private float AICounter = 0;
+        private float FrameCounter = 0;
+
+        private bool oldCollision = true;
         public override bool PreAI(NPC npc)
         {
             if (npc.type == NPCID.BlueSlime)
             {
                 // This is so stupid why would Red do this
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
-                    Player player = Main.player[npc.target];
-                    if (!player.active) npc.target = 255;
-
-                    switch (npc.ai[0])
+                    npc.velocity.X *= 0.98f;
+                    float moveSpeed = 0.25f * idleJumpDirection;
+                    Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+                    //Collision.StepDown(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, true);
+                    //Main.NewText("collideX: " + npc.collideX + " collideY: " + npc.collideY + " fC: " + FrameCounter + " aC: " + AICounter);
+                    if (npc.wet && AIState != (int)AICase.Swim)
                     {
+                        AICounter = 0;
+                        FrameCounter = 0;
+                        AICycles = 0;
+                        AIState = (int)AICase.Swim;
+                    }
+
+                    switch (AIState)
+                    {
+                        #region Idle
                         case (int)AICase.Idle:
-                            if (npc.ai[2] == 1) npc.velocity.X = 0.1f * idleJumpDirection;
+                            //Main.NewText("idle " + npc.collideY + ", velocity:" + npc.velocity.ToString());
 
-                            if (npc.ai[2]++ >= 40)
+                            if (npc.collideY)
                             {
-                                npc.velocity.X = 0;
-                                npc.ai[2] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
-
-                                if (npc.ai[3]++ >= 3)
+                                if (AICounter == 1 && npc.velocity.X == 0)
                                 {
-                                    npc.ai[0] = (int)AICase.PreJump;
-                                    npc.ai[2] = 0;
-                                    npc.ai[3] = 0;
+                                    npc.velocity.X = moveSpeed;
+                                    AICounter++;
+                                }
+
+                                if (!oldCollision)
+                                {
+                                    npc.velocity.X = moveSpeed;
+                                }
+                            }
+
+                            if (FrameCounter++ >= 40) FrameCounter = 1;
+
+                            if (AICounter++ >= 40)
+                            {
+                                if (npc.collideY) npc.velocity.X = moveSpeed;
+
+                                AICounter = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                //FrameCounter = 1;
+                                if (AICycles++ >= 5)
+                                {
+                                    if (npc.collideY) npc.velocity.X = 0;
+
+                                    AIState = (int)AICase.PreJump;
+                                    AICounter = 0;
+                                    FrameCounter = 0;
+                                    AICycles = 0;
                                 }
                             }
                             break;
+                        #endregion
+                        #region PreJump
                         case (int)AICase.PreJump:
                             int bounceRate = 1;
-                            if (npc.ai[3] >= 4) bounceRate = 2;
+                            if (AICycles >= 4) bounceRate = 2;
 
-                            npc.ai[2] += bounceRate;
+                            //Main.NewText("prejump " + npc.collideY + " / " + ModUtils.CheckEntityBottomSlopeCollision(npc));
 
-                            if (npc.ai[2] >= 12)
+                            if (npc.collideY || npc.CheckEntityBottomSlopeCollision())
                             {
-                                npc.ai[2] = 0;
-                                if (npc.ai[3]++ >= 8)
+                                AICounter += bounceRate;
+                            }
+
+                            // Prevent the NPC from sliding after being hit into the air and landing
+                            if (npc.collideY && npc.velocity.X != 0 && npc.oldVelocity.X != 0)
+                            {
+                                npc.velocity.X = 0;
+                            }
+
+                            FrameCounter += bounceRate;
+
+                            if (AICounter >= 12)
+                            {
+                                AICounter = 0;
+                                FrameCounter = 0;
+
+                                if (AICycles++ >= 8)
                                 {
-                                    npc.ai[0] = (int)AICase.Jump;
-                                    npc.ai[3] = 0;
+                                    AIState = (int)AICase.Jump;
+                                    AICycles = 0;
                                 }
                             }
                             break;
+                        #endregion
+                        #region Jump
                         case (int)AICase.Jump:
-                            if (npc.target != 255) idleJumpDirection = player.Center.X > npc.Center.X ? 1 : -1;
+                            if (target != null) idleJumpDirection = target.Center.X > npc.Center.X ? 1 : -1;
 
-                            if (npc.ai[2]++ == 0)
+                            if (AICounter++ == 0)
                                 npc.velocity = new Vector2(2 * idleJumpDirection, -7);
+
+                            FrameCounter++;
 
                             // Sometimes the NPC gets stuck on weird blocks or ledges and only ends up jumping straight up
                             // This nudges the NPC while in midair to get over these obstacles
-                            if (npc.velocity.X == 0 && npc.ai[2] >= 5) npc.velocity.X = 2 * idleJumpDirection;
+                            if (npc.velocity.X == 0 && AICounter >= 5) npc.velocity.X = 2 * idleJumpDirection;
 
-                            if (npc.collideY && npc.ai[2] >= 15)
+                            if (npc.collideY && AICounter >= 15)
                             {
-                                if (npc.velocity.X != 0) npc.velocity.X = 0;
+                                //if (npc.velocity.X != 0) npc.velocity.X = 0;
 
-                                npc.ai[0] = (int)AICase.Land;
-                                npc.ai[2] = 0;
+                                AIState = (int)AICase.Land;
+                                AICounter = 0;
+                                FrameCounter = 0;
                             }
                             break;
+                        #endregion
+                        #region Land
                         case (int)AICase.Land:
-                            if (npc.ai[2]++ >= 10)
+                            if (npc.collideY && npc.velocity.X != 0 && npc.oldVelocity.X != 0)
                             {
-                                npc.ai[0] = (int)AICase.Idle;
-                                npc.ai[2] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                npc.velocity.X = 0;
+                            }
+
+                            if (AICounter++ >= 10)
+                            {
+                                AIState = (int)AICase.Idle;
+                                AICounter = 1;
+                                FrameCounter = 1; // Set the FrameCounter to 1 so it doesnt immediately change frames when set to 0
                             }
                             break;
+                        #endregion
+                        #region Swim
+                        case (int)AICase.Swim:
+                            if (npc.wet)
+                            {
+                                if (npc.collideY)
+                                {
+                                    npc.velocity.Y = -2f;
+                                }
+
+                                if (npc.velocity.Y > 2f)
+                                {
+                                    npc.velocity.Y *= 0.9f;
+                                }
+
+                                npc.velocity.Y -= 0.5f;
+                                if (npc.velocity.Y < -4f)
+                                {
+                                    npc.velocity.Y = -4f;
+                                }
+                            }
+
+                            npc.velocity.X = moveSpeed * 5f;
+
+                            if (npc.collideY && !npc.wet)
+                            {
+                                AIState = (int)AICase.Idle;
+                            }
+                            break;
+                        #endregion
+                        default:
+                            break;
+
                     }
+
+                    oldCollision = npc.collideY;
 
                     // Allow the vanilla AI to run ONCE, after which the condition
                     // will no longer be true after being assigned a bonus drop (which will never be 0)
@@ -157,14 +245,12 @@ namespace OvermorrowMod.Content.NPCs
             if (npc.type == NPCID.BlueSlime)
             {
                 // During the singular run instance, reset ai0 to be 0
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
-                    if (npc.ai[0] < 0) npc.ai[0] = 0;
+                    if (AIState < 0) AIState = 0;
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
-                    npc.lifeMax = 30;
-                    npc.life = 30;
-
+                    //npc.lifeMax = npc.life = 100;
                     idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }
             }
@@ -176,8 +262,13 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
-                    npc.TargetClosest();
+                if (SlimeOverrideIDs.Contains(npc.netID))
+                {
+                    if (target == null)
+                    {
+                        target = Main.player[player.whoAmI];
+                    }
+                }
             }
         }
 
@@ -185,8 +276,14 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
-                    npc.TargetClosest();
+                if (SlimeOverrideIDs.Contains(npc.netID))
+                {
+                    if (target == null)
+                    {
+                        Entity ownerEntity = projectile.GlobalProjectile().ownerEntity;
+                        target = ownerEntity;
+                    }
+                }
             }
         }
 
@@ -194,8 +291,12 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
+                    binaryWriter.Write(AIState);
+                    binaryWriter.Write(AICycles);
+                    binaryWriter.Write(AICounter);
+                    binaryWriter.Write(FrameCounter);
                 }
             }
         }
@@ -204,16 +305,18 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
+                    AIState = binaryReader.ReadInt32();
+                    AICycles = binaryReader.ReadInt32();
+                    AICounter = binaryReader.ReadInt32();
+                    FrameCounter = binaryReader.ReadInt32();
                 }
             }
         }
 
         int xFrame = 1;
         int yFrame = 2;
-        int frameCounter;
-        int frameTimer;
 
         private const int MAX_FRAMES = 6;
         private const int FRAME_HEIGHT = 36;
@@ -221,31 +324,36 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void FindFrame(NPC npc, int frameHeight)
         {
+            // For some reason, SOMETHING is being called that messes with the frames if I use npc.frame.
+            // Therefore, I have to manually do them myself using my own counters.
+            // Vanilla can go fuck itself.
+
             if (npc.type == NPCID.BlueSlime)
             {
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
+                    //Main.NewText(npc.frameCounter + " " + npc.frame.Y);
                     npc.direction = idleJumpDirection;
 
-                    switch (npc.ai[0])
+                    switch (AIState)
                     {
                         case (int)AICase.Idle:
                             xFrame = 0;
-                            if (npc.ai[2] % 8 == 0)
+                            if (FrameCounter % 8 == 0)
                                 yFrame++;
 
                             // For SOME FUCKING REASON THIS KEEPS HAPPENING
                             if (yFrame > 5) yFrame = 5;
 
-                            if (npc.ai[2] >= 40) yFrame = 0;
+                            if (FrameCounter >= 40) yFrame = 0;
                             break;
                         case (int)AICase.PreJump:
                             xFrame = 1;
 
-                            if (npc.ai[2] == 0 || npc.ai[2] >= 12)
+                            if (FrameCounter == 0 || FrameCounter >= 12)
                                 yFrame = 2;
 
-                            if (npc.ai[2] == 6)
+                            if (FrameCounter == 6)
                                 yFrame = 1;
                             break;
                         case (int)AICase.Jump:
@@ -256,7 +364,13 @@ namespace OvermorrowMod.Content.NPCs
                             xFrame = 1;
                             yFrame = 1;
                             break;
+                        case (int)AICase.Swim:
+                            xFrame = 1;
+                            yFrame = npc.wet ? 2 : 0;
+                            break;
                     }
+
+                    return;
                 }
             }
 
@@ -271,7 +385,7 @@ namespace OvermorrowMod.Content.NPCs
                 var spriteEffects = npc.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 Rectangle drawRectangle = new Rectangle(xFrame * FRAME_WIDTH, yFrame * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
 
-                if (npc.netID == NPCID.GreenSlime)
+                if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     Color color = npc.color * Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                     float alpha = npc.alpha / 255f;
@@ -329,11 +443,11 @@ namespace OvermorrowMod.Content.NPCs
                         }
 
                         float drawDirection = npc.direction == 0 ? 1 : -1;
-                        spriteBatch.Draw(bonusDrop, npc.Center + new Vector2(drawOffset * drawDirection, 0) - Main.screenPosition, null, Color.White, npc.rotation, bonusDrop.Size() / 2, dropScale, SpriteEffects.None, 0);
+                        spriteBatch.Draw(bonusDrop, npc.Center + new Vector2(drawOffset * drawDirection, 0) - screenPos, null, Color.White, npc.rotation, bonusDrop.Size() / 2, dropScale, SpriteEffects.None, 0);
                     }
 
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
-                    return false;
+                    spriteBatch.Draw(texture, npc.Center - screenPos, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
+                    return npc.IsABestiaryIconDummy;
                 }
             }
 

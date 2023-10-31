@@ -1,24 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Detours;
-using OvermorrowMod.Common.NPCs;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
-using OvermorrowMod.Content.NPCs.Bosses.Eye;
-using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
-using OvermorrowMod.Content.NPCs.Carts;
-using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Core;
-using System;
 using System.Collections.Generic;
-using System.Xml;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common
 {
@@ -66,7 +53,7 @@ namespace OvermorrowMod.Common
 
             Terraria.On_Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
             Main.OnPreDraw += TileOverlay.Main_OnPreDraw;
-            Terraria.On_Main.Update += TileOverlay.Main_Update;
+            //Terraria.On_Main.Update += TileOverlay.Main_Update;
         }
 
         public static void Unload()
@@ -109,7 +96,7 @@ namespace OvermorrowMod.Common
 
             Terraria.On_Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
             Main.OnPreDraw -= TileOverlay.Main_OnPreDraw;
-            Terraria.On_Main.Update -= TileOverlay.Main_Update;
+            //Terraria.On_Main.Update -= TileOverlay.Main_Update;
 
             TileOverlay.projTarget = null;
         }
@@ -126,10 +113,10 @@ namespace OvermorrowMod.Common
 
         private static void SetTalkNPC(Terraria.On_Player.orig_SetTalkNPC orig, Player self, int npcIndex, bool fromNet)
         {
-            if (npcIndex == ModContent.NPCType<Cart>())
+            /*if (npcIndex == ModContent.NPCType<Cart>())
             {
                 self.currentShoppingSettings.HappinessReport = "";
-            }
+            }*/
 
             orig.Invoke(self, npcIndex, fromNet);
         }

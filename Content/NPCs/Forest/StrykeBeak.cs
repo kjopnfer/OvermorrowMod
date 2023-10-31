@@ -1,61 +1,62 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Biomes;
-using OvermorrowMod.Content.Items.Accessories;
+using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.ItemDropRules;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 
 namespace OvermorrowMod.Content.NPCs.Forest
 {
-    public class StrykeBeak : ModNPC
+    public class StrykeBeak : OvermorrowNPC
     {
         private const int MAX_FRAMES = 8;
-        /*public override bool? CanBeHitByItem(Player player, Item item) => true;
-        public override bool? CanBeHitByProjectile(Projectile projectile) => true;*/
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            switch (AIState)
-            {
-                case (int)AICase.Dive:
-                    return AICounter >= 60 && AICounter <= 120;
-                case (int)AICase.Grab:
-                    return AICounter >= 30;
-                default:
-                    return false;
-            }
-        }
-
-        //public override bool CanHitPlayer(Player target, ref int cooldownSlot) => canHitPlayer;
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Red Strykebeak");
             Main.npcFrameCount[NPC.type] = MAX_FRAMES;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
+            {
+                // The small one
+                Position = new Vector2(16, 8),
+
+                // The big image
+                PortraitPositionXOverride = 16,
+                PortraitPositionYOverride = 12,
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
-            NPC.width = 32;
+            NPC.width = 64;
             NPC.height = 38;
             NPC.damage = 20;
             NPC.defense = 6;
             NPC.lifeMax = 200;
             //NPC.friendly = true;
-            NPC.aiStyle = -1;
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit28;
             NPC.DeathSound = SoundID.NPCDeath31;
-            NPC.value = 60f;
+            NPC.value = Item.buyPrice(silver: 1, copper: 30);
 
             // knockBackResist is the multiplier applied to the knockback the NPC receives when it takes damage
             NPC.knockBackResist = 0.5f;
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
+
+                new FlavorTextBestiaryInfoElement("Strykebeaks are large social birds that live in colonies under a Matriarch. Preying on large forest insects, their dive bombs are particularly effective against hard shells.")
+            });
         }
 
         public int idleDirection;
@@ -72,14 +73,9 @@ namespace OvermorrowMod.Content.NPCs.Forest
             Hit = -1,
             Idle = 0,
             Angry = 1,
-            Dive = 2,
-            Grab = 3,
+            Dash = 2,
+            Dive = 3,
         }
-
-        public ref float AIState => ref NPC.ai[0];
-        public ref float AICounter => ref NPC.ai[1];
-
-        Player player => Main.player[NPC.target];
 
         float flySpeedX = 2;
         float flySpeedY = 0;
@@ -90,7 +86,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
         Vector2 diveStartPosition;
         Vector2 diveTargetPosition;
 
-        float grabOffset;
+        float diveOffset;
 
         public override void AI()
         {
@@ -184,25 +180,27 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     break;
                 case (int)AICase.Angry:
-                    frameRate = 5;
-                    NPC.TargetClosest();
+                    if (activeHitboxCount > 0) activeHitboxCount--;
 
-                    if (NPC.Center.X >= player.Center.X)
+                    frameRate = 5;
+                    //NPC.TargetClosest();
+                    FaceTarget();
+
+                    if (NPC.Center.X >= target.Center.X)
                     {
                         if (NPC.velocity.X >= -2) NPC.velocity.X -= 0.05f;
                         if (flySpeedX >= -2) flySpeedX -= 0.1f;
                     }
 
-                    if (NPC.Center.X <= player.Center.X)
+                    if (NPC.Center.X <= target.Center.X)
                     {
                         if (NPC.velocity.X <= 2) NPC.velocity.X += 0.05f;
                         if (flySpeedX <= 2) flySpeedX += 0.1f;
                     }
 
-                    // NPC is too high up from the player, move downwards
-                    if (NPC.Center.Y <= player.Center.Y - (16 * 5))
+                    // NPC is too high up from the target, move downwards
+                    if (NPC.Center.Y <= target.Center.Y - (16 * 5))
                     {
-                        Main.NewText("wtf!!!!!!!!");
                         if (NPC.velocity.Y <= 2f) NPC.velocity.Y += 0.1f;
 
                         // Prevent the NPC from moving in a straight line when the y velocity stays the same
@@ -212,8 +210,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     else
                     {
-                        Main.NewText("wtf???");
-
 
                         /*if (flySpeedY <= -2)
                         {
@@ -225,13 +221,11 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     // Nudge the NPC off the ground if they are too close
                     /*if (TRay.CastLength(NPC.Center, Vector2.UnitY, 25) < 25)
                     {
-                        Main.NewText("go up");
                         NPC.velocity.Y -= 0.5f;
                         flySpeedY -= 0.5f;
                     }*/
                     if (TRay.CastLength(NPC.Center, Vector2.UnitY, 128) < 128)
                     {
-                        Main.NewText("go up");
                         NPC.velocity.Y -= 0.1f;
                         flySpeedY -= 0.1f;
                     }
@@ -246,23 +240,24 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         flySpeedY -= 0.5f;
                     }
 
-                    float xDistance = Math.Abs(NPC.Center.X - player.Center.X);
+                    float xDistance = Math.Abs(NPC.Center.X - target.Center.X);
                     bool xDistanceCheck = xDistance < 200;
-                    bool yDistanceCheck = Math.Abs(NPC.Center.Y - player.Center.Y) < 100;
+                    bool yDistanceCheck = Math.Abs(NPC.Center.Y - target.Center.Y) < 100;
 
-                    if (xDistanceCheck && yDistanceCheck && Collision.CanHitLine(player.Center, 1, 1, NPC.Center, 1, 1))
+                    if (xDistanceCheck && yDistanceCheck && Collision.CanHitLine(target.Center, 1, 1, NPC.Center, 1, 1))
                     {
                         aggroDelay--;
                         if (aggroDelay <= 0)
                         {
                             if (xDistance < 32)
-                                AIState = (int)AICase.Grab;
-                            else
                                 AIState = (int)AICase.Dive;
+                            else
+                                AIState = (int)AICase.Dash;
                         }
                     }
                     break;
-                case (int)AICase.Dive:
+                case (int)AICase.Dash:
+                    activeHitboxCount = 20;
                     frameRate = 3;
 
                     NPC.velocity = Vector2.Zero;
@@ -275,7 +270,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     {
                         float randomOffset = Main.rand.Next(0, 5) * 32;
                         diveStartPosition = NPC.Center;
-                        diveTargetPosition = player.Center + new Vector2(randomOffset * NPC.direction, 0);
+                        diveTargetPosition = target.Center + new Vector2(randomOffset * NPC.direction, 0);
 
                         NPC.netUpdate = true;
                     }
@@ -296,17 +291,19 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         aggroDelay = 60;
                     }
                     break;
-                case (int)AICase.Grab:
+                case (int)AICase.Dive:
+                    activeHitboxCount = 60;
+
                     if (AICounter++ == 0)
                     {
-                        grabOffset = Main.rand.Next(4, 6) * -32;
+                        diveOffset = Main.rand.Next(4, 6) * -32;
                         NPC.netUpdate = true;
                     }
 
                     if (AICounter < 30)
                     {
                         diveStartPosition = NPC.Center;
-                        diveTargetPosition = player.Center + new Vector2(0, grabOffset);
+                        diveTargetPosition = target.Center + new Vector2(0, diveOffset);
 
                         if (NPC.Center.X >= diveTargetPosition.X)
                         {
@@ -372,7 +369,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             //NPC.velocity.X = flySpeedX;
             //NPC.velocity.Y = flySpeedY;
 
-            Main.NewText("flyspeed: [" + flySpeedX + ", " + flySpeedY + "] vs velocity: [" + NPC.velocity.X + ", " + NPC.velocity.Y + "]");
+            //Main.NewText("flyspeed: [" + flySpeedX + ", " + flySpeedY + "] vs velocity: [" + NPC.velocity.X + ", " + NPC.velocity.Y + "]");
         }
 
         public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
@@ -383,67 +380,79 @@ namespace OvermorrowMod.Content.NPCs.Forest
                 AIState = (int)AICase.Angry;
                 AICounter = 0;
 
-                //flySpeedX += knockback;
-                //flySpeedY += knockback;
+                target = player;
             }
         }
 
         public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
+            if (target == null)
+            {
+                Entity ownerEntity = projectile.GlobalProjectile().ownerEntity;
+                target = ownerEntity;
+            }
+
             if (AIState == (int)AICase.Idle)
             {
                 NPC.friendly = false;
                 AIState = (int)AICase.Angry;
                 AICounter = 0;
+
+                // For some fucking reason if the target has no value then get the nearest player
+                if (target == null)
+                {
+                    NPC.TargetClosest();
+                    target = Main.player[NPC.target];
+                }
             }
 
             //flySpeedX += Utils.Clamp(projectile.velocity.X * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
             //flySpeedY += Utils.Clamp(projectile.velocity.Y * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
         }
 
-        private int frame = 0;
-        private int frameTimer = 0;
         public override void FindFrame(int frameHeight)
         {
             NPC.spriteDirection = NPC.direction;
-            NPC.frame.Y = frameHeight * frame;
-
-            if (Main.gamePaused) return;
 
             switch (AIState)
             {
-                case (int)AICase.Grab:
+                case (int)AICase.Dive:
                     if (AICounter >= 30) frame = 0;
                     else
                     {
-                        frameTimer++;
-                        if (frameTimer % frameRate == 0)
+                        NPC.frameCounter++;
+                        if (NPC.frameCounter % frameRate == 0)
                         {
-                            if (frame < 7)
-                                frame++;
+                            if (NPC.frame.Y < 7 * frameHeight)
+                                NPC.frame.Y += frameHeight;
                             else
-                                frame = 0;
+                                NPC.frame.Y = 0;
                         }
                     }
                     break;
                 default:
-                    frameTimer++;
-                    if (frameTimer % frameRate == 0)
+                    NPC.frameCounter++;
+                    if (NPC.frameCounter % frameRate == 0)
                     {
-                        if (frame < 7)
-                            frame++;
+                        if (NPC.frame.Y < 5 * frameHeight)
+                            NPC.frame.Y += frameHeight;
                         else
-                            frame = 0;
+                            NPC.frame.Y = 0;
                     }
                     break;
             }
         }
 
+        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox)
+        {
+            return base.ModifyCollisionData(victimHitbox, ref immunityCooldownSlot, ref damageMultiplier, ref npcHitbox);
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            var spriteEffects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            Main.spriteBatch.Draw(texture, NPC.Center - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
         }

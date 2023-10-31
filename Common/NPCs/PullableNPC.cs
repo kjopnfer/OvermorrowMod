@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Particles;
 using Terraria;
 using Terraria.ID;
@@ -86,4 +86,4 @@ namespace OvermorrowMod.Common.NPCs
             return false;
         }
     }
-}
+}*/

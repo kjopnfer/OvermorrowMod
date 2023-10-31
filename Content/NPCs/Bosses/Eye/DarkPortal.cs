@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
@@ -147,7 +147,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Main.dust[num110].position = Projectile.Center + spinningpoint5;
                     Main.dust[num110].velocity = Projectile.velocity * 0f + spinningpoint5.SafeNormalize(Vector2.UnitY) * 1f;
                 }
-            }*/
+            }
 
             if (Projectile.timeLeft < 30)
             {
@@ -227,4 +227,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
         }
     }
-}
+}*/

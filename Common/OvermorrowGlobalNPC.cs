@@ -5,7 +5,6 @@ using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
-using OvermorrowMod.Content.NPCs.CaveFish;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -31,11 +30,11 @@ namespace OvermorrowMod.Common
 
         public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
-            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 0.25f;
+            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 1.25f;
         }
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
-            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 0.2f;
+            if (npc.HasBuff<PhoenixMarkBuff>()) modifiers.SourceDamage *= 1.2f;
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
@@ -49,7 +48,7 @@ namespace OvermorrowMod.Common
             if (player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()))
             {
                 pool.Clear();
-                pool.Add(ModContent.NPCType<CaveFish>(), .10f);
+                //pool.Add(ModContent.NPCType<CaveFish>(), .10f);
             }
         }
 
@@ -84,10 +83,6 @@ namespace OvermorrowMod.Common
                     break;
                 case NPCID.Harpy:
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HarpyLeg>(), 10));
-                    break;
-                case NPCID.Drippler:
-                case NPCID.BloodZombie:
-                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MutatedFlesh>(), 3, 1, 3));
                     break;
                 case NPCID.Zombie:
                 case NPCID.BigRainZombie:
@@ -129,6 +124,8 @@ namespace OvermorrowMod.Common
             {
                 npc.defense -= 8;
             }
+
+            if (npc.defense < 0) npc.defense = 0;
         }
 
         public override bool PreAI(NPC npc)

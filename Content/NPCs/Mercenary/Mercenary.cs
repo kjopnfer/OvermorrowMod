@@ -10,7 +10,7 @@ using Terraria.DataStructures;
 
 namespace OvermorrowMod.Content.NPCs.Mercenary
 {
-    public partial class Mercenary : ModNPC
+    public abstract partial class Mercenary : ModNPC
     {
         #region Adjustable Values
         /// <summary>

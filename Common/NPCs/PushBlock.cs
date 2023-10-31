@@ -1,4 +1,4 @@
-namespace OvermorrowMod.Common.NPCs
+/*namespace OvermorrowMod.Common.NPCs
 {
     public class PushBlock : PushableNPC
     {
@@ -21,3 +21,4 @@ namespace OvermorrowMod.Common.NPCs
         }
     }
 }
+*/

@@ -15,7 +15,6 @@ namespace OvermorrowMod.Content.Items.Accessories.GuideLantern
 {
     public class GuideLantern_Held : ModProjectile
     {
-        public override string Texture => AssetDirectory.Empty;
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanCutTiles() => false;
         public override void SetDefaults()
@@ -52,7 +51,7 @@ namespace OvermorrowMod.Content.Items.Accessories.GuideLantern
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = TextureAssets.Item[ModContent.ItemType<GuideLantern>()].Value;
+            Texture2D texture = TextureAssets.Projectile[ModContent.ProjectileType<GuideLantern_Held>()].Value;
             Main.spriteBatch.Draw(texture, Projectile.Center + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
 
             return false;

@@ -140,7 +140,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
-            if (player.HeldItem.type != ParentItem || !player.active)
+            if (player.HeldItem.type != ParentItem || !player.active || player.dead)
                 Projectile.Kill();
             else
                 Projectile.timeLeft = 5;
@@ -595,7 +595,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                 Texture2D counterTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "OverflowDisplay_Numbers").Value;
                 int counterTextureWidth = counterTexture.Width / 10;
-                //Main.NewText((BulletDisplay.Count));
 
                 int initialCount = BulletDisplay.Count - 1;
                 int firstPlace = GetPlace(initialCount, 100);

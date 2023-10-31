@@ -152,8 +152,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
             if (keepAlive > 0) keepAlive--;
 
-            //Main.NewText("keepAlive: " + keepAlive + " swapCounter: " + swapCounter + " rotateCounter: " + rotateCounter);
-
             base.Update(gameTime);
         }
 

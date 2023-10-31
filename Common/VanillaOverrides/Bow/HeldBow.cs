@@ -106,7 +106,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
-            if (player.HeldItem.type != ParentItem || !player.active)
+            if (player.HeldItem.type != ParentItem || !player.active || player.dead)
                 Projectile.Kill();
             else
                 Projectile.timeLeft = 5;
@@ -250,13 +250,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         {
             if (drawCounter >= ModifiedChargeTime)
             {
+                if (flashCounter == 0) SoundEngine.PlaySound(SoundID.MaxMana);
                 if (flashCounter < 48 && !Main.gamePaused) flashCounter++;
             }
 
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
-
-
 
             if (LoadedArrowItemType == -1) return;
 
@@ -277,7 +276,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             Color lerpColor = Color.Lerp(color, Color.White, flashProgress);
 
+            Main.instance.LoadProjectile(LoadedArrowType);
             Texture2D texture = TextureAssets.Projectile[LoadedArrowType].Value;
+
             Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, lerpColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);

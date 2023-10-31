@@ -15,9 +15,10 @@ namespace OvermorrowMod.Quests
         public bool grabbedAxe = false;
         public bool showCampfireArrow = false;
 
+        // TODO: Make this not cringe by putting them in the Quest or Requirements or something
         private void RequirementCompleteAction(string id)
         {
-            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            DialoguePlayer dialoguePlayer = Player.GetModPlayer<DialoguePlayer>();
 
             switch (id)
             {
@@ -62,17 +63,16 @@ namespace OvermorrowMod.Quests
                     {
                         if (clause is ItemRequirement || clause is MiscRequirement)
                         {
+                            //Main.NewText(clause.ID + " canHandIn: " + clause.CanHandInRequirement(this, questState) + " isCompleted: " + clause.IsCompleted(this, questState));
+
                             if (clause.CanHandInRequirement(this, questState) && !clause.IsCompleted(this, questState))
                             {
                                 clause.TryCompleteRequirement(this, questState);
                                 RequirementCompleteAction(clause.ID);
                             }
                         }
-                        //Main.NewText(clause.ID + " " + clause.IsCompleted(this, quest));
                     }
-
                 }
-
             }
 
             if (FindActiveQuest("GuideCampfire"))

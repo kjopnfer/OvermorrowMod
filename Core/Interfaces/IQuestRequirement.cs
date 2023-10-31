@@ -7,11 +7,13 @@ namespace OvermorrowMod.Core.Interfaces
     public interface IQuestRequirement
     {
         string ID { get; }
+
         /// <summary>
         /// Try to complete a requirement, and return true if it has already been completed,
         /// or if it succeeded.
         /// </summary>
         bool TryCompleteRequirement(QuestPlayer player, BaseQuestState state);
+
         /// <summary>
         /// Return true from this method if this requirement can be handed in to an NPC now,
         /// for example handing in items, or manually checking completion.

@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.NPCs.RockCrawler;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.Audio;

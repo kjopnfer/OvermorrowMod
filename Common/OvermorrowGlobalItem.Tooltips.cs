@@ -557,6 +557,11 @@ namespace OvermorrowMod.Common
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
+            int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
+            string type = item.GetWeaponType();
+            if (type != "None")
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", $"[c/FAD5A5:{type} Type]"));
+
             if (!CheckInVanity(tooltips))
             {
                 switch (item.type)

@@ -68,9 +68,9 @@ namespace OvermorrowMod.Common.Cutscenes
                 PopupStates.Add(id, new PopupState(new Popup(xmlDoc)));
         }
 
-        public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
+        public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
-            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, new Color(52, 201, 235).Hex3(), xmlDoc);
+            CurrentDialogue = new Dialogue(displayText, drawTime, xmlDoc);
         }
 
         public void SetDialogue(Dialogue dialogue) => CurrentDialogue = dialogue;
@@ -251,8 +251,6 @@ namespace OvermorrowMod.Common.Cutscenes
             }
             else
             {
-                //Main.NewText(Popup.DrawTimer + " / " + Popup.GetDrawTime());
-
                 if (Popup.DrawTimer < Popup.GetDrawTime()) // Draws the text for the specified time
                 {
                     if (Popup.DrawTimer == 0)

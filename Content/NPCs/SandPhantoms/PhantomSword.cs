@@ -77,7 +77,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
 
                 if (Projectile.Hitbox.Intersects(ParentNPC.Hitbox))
                 {
-                    ((SandPhantom)ParentNPC.ModNPC).ThrewSword = false;
+                    //((SandPhantom)ParentNPC.ModNPC).ThrewSword = false;
                     Projectile.Kill();
                 }
             }

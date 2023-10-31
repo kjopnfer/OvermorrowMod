@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Cutscenes;
-using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Core;
+using OvermorrowMod.Quests;
+using OvermorrowMod.Quests.ModQuests;
+using System.Linq;
 using System.Xml;
 using Terraria;
 using Terraria.ID;
@@ -14,9 +16,10 @@ namespace OvermorrowMod.Common.Detours
         public static void GUIChatDrawInner(Terraria.On_Main.orig_GUIChatDrawInner orig, Main self)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+
             if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                 XmlDocument doc = new XmlDocument();
 
@@ -27,11 +30,17 @@ namespace OvermorrowMod.Common.Detours
                 // TODO: This is dogshit someone fix this
                 if (npc.type == NPCID.Guide)
                 {
+                    if (questPlayer.HasCompletedQuest<GuideCampfire>())
+                    {
+                        orig(self);
+                        return;
+                    }
+
                     //text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
-                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp_0.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp.xml"));
                     doc.LoadXml(text);
 
-                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                    player.SetDialogue(npc.GetChat(), 20, doc);
                 }
                 /*else if (npc.type == NPCID.Merchant)
                 {
@@ -40,7 +49,7 @@ namespace OvermorrowMod.Common.Detours
 
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
                 }*/
-                else if (npc.type == ModContent.NPCType<TownKid>())
+                /*else if (npc.type == ModContent.NPCType<TownKid>())
                 {
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
                     doc.LoadXml(text);
@@ -89,7 +98,7 @@ namespace OvermorrowMod.Common.Detours
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
-                }
+                }*/
                 else
                 {
                     orig(self);

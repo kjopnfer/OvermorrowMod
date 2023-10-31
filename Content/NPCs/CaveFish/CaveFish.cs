@@ -1,4 +1,4 @@
-using OvermorrowMod.Content.Biomes;
+/*using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Items.Accessories;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -257,4 +257,4 @@ namespace OvermorrowMod.Content.NPCs.CaveFish
             return spawnInfo.Player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.05f : 0f;
         }
     }
-}
+}*/

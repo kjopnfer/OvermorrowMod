@@ -73,7 +73,6 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
                     }
                 }
             }
-            //else Main.NewText("Campfire Tile Entity not found");
 
             return base.RightClick(i, j);
         }
@@ -127,7 +126,6 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
-
                 if (questPlayer.FindActiveQuest("GuideCampfire") && questPlayer.showCampfireArrow)
                 {
                     Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
@@ -164,7 +162,6 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
         {
             FireOn = !FireOn;
             flameCounter = 0;
-            Main.NewText("set state to " + FireOn);
 
             Main.LocalPlayer.GetModPlayer<QuestPlayer>().showCampfireArrow = false;
         }

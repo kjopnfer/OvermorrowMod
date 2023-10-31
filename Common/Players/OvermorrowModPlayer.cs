@@ -28,6 +28,7 @@ namespace OvermorrowMod.Common.Players
         public bool ImbuementPouch;
         public bool SerpentTooth;
         public bool SickeningSnack;
+        public bool SimpleScabbard;
         public bool SnakeBite;
         public bool PracticeTarget;
         public bool PredatorTalisman;
@@ -43,6 +44,7 @@ namespace OvermorrowMod.Common.Players
         public int BearTrapCounter = 0;
 
         #endregion
+        
         public bool atomBuff;
         public bool smolBoi;
 
@@ -52,6 +54,8 @@ namespace OvermorrowMod.Common.Players
 
         public int PlatformTimer = 0;
 
+        public int NotInCombatDelay = 320;
+        public bool IsInCombat { get { return NotInCombatDelay != 320; } }
         public override void ResetEffects()
         {
             BearTrap = false;
@@ -61,12 +65,21 @@ namespace OvermorrowMod.Common.Players
             ImbuementPouch = false;
             SerpentTooth = false;
             SickeningSnack = false;
+            SimpleScabbard = false;
             SnakeBite = false;
             PracticeTarget = false;
             PredatorTalisman = false;
 
             atomBuff = false;
             smolBoi = false;
+        }
+
+        public override void UpdateLifeRegen()
+        {
+            //Player.lifeRegenTime = 300;
+            //Player.GetModPlayer<OvermorrowModPlayer>().natur
+            //Main.NewText("RT: " + Player.lifeRegenTime + " / RC:"  + Player.lifeRegenCount +  " / R: " + Player.lifeRegen);
+            base.UpdateLifeRegen();
         }
 
         public override IEnumerable<Item> AddStartingItems(bool mediumCoreDeath)
@@ -113,41 +126,6 @@ namespace OvermorrowMod.Common.Players
                     TextureAssets.Cursors[11] = cursor11;
                     TextureAssets.Cursors[12] = cursor12;
                 }
-            }
-        }
-
-        private int FindFlaskBuff()
-        {
-            for (int i = 0; i < Player.buffType.Length; i++)
-            {
-                switch (Player.buffType[i])
-                {
-                    case BuffID.WeaponImbueCursedFlames:
-                        return BuffID.CursedInferno;
-                    case BuffID.WeaponImbueFire:
-                        return BuffID.OnFire;
-                    case BuffID.WeaponImbueGold:
-                        return BuffID.Midas;
-                    case BuffID.WeaponImbueIchor:
-                        return BuffID.Ichor;
-                    case BuffID.WeaponImbueNanites:
-                        return BuffID.Confused;
-                    case BuffID.WeaponImbuePoison:
-                        return BuffID.Poisoned;
-                    case BuffID.WeaponImbueVenom:
-                        return BuffID.Venom;
-                }
-            }
-
-            return -1;
-        }
-
-        private void ApplyFlaskBuffs(NPC target)
-        {
-            int buffID = FindFlaskBuff();
-            if (buffID != -1)
-            {
-                target.AddBuff(buffID, 360);
             }
         }
 
@@ -202,9 +180,24 @@ namespace OvermorrowMod.Common.Players
             if (ImbuementPouch) ApplyFlaskBuffs(target);
         }
 
+        public override void OnHitAnything(float x, float y, Entity victim)
+        {
+            NotInCombatDelay = 0;
+        }
+
+        public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
+        {
+            NotInCombatDelay = 0;
+        }
+
         public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
         {
+            NotInCombatDelay = 0;
+        }
 
+        public override void OnHurt(Player.HurtInfo info)
+        {
+            base.OnHurt(info);
         }
 
         public override void PreUpdate()
@@ -233,28 +226,12 @@ namespace OvermorrowMod.Common.Players
         {
             if (OvermorrowModFile.BearTrapKey.JustPressed && BearTrap && BearTrapCounter > 0 && CheckOnGround())
             {
-                Main.NewText(CheckOnGround());
                 BearTrapCounter--;
 
                 Projectile.NewProjectile(new EntitySource_Misc("PlayerTrap"), Player.Center, Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.BearTrap.PlacedBearTrap>(), 0, 0f, Player.whoAmI, 0f);
-
-                //Main.NewText("pressed bear trap");
             }
 
             base.ProcessTriggers(triggersSet);
-        }
-
-        private bool IsInRange(Vector2 coordinates)
-        {
-            float distance = Vector2.Distance(coordinates, Player.Center);
-            if (distance <= 80)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

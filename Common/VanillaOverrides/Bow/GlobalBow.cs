@@ -61,9 +61,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 }
             }
 
-            int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
+            /*int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             if (WeaponType.ToString() != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + WeaponType.ToString() + " Type]"));
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + WeaponType.ToString() + " Type]"));*/
         }
 
         public override void SetDefaults(Item item)
@@ -75,11 +75,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 item.damage = bow.BowDamage;
                 item.noUseGraphic = true;
 
-                WeaponType = bow.WeaponType;
+                //WeaponType = bow.WeaponType;
             }
 
             // Temporary Classification
-            switch (item.type)
+            /*switch (item.type)
             {
                 case ItemID.BeesKnees:
                 case ItemID.HellwingBow:
@@ -89,7 +89,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 case ItemID.DaedalusStormbow:
                     WeaponType = BowType.Stormbow;
                     break;
-            }
+            }*/
         }
 
         public override void HoldItem(Item item, Player player)

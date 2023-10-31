@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
@@ -35,7 +34,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
-            int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Wavy Caves"));
+            int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Mountain Caves"));
             if (TerrainIndex != -1)
             {
                 tasks.Insert(TerrainIndex + 1, new PassLegacy("Sojourn Base", GenerateTownFoundation));
@@ -62,16 +61,23 @@ namespace OvermorrowMod.Content.WorldGeneration
                 y++;
             }
 
-            SojournLocation = new Vector2(x, y + 30) * 16;
+            int yOffset = 65;
+            SojournLocation = new Vector2(x, y + yOffset) * 16;
+            SojournBase sojournBase = new SojournBase();
 
             for (int _ = 0; _ < 2; _++)
             {
+                // sometimes the structure doesnt even place so you have to run it twice??
                 // this is so fucking stupid
                 if (_ == 1)
-                    PlaceTownFoundation(x, y + 30);
+                {
+                    sojournBase.Place(new Point(x, y + yOffset), GenVars.structures);
+                    //PlaceTownFoundation(x, y + yOffset);
+                }
                 else
                 { // this isnt supposed to do anything
-                    PlaceTownFoundation(x, y + 30);
+                    sojournBase.Place(new Point(x, y + yOffset), GenVars.structures);
+                    //PlaceTownFoundation(x, y + yOffset);
                 }
             }
         }
@@ -127,10 +133,10 @@ namespace OvermorrowMod.Content.WorldGeneration
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            WorldGen.TileRunner(x - (TileClear.width / 2), y - (TileClear.height / 2) + 30, 25, 1, TileID.ObsidianBrick, true);
-            WorldGen.TileRunner(x + (TileClear.width / 2), y - (TileClear.height / 2) + 45, 25, 1, TileID.ObsidianBrick, true);
+            //WorldGen.TileRunner(x - (TileClear.width / 2), y - (TileClear.height / 2) + 30, 25, 1, TileID.ObsidianBrick, true);
+            //WorldGen.TileRunner(x + (TileClear.width / 2), y - (TileClear.height / 2) + 45, 25, 1, TileID.ObsidianBrick, true);
 
-            for (int i = 0; i < 5; i++)
+            /*for (int i = 0; i < 5; i++)
             {
                 //WorldGen.digTunnel(x + (TileClear.width / 2) + (i * 20), y - (TileClear.height / 2) + 40 - (i * 10), 0, -20, 5, 20);
                 WorldGen.digTunnel(x - (TileClear.width / 2) - (i * 20), y - (TileClear.height / 2) + 30 - (i * 10), 0, -20, 5, 20);
@@ -140,16 +146,16 @@ namespace OvermorrowMod.Content.WorldGeneration
             for (int i = 0; i < 5; i++)
             {
                 WorldGen.digTunnel(x + (TileClear.width / 2) + (i * 20), y - (TileClear.height / 2) + 40 - (i * 10), 0, -20, 6, 20);
-            }
+            }*/
         }
 
         private static void PlacePlatforms(int x, int y)
         {
-            for (int i = 0; i < 3; i++)
+            /*for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                     WorldGen.PlaceTile(x + i, y + j, TileID.ObsidianBrick, false, true);
-            }
+            }*/
 
             // Setting forced to true gives an object reference error apparently
             #region Lower House
@@ -654,6 +660,48 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             PlacePlatforms(x, y);
             PlaceFurniture(x, y);
+        }
+    }
+
+    public class SojournBase : MicroBiome
+    {
+        public override bool Place(Point origin, StructureMap structures)
+        {
+            int x = origin.X;
+            int y = origin.Y;
+
+            Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
+            {
+                [new Color(53, 117, 60)] = TileID.Grass,
+                [new Color(90, 51, 37)] = TileID.Dirt,
+                [new Color(132, 124, 110)] = TileID.Stone,
+            };
+
+            Dictionary<Color, int> WallMapping = new Dictionary<Color, int>
+            {
+                [new Color(117, 86, 75)] = WallID.Dirt,
+                [new Color(67, 85, 69)] = WallID.Grass,
+            };
+
+            Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
+            {
+                [new Color(0, 0, 0)] = -2,
+            };
+
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear").Value;
+            TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
+            TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn").Value;
+            Texture2D WallMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Walls").Value;
+            Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Liquids").Value;
+
+            TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap);
+            TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+            
+            structures.AddProtectedStructure(new Rectangle(origin.X - (TileClear.width / 2), origin.Y - (TileClear.height), TileClear.width, TileClear.height));
+
+            return true;
         }
     }
 }

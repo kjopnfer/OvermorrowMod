@@ -112,7 +112,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.timeLeft = 120;
 
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -135,6 +135,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override void OnSpawn(IEntitySource source)
         {
             InitializeValues();
+        }
+
+        private int _hitDelay = 0;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            //_hitDelay = 4;
         }
 
         /// <summary>
@@ -170,6 +176,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             if (InactiveCounter == InactiveLimit) Projectile.Kill();
             if (!IsExecutingAction) InactiveCounter++;
+
+            if (_hitDelay > 0)
+            {
+                _hitDelay--;
+                return;
+            }
 
             HandleArmDrawing();
             HandleWeaponUse();
@@ -275,9 +287,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 flashCounter = 0;
                 justReleasedWeapon = true;
                 lastMousePosition = Main.MouseWorld;
-
-                //if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
-                //if (HoldCounter >= heavySwingThreshold) Main.NewText("heavy attack");
             }
 
             // Position
@@ -402,6 +411,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Color lerpColor = Color.Lerp(lightColor, Color.White, flashProgress);
 
+            //Texture2D slashTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "slash_01").Value;
+            //Main.spriteBatch.Draw(slashTexture, Projectile.Center - Main.screenPosition, null, lightColor * 0.25f, Projectile.rotation + MathHelper.ToRadians(-45), slashTexture.Size() / 2f, 0.25f, SpriteEffects.FlipHorizontally, 1);
+
             Main.spriteBatch.Draw(texture, spriteCenter + spritePositionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation + rotationOffset, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
         }
 
@@ -467,9 +479,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
         }
 
+        // WIP: The collision doesn't properly detect sometimes
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return base.Colliding(projHitbox, targetHitbox);
+            /*Vector2 start = Projectile.Center;
+            Vector2 end = start + Vector2.UnitX.RotatedBy(Projectile.rotation) * 45;
+            float collisionPoint = 0f; // Don't need that variable, but required as parameter
+            float collisionWidth = 6f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, collisionWidth, ref collisionPoint);*/
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
@@ -499,11 +517,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             spriteCenter = new Vector2(hitbox.X + (hitbox.Width / 2f), hitbox.Y + (hitbox.Height / 2f));
 
             base.ModifyDamageHitbox(ref hitbox);
-        }
-
-        public override void Kill(int timeLeft)
-        {
-            base.Kill(timeLeft);
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.NPCs.Bandits
     public class JackalBandit : ModNPC
     {
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
-        public override bool CanHitNPC(NPC target)/* tModPorter Suggestion: Return true instead of null */ => false;
+        public override bool CanHitNPC(NPC target) => false;
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Jackal Bandit");
@@ -252,8 +252,6 @@ namespace OvermorrowMod.Content.NPCs.Bandits
                 #region Jump
                 case FrameType.Jump:
                     xFrame = 1;
-
-                    //Main.NewText("cring " + tempCounter + " / " + yFrame);
                     if (NPC.velocity.X != 0) NPC.direction = Math.Sign(NPC.velocity.X);
 
                     if (tempCounter++ == 0)
@@ -290,4 +288,4 @@ namespace OvermorrowMod.Content.NPCs.Bandits
         {
         }
     }
-}
+}*/

@@ -16,6 +16,18 @@
 		<Hex>BF40BF</Hex>
 		<Description>Triggers when right clicking and holding this item</Description>
 	</Keyword>
+
+	<Keyword id="Reap">
+		<Name>Reap</Name>
+		<Hex>BF40BF</Hex>
+		<Description>Triggers after killing an enemy with this item</Description>
+	</Keyword>
+
+	<Keyword id="Out of Combat">
+		<Name>Out of Combat</Name>
+		<Hex>BF40BF</Hex>
+		<Description>Whenever the player has not struck or has been struck by an enemy for 5 seconds</Description>
+	</Keyword>
 	
 	<Keyword id="Reload">
 		<Name>Reload</Name>
