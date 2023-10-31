@@ -20,6 +20,11 @@ namespace OvermorrowMod.Core
             return (float)(1 - Math.Pow(1 - x, 5));
         }
 
+        public static float EaseOutQuart(float x)
+        {
+            return (float)(1 - Math.Pow(1 - x, 4));
+        }
+
         public static float EaseInQuad(float x)
         {
             return x * x;
