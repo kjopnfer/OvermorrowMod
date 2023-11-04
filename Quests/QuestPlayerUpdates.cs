@@ -27,9 +27,16 @@ namespace OvermorrowMod.Quests
                     break;
                 case "wood":
                     dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampGel.xml"));
+
+                    float offset = 64 * (Main.rand.NextBool() ? 16 : -16); // Spawn a slime on the left or right side 64 tiles away
+                    Vector2 position = dialoguePlayer.Player.Center + new Vector2(offset, -720);
+                    Vector2 spawnPosition = ModUtils.FindNearestGround(position) * 16;
+
+                    NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.GreenSlime, 0);
                     break;
                 case "gel":
                     dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampTorch.xml"));
+                    
                     break;
                 case "torches":
                     showCampfireArrow = true;
