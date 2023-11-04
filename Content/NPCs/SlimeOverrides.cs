@@ -251,7 +251,9 @@ namespace OvermorrowMod.Content.NPCs
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
                     //npc.lifeMax = npc.life = 100;
-                    idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
+                    Player nearestPlayer = ModUtils.GetNearestPlayer(npc);
+                    idleJumpDirection = npc.Center.X > nearestPlayer.Center.X ? -1 : 1;
+                    Main.NewText("idleing to " + idleJumpDirection);
                 }
             }
 
