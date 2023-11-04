@@ -120,6 +120,27 @@ namespace OvermorrowMod.Core
             return item.GetGlobalItem<GlobalGun>().GunType;
         }
 
+        // Adapted from Mod of Redemption, I don't know what that distance is supposed to be.
+        /// <summary>
+        /// Gets the nearest player. Defaults to the first player in the Main.player array.
+        /// </summary>
+        /// <param name="entity">The entity to compare to</param>
+        public static Player GetNearestPlayer(this Entity entity)
+        {
+            float nearestPlayerDist = 4815162342f;
+            Player nearestPlayer = Main.player[0];
+
+            foreach (Player player in Main.player)
+            {
+                if (!(player.Distance(entity.Center) < nearestPlayerDist) || !player.active) continue;
+
+                nearestPlayerDist = player.Distance(entity.Center);
+                nearestPlayer = player;
+            }
+
+            return nearestPlayer;
+        }
+
         public static NPC FindClosestNPC(this Projectile projectile, float maxDetectDistance, NPC ignoreNPC = null)
         {
             NPC closestNPC = null;
@@ -455,7 +476,18 @@ namespace OvermorrowMod.Core
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
 
-        
+        public static Vector2 FindNearestGround(Vector2 startPosition)
+        {
+            Vector2 position = startPosition / 16;
+            Tile tile = Framing.GetTileSafely((int)position.X, (int)position.Y);
+            while (!tile.HasTile || tile.TileType == TileID.Trees || !Main.tileSolid[tile.TileType])
+            {
+                position.Y += 1;
+                tile = Framing.GetTileSafely((int)position.X, (int)position.Y);
+            }
+
+            return position;
+        }
 
         /// <summary>
         /// Modified version of Player.Hurt, which ignores defense.
