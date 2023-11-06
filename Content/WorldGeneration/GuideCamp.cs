@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Common.WorldGeneration;
 using OvermorrowMod.Content.Tiles.GuideCamp;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
@@ -24,15 +25,43 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (GuideIndex != -1)
             {
                 tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
+                tasks.Insert(GuideIndex + 2, new PassLegacy("Feyden Cave", GenerateSlimeCave));
             }
+        }
+
+        private void GenerateSlimeCave(GenerationProgress progress, GameConfiguration config)
+        {
+            progress.Message = "Falling into a cave";
+
+            float flatDelay = Main.maxTilesX * 0.05f;
+            int x = (int)((Main.maxTilesX / 7 * 4) + flatDelay);
+            int y = 0;
+
+            bool validArea = false;
+            while (!validArea)
+            {
+                Tile tile = Framing.GetTileSafely(x, y);
+                while (!tile.HasTile)
+                {
+                    y++;
+                    tile = Framing.GetTileSafely(x, y);
+                }
+
+                // We have the tile but we want to check if its a grass block, if it isn't restart the process
+                if (/*!aboveTile.HasTile*/Main.tileSolid[tile.TileType])
+                {
+                    validArea = true;
+                }
+            }
+
+            FeydenCave feydenCave = new FeydenCave();
+            feydenCave.Place(new Point(x, y), GenVars.structures);
         }
 
         private void GenerateCamp(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Setting up camp";
 
-            //int startX = Main.spawnTileX;
-            //int startY = Main.spawnTileY;
             int startX = Main.maxTilesX / 2;
             int startY = 0;
 
@@ -104,6 +133,78 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceTilePile<GuideTent, GuideTentObjects>((int)(origin.X + 34), (int)(origin.Y + 3));
             ModUtils.PlaceTilePile<BookRock, BookRockObjects>((int)(origin.X + 39), (int)(origin.Y + 3));
             ModUtils.PlaceTilePile<AxeStump, AxeStumpObjects>((int)(origin.X + 42), (int)(origin.Y + 3));
+        }
+    }
+
+    public class FeydenCave : MicroBiome
+    {
+        public override bool Place(Point origin, StructureMap structures)
+        {
+            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+            noise.SetFractalOctaves(6);
+            noise.SetFractalLacunarity(4);
+            noise.SetFrequency(0.025f);
+            noise.SetFractalGain(0.1f);
+
+            Vector2 end = origin.ToVector2() + new Vector2(0, 150).RotatedBy(MathHelper.PiOver4);
+            FeydenTunneler tunnel = new FeydenTunneler(origin.ToVector2(), end, noise, 2);
+            tunnel.Run(out _);
+
+            structures.AddProtectedStructure(new Rectangle(origin.X, origin.Y, 300, 300));
+
+            return true;
+        }
+    }
+
+    public class FeydenTunneler : PerlinWorm
+    {
+        public int repeatWorm = 0;
+
+        public FeydenTunneler(Vector2 startPosition, Vector2 endPosition, FastNoiseLite noise, int repeatWorm = 1) : base(startPosition, endPosition, noise)
+        {
+            this.repeatWorm = repeatWorm;
+        }
+
+        public int endDistance = 300;
+        public override void OnRunStart(Vector2 position)
+        {
+        }
+
+        public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
+        {
+            int size = Main.rand.Next(3, 7);
+            WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, size, false);
+        }
+
+        public override void OnRunEnd(Vector2 position)
+        {
+            if (repeatWorm <= 1)
+            {
+                bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
+                if (withinBounds)
+                {
+                    for (int i = 0; i < Main.rand.Next(2, 4); i++)
+                    {
+                        float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
+                        float yScale = Main.rand.NextFloat(0.6f, 0.8f);
+                        int radius = Main.rand.Next(32, 48);
+                        Point shapePosition = new Point((int)position.X + -15 * i, (int)position.Y + Main.rand.Next(-5, 5));
+
+                        ShapeData slimeShapeData = new ShapeData();
+                        WorldUtils.Gen(shapePosition, new Shapes.Slime(20, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
+                        WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(TileID.SlimeBlock, true)));
+                    }
+                }
+            }
+            else
+            {
+                Vector2 branchEndpoint = position + new Vector2(0, 150).RotatedBy(-MathHelper.PiOver2);
+                FeydenTunneler tunnel = new FeydenTunneler(position, branchEndpoint, noise, --repeatWorm);
+                tunnel.Run(out _);
+            }
+
+            base.OnRunEnd(position);
         }
     }
 }
