@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Content.Projectiles;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.ModQuests;
@@ -40,6 +42,25 @@ namespace OvermorrowMod.Common.Detours
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp.xml"));
                     doc.LoadXml(text);
 
+                    player.SetDialogue(npc.GetChat(), 20, doc);
+                }
+                else if (npc.type == ModContent.NPCType<Feyden_Bound>())
+                {
+                    // Check if the handler is active to prevent the player from interacting with this NPC
+                    bool handlerActive = false;
+                    foreach (Projectile projectile in Main.projectile)
+                    {
+                        if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) handlerActive = true;
+                    }
+
+                    if (handlerActive)
+                    {
+                        orig(self);
+                        return;
+                    }
+
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenBound.xml"));
+                    doc.LoadXml(text);
                     player.SetDialogue(npc.GetChat(), 20, doc);
                 }
                 /*else if (npc.type == NPCID.Merchant)

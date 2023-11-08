@@ -14,12 +14,24 @@ using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {
     public class GuideCamp : ModSystem
     {
+        public static Vector2 FeydenCavePosition;
+        public override void SaveWorldData(TagCompound tag)
+        {
+            tag["FeydenCavePosition"] = FeydenCavePosition;
+        }
+
+        public override void LoadWorldData(TagCompound tag)
+        {
+            FeydenCavePosition = tag.Get<Vector2>("FeydenCavePosition");
+        }
+
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
@@ -202,7 +214,11 @@ namespace OvermorrowMod.Content.WorldGeneration
                         WorldUtils.Gen(shapePosition, new Shapes.Slime(20, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
                         WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(TileID.SlimeBlock, true)));
 
-                        if (i == repeat - 1) NPC.NewNPC(null, shapePosition.X * 16, shapePosition.Y * 16, ModContent.NPCType<Feyden_Bound>());
+                        if (i == repeat - 1)
+                        {
+                            GuideCamp.FeydenCavePosition = shapePosition.ToVector2() * 16;
+                            NPC.NewNPC(null, shapePosition.X * 16, shapePosition.Y * 16, ModContent.NPCType<Feyden_Bound>());
+                        }
                     }
                 }
             }

@@ -13,6 +13,8 @@ using OvermorrowMod.Quests;
 using Terraria.Audio;
 using OvermorrowMod.Common.NPCs;
 using System;
+using OvermorrowMod.Content.Projectiles;
+using OvermorrowMod.Content.WorldGeneration;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -385,6 +387,17 @@ namespace OvermorrowMod.Common.Cutscenes
                             // Run the Quest Complete UI
                             Main.NewText("COMPLETED QUEST: " + quest.QuestName, Color.Yellow);
 
+                            parent.ExitText();
+                            return;
+                        case "feyden_trigger":
+
+                            bool spawnHandler = true;
+                            foreach (Projectile projectile in Main.projectile)
+                            {
+                                if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) spawnHandler = false;
+                            }
+
+                            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, Main.myPlayer);
                             parent.ExitText();
                             return;
                         case "exit":
