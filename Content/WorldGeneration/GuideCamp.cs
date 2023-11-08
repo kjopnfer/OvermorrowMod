@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
 using OvermorrowMod.Common.WorldGeneration;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.Tiles.GuideCamp;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
@@ -25,7 +26,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (GuideIndex != -1)
             {
                 tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
-                tasks.Insert(GuideIndex + 2, new PassLegacy("Feyden Cave", GenerateSlimeCave));
+            }
+
+            int SurfaceCaves = tasks.FindIndex(genpass => genpass.Name.Equals("Rock Layer Caves"));
+            if (SurfaceCaves != -1)
+            {
+                tasks.Insert(SurfaceCaves + 1, new PassLegacy("Feyden Cave", GenerateSlimeCave));
             }
         }
 
@@ -184,7 +190,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
                 if (withinBounds)
                 {
-                    for (int i = 0; i < Main.rand.Next(2, 4); i++)
+                    int repeat = Main.rand.Next(2, 4);
+                    for (int i = 0; i < repeat; i++)
                     {
                         float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
                         float yScale = Main.rand.NextFloat(0.6f, 0.8f);
@@ -194,6 +201,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                         ShapeData slimeShapeData = new ShapeData();
                         WorldUtils.Gen(shapePosition, new Shapes.Slime(20, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
                         WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(TileID.SlimeBlock, true)));
+
+                        if (i == repeat - 1) NPC.NewNPC(null, shapePosition.X * 16, shapePosition.Y * 16, ModContent.NPCType<Feyden_Bound>());
                     }
                 }
             }
