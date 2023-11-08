@@ -253,7 +253,6 @@ namespace OvermorrowMod.Content.NPCs
                     //npc.lifeMax = npc.life = 100;
                     Player nearestPlayer = ModUtils.GetNearestPlayer(npc);
                     idleJumpDirection = npc.Center.X > nearestPlayer.Center.X ? -1 : 1;
-                    Main.NewText("idleing to " + idleJumpDirection);
                 }
             }
 
