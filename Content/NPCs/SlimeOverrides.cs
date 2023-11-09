@@ -103,7 +103,16 @@ namespace OvermorrowMod.Content.NPCs
                                 }
                             }
 
-                            if (FrameCounter++ >= 40) FrameCounter = 1;
+                            if (FrameCounter++ >= 40)
+                            {
+                                // Set the NPC's direction towards the target periodically
+                                if (target != null)
+                                {
+                                    idleJumpDirection = npc.Center.X > target.Center.X ? -1 : 1;
+                                }
+
+                                FrameCounter = 1;
+                            }
 
                             if (AICounter++ >= 40)
                             {

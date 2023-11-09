@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Common.VanillaOverrides;
+using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
@@ -75,7 +77,7 @@ namespace OvermorrowMod.Content.Projectiles
             }
 
             if (finalWave && ActiveSlimes.Count <= 0)
-            {              
+            {
                 Projectile.Kill();
             }
         }
@@ -94,7 +96,7 @@ namespace OvermorrowMod.Content.Projectiles
                 activeSlimes.Remove(slimeID);
             }
         }
-        
+
         private void SpawnSlimes()
         {
             // Pick three random spots to spawn the slimes
@@ -104,6 +106,13 @@ namespace OvermorrowMod.Content.Projectiles
                 Vector2 spawnPosition = ModUtils.FindNearestGround(position) * 16;
 
                 int slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.BlueSlime, 0);
+                Player nearestPlayer = ModUtils.GetNearestPlayer(Main.npc[slime]);
+
+                if (nearestPlayer != null && nearestPlayer.active)
+                {
+                    Main.npc[slime].GetGlobalNPC<SlimeOverrides>().SetTarget(nearestPlayer);
+                }
+              
                 ActiveSlimes.Add(slime);
             }
         }

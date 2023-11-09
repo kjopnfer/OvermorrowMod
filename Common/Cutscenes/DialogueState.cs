@@ -320,6 +320,9 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
                     QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+
+                    if (Main.LocalPlayer.talkNPC == -1) return;
+
                     NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                     QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
 
