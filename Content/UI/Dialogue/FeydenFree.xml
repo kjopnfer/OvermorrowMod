@@ -1,0 +1,9 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text portrait="Guide" time="60">nice fightin stranger u really showed those slimes whos boss</Text>
+			<Text portrait="Guide" time="60">if u dont mind i got a favor to ask of u</Text>
+			<Text portrait="Guide" time="60">would u mind taking me back home thanks</Text>
+		</Dialogue>
+	</DialogueNode>
+</Dialogue>

@@ -187,6 +187,8 @@ namespace OvermorrowMod.Common.Cutscenes
         /// </summary>
         public void ExitText()
         {
+            // Get any exit actions from the dialogue here
+
             ResetTimers();
             SetID("start");
 

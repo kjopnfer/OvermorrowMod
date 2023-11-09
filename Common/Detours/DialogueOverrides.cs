@@ -53,13 +53,13 @@ namespace OvermorrowMod.Common.Detours
                         if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) handlerActive = true;
                     }
 
-                    if (handlerActive)
-                    {
-                        orig(self);
-                        return;
-                    }
+                    if (handlerActive) return;
 
-                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenBound.xml"));
+                    if (OvermorrowWorld.savedFeyden)
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenFree.xml"));
+                    else
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenBound.xml"));
+
                     doc.LoadXml(text);
                     player.SetDialogue(npc.GetChat(), 20, doc);
                 }

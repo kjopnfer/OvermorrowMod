@@ -39,6 +39,7 @@ namespace OvermorrowMod.Common
         public static List<int> SavedShades = new List<int>();
         public static List<Vector2> ShadePositions = new List<Vector2>();
 
+        public static bool savedFeyden;
         public override void OnWorldLoad()
         {
             #region Boss Downed Flags

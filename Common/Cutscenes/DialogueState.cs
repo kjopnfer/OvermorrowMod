@@ -185,6 +185,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
                 else
                 {
+                    // If there are no dialogue options left, then make it so clicking will exit out of the dialogue completely
                     if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
                         ExitText();
                     else
