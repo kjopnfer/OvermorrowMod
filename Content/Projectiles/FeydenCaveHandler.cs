@@ -1,13 +1,10 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
-using OvermorrowMod.Common.VanillaOverrides;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,47 +35,42 @@ namespace OvermorrowMod.Content.Projectiles
             if (Projectile.ai[0]++ == 0)
             {
                 dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenCaveIntro.xml"));
-                SpawnSlimes();
             }
 
+            SpawnSlimes(finalWave);
             UpdateSlimes(ref ActiveSlimes);
 
-            if (firstWave && ActiveSlimes.Count <= 0)
+            if (ActiveSlimes.Count <= 0)
             {
-                firstWave = false;
-                secondWave = true;
-                Main.NewText("second wave");
+                if (firstWave)
+                {
+                    firstWave = false;
+                    secondWave = true;
 
-                SpawnSlimes();
-            }
+                    Main.NewText("second wave");
+                }
+                else if (secondWave)
+                {
+                    secondWave = false;
+                    thirdWave = true;
 
-            if (secondWave && ActiveSlimes.Count <= 0)
-            {
-                secondWave = false;
-                thirdWave = true;
-                Main.NewText("third wave");
+                    Main.NewText("third wave");
+                }
+                else if (thirdWave)
+                {
+                    thirdWave = false;
+                    finalWave = true;
+                    Main.NewText("final wave");
 
-                SpawnSlimes();
-            }
+                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenCaveBoss.xml"));
+                }
+                else if (finalWave)
+                {
+                    Projectile.Kill();
+                }
 
-            if (thirdWave && ActiveSlimes.Count <= 0)
-            {
-                Main.NewText("final wave");
-                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenCaveBoss.xml"));
-
-                thirdWave = false;
-                finalWave = true;
-
-                Vector2 position = new Vector2(Projectile.Center.X + Main.rand.Next(-7, 7) * 32, (int)Projectile.Center.Y);
-                Vector2 spawnPosition = ModUtils.FindNearestGround(position) * 16;
-
-                int slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.YellowSlime, 0);
-                ActiveSlimes.Add(slime);
-            }
-
-            if (finalWave && ActiveSlimes.Count <= 0)
-            {
-                Projectile.Kill();
+                iterations = 0;
+                Projectile.ai[1] = 0;
             }
         }
 
@@ -97,29 +89,45 @@ namespace OvermorrowMod.Content.Projectiles
             }
         }
 
-        private void SpawnSlimes()
+        int iterations = 0;
+        float previousOffset = 999;
+        private void SpawnSlimes(bool bigSlime = false)
         {
-            // Pick three random spots to spawn the slimes
-            for (int i = 0; i < 3; i++)
+            int maxIterations = bigSlime ? 1 : 3;
+            int type = bigSlime ? NPCID.YellowSlime : NPCID.BlueSlime;
+
+            // Pick random spots to spawn the slimes, staggered by a counter
+            if (Projectile.ai[1]++ % 25 == 0 && iterations < maxIterations)
             {
-                Vector2 position = new Vector2(Projectile.Center.X + Main.rand.NextFloat(-7, 7) * 64, (int)Projectile.Center.Y);
+                float randomOffset = Main.rand.NextFloat(-7, 7);
+
+                // Make it harder for the slimes to randomly spawn next to each other sequentially
+                while (Math.Abs(randomOffset - previousOffset) <= 3) randomOffset = Main.rand.NextFloat(-7, 7);
+
+                Vector2 position = new Vector2(Projectile.Center.X + randomOffset * 64, (int)Projectile.Center.Y);
                 Vector2 spawnPosition = ModUtils.FindNearestGround(position) * 16;
 
-                int slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.BlueSlime, 0);
+                int slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, type);
                 Player nearestPlayer = ModUtils.GetNearestPlayer(Main.npc[slime]);
 
                 if (nearestPlayer != null && nearestPlayer.active)
                 {
                     Main.npc[slime].GetGlobalNPC<SlimeOverrides>().SetTarget(nearestPlayer);
                 }
-              
+
                 ActiveSlimes.Add(slime);
+                iterations++;
+                previousOffset = randomOffset;
             }
         }
 
         public override void OnKill(int timeLeft)
         {
-            if (finalWave && ActiveSlimes.Count <= 0) Main.NewText("Monster Den Cleared!", Color.Yellow);
+            if (finalWave && ActiveSlimes.Count <= 0)
+            {
+                OvermorrowWorld.savedFeyden = true;
+                Main.NewText("Monster Den Cleared!", Color.Yellow);
+            }
         }
     }
 }
