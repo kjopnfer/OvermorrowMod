@@ -81,20 +81,6 @@ namespace OvermorrowMod.Quests
                     }
                 }
             }
-
-            if (FindActiveQuest("GuideCampfire"))
-            {
-                /*var npc = Main.npc[Main.LocalPlayer.talkNPC];
-                var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-
-                
-                if (!isDoing) return;
-
-                QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-                var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);*/
-
-            }
-
         }
 
         private void UpdateTravelMarkers()
@@ -103,16 +89,15 @@ namespace OvermorrowMod.Quests
             {
                 if (!req.IsCompleted)
                 {
+                    Main.NewText((req.Requirement as TravelRequirement).Location);
+                    
                     if (markerCounter % 30 == 0)
                     {
-                        Particle.CreateParticle(Particle.ParticleType<Pulse>(), (req.Requirement as TravelRequirement).Location * 16f,
+                        Particle.CreateParticle(Particle.ParticleType<Pulse>(), (req.Requirement as TravelRequirement).Location,
                             Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
                     }
 
-                    if (Player.active && Player.Distance((req.Requirement as TravelRequirement).Location * 16) < 50)
-                    {
-                        req.IsCompleted = true;
-                    }
+                    if (Player.active && Player.Distance((req.Requirement as TravelRequirement).Location) < 50) req.IsCompleted = true;               
                 }
             }
 

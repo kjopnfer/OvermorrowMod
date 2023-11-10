@@ -24,7 +24,7 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new TravelRequirement("sojourn_travel", TownGeneration.SojournLocation, "Escort Feyden to Sojourn"),
+                new TravelRequirement("sojourn_travel", () => TownGeneration.SojournLocation, "Sojourn", "Escort Feyden to Sojourn"),
             };
             Rewards = new[]
             {

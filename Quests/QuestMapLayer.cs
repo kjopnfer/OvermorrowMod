@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.State;
@@ -31,9 +32,8 @@ namespace OvermorrowMod.Quests
             foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(modPlayer))
             {
                 if (req.IsCompleted) continue;
-
                 var requirement = req.Requirement as TravelRequirement;
-
+                modPlayer.Player.position = requirement.Location;
                 if (context.Draw(questMarker.Value, requirement.Location, Color.White, new SpriteFrame(1, 1, 0, 0), 1f, 1.5f, Alignment.Center).IsMouseOver)
                 {
                     text = requirement.ID;

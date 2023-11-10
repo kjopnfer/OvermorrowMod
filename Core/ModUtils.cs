@@ -481,9 +481,10 @@ namespace OvermorrowMod.Core
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
 
-        public static Vector2 FindNearestGround(Vector2 startPosition)
+        public static Vector2 FindNearestGround(Vector2 startPosition, bool convertToTile = true)
         {
-            Vector2 position = startPosition / 16;
+            Vector2 position = startPosition;
+            if (convertToTile) position /= 16;
             Tile tile = Framing.GetTileSafely((int)position.X, (int)position.Y);
             while (!tile.HasTile || tile.TileType == TileID.Trees || !Main.tileSolid[tile.TileType])
             {

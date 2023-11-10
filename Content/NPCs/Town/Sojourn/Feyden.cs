@@ -72,13 +72,12 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                 _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
 
                 NPC.aiStyle = 0;
+
+                // The Pathfinder should reset every few seconds for any environmental changes
                 if (++AICounter % 400 == 0)
                 {
                     AICounter = 0;
-                    SharedAIState.State1x2.CanFitInTile.Clear();
-                    SharedAIState.State1x2.CanStandOnTile.Clear();
-                    SharedAIState.State1x2.CanFallThroughTile.Clear();
-
+                    SharedAIState.State1x2.Reset();
                 }
                 return;
             }
