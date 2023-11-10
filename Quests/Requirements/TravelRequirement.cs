@@ -18,9 +18,15 @@ namespace OvermorrowMod.Quests.Requirements
         private readonly Func<Vector2> locationGenerator;
 
 
-        public TravelRequirement(Func<Vector2> locationGenerator, string description, string id) : base(id)
+        public TravelRequirement(string id, Func<Vector2> locationGenerator, string description) : base(id)
         {
             this.locationGenerator = locationGenerator;
+            this.description = description;
+        }
+
+        public TravelRequirement(string id, Vector2 location, string description) : base(id)
+        {
+            this.location = location;
             this.description = description;
         }
 

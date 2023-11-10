@@ -36,6 +36,12 @@ namespace OvermorrowMod.Core
             }
         }
 
+        private static bool CanStandOn(int x, int y)
+        {
+            var tile = Main.tile[x, y];
+            return tile.HasTile && (Main.tileSolid[tile.TileType] || Main.tileSolidTop[tile.TileType]);
+        }
+
         public static bool CheckKeyPress()
         {
             if (Main.keyState.IsKeyDown(Keys.Q) || Main.keyState.IsKeyDown(Keys.W) || Main.keyState.IsKeyDown(Keys.E) || Main.keyState.IsKeyDown(Keys.R) ||
@@ -176,7 +182,6 @@ namespace OvermorrowMod.Core
 
             return closestNPC;
         }
-
 
         public static void PlaceTilePile<T, TE>(int x, int y) where T : ModTilePile<TE> where TE : BaseTilePile
         {
