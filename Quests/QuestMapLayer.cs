@@ -33,7 +33,9 @@ namespace OvermorrowMod.Quests
             {
                 if (req.IsCompleted) continue;
                 var requirement = req.Requirement as TravelRequirement;
-                modPlayer.Player.position = requirement.Location;
+                modPlayer.SelectedLocation = requirement.ID;
+
+                //modPlayer.Player.position = requirement.Location;
                 if (context.Draw(questMarker.Value, requirement.Location, Color.White, new SpriteFrame(1, 1, 0, 0), 1f, 1.5f, Alignment.Center).IsMouseOver)
                 {
                     text = requirement.ID;

@@ -81,18 +81,24 @@ namespace OvermorrowMod.Content.WorldGeneration
             progress.Message = "Setting up camp";
 
             Vector2 startPosition = new Vector2(Main.maxTilesX / 2, 0);
-
             Vector2 campPosition = ModUtils.FindNearestGround(startPosition, false);
             //WorldGen.PlaceTile(x, y, TileID.Adamantite, false, true);
 
+            SpawnCamp spawnCamp = new SpawnCamp();
             for (int i = 0; i < 2; i++)
             {
-                PlaceCamp((int)campPosition.X + 3, (int)campPosition.Y + 8);
+                spawnCamp.Place(new Point((int)campPosition.X + 3, (int)campPosition.Y + 8), GenVars.structures);
             }
         }
+    }
 
-        public static void PlaceCamp(int x, int y)
+    public class SpawnCamp : MicroBiome
+    {
+        public override bool Place(Point origin, StructureMap structures)
         {
+            int x = origin.X;
+            int y = origin.Y;
+
             Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
             {
                 [new Color(42, 100, 46)] = TileID.Grass,
@@ -114,20 +120,23 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             //WorldGen.PlaceTile(x - (TileGen.width / 2), y - TileGen.height, TileID.Adamantite, false, true);
 
-            Vector2 origin = new Vector2(x - (TileGen.width / 2), y - TileGen.height);
+            Vector2 position = new Vector2(x - (TileGen.width / 2), y - TileGen.height);
+            ModUtils.PlaceObject((int)(position.X + 20), (int)(position.Y + 5), ModContent.TileType<GuideCampfire>());
+            ModContent.GetInstance<GuideCampfire_TE>().Place((int)(position.X + 19), (int)(position.Y + 4));
 
-            ModUtils.PlaceObject((int)(origin.X + 20), (int)(origin.Y + 5), ModContent.TileType<GuideCampfire>());
-            ModContent.GetInstance<GuideCampfire_TE>().Place((int)(origin.X + 19), (int)(origin.Y + 4));
+            ModUtils.PlaceTilePile<BowRock, BowRockObjects>((int)(position.X + 12), (int)(position.Y + 4));
+            //WorldGen.PlaceTile((int)(position.X + 12), (int)(position.Y + 4), TileID.Adamantite, false, true);
+            ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(position.X + 16), (int)(position.Y + 5));
+            //WorldGen.PlaceTile((int)(position.X + 26), (int)(position.Y + 5), TileID.Adamantite, false, true);
 
-            ModUtils.PlaceTilePile<BowRock, BowRockObjects>((int)(origin.X + 12), (int)(origin.Y + 4));
-            //WorldGen.PlaceTile((int)(origin.X + 12), (int)(origin.Y + 4), TileID.Adamantite, false, true);
-            ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(origin.X + 16), (int)(origin.Y + 5));
-            //WorldGen.PlaceTile((int)(origin.X + 26), (int)(origin.Y + 5), TileID.Adamantite, false, true);
+            ModUtils.PlaceTilePile<GuideLog, GuideLogObjects>((int)(position.X + 26), (int)(position.Y + 4));
+            ModUtils.PlaceTilePile<GuideTent, GuideTentObjects>((int)(position.X + 34), (int)(position.Y + 3));
+            ModUtils.PlaceTilePile<BookRock, BookRockObjects>((int)(position.X + 39), (int)(position.Y + 3));
+            ModUtils.PlaceTilePile<AxeStump, AxeStumpObjects>((int)(position.X + 42), (int)(position.Y + 3));
 
-            ModUtils.PlaceTilePile<GuideLog, GuideLogObjects>((int)(origin.X + 26), (int)(origin.Y + 4));
-            ModUtils.PlaceTilePile<GuideTent, GuideTentObjects>((int)(origin.X + 34), (int)(origin.Y + 3));
-            ModUtils.PlaceTilePile<BookRock, BookRockObjects>((int)(origin.X + 39), (int)(origin.Y + 3));
-            ModUtils.PlaceTilePile<AxeStump, AxeStumpObjects>((int)(origin.X + 42), (int)(origin.Y + 3));
+            structures.AddProtectedStructure(new Rectangle(origin.X - (TileClear.width / 2), origin.Y - (TileClear.height), TileClear.width, TileClear.height));
+
+            return true;
         }
     }
 
