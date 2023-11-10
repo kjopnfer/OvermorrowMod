@@ -80,37 +80,14 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             progress.Message = "Setting up camp";
 
-            int startX = Main.maxTilesX / 2;
-            int startY = 0;
+            Vector2 startPosition = new Vector2(Main.maxTilesX / 2, 0);
 
-            bool validArea = false;
-
-            int x = startX;
-            int y = startY/* - 15*/;
-
-            while (!validArea)
-            {
-                Tile tile = Framing.GetTileSafely(x, y);
-                while (!tile.HasTile)
-                {
-                    y++;
-                    tile = Framing.GetTileSafely(x, y);
-                }
-
-                Tile aboveTile = Framing.GetTileSafely(x, y - 1);
-
-                // We have the tile but we want to check if its a grass block, if it isn't restart the process
-                if (/*!aboveTile.HasTile*/Main.tileSolid[tile.TileType])
-                {
-                    validArea = true;
-                }
-            }
-
-            WorldGen.PlaceTile(x, y, TileID.Adamantite, false, true);
+            Vector2 campPosition = ModUtils.FindNearestGround(startPosition, false);
+            //WorldGen.PlaceTile(x, y, TileID.Adamantite, false, true);
 
             for (int i = 0; i < 2; i++)
             {
-                PlaceCamp(x + 3, y + 8);
+                PlaceCamp((int)campPosition.X + 3, (int)campPosition.Y + 8);
             }
         }
 
@@ -202,7 +179,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 bool withinBounds = position.X > 0 && position.X < Main.maxTilesX && position.Y > 0 && position.Y < Main.maxTilesY;
                 if (withinBounds)
                 {
-                    int repeat = Main.rand.Next(2, 4);
+                    int repeat = 3;
                     for (int i = 0; i < repeat; i++)
                     {
                         float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area

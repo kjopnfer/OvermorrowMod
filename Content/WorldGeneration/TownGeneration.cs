@@ -62,7 +62,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
 
             int yOffset = 65;
-            SojournLocation = new Vector2(x, y + yOffset) * 16;
+            SojournLocation = new Vector2(x, y) * 16;
             SojournBase sojournBase = new SojournBase();
 
             for (int _ = 0; _ < 2; _++)
@@ -71,12 +71,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 // this is so fucking stupid
                 if (_ == 1)
                 {
-                    sojournBase.Place(new Point(x, y + yOffset), GenVars.structures);
+                    sojournBase.Place(new Point((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65)), GenVars.structures);
                     //PlaceTownFoundation(x, y + yOffset);
                 }
                 else
                 { // this isnt supposed to do anything
-                    sojournBase.Place(new Point(x, y + yOffset), GenVars.structures);
+                    sojournBase.Place(new Point((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65)), GenVars.structures);
                     //PlaceTownFoundation(x, y + yOffset);
                 }
             }
@@ -91,10 +91,10 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 // this is so fucking stupid
                 if (_ == 1)
-                    PlaceTown((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16), true);
+                    PlaceTown((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65), true);
                 else
                 { // this isnt supposed to do anything
-                    PlaceTown((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16));
+                    PlaceTown((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65));
                 }
             }
         }
