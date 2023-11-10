@@ -39,7 +39,8 @@ namespace OvermorrowMod.Common
 
         public override void PostDrawTiles()
         {
-            // SharedAIState.State2x2.Visualize();
+            //SharedAIState.State2x2.Visualize();
+            SharedAIState.State1x2.Visualize();
         }
 
         // Worldgen Debugging

@@ -15,6 +15,7 @@ using OvermorrowMod.Common.NPCs;
 using System;
 using OvermorrowMod.Content.Projectiles;
 using OvermorrowMod.Content.WorldGeneration;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -354,12 +355,15 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             return;
                         case "quest":
+                        case "feyden_escort":
                             questPlayer.AddQuest(quest);
                             questNPC.TakeQuest();
 
-                            if (quest.QuestName == "Rekindle the Flame")
+                            if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
+                            if (npc.ModNPC is Feyden feyden)
                             {
-                                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
+                                Main.NewText(TownGeneration.SojournLocation);
+                                feyden.followPlayer = questPlayer.Player;
                             }
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")

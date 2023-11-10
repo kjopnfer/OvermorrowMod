@@ -8,15 +8,15 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 {
     public class Feyden : ModNPC
     {
-        private WalkPathFinder _pf = new WalkPathFinder(SharedAIState.State2x2, new WalkPathFinderProperties
+        private WalkPathFinder _pf = new WalkPathFinder(SharedAIState.State1x2, new WalkPathFinderProperties
         {
             Acceleration = 1.0f,
             JumpSpeeds = new[] { 7f / 16f, 5.5f / 16f },
-            MoveSpeed = 4f / 16f,
+            MoveSpeed = 2f / 16f,
             MaxFallDepth = 50,
             NumPermutationSteps = 2,
-            Timeout = 200,
-            MaxDivergence = 50,
+            Timeout = 300,
+            MaxDivergence = 100,
         });
 
         public override bool CanTownNPCSpawn(int numTownNPCs) => false;
@@ -33,15 +33,23 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         {
             NPC.townNPC = true; // Sets NPC to be a Town NPC
             NPC.friendly = true; // NPC Will not attack player
-            NPC.width = 18;
-            NPC.height = 40;
+            /*NPC.width = 32;
+            NPC.height = 32;
             NPC.aiStyle = 7;
             NPC.damage = 10;
             NPC.defense = 15;
             NPC.lifeMax = 250;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.knockBackResist = 0.5f;
+            NPC.knockBackResist = 0.5f;*/
+            NPC.width = 16;
+            NPC.height = 32;
+            NPC.aiStyle = 7;
+            NPC.defense = 30;
+            NPC.damage = 0;
+            NPC.lifeMax = 150;
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.DeathSound = SoundID.NPCDeath1;
 
             AnimationType = NPCID.Guide;
         }
@@ -55,6 +63,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         }
 
         public Player followPlayer = null;
+        private int AICounter = 0;
         public override void AI()
         {
             if (followPlayer != null)
@@ -62,11 +71,28 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                 _pf.SetTarget(followPlayer.position);
                 _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
 
+                NPC.aiStyle = 0;
+                if (++AICounter % 400 == 0)
+                {
+                    AICounter = 0;
+                    SharedAIState.State1x2.CanFitInTile.Clear();
+                    SharedAIState.State1x2.CanStandOnTile.Clear();
+                    SharedAIState.State1x2.CanFallThroughTile.Clear();
+
+                }
                 return;
             }
+            //_pf.SetTarget(Main.CurrentPlayer.position);
+            //_pf.GetVelocity(ref NPC.position, ref NPC.velocity);
 
-            base.AI();
+            NPC.aiStyle = 7;
         }
+
+        public override bool? CanFallThroughPlatforms()
+        {
+            return _pf.ShouldFallThroughPlatforms(NPC.velocity, NPC.position);
+        }
+
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {

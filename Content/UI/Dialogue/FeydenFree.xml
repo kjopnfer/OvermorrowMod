@@ -6,7 +6,7 @@
 			<Text portrait="Guide" time="60">would u mind taking me back home thanks</Text>
 		</Dialogue>
 		<Options>
-			<Option link="exit" icon="quest" action="quest">sure</Option>
+			<Option link="exit" icon="quest" action="feyden_escort">sure</Option>
 		</Options>
 	</DialogueNode>
 </Dialogue>

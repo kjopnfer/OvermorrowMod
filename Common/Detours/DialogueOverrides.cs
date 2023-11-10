@@ -60,7 +60,10 @@ namespace OvermorrowMod.Common.Detours
                     player.SetDialogue(npc.GetChat(), 20, doc);
                 }
                 else if (npc.type == ModContent.NPCType<Feyden>())
-                {
+                {          
+                    if (questPlayer.FindActiveQuest("FeydenEscort")) return;
+                    
+
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenFree.xml"));
                     doc.LoadXml(text);
                     player.SetDialogue(npc.GetChat(), 20, doc);
