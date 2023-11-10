@@ -25,7 +25,7 @@ namespace OvermorrowMod.Quests
         private Asset<Texture2D> questMarker;
         public override void Draw(ref MapOverlayDrawContext context, ref string text)
         {
-            if (questMarker == null || questMarker.IsDisposed) questMarker = ModContent.Request<Texture2D>(AssetDirectory.Textures + "QuestMarker");
+            if (questMarker == null || questMarker.IsDisposed) questMarker = ModContent.Request<Texture2D>(AssetDirectory.Textures + "QuestMarker", AssetRequestMode.ImmediateLoad);
 
             var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
 
@@ -33,7 +33,6 @@ namespace OvermorrowMod.Quests
             {
                 if (req.IsCompleted) continue;
                 var requirement = req.Requirement as TravelRequirement;
-                modPlayer.SelectedLocation = requirement.ID;
 
                 //modPlayer.Player.position = requirement.Location;
                 if (context.Draw(questMarker.Value, requirement.Location, Color.White, new SpriteFrame(1, 1, 0, 0), 1f, 1.5f, Alignment.Center).IsMouseOver)

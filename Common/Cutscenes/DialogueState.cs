@@ -16,6 +16,7 @@ using System;
 using OvermorrowMod.Content.Projectiles;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Quests.Requirements;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -362,7 +363,11 @@ namespace OvermorrowMod.Common.Cutscenes
                             if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
                             if (npc.ModNPC is Feyden feyden)
                             {
-                                Main.NewText(TownGeneration.SojournLocation);
+                                foreach (var req in quest.Requirements)
+                                {
+                                    if (req is TravelRequirement travelReq) questPlayer.SelectedLocation = travelReq.ID;
+                                }
+
                                 feyden.followPlayer = questPlayer.Player;
                             }
 

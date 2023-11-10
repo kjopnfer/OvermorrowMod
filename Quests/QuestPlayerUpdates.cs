@@ -88,9 +88,7 @@ namespace OvermorrowMod.Quests
             foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(this))
             {
                 if (!req.IsCompleted)
-                {
-                    Main.NewText((req.Requirement as TravelRequirement).Location);
-                    
+                {                    
                     if (markerCounter % 30 == 0)
                     {
                         Particle.CreateParticle(Particle.ParticleType<Pulse>(), (req.Requirement as TravelRequirement).Location,
