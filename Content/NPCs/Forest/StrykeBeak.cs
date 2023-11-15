@@ -459,7 +459,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            bool isUnderground = Framing.GetTileSafely(spawnInfo.SpawnTileX, spawnInfo.SpawnTileY).WallType > 0;
+            bool isUnderground = Framing.GetTileSafely(spawnInfo.SpawnTileX, spawnInfo.SpawnTileY).WallType > 0 || spawnInfo.SpawnTileY < Main.worldSurface;
             return spawnInfo.Player.ZonePurity && !isUnderground && Main.dayTime ? 0.05f : 0f;
         }
     }

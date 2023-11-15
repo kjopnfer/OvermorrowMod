@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                 NPC.aiStyle = 0;
 
                 // The Pathfinder should reset every few seconds for any environmental changes
-                if (++AICounter % 400 == 0)
+                if (++AICounter % 600 == 0)
                 {
                     AICounter = 0;
                     SharedAIState.State1x2.Reset();
