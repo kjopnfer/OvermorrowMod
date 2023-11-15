@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
 
             PileContents[0] = new TileInfo(ObjectType<Bread>(), position, 10 + 16, 10 + 16, 2, (int)TileInfo.InteractionType.Click);
             PileContents[1] = new TileInfo(ObjectType<Knife>(), position, 2 + 16, 0 + 16, 2, (int)TileInfo.InteractionType.Click);
-            PileContents[2] = new TileInfo(ObjectType<Stool>(), position, 2 + 16, 20 + 16, -1, (int)TileInfo.InteractionType.Mine);
+            PileContents[2] = new TileInfo(ObjectType<Stool>(), position, 2 + 16, 20 + 16, -1, (int)TileInfo.InteractionType.Click);
         }
 
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
