@@ -481,6 +481,12 @@ namespace OvermorrowMod.Core
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
 
+        /// <summary>
+        /// Gets the nearest solid ground tile given a starting position.
+        /// </summary>
+        /// <param name="startPosition">Initial position to start looping downwards from</param>
+        /// <param name="convertToTile">Whether to divide the input by 16</param>
+        /// <returns></returns>
         public static Vector2 FindNearestGround(Vector2 startPosition, bool convertToTile = true)
         {
             Vector2 position = startPosition;

@@ -51,35 +51,12 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             progress.Message = "Excavating Sojourn";
 
-            int x = (int)(Main.maxTilesX * 0.75f);
-            int y = (int)(Main.worldSurface * 0.35f);
-
-
-            // Loop downwards until we reach a solid tile
-            while (y - 200 < Main.worldSurface * 0.35f)
-            {
-                y++;
-            }
-
-            int yOffset = 65;
-            SojournLocation = new Vector2(x, y) * 16;
+            Vector2 startPosition = new Vector2(Main.maxTilesX * 0.75f, (float)(Main.worldSurface * 0.35f));
+            SojournLocation = ModUtils.FindNearestGround(startPosition, false) * 16;
             SojournBase sojournBase = new SojournBase();
 
             for (int _ = 0; _ < 2; _++)
-            {
-                // sometimes the structure doesnt even place so you have to run it twice??
-                // this is so fucking stupid
-                if (_ == 1)
-                {
-                    sojournBase.Place(new Point((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65)), GenVars.structures);
-                    //PlaceTownFoundation(x, y + yOffset);
-                }
-                else
-                { // this isnt supposed to do anything
-                    sojournBase.Place(new Point((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65)), GenVars.structures);
-                    //PlaceTownFoundation(x, y + yOffset);
-                }
-            }
+                sojournBase.Place(new Point((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65)), GenVars.structures);
         }
 
         private void GenerateTown(GenerationProgress progress, GameConfiguration config)
@@ -698,7 +675,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
-            
+
             structures.AddProtectedStructure(new Rectangle(origin.X - (TileClear.width / 2), origin.Y - (TileClear.height), TileClear.width, TileClear.height));
 
             return true;

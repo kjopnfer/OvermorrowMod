@@ -86,9 +86,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             SpawnCamp spawnCamp = new SpawnCamp();
             for (int i = 0; i < 2; i++)
-            {
-                spawnCamp.Place(new Point((int)campPosition.X + 3, (int)campPosition.Y + 8), GenVars.structures);
-            }
+                spawnCamp.Place(new Point((int)campPosition.X + 3, (int)campPosition.Y + 5), GenVars.structures);
         }
     }
 
