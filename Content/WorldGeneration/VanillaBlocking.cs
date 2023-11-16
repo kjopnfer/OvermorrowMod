@@ -62,8 +62,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             //RemovePass(tasks, "Terrain");
 
             //RemovePass(tasks, "Tunnels");
-            RemovePass(tasks, "Mount Caves"); // This will have to be reverse-engineered
-            RemovePass(tasks, "Mountain Caves"); // This will have to be reverse-engineered
+            RemovePass(tasks, "Mount Caves"); 
+            RemovePass(tasks, "Mountain Caves");
 
             RemovePass(tasks, "Small Holes");
             //RemovePass(tasks, "Surface Caves");

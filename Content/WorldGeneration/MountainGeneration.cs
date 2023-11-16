@@ -18,53 +18,62 @@ namespace OvermorrowMod.Content.WorldGeneration
             numMCaves = 0;
             progress.Message = Lang.gen[2].Value;
             int num883 = 0;
-            bool flag56 = false;
+            bool isInvalidLocation = false;
             bool flag57 = false;
 
-            int num884 = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.75));
+            // Find a random x-position to generate the mountain at within the inner 50% of the world
+            int generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.75));
             while (!flag57)
             {
                 flag57 = true;
-                while (num884 > Main.maxTilesX / 2 - 90 && num884 < Main.maxTilesX / 2 + 90)
+
+                // Find a different x-position if the chosen location is within 90 tiles of the spawn area
+                while (generateX > Main.maxTilesX / 2 - 90 && generateX < Main.maxTilesX / 2 + 90)
                 {
-                    num884 = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.75));
+                    generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.75));
                 }
+
+                // I have no idea what this does
                 for (int num885 = 0; num885 < numMCaves; num885++)
                 {
-                    if (Math.Abs(num884 - mCaveX[num885]) < 100)
+                    if (Math.Abs(generateX - mCaveX[num885]) < 100)
                     {
                         num883++;
                         flag57 = false;
                         break;
                     }
                 }
+
+                // I have no idea what this is checking
                 if (num883 >= Main.maxTilesX / 5)
                 {
-                    flag56 = true;
+                    isInvalidLocation = true;
                     break;
                 }
             }
 
-            if (!flag56)
+            if (!isInvalidLocation)
             {
-                for (int num886 = 0; (double)num886 < Main.worldSurface; num886++)
+                // Finds a valid y-position by looping form the top of the world to the world's surface
+                for (int generateY = 0; (double)generateY < Main.worldSurface; generateY++)
                 {
-                    if (Main.tile[num884, num886].HasTile)
+                    if (Main.tile[generateX, generateY].HasTile)
                     {
-                        for (int num887 = num884 - 50; num887 < num884 + 50; num887++)
+                        // Check within 100 pixels on the chosen location for any sand. If found, do not generate.
+                        for (int x = generateX - 50; x < generateX + 50; x++)
                         {
-                            for (int num888 = num886 - 25; num888 < num886 + 25; num888++)
+                            for (int y = generateY - 25; y < generateY + 25; y++)
                             {
-                                bool checkSand = Main.tile[num887, num888].HasTile && (Main.tile[num887, num888].TileType == TileID.Sand || Main.tile[num887, num888].TileType == TileID.SandstoneBrick || Main.tile[num887, num888].TileType == TileID.SandStoneSlab);
-                                if (checkSand) flag56 = true;
+                                bool checkSand = Main.tile[x, y].HasTile && (Main.tile[x, y].TileType == TileID.Sand || Main.tile[x, y].TileType == TileID.SandstoneBrick || Main.tile[x, y].TileType == TileID.SandStoneSlab);
+                                if (checkSand) isInvalidLocation = true;
                             }
                         }
 
-                        if (!flag56)
+                        if (!isInvalidLocation)
                         {
-                            WorldGen.Mountinater(num884, num886);
-                            mCaveX[numMCaves] = num884;
-                            mCaveY[numMCaves] = num886;
+                            WorldGen.Mountinater(generateX, generateY);
+                            mCaveX[numMCaves] = generateX;
+                            mCaveY[numMCaves] = generateY;
                             numMCaves++;
                             break;
                         }
@@ -76,12 +85,12 @@ namespace OvermorrowMod.Content.WorldGeneration
         public static void GenerateMountainCaves(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = Lang.gen[21].Value;
-            for (int num655 = 0; num655 < numMCaves; num655++)
+            for (int currentCave = 0; currentCave < numMCaves; currentCave++)
             {
-                int i4 = mCaveX[num655];
-                int j4 = mCaveY[num655];
-                WorldGen.CaveOpenater(i4, j4);
-                WorldGen.Cavinator(i4, j4, WorldGen.genRand.Next(40, 50));
+                int i = mCaveX[currentCave];
+                int j = mCaveY[currentCave];
+                WorldGen.CaveOpenater(i, j);
+                WorldGen.Cavinator(i, j, WorldGen.genRand.Next(40, 50));
             }
         }
     }
