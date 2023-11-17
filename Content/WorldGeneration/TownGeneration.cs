@@ -34,12 +34,9 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
-            int TerrainIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Mountain Caves"));
-            if (TerrainIndex != -1)
-            {
-                tasks.Insert(TerrainIndex + 1, new PassLegacy("Sojourn Base", GenerateTownFoundation));
-            }
-
+            int TunnelIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tunnels"));
+            if (TunnelIndex != -1) tasks.Insert(TunnelIndex + 1, new PassLegacy("Sojourn Base", GenerateTownFoundation));
+            
             int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (BiomeIndex != -1)
             {

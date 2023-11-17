@@ -22,15 +22,19 @@ namespace OvermorrowMod.Content.WorldGeneration
             bool flag57 = false;
 
             // Find a random x-position to generate the mountain at within the inner 50% of the world
-            int generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.75));
+            int generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.65));
             while (!flag57)
             {
                 flag57 = true;
 
-                // Find a different x-position if the chosen location is within 90 tiles of the spawn area
-                while (generateX > Main.maxTilesX / 2 - 90 && generateX < Main.maxTilesX / 2 + 90)
+                float tilePadding = Main.maxTilesX * 0.05f;
+                int slimeCavePosition = (int)((Main.maxTilesX / 7 * 4) + tilePadding);
+
+                // Find a different x-position if the chosen location is within 180 tiles of the spawn area
+                // Prevent the mountain from generating into the slime cave which is always to the right of the spawn camp
+                while (generateX > Main.maxTilesX / 2 - 180 && generateX < slimeCavePosition + 180)
                 {
-                    generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.75));
+                    generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.65));
                 }
 
                 // I have no idea what this does

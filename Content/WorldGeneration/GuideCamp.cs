@@ -35,45 +35,23 @@ namespace OvermorrowMod.Content.WorldGeneration
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
-            if (GuideIndex != -1)
-            {
-                tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
-            }
-
+            if (GuideIndex != -1) tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
+            
             int SurfaceCaves = tasks.FindIndex(genpass => genpass.Name.Equals("Rock Layer Caves"));
-            if (SurfaceCaves != -1)
-            {
-                tasks.Insert(SurfaceCaves + 1, new PassLegacy("Feyden Cave", GenerateSlimeCave));
-            }
+            if (SurfaceCaves != -1) tasks.Insert(SurfaceCaves + 1, new PassLegacy("Feyden Cave", GenerateSlimeCave));
         }
 
         private void GenerateSlimeCave(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Falling into a cave";
 
-            float flatDelay = Main.maxTilesX * 0.05f;
-            int x = (int)((Main.maxTilesX / 7 * 4) + flatDelay);
-            int y = 0;
+            float tilePadding = Main.maxTilesX * 0.05f;
 
-            bool validArea = false;
-            while (!validArea)
-            {
-                Tile tile = Framing.GetTileSafely(x, y);
-                while (!tile.HasTile)
-                {
-                    y++;
-                    tile = Framing.GetTileSafely(x, y);
-                }
-
-                // We have the tile but we want to check if its a grass block, if it isn't restart the process
-                if (/*!aboveTile.HasTile*/Main.tileSolid[tile.TileType])
-                {
-                    validArea = true;
-                }
-            }
+            Vector2 startPosition = new Vector2((int)((Main.maxTilesX / 7 * 4) + tilePadding), 0);
+            Vector2 cavePosition = ModUtils.FindNearestGround(startPosition, false);
 
             FeydenCave feydenCave = new FeydenCave();
-            feydenCave.Place(new Point(x, y), GenVars.structures);
+            feydenCave.Place(new Point((int)cavePosition.X, (int)cavePosition.Y), GenVars.structures);
         }
 
         private void GenerateCamp(GenerationProgress progress, GameConfiguration config)
