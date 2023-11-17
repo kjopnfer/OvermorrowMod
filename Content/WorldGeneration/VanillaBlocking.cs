@@ -49,13 +49,13 @@ namespace OvermorrowMod.Content.WorldGeneration
             int TunnelIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tunnels"));
             if (TunnelIndex != -1)
             {
-                tasks.Insert(TunnelIndex + 1, new PassLegacy("Mount Caves", MountainGeneration.GenerateMountains));
+                tasks.Insert(TunnelIndex + 1, new PassLegacy("Mountains", MountainGeneration.GenerateMountains));
             }
 
             int SlushIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Slush"));
             if (SlushIndex != -1)
             {
-                tasks.Insert(SlushIndex + 1, new PassLegacy("Mountain Caves", MountainGeneration.GenerateMountainCaves));
+                tasks.Insert(SlushIndex + 1, new PassLegacy("Mountain Tunnels", MountainGeneration.GenerateMountainCaves));
             }
 
 
