@@ -66,7 +66,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             RemovePass(tasks, "Mountain Caves");
 
             RemovePass(tasks, "Small Holes");
-            //RemovePass(tasks, "Surface Caves");
+            RemovePass(tasks, "Surface Caves");
             //RemovePass(tasks, "Dirt Layer Caves");
 
             //RemovePass(tasks, "Rock Layer Caves");

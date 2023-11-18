@@ -48,26 +48,13 @@ namespace OvermorrowMod.Content.WorldGeneration
             Vector2 startPosition = new Vector2(Main.maxTilesX * 0.75f, (float)(Main.worldSurface * 0.35f));
             SojournLocation = ModUtils.FindNearestGround(startPosition, false) * 16;
             SojournBase sojournBase = new SojournBase();
-
-            for (int _ = 0; _ < 2; _++)
-                sojournBase.Place(new Point((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65)), GenVars.structures);
+            sojournBase.Place(new Point((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65)), GenVars.structures);
         }
 
         private void GenerateTown(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Raising Sojourn";
-
-            // I don't know why the first one doesn't generate dude
-            for (int _ = 0; _ < 2; _++)
-            {
-                // this is so fucking stupid
-                if (_ == 1)
-                    PlaceTown((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65), true);
-                else
-                { // this isnt supposed to do anything
-                    PlaceTown((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65));
-                }
-            }
+            PlaceTown((int)(SojournLocation.X / 16), (int)(SojournLocation.Y / 16 + 65));   
         }
 
         /// <summary>
@@ -93,13 +80,13 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(0, 0, 0)] = -2,
             };
 
-            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear").Value;
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear", AssetRequestMode.ImmediateLoad).Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn").Value;
-            Texture2D WallMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Walls").Value;
-            Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Liquids").Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D WallMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Walls", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Liquids", AssetRequestMode.ImmediateLoad).Value;
 
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
@@ -592,7 +579,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         /// <summary>
         /// Second pass to place buildings, liquids, and walls
         /// </summary>
-        public static void PlaceTown(int x, int y, bool spawnNPC = false)
+        public static void PlaceTown(int x, int y)
         {
             Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
             {
@@ -659,13 +646,13 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(0, 0, 0)] = -2,
             };
 
-            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear").Value;
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear", AssetRequestMode.ImmediateLoad).Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn").Value;
-            Texture2D WallMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Walls").Value;
-            Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Liquids").Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D WallMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Walls", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Liquids", AssetRequestMode.ImmediateLoad).Value;
 
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);

@@ -34,11 +34,15 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
-            int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
-            if (GuideIndex != -1) tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
-            
             int SurfaceCaves = tasks.FindIndex(genpass => genpass.Name.Equals("Rock Layer Caves"));
-            if (SurfaceCaves != -1) tasks.Insert(SurfaceCaves + 1, new PassLegacy("Feyden Cave", GenerateSlimeCave));
+            if (SurfaceCaves != -1)
+            {
+                tasks.Insert(SurfaceCaves + 1, new PassLegacy("Spawn Camp", GenerateCamp));
+                tasks.Insert(SurfaceCaves + 2, new PassLegacy("Feyden Cave", GenerateSlimeCave));
+            }
+
+            //int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
+            //if (GuideIndex != -1) tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
         }
 
         private void GenerateSlimeCave(GenerationProgress progress, GameConfiguration config)
@@ -63,8 +67,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             //WorldGen.PlaceTile(x, y, TileID.Adamantite, false, true);
 
             SpawnCamp spawnCamp = new SpawnCamp();
-            for (int i = 0; i < 2; i++)
-                spawnCamp.Place(new Point((int)campPosition.X + 3, (int)campPosition.Y + 5), GenVars.structures);
+            spawnCamp.Place(new Point((int)campPosition.X + 3, (int)campPosition.Y + 5), GenVars.structures);
         }
     }
 
@@ -86,11 +89,11 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(0, 0, 0)] = -2
             };
 
-            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/GuideCamp_Clear").Value;
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/GuideCamp_Clear", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/GuideCamp").Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/GuideCamp", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 

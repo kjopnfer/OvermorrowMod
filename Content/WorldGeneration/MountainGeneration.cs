@@ -17,9 +17,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             numMCaves = 0;
             progress.Message = Lang.gen[2].Value;
-            int num883 = 0;
             bool isInvalidLocation = false;
-            bool flag57 = false;
 
             for (int i = 0; i < Main.rand.Next(3, 5); i++)
             {
@@ -35,8 +33,6 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.65));
                 }
-
-
 
                 // Finds a valid y-position by looping form the top of the world to the world's surface
                 for (int generateY = 0; (double)generateY < Main.worldSurface; generateY++)
