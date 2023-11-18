@@ -21,11 +21,10 @@ namespace OvermorrowMod.Content.WorldGeneration
             bool isInvalidLocation = false;
             bool flag57 = false;
 
-            // Find a random x-position to generate the mountain at within the inner 50% of the world
-            int generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.65));
-            while (!flag57)
+            for (int i = 0; i < Main.rand.Next(3, 5); i++)
             {
-                flag57 = true;
+                // Find a random x-position to generate the mountain at within the inner 50% of the world
+                int generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.65));
 
                 float tilePadding = Main.maxTilesX * 0.05f;
                 int slimeCavePosition = (int)((Main.maxTilesX / 7 * 4) + tilePadding);
@@ -37,27 +36,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                     generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.65));
                 }
 
-                // I have no idea what this does
-                for (int num885 = 0; num885 < numMCaves; num885++)
-                {
-                    if (Math.Abs(generateX - mCaveX[num885]) < 100)
-                    {
-                        num883++;
-                        flag57 = false;
-                        break;
-                    }
-                }
 
-                // I have no idea what this is checking
-                if (num883 >= Main.maxTilesX / 5)
-                {
-                    isInvalidLocation = true;
-                    break;
-                }
-            }
 
-            if (!isInvalidLocation)
-            {
                 // Finds a valid y-position by looping form the top of the world to the world's surface
                 for (int generateY = 0; (double)generateY < Main.worldSurface; generateY++)
                 {
