@@ -22,14 +22,17 @@ namespace OvermorrowMod.Content.WorldGeneration
     public class GuideCamp : ModSystem
     {
         public static Vector2 FeydenCavePosition;
+        public static Vector2 SlimeCaveEntrance;
         public override void SaveWorldData(TagCompound tag)
         {
+            tag["SlimeCaveEntrance"] = FeydenCavePosition;
             tag["FeydenCavePosition"] = FeydenCavePosition;
         }
 
         public override void LoadWorldData(TagCompound tag)
         {
             FeydenCavePosition = tag.Get<Vector2>("FeydenCavePosition");
+            SlimeCaveEntrance = tag.Get<Vector2>("SlimeCaveEntrance");
         }
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
@@ -57,6 +60,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Vector2 startPosition = new Vector2((int)((Main.maxTilesX / 7 * 4) + tilePadding), 0);
             Vector2 cavePosition = ModUtils.FindNearestGround(startPosition, false);
+            SlimeCaveEntrance = cavePosition * 16;
 
             FeydenCave feydenCave = new FeydenCave();
             feydenCave.Place(new Point((int)cavePosition.X, (int)cavePosition.Y), GenVars.structures);

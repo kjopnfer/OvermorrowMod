@@ -1,9 +1,11 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.State;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,12 +16,12 @@ namespace OvermorrowMod.Quests
     {
         public bool grabbedAxe = false;
         public bool showCampfireArrow = false;
+        public bool reachedSlimeCave = false;
+        DialoguePlayer dialoguePlayer => Player.GetModPlayer<DialoguePlayer>();
 
         // TODO: Make this not cringe by putting them in the Quest or Requirements or something
         private void RequirementCompleteAction(string id)
         {
-            DialoguePlayer dialoguePlayer = Player.GetModPlayer<DialoguePlayer>();
-
             switch (id)
             {
                 case "axe":
@@ -55,6 +57,34 @@ namespace OvermorrowMod.Quests
                         req.IsCompleted = true;
                     }
                 }
+            }
+        }
+
+        private void GeneralUpdateActions()
+        {
+            if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (80 * 16) && !reachedSlimeCave)
+            {
+                reachedSlimeCave = true;
+                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenHelp.xml"));
+
+                var possibleQuests = Quests.QuestList.Values
+                .Where(q => q.QuestName == "A Call for Help")
+                .GroupBy(q => q.Priority)
+                .Max()
+                ?.ToList();
+
+                if (possibleQuests == null || !possibleQuests.Any()) return;
+                var quest = possibleQuests[0];
+                foreach (var req in quest.Requirements)
+                {
+                    if (req is ChainRequirement chainReq)
+                    {
+                        foreach (var clause in chainReq.AllClauses)
+                            if (clause is TravelRequirement travelReq) SelectedLocation = travelReq.ID;
+                    }
+                }
+
+                AddQuest(quest);
             }
         }
 
@@ -101,6 +131,5 @@ namespace OvermorrowMod.Quests
 
             markerCounter++;
         }
-
     }
 }

@@ -114,6 +114,7 @@ namespace OvermorrowMod.Quests
         {
             UpdateTravelMarkers();
             AutoCompleteRequirements();
+            GeneralUpdateActions();
         }
 
         // TODO: Why did I write it like this, uncringe this

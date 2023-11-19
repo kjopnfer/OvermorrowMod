@@ -1,14 +1,7 @@
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.Cutscenes;
-using OvermorrowMod.Content.Items.Accessories;
-using OvermorrowMod.Content.Items.Quest;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.WorldGeneration;
-using OvermorrowMod.Core;
-using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

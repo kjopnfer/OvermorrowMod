@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Popup>
+	<Text npcPortrait="Guide" drawTime="45" displayTime="60" color="34C9EB">GET BACK FOUL FIEND!</Text>
+	<Text npcPortrait="Guide" drawTime="90" displayTime="90" color="34C9EB">TAKE THIS! BLACKLIGHT REALITY CLEAVER TIER FOUR!!!</Text>
+</Popup>

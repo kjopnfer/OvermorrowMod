@@ -482,7 +482,8 @@ namespace OvermorrowMod.Core
         }
 
         /// <summary>
-        /// Gets the nearest solid ground tile given a starting position.
+        /// Gets the nearest solid ground tile given a starting position. Set convert to tile to true only if the initial 
+        /// input is via world coordinates and not tile coordinates (i.e., used during world generation)
         /// </summary>
         /// <param name="startPosition">Initial position to start looping downwards from</param>
         /// <param name="convertToTile">Whether to divide the input by 16</param>
