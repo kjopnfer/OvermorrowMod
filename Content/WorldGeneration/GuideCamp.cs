@@ -38,9 +38,13 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (SurfaceCaves != -1)
             {
                 tasks.Insert(SurfaceCaves + 1, new PassLegacy("Spawn Camp", GenerateCamp));
-                tasks.Insert(SurfaceCaves + 2, new PassLegacy("Feyden Cave", GenerateSlimeCave));
             }
 
+            int TunnelIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tunnels"));
+            if (TunnelIndex != -1)
+            {
+                tasks.Insert(TunnelIndex + 1, new PassLegacy("Feyden Cave", GenerateSlimeCave));
+            }
             //int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
             //if (GuideIndex != -1) tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
         }
@@ -130,8 +134,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             noise.SetFrequency(0.025f);
             noise.SetFractalGain(0.1f);
 
-            Vector2 end = origin.ToVector2() + new Vector2(0, 150).RotatedBy(MathHelper.PiOver4);
-            FeydenTunneler tunnel = new FeydenTunneler(origin.ToVector2(), end, noise, 2);
+            Vector2 end = origin.ToVector2() + new Vector2(0, 25);
+            FeydenTunneler tunnel = new FeydenTunneler(origin.ToVector2(), end, noise, 3);
             tunnel.Run(out _);
 
             structures.AddProtectedStructure(new Rectangle(origin.X, origin.Y, 300, 300));
@@ -157,7 +161,16 @@ namespace OvermorrowMod.Content.WorldGeneration
         public override void RunAction(Vector2 position, Vector2 endPosition, int currentIteration)
         {
             int size = Main.rand.Next(3, 7);
-            WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, size, false);
+            //WorldGen.digTunnel((int)position.X, (int)position.Y, 0, 0, 1, size, false);
+
+            Point shapePosition = new Point((int)position.X, (int)position.Y);
+            float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
+
+            ShapeData slimeShapeData = new ShapeData();
+            WorldUtils.Gen(shapePosition, new Shapes.Slime(10, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
+            if (Main.rand.NextBool(3)) WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(TileID.SlimeBlock, true)));
+
+            WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe)));
         }
 
         public override void OnRunEnd(Vector2 position)
@@ -170,14 +183,15 @@ namespace OvermorrowMod.Content.WorldGeneration
                     int repeat = 3;
                     for (int i = 0; i < repeat; i++)
                     {
-                        float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
+                        float xScale = 0.8f + Main.rand.NextFloat() * 0.5f;
                         float yScale = Main.rand.NextFloat(0.6f, 0.8f);
                         int radius = Main.rand.Next(32, 48);
-                        Point shapePosition = new Point((int)position.X + -15 * i, (int)position.Y + Main.rand.Next(-5, 5));
+                        Point shapePosition = new Point((int)position.X + -15 * i, (int)position.Y + Main.rand.Next(5, 10));
 
                         ShapeData slimeShapeData = new ShapeData();
                         WorldUtils.Gen(shapePosition, new Shapes.Slime(20, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
                         WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(TileID.SlimeBlock, true)));
+                        WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe), /*new Modifiers.Blotches(3, 0.65f), new Modifiers.Dither(.85),*/ new Actions.PlaceWall(WallID.Slime, true)));
 
                         if (i == repeat - 1)
                         {
@@ -189,7 +203,9 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
             else
             {
-                Vector2 branchEndpoint = position + new Vector2(0, 150).RotatedBy(-MathHelper.PiOver2);
+                Vector2 branchEndpoint = position + new Vector2(250, 0); // Turn to the right
+                if (repeatWorm == 3) branchEndpoint = position + new Vector2(0, 150).RotatedBy(MathHelper.ToRadians(70)); // Go diagonally
+
                 FeydenTunneler tunnel = new FeydenTunneler(position, branchEndpoint, noise, --repeatWorm);
                 tunnel.Run(out _);
             }

@@ -29,7 +29,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                 // Find a different x-position if the chosen location is within 180 tiles of the spawn area
                 // Prevent the mountain from generating into the slime cave which is always to the right of the spawn camp
-                while (generateX > Main.maxTilesX / 2 - 180 && generateX < slimeCavePosition + 90)
+                while (generateX > Main.maxTilesX / 2 - 180 && generateX < slimeCavePosition + 175)
                 {
                     generateX = WorldGen.genRand.Next((int)((double)Main.maxTilesX * 0.25), (int)((double)Main.maxTilesX * 0.65));
                 }
