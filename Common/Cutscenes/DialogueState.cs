@@ -369,6 +369,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                 }
 
                                 feyden.followPlayer = questPlayer.Player;
+                                questPlayer.CompleteQuest("");
                             }
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")

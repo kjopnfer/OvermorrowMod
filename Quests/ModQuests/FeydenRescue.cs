@@ -23,7 +23,6 @@ namespace OvermorrowMod.Quests.ModQuests
                     {
                         new TravelRequirement("feyden_cave", () => ModUtils.FindNearestGround(GuideCamp.FeydenCavePosition) * 16, "???", "Investigate the Call for Help"),
                         new MiscRequirement("feyden_fight", "Help the Stranger Fight Off Slimes"),
-
                     }, "chain")
             };
             Rewards = new[]

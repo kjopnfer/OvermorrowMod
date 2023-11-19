@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.WorldGeneration;
@@ -50,18 +51,22 @@ namespace OvermorrowMod.Quests
         {
             foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<MiscRequirementState>(this))
             {
-                if (!req.IsCompleted)
-                {
-                    if (req.Requirement.ID == id)
-                    {
-                        req.IsCompleted = true;
-                    }
-                }
+                if (!req.IsCompleted && req.Requirement.ID == id)
+                    req.IsCompleted = true;                     
+            }
+        }
+
+        public void SetTravelLocation(BaseQuest quest, string id)
+        {
+            foreach (var req in quest.GetAllRequirements())
+            {
+                if (req.ID == id) SelectedLocation = req.ID;
             }
         }
 
         private void GeneralUpdateActions()
         {
+            #region Slime Cave
             if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (80 * 16) && !reachedSlimeCave)
             {
                 reachedSlimeCave = true;
@@ -75,17 +80,13 @@ namespace OvermorrowMod.Quests
 
                 if (possibleQuests == null || !possibleQuests.Any()) return;
                 var quest = possibleQuests[0];
-                foreach (var req in quest.Requirements)
-                {
-                    if (req is ChainRequirement chainReq)
-                    {
-                        foreach (var clause in chainReq.AllClauses)
-                            if (clause is TravelRequirement travelReq) SelectedLocation = travelReq.ID;
-                    }
-                }
 
+                SetTravelLocation(quest, "feyden_cave");
                 AddQuest(quest);
             }
+
+            if (OvermorrowWorld.savedFeyden) CompleteMiscRequirement("feyden_fight");
+            #endregion
         }
 
         private void AutoCompleteRequirements()
