@@ -39,7 +39,7 @@ namespace OvermorrowMod.Quests
                     break;
                 case "gel":
                     dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampTorch.xml"));
-                    
+
                     break;
                 case "torches":
                     showCampfireArrow = true;
@@ -52,15 +52,29 @@ namespace OvermorrowMod.Quests
             foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<MiscRequirementState>(this))
             {
                 if (!req.IsCompleted && req.Requirement.ID == id)
-                    req.IsCompleted = true;                     
+                    req.IsCompleted = true;
             }
         }
 
+        /// <summary>
+        /// Returns an active Quest's ID given the Quest's display name. Returns null if not found.
+        /// </summary>
+        public string GetQuestIDByName(string name)
+        {
+            var quest = Quests.State.GetActiveQuests(this).Where(q => q.Quest.QuestName == name)?.ToList();
+            if (quest == null || !quest.Any()) return null;
+
+            return quest[0].Quest.QuestID;
+        }
+
+        /// <summary>
+        /// Sets the Player's travel marker to one of the TravelRequirements given their ID
+        /// </summary>
         public void SetTravelLocation(BaseQuest quest, string id)
         {
             foreach (var req in quest.GetAllRequirements())
             {
-                if (req.ID == id) SelectedLocation = req.ID;
+                if (req.ID == id && req is TravelRequirement) SelectedLocation = req.ID;
             }
         }
 
@@ -119,14 +133,14 @@ namespace OvermorrowMod.Quests
             foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(this))
             {
                 if (!req.IsCompleted)
-                {                    
+                {
                     if (markerCounter % 30 == 0)
                     {
                         Particle.CreateParticle(Particle.ParticleType<Pulse>(), (req.Requirement as TravelRequirement).Location,
                             Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
                     }
 
-                    if (Player.active && Player.Distance((req.Requirement as TravelRequirement).Location) < 50) req.IsCompleted = true;               
+                    if (Player.active && Player.Distance((req.Requirement as TravelRequirement).Location) < 50) req.IsCompleted = true;
                 }
             }
 

@@ -357,20 +357,24 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest":
                         case "feyden_escort":
-                            questPlayer.AddQuest(quest);
-                            questNPC.TakeQuest();
-
                             if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
                             if (npc.ModNPC is Feyden feyden)
                             {
-                                foreach (var req in quest.Requirements)
+                                questPlayer.SetTravelLocation(quest, "sojourn_travel");
+                                questPlayer.CompleteQuest(questPlayer.GetQuestIDByName("A Call for Help"));
+                                /*foreach (var req in quest.Requirements)
                                 {
                                     if (req is TravelRequirement travelReq) questPlayer.SelectedLocation = travelReq.ID;
-                                }
+                                }*/
 
                                 feyden.followPlayer = questPlayer.Player;
-                                questPlayer.CompleteQuest("");
+
+                                // TODO: complete the cave quest here
+                                //questPlayer.CompleteQuest("");
                             }
+
+                            questPlayer.AddQuest(quest);
+                            questNPC.TakeQuest();
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
                             {
