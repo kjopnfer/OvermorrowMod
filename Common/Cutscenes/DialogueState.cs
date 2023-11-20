@@ -17,6 +17,7 @@ using OvermorrowMod.Content.Projectiles;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.ModQuests;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -314,8 +315,8 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
-            // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent is DialogueState parent)
+                // On the click action, go back into the parent and set the dialogue node to the one stored in here
+                if (Parent is DialogueState parent)
             {
                 parent.ResetTimers();
 
@@ -330,6 +331,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
 
                     var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+                    bool isFeyden = (npc.ModNPC is Feyden); // Temporary
 
                     switch (action)
                     {
@@ -358,7 +360,7 @@ namespace OvermorrowMod.Common.Cutscenes
                         case "quest":
                         case "feyden_escort":
                             if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
-                            if (npc.ModNPC is Feyden feyden)
+                            if (isFeyden)
                             {
                                 questPlayer.SetTravelLocation(quest, "sojourn_travel");
                                 questPlayer.CompleteQuest(questPlayer.GetQuestIDByName("A Call for Help"));
@@ -366,7 +368,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                 {
                                     if (req is TravelRequirement travelReq) questPlayer.SelectedLocation = travelReq.ID;
                                 }*/
-
+                                var feyden = npc.ModNPC as Feyden;
                                 feyden.followPlayer = questPlayer.Player;
 
                                 // TODO: complete the cave quest here
@@ -390,6 +392,14 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest_complete":
                             var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
+                            if (isFeyden && quest is FeydenEscort)
+                            {
+                                Main.NewText("reset npc tracking");
+
+                                var feyden = npc.ModNPC as Feyden;
+                                feyden.followPlayer = null;
+                            }
+
                             if (rewardIndex != "none") // Provide the index of the reward to the method 
                                 questPlayer.CompleteQuest(quest.QuestID, rewardIndex);
                             else  // If the quest doesn't offer a choose your own reward, use default behavior

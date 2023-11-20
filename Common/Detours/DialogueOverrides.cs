@@ -28,7 +28,6 @@ namespace OvermorrowMod.Common.Detours
                 string text;
                 #region Dialogue Overrides
 
-                // I'm sorry but apparently there is no other way lol
                 // TODO: This is dogshit someone fix this
                 if (npc.type == NPCID.Guide)
                 {
@@ -60,10 +59,16 @@ namespace OvermorrowMod.Common.Detours
                     player.SetDialogue(npc.GetChat(), 20, doc);
                 }
                 else if (npc.type == ModContent.NPCType<Feyden>())
-                {          
-                    if (questPlayer.FindActiveQuest("FeydenEscort")) return;
-                    
+                {
+                    if (questPlayer.FindActiveQuest("FeydenEscort"))
+                    {
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenEscort.xml"));
+                        doc.LoadXml(text);
+                        player.SetDialogue(npc.GetChat(), 20, doc);
 
+                        return;
+                    }
+                    
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenFree.xml"));
                     doc.LoadXml(text);
                     player.SetDialogue(npc.GetChat(), 20, doc);
