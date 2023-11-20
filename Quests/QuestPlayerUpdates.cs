@@ -81,7 +81,7 @@ namespace OvermorrowMod.Quests
         private void GeneralUpdateActions()
         {
             #region Slime Cave
-            if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (80 * 16) && !reachedSlimeCave)
+            if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (150 * 16) && !reachedSlimeCave)
             {
                 reachedSlimeCave = true;
                 dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenHelp.xml"));

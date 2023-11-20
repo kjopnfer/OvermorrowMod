@@ -315,8 +315,10 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
-                // On the click action, go back into the parent and set the dialogue node to the one stored in here
-                if (Parent is DialogueState parent)
+            // TODO: This shit is gonna SUCK in the long run, gotta fix it
+
+            // On the click action, go back into the parent and set the dialogue node to the one stored in here
+            if (Parent is DialogueState parent)
             {
                 parent.ResetTimers();
 

@@ -97,5 +97,10 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         {
             return 0f;
         }
+
+        public override bool CheckDead()
+        {
+            return false;
+        }
     }
 }
