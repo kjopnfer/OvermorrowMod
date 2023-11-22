@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 {
@@ -60,6 +61,18 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             {
                 if (npc.active && npc.type == Type && npc != NPC) npc.life = 0;
             }
+        }
+
+        // TODO: The NPC should remember the Player they're following somehow
+        public override void SaveData(TagCompound tag)
+        {
+            
+            base.SaveData(tag);
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            base.LoadData(tag);
         }
 
         public Player followPlayer = null;
