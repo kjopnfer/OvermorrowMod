@@ -946,6 +946,11 @@ Mods: {
 				DisplayName: Water Cave Biome
 				TownNPCDialogueName: the Water Cave Biome
 			}
+
+			Ravensfell: {
+				DisplayName: Ravensfell
+				TownNPCDialogueName: the Ravensfell
+			}
 		}
 
 		Buffs: {

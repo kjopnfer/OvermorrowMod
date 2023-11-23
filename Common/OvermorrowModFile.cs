@@ -22,6 +22,7 @@ using OvermorrowMod.Content.NPCs.Mercenary;
 using static OvermorrowMod.Content.NPCs.Mercenary.Paladin.Paladin;
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.TilePiles;
+using OvermorrowMod.Content.Skies;
 
 namespace OvermorrowMod.Common
 {
@@ -97,6 +98,10 @@ namespace OvermorrowMod.Common
 
             if (!Main.dedServ)
             {
+                // Activate this with ManageSpecialBiomeVisuals probably... 
+                //Filters.Scene["OM:RavensfellSky"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(0.2f, 0f, 0.3f).UseOpacity(0.5f), EffectPriority.Medium);
+                SkyManager.Instance["OM:RavensfellSky"] = new RavensfellSky();
+
                 lastScreenSize = new Vector2(Main.screenWidth, Main.screenHeight);
                 lastViewSize = Main.ViewSize;
                 lastViewPort = Main.graphics.GraphicsDevice.Viewport;
