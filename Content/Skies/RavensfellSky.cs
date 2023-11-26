@@ -4,6 +4,7 @@ using OvermorrowMod.Core;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Skies
@@ -14,7 +15,7 @@ namespace OvermorrowMod.Content.Skies
 
         private const float Scale = 2f;
         private const float ScreenParralaxMultiplier = 0.4f;
-
+        float starOpacity = 1f;
 
         public override void Update(GameTime gameTime)
         {
@@ -30,12 +31,6 @@ namespace OvermorrowMod.Content.Skies
             //spriteBatch.Draw(texture, rect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
 
 
-            // Day
-
-            // Sunset
-
-            // Night
-
             #region Manual Background
             // Small worlds, default draw height.
             int biomeHeight = ((int)Main.worldSurface + (int)Main.worldSurface) / 2;
@@ -49,7 +44,7 @@ namespace OvermorrowMod.Content.Skies
             // Large worlds (and anything bigger).
             //if (Main.maxTilesX >= 8400)
             //    biomeHeight = (World.AstralBiome.YStart + (int)Main.worldSurface) / 140;*/
-            Main.NewText(Main.time);
+            //Main.NewText(Main.time);
             float width = Main.screenWidth / 2f;
             float height = Main.screenHeight / 2f;
             Color textureColor = Color.White;
@@ -125,6 +120,73 @@ namespace OvermorrowMod.Content.Skies
                 }
             }*/
 
+            #endregion
+
+            #region Stars
+            // I have no idea what this value represents
+            const float someConstantValue = 3.40282347E+38f;
+            if (maxDepth >= someConstantValue && minDepth < someConstantValue)
+            {
+                if (Main.netMode != NetmodeID.Server)
+                {
+
+                    int bgTop = (int)((-Main.screenPosition.Y) / (Main.worldSurface * 16.0 - 600.0) * 200.0);
+                    float colorMult = 0.952f * starOpacity;
+                    Color astralcyan = new Color(100, 183, 255);
+                    Color purple = new Color(201, 148, 255);
+                    Color yellow = new Color(255, 146, 73);
+                    float width1 = Main.screenWidth / 500f;
+                    float height1 = Main.screenHeight / 600f;
+                    float width2 = Main.screenWidth / 600f;
+                    float height2 = Main.screenHeight / 800f;
+                    float width3 = Main.screenWidth / 200f;
+                    float height3 = Main.screenHeight / 900f;
+                    float width4 = Main.screenWidth / 1000f;
+                    float height4 = Main.screenHeight / 200f;
+
+                    spriteBatch.Reload(BlendState.Additive);
+                    for (int i = 0; i < Main.star.Length; i++)
+                    {
+
+                        Star star = Main.star[i];
+                        if (star == null) continue;
+
+                        //Texture2D t2D = TextureAssets.Star[star.type].Value;
+                        Texture2D starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
+
+                        // Big Stars
+                        Vector2 starOrigin = new Vector2(starTexture.Width * 0.5f, starTexture.Height * 0.5f);
+                        float posX = star.position.X * width1;
+                        float posY = star.position.Y * height1;
+                        Vector2 position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                        spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * 0.25f, star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
+
+
+                        starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Circle").Value;
+                        starOrigin = new Vector2(starTexture.Width * 0.2f, starTexture.Height * 0.2f);
+                        posX = star.position.X * width2;
+                        posY = star.position.Y * height2;
+                        position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                        spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
+
+                        // Small stars
+                        starOrigin = new Vector2(starTexture.Width * 0.8f, starTexture.Height * 0.8f);
+                        posX = star.position.X * width3;
+                        posY = star.position.Y * height3;
+                        position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                        spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, star.scale / 5f, SpriteEffects.None, 0f);
+
+                        // Small stars
+                        starOrigin = new Vector2(starTexture.Width * 0.5f, starTexture.Height * 0.5f);
+                        posX = star.position.X * width4;
+                        posY = star.position.Y * height4;
+                        position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                        spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, star.scale / 5f, SpriteEffects.None, 0f / 2f);
+                    }
+
+                    spriteBatch.Reload(BlendState.AlphaBlend);
+                }
+            }
             #endregion
         }
 
