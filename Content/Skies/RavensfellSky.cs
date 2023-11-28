@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.GameContent;
@@ -45,6 +46,11 @@ namespace OvermorrowMod.Content.Skies
             //if (Main.maxTilesX >= 8400)
             //    biomeHeight = (World.AstralBiome.YStart + (int)Main.worldSurface) / 140;*/
             //Main.NewText(Main.time);
+            float nightAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp(Main.time / 13500, 0, 1f));
+            float morningAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500) / 13500, 0, 1f));
+            float dayAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 2) / 13500, 0, 1f));
+            float sunsetAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 3) / 13500, 0, 1f));
+
             float width = Main.screenWidth / 2f;
             float height = Main.screenHeight / 2f;
             Color textureColor = Color.White;
@@ -64,10 +70,6 @@ namespace OvermorrowMod.Content.Skies
                 Vector2 position = morning.Size() / 2f * Scale;
 
                 // 54000
-                float nightAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp(Main.time / 13500, 0, 1f));
-                float morningAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500) / 13500, 0, 1f));
-                float dayAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 2) / 13500, 0, 1f));
-                float sunsetAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 3) / 13500, 0, 1f));
 
                 //spriteBatch.Reload(BlendState.Additive);
                 for (int k = -1; k <= 1; k++)
@@ -83,29 +85,55 @@ namespace OvermorrowMod.Content.Skies
                         spriteBatch.Draw(night, pos - position, null, Color.White * nightAlpha, 0f, origin, Scale * 2, SpriteEffects.None, 0f);
                     }
                     else
-                        spriteBatch.Draw(night, pos - position, null, Color.White, 0f, origin, Scale * 2, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(night, pos - position, null, new Color(158, 158, 158), 0f, origin, Scale * 2, SpriteEffects.None, 0f);
                 }
 
 
                 //spriteBatch.Reload(BlendState.AlphaBlend);
             }
 
-            /*if (maxDepth >= 8f && minDepth < 8f)
+            if (maxDepth >= 8f && minDepth < 8f)
             {
-                Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/forest_test_close", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                Texture2D cloudsNight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                Texture2D cloudsSunset = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                Texture2D cloudsDay = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                Texture2D cloudsMorning = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+
                 int x = (int)(Main.screenPosition.X * 0.5f * ScreenParralaxMultiplier);
-                x %= (int)(farTexture.Width * Scale);
+                x %= (int)(cloudsNight.Width * Scale);
                 int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParralaxMultiplier);
-                y -= 1520; // 1000
-                Vector2 position = farTexture.Size() / 2f * Scale;
+                y -= 1820; // 1000
+                Vector2 position = cloudsNight.Size() / 2f * Scale;
+                Main.NewText(nightAlpha + " to " + (nightAlpha * 0.5f));
+
+                spriteBatch.Reload(SpriteSortMode.Immediate);
+
+                Effect effect = OvermorrowModFile.Instance.ImageLerp.Value;
+                effect.Parameters["progress"].SetValue(nightAlpha);
+                effect.Parameters["tex"].SetValue(cloudsDay);
+                effect.CurrentTechnique.Passes["ImageLerp"].Apply();
+
                 for (int k = -1; k <= 1; k++)
                 {
-                    var pos = new Vector2(width - x + farTexture.Width * k * Scale, height - y);
-                    spriteBatch.Draw(farTexture, pos - position, null, textureColor, 0f, origin, Scale, SpriteEffects.None, 0f);
+                    var pos = new Vector2(width - x + cloudsNight.Width * k * Scale, height - y);
+                    spriteBatch.Draw(cloudsNight, pos - position, null, textureColor, 0f, origin, Scale, SpriteEffects.None, 0f); 
+
+                    /*if (Main.dayTime)
+                    {
+                        spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(cloudsSunset, pos - position, null, textureColor * sunsetAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(cloudsDay, pos - position, null, textureColor * dayAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(cloudsMorning, pos - position, null, textureColor * morningAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * nightAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
+                    }
+                    else
+                        spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);*/
                 }
+
+                spriteBatch.Reload(SpriteSortMode.Deferred);
             }
 
-            if (maxDepth >= 6f && minDepth < 6f)
+            /*if (maxDepth >= 6f && minDepth < 6f)
             {
                 Texture2D closeTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/forest_test_close", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 int x = (int)(Main.screenPosition.X * 0.9f * ScreenParralaxMultiplier);

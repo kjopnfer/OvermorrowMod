@@ -49,6 +49,7 @@ namespace OvermorrowMod.Common
         public Asset<Effect> ContainedFlash;
         public Asset<Effect> Dissolve;
         public Asset<Effect> Flash;
+        public Asset<Effect> ImageLerp;
         public Asset<Effect> RadialBlur;
         public Asset<Effect> Ring;
         public Asset<Effect> Shockwave;
@@ -115,6 +116,7 @@ namespace OvermorrowMod.Common
                 ContainedFlash = Assets.Request<Effect>("Effects/ContainedFlash");
                 Dissolve = Assets.Request<Effect>("Effects/Dissolve");
                 Flash = Assets.Request<Effect>("Effects/Flash");
+                ImageLerp = Assets.Request<Effect>("Effects/ImageLerp");
                 Ring = Assets.Request<Effect>("Effects/Ring");
                 Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
                 Shockwave2 = Assets.Request<Effect>("Effects/ShockwaveEffect");
@@ -208,6 +210,7 @@ namespace OvermorrowMod.Common
             BeamShader = null;
             Dissolve = null;
             Flash = null;
+            ImageLerp = null;
             RadialBlur = null;
             Ring = null;
             Shockwave = null;
