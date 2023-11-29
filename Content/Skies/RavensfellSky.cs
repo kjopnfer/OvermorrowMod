@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
+using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
@@ -95,39 +96,37 @@ namespace OvermorrowMod.Content.Skies
             if (maxDepth >= 8f && minDepth < 8f)
             {
                 Texture2D cloudsNight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                Texture2D cloudsSunset = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                Texture2D cloudsDay = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                Texture2D cloudsMorning = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
                 int x = (int)(Main.screenPosition.X * 0.5f * ScreenParralaxMultiplier);
                 x %= (int)(cloudsNight.Width * Scale);
+
                 int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParralaxMultiplier);
                 y -= 1820; // 1000
-                Vector2 position = cloudsNight.Size() / 2f * Scale;
-                Main.NewText(nightAlpha + " to " + (nightAlpha * 0.5f));
 
                 spriteBatch.Reload(SpriteSortMode.Immediate);
+                Texture2D startTexture = cloudsNight;
 
                 Effect effect = OvermorrowModFile.Instance.ImageLerp.Value;
-                effect.Parameters["progress"].SetValue(nightAlpha);
-                effect.Parameters["tex"].SetValue(cloudsDay);
+                if (Main.dayTime)
+                {
+                    int skyIteration = (int)Math.Floor(Main.time / 13500);
+                    var textures = GetCloudStartAndEndTextures(skyIteration);
+                    startTexture = textures.Item1;
+
+                    float progress = MathHelper.Lerp(0f, 1f, (float)((Main.time % 13500) / 13500f));
+
+                    effect.Parameters["progress"].SetValue(1 - progress); // Don't know why this is reversed
+                    effect.Parameters["tex"].SetValue(textures.Item2);
+                }
+                
                 effect.CurrentTechnique.Passes["ImageLerp"].Apply();
 
+                Vector2 position = cloudsNight.Size() / 2f * Scale;
                 for (int k = -1; k <= 1; k++)
                 {
                     var pos = new Vector2(width - x + cloudsNight.Width * k * Scale, height - y);
-                    spriteBatch.Draw(cloudsNight, pos - position, null, textureColor, 0f, origin, Scale, SpriteEffects.None, 0f); 
-
-                    /*if (Main.dayTime)
-                    {
-                        spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(cloudsSunset, pos - position, null, textureColor * sunsetAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(cloudsDay, pos - position, null, textureColor * dayAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(cloudsMorning, pos - position, null, textureColor * morningAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * nightAlpha * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
-                    }
-                    else
-                        spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);*/
+                    if (Main.dayTime) spriteBatch.Draw(startTexture, pos - position, null, textureColor * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f);
+                    else spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f); 
                 }
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);
@@ -216,6 +215,18 @@ namespace OvermorrowMod.Content.Skies
                 }
             }
             #endregion
+        }
+
+        private (Texture2D, Texture2D) GetCloudStartAndEndTextures(int id)
+        {
+            return id switch
+            {
+                0 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value),
+                1 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day").Value),
+                2 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset").Value),
+                3 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value),
+                _ => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value),
+            };
         }
 
         public override bool IsActive()
