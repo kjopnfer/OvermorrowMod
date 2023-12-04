@@ -56,46 +56,63 @@ namespace OvermorrowMod.Content.Skies
             float height = Main.screenHeight / 2f;
             Color textureColor = Color.White;
             Vector2 origin = new Vector2(0f, biomeHeight);
+            
+            // Horizon
             if (maxDepth >= 9f && minDepth < 9f)
             {
+                float horizonScale = 1f;
                 spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Black);
                 Texture2D morning = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/morning").Value;
-                Texture2D day = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/day").Value;
+                Texture2D day = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value;
                 Texture2D sunset = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/sunset").Value;
                 Texture2D night = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/night").Value;
 
                 int x = (int)(Main.screenPosition.X * 0.4f * ScreenParralaxMultiplier);
-                x %= (int)(morning.Width * Scale);
+                x %= (int)(day.Width * horizonScale);
                 int y = (int)(Main.screenPosition.Y * 0.4f * ScreenParralaxMultiplier);
-                y -= 1380; // 1000
-                Vector2 position = morning.Size() / 2f * Scale;
+                y -= 1200; // 1000
+                Vector2 position = day.Size() / 2f * horizonScale;
 
                 // 54000
 
                 //spriteBatch.Reload(BlendState.Additive);
                 for (int k = -1; k <= 1; k++)
                 {
-                    var pos = new Vector2(width - x + morning.Width * k * Scale, height - y);
+                    var pos = new Vector2(width - x + day.Width * k * horizonScale, height - y);
 
                     if (Main.dayTime)
                     {
-                        spriteBatch.Draw(night, pos - position, null, Color.White, 0f, origin, Scale * 2, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(sunset, pos - position, null, new Color(227, 167, 154, 150) * sunsetAlpha, 0f, origin, Scale * 2, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(day, pos - position, null, new Color(227, 167, 154, 150) * dayAlpha, 0f, origin, Scale * 2, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(morning, pos - position, null, new Color(227, 167, 154, 150) * morningAlpha, 0f, origin, Scale * 2, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(night, pos - position, null, Color.White * nightAlpha, 0f, origin, Scale * 2, SpriteEffects.None, 0f);
+                        //spriteBatch.Draw(night, pos - position, null, Color.White, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                        //spriteBatch.Draw(sunset, pos - position, null, new Color(227, 167, 154, 150) * sunsetAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(day, pos - position, null, new Color(227, 167, 154, 150) * dayAlpha, 0f, origin, horizonScale, SpriteEffects.None, 0f);
+                        //spriteBatch.Draw(morning, pos - position, null, new Color(227, 167, 154, 150) * morningAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                        //spriteBatch.Draw(night, pos - position, null, Color.White * nightAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
                     }
                     else
-                        spriteBatch.Draw(night, pos - position, null, new Color(158, 158, 158), 0f, origin, Scale * 2, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(night, pos - position, null, new Color(158, 158, 158), 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
                 }
 
 
                 //spriteBatch.Reload(BlendState.AlphaBlend);
             }
 
+            // Far
             if (maxDepth >= 8f && minDepth < 8f)
             {
-                Texture2D cloudsNight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                float farScale = 0.5f;
+                Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                int x = (int)(Main.screenPosition.X * 0.5f * ScreenParralaxMultiplier);
+                x %= (int)(farTexture.Width * farScale);
+                int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParralaxMultiplier);
+                y -= 1260; // 900
+                Vector2 position = farTexture.Size() / 2f * farScale;
+                for (int k = -1; k <= 1; k++)
+                {
+                    var pos = new Vector2(width - x + farTexture.Width * k * farScale, height - y);
+                    spriteBatch.Draw(farTexture, pos - position, null, textureColor, 0f, origin, farScale, SpriteEffects.None, 0f);
+                }
+
+                /*Texture2D cloudsNight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
                 int x = (int)(Main.screenPosition.X * 0.5f * ScreenParralaxMultiplier);
                 x %= (int)(cloudsNight.Width * Scale);
@@ -129,24 +146,60 @@ namespace OvermorrowMod.Content.Skies
                     else spriteBatch.Draw(cloudsNight, pos - position, null, textureColor * 0.5f, 0f, origin, Scale, SpriteEffects.None, 0f); 
                 }
 
-                spriteBatch.Reload(SpriteSortMode.Deferred);
+                spriteBatch.Reload(SpriteSortMode.Deferred);*/
             }
 
-            /*if (maxDepth >= 6f && minDepth < 6f)
+
+            // Middle
+            if (maxDepth >= 7f && minDepth < 7f)
             {
-                Texture2D closeTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/forest_test_close", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int x = (int)(Main.screenPosition.X * 0.9f * ScreenParralaxMultiplier);
-                x %= (int)(closeTexture.Width * Scale);
-                int y = (int)(Main.screenPosition.Y * 0.55f * ScreenParralaxMultiplier);
-                y -= 1880; // 1000
-                Vector2 position = closeTexture.Size() / 2f * Scale;
+                float midScale = 0.5f;
+                Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Close", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                int x = (int)(Main.screenPosition.X * 0.8f * ScreenParralaxMultiplier);
+                x %= (int)(midTexture.Width * midScale);
+                int y = (int)(Main.screenPosition.Y * 0.5f * ScreenParralaxMultiplier);
+                y -= 1420; // 1000
+                Vector2 position = midTexture.Size() / 2f * midScale;
                 for (int k = -1; k <= 1; k++)
                 {
-                    var pos = new Vector2(width - x + closeTexture.Width * k * Scale, height - y);
-                    spriteBatch.Draw(closeTexture, pos - position, null, textureColor, 0f, origin, Scale, SpriteEffects.None, 0f);
+                    var pos = new Vector2(width - x + midTexture.Width * k * midScale, height - y);
+                    spriteBatch.Draw(midTexture, pos - position, null, textureColor, 0f, origin, midScale, SpriteEffects.None, 0f);
+                }
+            }
+
+            // Close
+            /*if (maxDepth >= 6f && minDepth < 6f)
+            {
+                float closeScale = 0.5f;
+                Texture2D closeTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Close", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                int x = (int)(Main.screenPosition.X * 0.9f * ScreenParralaxMultiplier);
+                x %= (int)(closeTexture.Width * 1.5f);
+                int y = (int)(Main.screenPosition.Y * 0.55f * ScreenParralaxMultiplier);
+                y -= 1600; // 1000
+                Vector2 position = closeTexture.Size() / 2f * closeScale;
+                for (int k = -1; k <= 1; k++)
+                {
+                    var pos = new Vector2(width - x + closeTexture.Width * k * closeScale, height - y);
+                    spriteBatch.Draw(closeTexture, pos - position, null, textureColor, 0f, origin, closeScale, SpriteEffects.None, 0f);
+                }
+            }
+            
+            // Front
+            if (maxDepth >= 5f && minDepth < 5f)
+            {
+                float frontScale = 1.25f;
+                Texture2D frontTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Front", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                int x = (int)(Main.screenPosition.X * 1.1f * ScreenParralaxMultiplier);
+                x %= (int)(frontTexture.Width * frontScale);
+                int y = (int)(Main.screenPosition.Y * 0.6f * ScreenParralaxMultiplier);
+                y -= 1800; // 1000
+                Vector2 position = frontTexture.Size() / 2f * frontScale;
+                for (int k = -1; k <= 1; k++)
+                {
+                    var pos = new Vector2(width - x + frontTexture.Width * k * frontScale, height - y);
+                    spriteBatch.Draw(frontTexture, pos - position, null, textureColor, 0f, origin, frontScale, SpriteEffects.None, 0f);
                 }
             }*/
-
             #endregion
 
             #region Stars
@@ -228,6 +281,8 @@ namespace OvermorrowMod.Content.Skies
                 _ => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value),
             };
         }
+
+        public override float GetCloudAlpha() => 0f;
 
         public override bool IsActive()
         {
