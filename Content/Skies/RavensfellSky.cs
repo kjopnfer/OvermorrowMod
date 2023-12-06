@@ -68,8 +68,8 @@ namespace OvermorrowMod.Content.Skies
 
                 int x = (int)(Main.screenPosition.X * 0.4f * ScreenParralaxMultiplier);
                 x %= (int)(day.Width * horizonScale);
-                int y = (int)(Main.screenPosition.Y * 0.4f * ScreenParralaxMultiplier);
-                y -= 1200; // 1000
+                int y = (int)(Main.screenPosition.Y * 0.2f * ScreenParralaxMultiplier);
+                y -= 540; // 1000
                 Vector2 position = day.Size() / 2f * horizonScale;
 
                 // 54000
@@ -274,6 +274,18 @@ namespace OvermorrowMod.Content.Skies
           }
 
         private (Texture2D, Texture2D) GetCloudStartAndEndTextures(int id)
+        {
+            return id switch
+            {
+                0 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value),
+                1 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day").Value),
+                2 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset").Value),
+                3 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value),
+                _ => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value),
+            };
+        }
+
+        private (Texture2D, Texture2D) GetHorizonStartAndEndTextures(int id)
         {
             return id switch
             {
