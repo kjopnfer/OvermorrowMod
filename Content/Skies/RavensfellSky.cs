@@ -19,6 +19,24 @@ namespace OvermorrowMod.Content.Skies
         private const float ScreenParralaxMultiplier = 0.4f;
         float starOpacity = 1f;
 
+        // These are used to lerp between the textures/colors based on the time of day
+        int timeSlot => (int)Math.Floor(Main.time / 13500);
+        float timeProgress => MathHelper.Lerp(0f, 1f, (float)((Main.time % 13500) / 13500f));
+
+        public override Color OnTileColor(Color inColor)
+        {
+            Main.NewText(Main.time);
+
+            Color defaultColor = base.OnTileColor(inColor);
+            Color tileColor = Color.Lerp(GetStartAndEndTileColors(timeSlot, defaultColor).Item1, GetStartAndEndTileColors(timeSlot, defaultColor).Item2, timeProgress);
+            if (!Main.dayTime) tileColor = GetStartAndEndTileColors(-1, defaultColor).Item1;
+            tileColor.A = inColor.A;
+
+            return Color.Lerp(inColor, tileColor, 1f);
+
+            //return base.OnTileColor(inColor);
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (isActive) { }
@@ -48,7 +66,6 @@ namespace OvermorrowMod.Content.Skies
             //Main.NewText(Main.time);
             float nightAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp(Main.time / 13500, 0, 1f));
             float morningAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500) / 13500, 0, 1f));
-            float dayAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 2) / 13500, 0, 1f));
             float sunsetAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 3) / 13500, 0, 1f));
 
             float width = Main.screenWidth / 2f;
@@ -59,41 +76,10 @@ namespace OvermorrowMod.Content.Skies
             // Horizon
             if (maxDepth >= 9f && minDepth < 9f)
             {
-                float horizonScale = 1f;
                 spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Black);
-                Texture2D morning = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/morning").Value;
-                Texture2D day = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value;
-                Texture2D sunset = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/sunset").Value;
-                Texture2D night = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/night").Value;
-
-                int x = (int)(Main.screenPosition.X * 0.4f * ScreenParralaxMultiplier);
-                x %= (int)(day.Width * horizonScale);
-                int y = (int)(Main.screenPosition.Y * 0.2f * ScreenParralaxMultiplier);
-                y -= 540; // 1000
-                Vector2 position = day.Size() / 2f * horizonScale;
-
-                // 54000
-
-                //spriteBatch.Reload(BlendState.Additive);
-                for (int k = -1; k <= 1; k++)
-                {
-                    var pos = new Vector2(width - x + day.Width * k * horizonScale, height - y);
-
-                    if (Main.dayTime)
-                    {
-                        //spriteBatch.Draw(night, pos - position, null, Color.White, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                        //spriteBatch.Draw(sunset, pos - position, null, new Color(227, 167, 154, 150) * sunsetAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                        spriteBatch.Draw(day, pos - position, null, new Color(227, 167, 154, 150) * dayAlpha, 0f, origin, horizonScale, SpriteEffects.None, 0f);
-                        //spriteBatch.Draw(morning, pos - position, null, new Color(227, 167, 154, 150) * morningAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                        //spriteBatch.Draw(night, pos - position, null, Color.White * nightAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                    }
-                    else
-                        spriteBatch.Draw(night, pos - position, null, new Color(158, 158, 158), 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                }
-
+                
+                DrawSky(spriteBatch, width, height, textureColor, origin);
                 DrawFarTexture(spriteBatch, width, height, textureColor, origin);
-
-                //spriteBatch.Reload(BlendState.AlphaBlend);
             }
 
 
@@ -297,6 +283,28 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="defaultColor">I don't know what vanilla uses.</param>
+        private (Color, Color) GetStartAndEndTileColors(int id, Color defaultColor)
+        {
+            Color morning = new Color(243, 168, 160);
+            Color day = defaultColor;
+            Color sunset = new Color(255, 151, 111);
+            Color night = new Color(21, 42, 63);
+
+            return id switch
+            {
+                0 => (night, morning),
+                1 => (morning, day),
+                2 => (day, sunset),
+                3 => (sunset, night),
+                _ => (night, night),
+            };
+        }
+
         private void DrawFarTexture(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
         {
             float farScale = 0.5f;
@@ -312,6 +320,43 @@ namespace OvermorrowMod.Content.Skies
             {
                 var pos = new Vector2(width - x + farTexture.Width * k * farScale, height - y);
                 spriteBatch.Draw(farTexture, pos - position, null, textureColor, 0f, origin, farScale, SpriteEffects.None, 0f);
+            }
+        }
+
+        private void DrawSky(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
+        {
+            float dayAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 2) / 13500, 0, 1f));
+
+            float horizonScale = 1f;
+
+            Texture2D morning = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/morning").Value;
+            Texture2D day = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value;
+            Texture2D sunset = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/sunset").Value;
+            Texture2D night = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/night").Value;
+
+            int x = (int)(Main.screenPosition.X * 0.4f * ScreenParralaxMultiplier);
+            x %= (int)(day.Width * horizonScale);
+            int y = (int)(Main.screenPosition.Y * 0.2f * ScreenParralaxMultiplier);
+            y -= 540; // 1000
+            Vector2 position = day.Size() / 2f * horizonScale;
+
+            // 54000
+
+            //spriteBatch.Reload(BlendState.Additive);
+            for (int k = -1; k <= 1; k++)
+            {
+                var pos = new Vector2(width - x + day.Width * k * horizonScale, height - y);
+
+                if (Main.dayTime)
+                {
+                    //spriteBatch.Draw(night, pos - position, null, Color.White, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                    //spriteBatch.Draw(sunset, pos - position, null, new Color(227, 167, 154, 150) * sunsetAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(day, pos - position, null, Color.White * dayAlpha, 0f, origin, horizonScale, SpriteEffects.None, 0f);
+                    //spriteBatch.Draw(morning, pos - position, null, new Color(227, 167, 154, 150) * morningAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                    //spriteBatch.Draw(night, pos - position, null, Color.White * nightAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                }
+                else
+                    spriteBatch.Draw(night, pos - position, null, new Color(158, 158, 158), 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
             }
         }
 
