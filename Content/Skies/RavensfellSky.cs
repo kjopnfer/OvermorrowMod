@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Skies
         private bool isActive = false;
 
         private const float Scale = 2f;
-        private const float ScreenParralaxMultiplier = 0.4f;
+        private const float ScreenParallaxMultiplier = 0.4f;
         float starOpacity = 1f;
 
         // These are used to lerp between the textures/colors based on the time of day
@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.Skies
                 spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Black);
                 
                 DrawSky(spriteBatch, width, height, textureColor, origin);
-                DrawFarTexture(spriteBatch, width, height, textureColor, origin);
+                //DrawFarTexture(spriteBatch, width, height, textureColor, origin);
             }
 
 
@@ -156,9 +156,9 @@ namespace OvermorrowMod.Content.Skies
             {
                 float farScale = 0.5f;
                 Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Far", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int x = (int)(Main.screenPosition.X * 0.5f * ScreenParralaxMultiplier);
+                int x = (int)(Main.screenPosition.X * 0.5f * ScreenParallaxMultiplier);
                 x %= (int)(farTexture.Width * farScale);
-                int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParralaxMultiplier);
+                int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParallaxMultiplier);
                 y -= 1260; // 900
                 Vector2 position = farTexture.Size() / 2f * farScale;
                 for (int k = -1; k <= 1; k++)
@@ -210,9 +210,9 @@ namespace OvermorrowMod.Content.Skies
             {
                 float midScale = 0.5f;
                 Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int x = (int)(Main.screenPosition.X * 0.8f * ScreenParralaxMultiplier);
+                int x = (int)(Main.screenPosition.X * 0.8f * ScreenParallaxMultiplier);
                 x %= (int)(midTexture.Width * midScale);
-                int y = (int)(Main.screenPosition.Y * 0.5f * ScreenParralaxMultiplier);
+                int y = (int)(Main.screenPosition.Y * 0.5f * ScreenParallaxMultiplier);
                 y -= 1420; // 1000
                 Vector2 position = midTexture.Size() / 2f * midScale;
                 for (int k = -1; k <= 1; k++)
@@ -275,11 +275,11 @@ namespace OvermorrowMod.Content.Skies
         {
             return id switch
             {
-                0 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value),
-                1 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day").Value),
-                2 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset").Value),
-                3 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_sunset").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value),
-                _ => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value),
+                0 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value),
+                1 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Day").Value),
+                2 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Day").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Sunset").Value),
+                3 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Sunset").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value),
+                _ => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value),
             };
         }
 
@@ -310,9 +310,9 @@ namespace OvermorrowMod.Content.Skies
             float farScale = 0.5f;
             Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Clouds", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
-            int x = (int)(Main.screenPosition.X * 0.4f * ScreenParralaxMultiplier);
+            int x = (int)(Main.screenPosition.X * 0.4f * ScreenParallaxMultiplier);
             x %= (int)(farTexture.Width * farScale);
-            int y = (int)(Main.screenPosition.Y * 0.4f * ScreenParralaxMultiplier);
+            int y = (int)(Main.screenPosition.Y * 0.4f * ScreenParallaxMultiplier);
             y -= 700; // 1000
 
             Vector2 position = farTexture.Size() / 2f * farScale;
@@ -325,39 +325,39 @@ namespace OvermorrowMod.Content.Skies
 
         private void DrawSky(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
         {
-            float dayAlpha = MathHelper.Lerp(1f, 0, (float)Utils.Clamp((Main.time - 13500 * 2) / 13500, 0, 1f));
-
             float horizonScale = 1f;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
-            Texture2D morning = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/morning").Value;
-            Texture2D day = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value;
-            Texture2D sunset = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/sunset").Value;
-            Texture2D night = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/night").Value;
+            int x = (int)(Main.screenPosition.X * 0.5f * ScreenParallaxMultiplier);
+            x %= (int)(texture.Width * horizonScale);
 
-            int x = (int)(Main.screenPosition.X * 0.4f * ScreenParralaxMultiplier);
-            x %= (int)(day.Width * horizonScale);
-            int y = (int)(Main.screenPosition.Y * 0.2f * ScreenParralaxMultiplier);
-            y -= 540; // 1000
-            Vector2 position = day.Size() / 2f * horizonScale;
+            int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParallaxMultiplier);
+            y -= 750; // 1000
 
-            // 54000
+            spriteBatch.Reload(SpriteSortMode.Immediate);
+            Texture2D startTexture = texture;
 
-            //spriteBatch.Reload(BlendState.Additive);
+            Effect effect = OvermorrowModFile.Instance.ImageLerp.Value;
+            if (Main.dayTime)
+            {
+                var textures = GetHorizonStartAndEndTextures(timeSlot);
+                startTexture = textures.Item1;
+
+                effect.Parameters["progress"].SetValue(1 - timeProgress); // Don't know why this is reversed
+                effect.Parameters["tex"].SetValue(textures.Item2);
+            }
+
+            effect.CurrentTechnique.Passes["ImageLerp"].Apply();
+
+            Vector2 position = texture.Size() / 2f * horizonScale;
             for (int k = -1; k <= 1; k++)
             {
-                var pos = new Vector2(width - x + day.Width * k * horizonScale, height - y);
-
-                if (Main.dayTime)
-                {
-                    //spriteBatch.Draw(night, pos - position, null, Color.White, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                    //spriteBatch.Draw(sunset, pos - position, null, new Color(227, 167, 154, 150) * sunsetAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                    spriteBatch.Draw(day, pos - position, null, Color.White * dayAlpha, 0f, origin, horizonScale, SpriteEffects.None, 0f);
-                    //spriteBatch.Draw(morning, pos - position, null, new Color(227, 167, 154, 150) * morningAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                    //spriteBatch.Draw(night, pos - position, null, Color.White * nightAlpha, 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
-                }
-                else
-                    spriteBatch.Draw(night, pos - position, null, new Color(158, 158, 158), 0f, origin, horizonScale * 2, SpriteEffects.None, 0f);
+                var pos = new Vector2(width - x + texture.Width * k * horizonScale, height - y);
+                if (Main.dayTime) spriteBatch.Draw(startTexture, pos - position, null, Color.White, 0f, origin, horizonScale, SpriteEffects.None, 0f);
+                else spriteBatch.Draw(texture, pos - position, null, Color.White * 0.5f, 0f, origin, horizonScale, SpriteEffects.None, 0f);
             }
+
+            spriteBatch.Reload(SpriteSortMode.Deferred);
         }
 
         public override float GetCloudAlpha() => 0f;
