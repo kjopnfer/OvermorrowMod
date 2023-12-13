@@ -8,6 +8,7 @@ using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.Main;
 
 namespace OvermorrowMod.Content.Skies
 {
@@ -25,7 +26,7 @@ namespace OvermorrowMod.Content.Skies
 
         public override Color OnTileColor(Color inColor)
         {
-            Main.NewText(Main.time);
+            Main.NewText(Main.time + " / " + Main.sunModY);
 
             Color defaultColor = base.OnTileColor(inColor);
             Color tileColor = Color.Lerp(GetStartAndEndTileColors(timeSlot, defaultColor).Item1, GetStartAndEndTileColors(timeSlot, defaultColor).Item2, timeProgress);
@@ -72,14 +73,16 @@ namespace OvermorrowMod.Content.Skies
             float height = Main.screenHeight / 2f;
             Color textureColor = Color.White;
             Vector2 origin = new Vector2(0f, biomeHeight);
-            
+
             // Horizon
             if (maxDepth >= 9f && minDepth < 9f)
             {
                 spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Black);
-                
+
                 DrawSky(spriteBatch, width, height, textureColor, origin);
                 //DrawFarTexture(spriteBatch, width, height, textureColor, origin);
+                DrawSunTexture(spriteBatch);
+
             }
 
 
@@ -257,7 +260,7 @@ namespace OvermorrowMod.Content.Skies
             }*/
             #endregion
 
-          }
+        }
 
         private (Texture2D, Texture2D) GetCloudStartAndEndTextures(int id)
         {
@@ -271,6 +274,7 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
+
         private (Texture2D, Texture2D) GetHorizonStartAndEndTextures(int id)
         {
             return id switch
@@ -281,6 +285,99 @@ namespace OvermorrowMod.Content.Skies
                 3 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Sunset").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value),
                 _ => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value),
             };
+        }
+
+
+        private void DrawSunTexture(SpriteBatch spriteBatch)
+        {
+            // This is all just vanilla code
+            int num13 = screenWidth;
+            int num14 = screenHeight;
+            Vector2 zero = Vector2.Zero;
+            if (num13 < 800)
+            {
+                int num15 = 800 - num13;
+                zero.X -= (float)num15 * 0.5f;
+                num13 = 800;
+            }
+            if (num14 < 600)
+            {
+                int num16 = 600 - num14;
+                zero.Y -= (float)num16 * 0.5f;
+                num14 = 600;
+            }
+
+            SceneArea sceneArea = default(SceneArea);
+            sceneArea.bgTopY = 0;
+            sceneArea.totalWidth = num13;
+            sceneArea.totalHeight = num14;
+            sceneArea.SceneLocalScreenPositionOffset = zero;
+
+            Texture2D sunTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Sun", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            int num = moonType;
+
+            Texture2D moonTexture = TextureAssets.Moon[num].Value;
+
+            int num2 = sceneArea.bgTopY;
+            int num3 = (int)(time / 54000.0 * (double)(sceneArea.totalWidth + (float)(sunTexture.Width * 2))) - sunTexture.Width;
+            int num4 = 0;
+            int num6 = (int)(time / 32400.0 * (double)(sceneArea.totalWidth + (float)(moonTexture.Width * 2))) - moonTexture.Width;
+            int num7 = 0;
+            float num8 = 1f;
+            float num9 = (float)(time / 32400.0) * 2f - 7.3f;
+
+            if (Main.dayTime)
+            {
+                double num10;
+                if (Main.time < 27000.0)
+                {
+                    num10 = Math.Pow(1.0 - Main.time / 54000.0 * 2.0, 2.0);
+                    num4 = (int)(num10 * 250.0 + 180.0);
+                }
+                else
+                {
+                    num10 = Math.Pow((Main.time / 54000.0 - 0.5) * 2.0, 2.0);
+                    num4 = (int)(num10 * 250.0 + 180.0);
+                }
+
+                Vector2 position = new Vector2(num3, num4 + Main.sunModY) + sceneArea.SceneLocalScreenPositionOffset;
+                Color sunColor = Color.Lerp(GetStartAndEndSunColors(timeSlot).Item1, GetStartAndEndSunColors(timeSlot).Item2, timeProgress);
+                spriteBatch.Draw(sunTexture, position, null, sunColor, 0f, sunTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                double num11;
+                if (time < 16200.0)
+                {
+                    num11 = Math.Pow(1.0 - time / 32400.0 * 2.0, 2.0);
+                    num7 = (int)((double)num2 + num11 * 250.0 + 180.0);
+                }
+                else
+                {
+                    num11 = Math.Pow((time / 32400.0 - 0.5) * 2.0, 2.0);
+                    num7 = (int)((double)num2 + num11 * 250.0 + 180.0);
+                }
+                num8 = (float)(1.2 - num11 * 0.4);
+    
+                Color moonColor = Color.White;
+                Vector2 position2 = new Vector2(num6, num7 + moonModY) + sceneArea.SceneLocalScreenPositionOffset;
+                if (WorldGen.drunkWorldGen)
+                {
+                    spriteBatch.Draw(TextureAssets.SmileyMoon.Value, position2, new Rectangle(0, 0, TextureAssets.SmileyMoon.Width(), TextureAssets.SmileyMoon.Height()), moonColor, num9 / 2f + (float)Math.PI, new Vector2(TextureAssets.SmileyMoon.Width() / 2, TextureAssets.SmileyMoon.Width() / 2), num8, SpriteEffects.None, 0f);
+                }
+                else if (pumpkinMoon)
+                {
+                    spriteBatch.Draw(TextureAssets.PumpkinMoon.Value, position2, new Rectangle(0, TextureAssets.PumpkinMoon.Width() * moonPhase, TextureAssets.PumpkinMoon.Width(), TextureAssets.PumpkinMoon.Width()), moonColor, num9, new Vector2(TextureAssets.PumpkinMoon.Width() / 2, TextureAssets.PumpkinMoon.Width() / 2), num8, SpriteEffects.None, 0f);
+                }
+                else if (snowMoon)
+                {
+                    spriteBatch.Draw(TextureAssets.SnowMoon.Value, position2, new Rectangle(0, TextureAssets.SnowMoon.Width() * moonPhase, TextureAssets.SnowMoon.Width(), TextureAssets.SnowMoon.Width()), moonColor, num9, new Vector2(TextureAssets.SnowMoon.Width() / 2, TextureAssets.SnowMoon.Width() / 2), num8, SpriteEffects.None, 0f);
+                }
+                else
+                {
+                    spriteBatch.Draw(TextureAssets.Moon[num].Value, position2, new Rectangle(0, TextureAssets.Moon[num].Width() * moonPhase, TextureAssets.Moon[num].Width(), TextureAssets.Moon[num].Width()), moonColor, num9, new Vector2(TextureAssets.Moon[num].Width() / 2, TextureAssets.Moon[num].Width() / 2), num8, SpriteEffects.None, 0f);
+                }
+            }
         }
 
         /// <summary>
@@ -302,6 +399,24 @@ namespace OvermorrowMod.Content.Skies
                 2 => (day, sunset),
                 3 => (sunset, night),
                 _ => (night, night),
+            };
+        }
+
+        private (Color, Color) GetStartAndEndSunColors(int id)
+        {
+            Color morning = new Color(255, 255, 255);
+            Color midMorning = new Color(248, 187, 173);
+            Color day = new Color(241, 118, 90);
+            Color midSunset = new Color(248, 181, 143);
+            Color sunset = new Color(255, 243, 196);
+
+            return id switch
+            {
+                0 => (morning, midMorning),
+                1 => (midMorning, day),
+                2 => (day, midSunset),
+                3 => (midSunset, sunset),
+                _ => (sunset, sunset),
             };
         }
 
