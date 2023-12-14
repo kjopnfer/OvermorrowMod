@@ -17,25 +17,21 @@ namespace OvermorrowMod.Content.Skies
         private bool isActive = false;
 
         private const float Scale = 2f;
-        private const float ScreenParallaxMultiplier = 0.4f;
-        float starOpacity = 1f;
-
-        // These are used to lerp between the textures/colors based on the time of day
-        int timeSlot => (int)Math.Floor(Main.time / 13500);
-        float timeProgress => MathHelper.Lerp(0f, 1f, (float)((Main.time % 13500) / 13500f));
+        private const float ParallaxMultiplier = 0.4f;
+        float starOpacity => SetStarOpacity();
+ 
         public override float GetCloudAlpha() => 0f;
 
         public override Color OnTileColor(Color inColor)
         {
-            Main.NewText(Main.time + " / " + Main.sunModY);
-
+            Main.NewText(Main.time + " / slot: " + timeSlot);
+            
             Color defaultColor = base.OnTileColor(inColor);
-            Color tileColor = Color.Lerp(GetStartAndEndTileColors(timeSlot, defaultColor).Item1, GetStartAndEndTileColors(timeSlot, defaultColor).Item2, timeProgress);
-            if (!Main.dayTime) tileColor = GetStartAndEndTileColors(-1, defaultColor).Item1;
+            Color tileColor = Color.Lerp(GetStartAndEndTileColors(defaultColor).Item1, GetStartAndEndTileColors(defaultColor).Item2, timeProgress);
+            if (!Main.dayTime) tileColor = GetStartAndEndTileColors(defaultColor).Item1;
             tileColor.A = inColor.A;
 
             return Color.Lerp(inColor, tileColor, 1f);
-
             //return base.OnTileColor(inColor);
         }
 
@@ -80,9 +76,9 @@ namespace OvermorrowMod.Content.Skies
             {
                 float farScale = 0.5f;
                 Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Far", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int x = (int)(Main.screenPosition.X * 0.5f * ScreenParallaxMultiplier);
+                int x = (int)(Main.screenPosition.X * 0.5f * ParallaxMultiplier);
                 x %= (int)(farTexture.Width * farScale);
-                int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParallaxMultiplier);
+                int y = (int)(Main.screenPosition.Y * 0.45f * ParallaxMultiplier);
                 y -= 1360; // 900
                 Vector2 position = farTexture.Size() / 2f * farScale;
                 for (int k = -1; k <= 1; k++)
@@ -134,9 +130,9 @@ namespace OvermorrowMod.Content.Skies
             {
                 float midScale = 0.5f;
                 Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int x = (int)(Main.screenPosition.X * 0.8f * ScreenParallaxMultiplier);
+                int x = (int)(Main.screenPosition.X * 0.8f * ParallaxMultiplier);
                 x %= (int)(midTexture.Width * midScale);
-                int y = (int)(Main.screenPosition.Y * 0.5f * ScreenParallaxMultiplier);
+                int y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
                 y -= 1520; // 1000
                 Vector2 position = midTexture.Size() / 2f * midScale;
                 for (int k = -1; k <= 1; k++)
@@ -180,7 +176,6 @@ namespace OvermorrowMod.Content.Skies
                 }
             }*/
             #endregion
-
         }
 
         public override void Update(GameTime gameTime)

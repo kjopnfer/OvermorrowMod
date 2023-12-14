@@ -14,16 +14,16 @@ namespace OvermorrowMod.Content.Skies
 {
     public partial class RavensfellSky : CustomSky
     {
+        // These are used to lerp between the textures/colors based on the time of day
+        int timeSlot => (int)Math.Floor(Main.time / 13500);
+        float timeProgress => MathHelper.Lerp(0f, 1f, (float)((Main.time % 13500) / 13500f));
+
         private void DrawStars()
         {
             if (Main.netMode == NetmodeID.Server) return;
 
-
             int bgTop = (int)((-Main.screenPosition.Y) / (Main.worldSurface * 16.0 - 600.0) * 200.0);
             float colorMult = 0.952f * starOpacity;
-            Color astralcyan = new Color(100, 183, 255);
-            Color purple = new Color(201, 148, 255);
-            Color yellow = new Color(255, 146, 73);
             float width1 = Main.screenWidth / 500f;
             float height1 = Main.screenHeight / 600f;
             float width2 = Main.screenWidth / 600f;
@@ -36,7 +36,6 @@ namespace OvermorrowMod.Content.Skies
             spriteBatch.Reload(BlendState.Additive);
             for (int i = 0; i < Main.star.Length; i++)
             {
-
                 Star star = Main.star[i];
                 if (star == null) continue;
 
@@ -48,8 +47,7 @@ namespace OvermorrowMod.Content.Skies
                 float posX = star.position.X * width1;
                 float posY = star.position.Y * height1;
                 Vector2 position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
-                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * 0.25f, star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
-
+                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * 0.25f * colorMult,  star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
 
                 starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Circle").Value;
                 starOrigin = new Vector2(starTexture.Width * 0.2f, starTexture.Height * 0.2f);
@@ -76,9 +74,9 @@ namespace OvermorrowMod.Content.Skies
             spriteBatch.Reload(BlendState.AlphaBlend);
         }
 
-        private (Texture2D, Texture2D) GetCloudStartAndEndTextures(int id)
+        private (Texture2D, Texture2D) GetCloudStartAndEndTextures()
         {
-            return id switch
+            return timeSlot switch
             {
                 0 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value),
                 1 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_morning").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_day").Value),
@@ -88,9 +86,9 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
-        private (Texture2D, Texture2D) GetHorizonStartAndEndTextures(int id)
+        private (Texture2D, Texture2D) GetHorizonStartAndEndTextures()
         {
-            return id switch
+            return timeSlot switch
             {
                 0 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value),
                 1 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Morning").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Day").Value),
@@ -100,16 +98,18 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
-        /// <param name="id"></param>
+        /// <param name="timeSlot"></param>
         /// <param name="defaultColor">I don't know what vanilla uses.</param>
-        private (Color, Color) GetStartAndEndTileColors(int id, Color defaultColor)
+        private (Color, Color) GetStartAndEndTileColors(Color defaultColor)
         {
             Color morning = new Color(243, 168, 160);
             Color day = defaultColor;
             Color sunset = new Color(255, 151, 111);
             Color night = new Color(21, 42, 63);
 
-            return id switch
+            if (!Main.dayTime) return (night, night);
+
+            return timeSlot switch
             {
                 0 => (night, morning),
                 1 => (morning, day),
@@ -119,7 +119,7 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
-        private (Color, Color) GetStartAndEndSunColors(int id)
+        private (Color, Color) GetStartAndEndSunColors()
         {
             Color morning = new Color(255, 255, 255);
             Color midMorning = new Color(248, 187, 173);
@@ -127,7 +127,7 @@ namespace OvermorrowMod.Content.Skies
             Color midSunset = new Color(248, 181, 143);
             Color sunset = new Color(255, 243, 196);
 
-            return id switch
+            return timeSlot switch
             {
                 0 => (morning, midMorning),
                 1 => (midMorning, day),
@@ -137,14 +137,28 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
+        private float SetStarOpacity()
+        {
+            if (Main.dayTime)
+            {
+                if (timeSlot == 1 || timeSlot == 2) return 0;
+
+                if (timeSlot == 0) return MathHelper.Lerp(1f, 0, timeProgress);
+                if (timeSlot == 3) return MathHelper.Lerp(0, 1f, timeProgress);
+                if (timeSlot == 3) return MathHelper.Lerp(0, 1f, timeProgress);
+            }
+
+            return 1f;
+        }
+
         private void DrawFarClouds(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
         {
             float farScale = 0.5f;
             Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Clouds", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
-            int x = (int)(Main.screenPosition.X * 0.4f * ScreenParallaxMultiplier);
+            int x = (int)(Main.screenPosition.X * 0.4f * ParallaxMultiplier);
             x %= (int)(farTexture.Width * farScale);
-            int y = (int)(Main.screenPosition.Y * 0.4f * ScreenParallaxMultiplier);
+            int y = (int)(Main.screenPosition.Y * 0.4f * ParallaxMultiplier);
             y -= 700; // 1000
 
             Vector2 position = farTexture.Size() / 2f * farScale;
@@ -162,10 +176,10 @@ namespace OvermorrowMod.Content.Skies
             float horizonScale = 1f;
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
-            int x = (int)(Main.screenPosition.X * 0.5f * ScreenParallaxMultiplier);
+            int x = (int)(Main.screenPosition.X * 0.5f * ParallaxMultiplier);
             x %= (int)(texture.Width * horizonScale);
 
-            int y = (int)(Main.screenPosition.Y * 0.45f * ScreenParallaxMultiplier);
+            int y = (int)(Main.screenPosition.Y * 0.45f * ParallaxMultiplier);
             y -= 750; // 1000
 
             spriteBatch.Reload(SpriteSortMode.Immediate);
@@ -174,7 +188,7 @@ namespace OvermorrowMod.Content.Skies
             Effect effect = OvermorrowModFile.Instance.ImageLerp.Value;
             if (Main.dayTime)
             {
-                var textures = GetHorizonStartAndEndTextures(timeSlot);
+                var textures = GetHorizonStartAndEndTextures();
                 startTexture = textures.Item1;
 
                 effect.Parameters["progress"].SetValue(1 - timeProgress); // Don't know why this is reversed
@@ -247,7 +261,7 @@ namespace OvermorrowMod.Content.Skies
                 }
 
                 Vector2 position = new Vector2(num3, num4 + Main.sunModY) + sceneArea.SceneLocalScreenPositionOffset;
-                Color sunColor = Color.Lerp(GetStartAndEndSunColors(timeSlot).Item1, GetStartAndEndSunColors(timeSlot).Item2, timeProgress);
+                Color sunColor = Color.Lerp(GetStartAndEndSunColors().Item1, GetStartAndEndSunColors().Item2, timeProgress);
                 spriteBatch.Draw(sunTexture, position, null, sunColor, 0f, sunTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
             }
             else
