@@ -18,62 +18,7 @@ namespace OvermorrowMod.Content.Skies
         int timeSlot => (int)Math.Floor(Main.time / 13500);
         float timeProgress => MathHelper.Lerp(0f, 1f, (float)((Main.time % 13500) / 13500f));
 
-        private void DrawStars()
-        {
-            if (Main.netMode == NetmodeID.Server) return;
-
-            int bgTop = (int)((-Main.screenPosition.Y) / (Main.worldSurface * 16.0 - 600.0) * 200.0);
-            float colorMult = 0.952f * starOpacity;
-            float width1 = Main.screenWidth / 500f;
-            float height1 = Main.screenHeight / 600f;
-            float width2 = Main.screenWidth / 600f;
-            float height2 = Main.screenHeight / 800f;
-            float width3 = Main.screenWidth / 200f;
-            float height3 = Main.screenHeight / 900f;
-            float width4 = Main.screenWidth / 1000f;
-            float height4 = Main.screenHeight / 200f;
-
-            spriteBatch.Reload(BlendState.Additive);
-            for (int i = 0; i < Main.star.Length; i++)
-            {
-                Star star = Main.star[i];
-                if (star == null) continue;
-
-                //Texture2D t2D = TextureAssets.Star[star.type].Value;
-                Texture2D starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
-
-                // Big Stars
-                Vector2 starOrigin = new Vector2(starTexture.Width * 0.5f, starTexture.Height * 0.5f);
-                float posX = star.position.X * width1;
-                float posY = star.position.Y * height1;
-                Vector2 position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
-                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * 0.25f * colorMult,  star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
-
-                starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Circle").Value;
-                starOrigin = new Vector2(starTexture.Width * 0.2f, starTexture.Height * 0.2f);
-                posX = star.position.X * width2;
-                posY = star.position.Y * height2;
-                position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
-                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
-
-                // Small stars
-                starOrigin = new Vector2(starTexture.Width * 0.8f, starTexture.Height * 0.8f);
-                posX = star.position.X * width3;
-                posY = star.position.Y * height3;
-                position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
-                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, star.scale / 5f, SpriteEffects.None, 0f);
-
-                // Small stars
-                starOrigin = new Vector2(starTexture.Width * 0.5f, starTexture.Height * 0.5f);
-                posX = star.position.X * width4;
-                posY = star.position.Y * height4;
-                position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
-                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, star.scale / 5f, SpriteEffects.None, 0f / 2f);
-            }
-
-            spriteBatch.Reload(BlendState.AlphaBlend);
-        }
-
+        #region Color and Opacity
         private (Texture2D, Texture2D) GetCloudStartAndEndTextures()
         {
             return timeSlot switch
@@ -137,6 +82,23 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
+        private (Color, Color) GetStartAndEndHorizonColors()
+        {
+            Color morning = new Color(62, 154, 229);
+            Color day = new Color(154, 168, 192);
+            Color sunset = new Color(66, 79, 197);
+            Color night = new Color(3, 19, 32);
+
+            return timeSlot switch
+            {
+                0 => (night, morning),
+                1 => (morning, day),
+                2 => (day, sunset),
+                3 => (sunset, night),
+                _ => (night, night),
+            };
+        }
+
         private float SetStarOpacity()
         {
             if (Main.dayTime)
@@ -149,6 +111,64 @@ namespace OvermorrowMod.Content.Skies
             }
 
             return 1f;
+        }
+        #endregion
+
+        #region Drawing
+        private void DrawStars()
+        {
+            if (Main.netMode == NetmodeID.Server) return;
+
+            int bgTop = (int)((-Main.screenPosition.Y) / (Main.worldSurface * 16.0 - 600.0) * 200.0);
+            float colorMult = 0.952f * starOpacity;
+            float width1 = Main.screenWidth / 500f;
+            float height1 = Main.screenHeight / 600f;
+            float width2 = Main.screenWidth / 600f;
+            float height2 = Main.screenHeight / 800f;
+            float width3 = Main.screenWidth / 200f;
+            float height3 = Main.screenHeight / 900f;
+            float width4 = Main.screenWidth / 1000f;
+            float height4 = Main.screenHeight / 200f;
+
+            spriteBatch.Reload(BlendState.Additive);
+            for (int i = 0; i < Main.star.Length; i++)
+            {
+                Star star = Main.star[i];
+                if (star == null) continue;
+
+                //Texture2D t2D = TextureAssets.Star[star.type].Value;
+                Texture2D starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
+
+                // Big Stars
+                Vector2 starOrigin = new Vector2(starTexture.Width * 0.5f, starTexture.Height * 0.5f);
+                float posX = star.position.X * width1;
+                float posY = star.position.Y * height1;
+                Vector2 position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * 0.25f * colorMult, star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
+
+                starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Circle").Value;
+                starOrigin = new Vector2(starTexture.Width * 0.2f, starTexture.Height * 0.2f);
+                posX = star.position.X * width2;
+                posY = star.position.Y * height2;
+                position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, (star.scale) / 4f, SpriteEffects.None, 0f);
+
+                // Small stars
+                starOrigin = new Vector2(starTexture.Width * 0.8f, starTexture.Height * 0.8f);
+                posX = star.position.X * width3;
+                posY = star.position.Y * height3;
+                position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, star.scale / 5f, SpriteEffects.None, 0f);
+
+                // Small stars
+                starOrigin = new Vector2(starTexture.Width * 0.5f, starTexture.Height * 0.5f);
+                posX = star.position.X * width4;
+                posY = star.position.Y * height4;
+                position = new Vector2(posX + starOrigin.X, posY + starOrigin.Y + bgTop);
+                spriteBatch.Draw(starTexture, position, new Rectangle(0, 0, starTexture.Width, starTexture.Height), Color.White * star.twinkle * colorMult, star.rotation, starOrigin, star.scale / 5f, SpriteEffects.None, 0f / 2f);
+            }
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
         }
 
         private void DrawFarClouds(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
@@ -171,7 +191,9 @@ namespace OvermorrowMod.Content.Skies
 
         private void DrawSky(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
         {
-            spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Black);
+            Color horizonColor = Color.Lerp(GetStartAndEndHorizonColors().Item1, GetStartAndEndHorizonColors().Item2, timeProgress);
+            if (!Main.dayTime) horizonColor = GetStartAndEndHorizonColors().Item1;
+            spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), horizonColor);
 
             float horizonScale = 1f;
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -180,7 +202,7 @@ namespace OvermorrowMod.Content.Skies
             x %= (int)(texture.Width * horizonScale);
 
             int y = (int)(Main.screenPosition.Y * 0.45f * ParallaxMultiplier);
-            y -= 750; // 1000
+            y -= 650; // 1000
 
             spriteBatch.Reload(SpriteSortMode.Immediate);
             Texture2D startTexture = texture;
@@ -299,5 +321,6 @@ namespace OvermorrowMod.Content.Skies
                 }
             }
         }
+        #endregion
     }
 }
