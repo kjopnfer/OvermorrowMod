@@ -95,7 +95,6 @@ namespace OvermorrowMod.Content.Projectiles
         private void SpawnSlimes(bool bigSlime = false)
         {
             int maxIterations = bigSlime ? 1 : 3;
-            int type = bigSlime ? NPCID.YellowSlime : NPCID.BlueSlime;
 
             // Pick random spots to spawn the slimes, staggered by a counter
             if (Projectile.ai[1]++ % 25 == 0 && iterations < maxIterations)
@@ -108,7 +107,9 @@ namespace OvermorrowMod.Content.Projectiles
                 Vector2 position = new Vector2(Projectile.Center.X + randomOffset * 64, (int)Projectile.Center.Y);
                 Vector2 spawnPosition = ModUtils.FindNearestGround(position) * 16;
 
-                int slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, type);
+                int slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.BlueSlime);
+                if (bigSlime) slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.BlueSlime, 0, 0, ItemID.IronPickaxe);
+
                 Player nearestPlayer = ModUtils.GetNearestPlayer(Main.npc[slime]);
 
                 if (nearestPlayer != null && nearestPlayer.active)

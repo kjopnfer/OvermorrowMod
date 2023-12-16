@@ -73,7 +73,6 @@ namespace OvermorrowMod.Content.NPCs
         public float FrameCounter = 0;
 
         private bool oldCollision = true;
-        // ai[3] as -1 will trigger the spawn case
         public override bool PreAI(NPC npc)
         {
             if (npc.type == NPCID.BlueSlime)
@@ -423,13 +422,12 @@ namespace OvermorrowMod.Content.NPCs
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Slime").Value;
                 var spriteEffects = npc.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 Rectangle drawRectangle = new Rectangle(xFrame * FRAME_WIDTH, yFrame * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
-
-                
+    
                 if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     Color color = npc.color * Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                     float alpha = npc.alpha / 255f;
-                    
+                    float scale = npc.scale;
                     #region Bonus Drop
                     if (npc.ai[1] != -1)
                     {
@@ -492,7 +490,10 @@ namespace OvermorrowMod.Content.NPCs
                     float spawnOffset = 0;
                     if (AIState == (int)AICase.Spawn) spawnOffset = MathHelper.Lerp(8f, 0f, AICounter / 60f);
 
-                    spriteBatch.Draw(texture, npc.Center + new Vector2(0, spawnOffset) - screenPos, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
+                    // This is the pickaxe slime in the Feyden cave
+                    if (npc.ai[1] == ItemID.IronPickaxe) scale = 1.5f;
+
+                    spriteBatch.Draw(texture, npc.Center + new Vector2(0, spawnOffset) - screenPos, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, scale, spriteEffects, 0);
                     return npc.IsABestiaryIconDummy;
                 }
             }
