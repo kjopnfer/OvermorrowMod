@@ -1,4 +1,6 @@
 using OvermorrowMod.Common.Pathfinding;
+using OvermorrowMod.Core;
+using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -63,10 +65,9 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             }
         }
 
-        // TODO: The NPC should remember the Player they're following somehow
         public override void SaveData(TagCompound tag)
         {
-            
+
             base.SaveData(tag);
         }
 
@@ -75,29 +76,61 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             base.LoadData(tag);
         }
 
+        public enum AICase
+        {
+            Default = 0,
+            Following = 1,
+            Fighting = 2,
+        }
+
+        public bool canFight = true;
         public Player followPlayer = null;
+        public NPC target = null;
+
         private int AICounter = 0;
+
+        private int AIState;
         public override void AI()
         {
+            // TODO: The NPC should check if their following player is active or exists, otherwise get reassigned to host
             if (followPlayer != null)
             {
-                _pf.SetTarget(followPlayer.position);
-                _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
-
-                NPC.aiStyle = 0;
-
-                // The Pathfinder should reset every few seconds for any environmental changes
-                if (++AICounter % 600 == 0)
-                {
-                    AICounter = 0;
-                    SharedAIState.State1x2.Reset();
-                }
-                return;
+                if (followPlayer.active) AIState = (int)AICase.Following;
+                else ReassignToHost();
             }
-            //_pf.SetTarget(Main.CurrentPlayer.position);
-            //_pf.GetVelocity(ref NPC.position, ref NPC.velocity);
+            else
+            {
+                AIState = (int)AICase.Default;
+            }
 
-            NPC.aiStyle = 7;
+            switch (AIState)
+            {
+                case (int)AICase.Default:
+                    NPC.aiStyle = 7;
+                    break;
+                case (int)AICase.Following:
+                    _pf.SetTarget(followPlayer.position);
+                    _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
+
+                    NPC.aiStyle = 0;
+
+                    if (canFight)
+                    {
+                        if (!target.active || target == null) target = NPC.FindClosestNPC(400f);
+                    }
+
+                    // The Pathfinder should reset every few seconds for any environmental changes
+                    // TODO: Maybe make this more efficient by detecting environmental change to reset instead?
+                    if (++AICounter % 600 == 0)
+                    {
+                        AICounter = 0;
+                        SharedAIState.State1x2.Reset();
+                    }
+                    break;
+                case (int)AICase.Fighting:
+                    break;
+            }
+
         }
 
         public override bool? CanFallThroughPlatforms()
@@ -111,9 +144,24 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             return 0f;
         }
 
-        public override bool CheckDead()
+        // Legends never die
+        public override bool CheckDead() => false;
+
+        public override void SendExtraAI(BinaryWriter writer)
         {
-            return false;
+            writer.Write(AIState);
+            writer.Write(AICounter);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            AIState = reader.ReadInt16();
+            AICounter = reader.ReadInt16();
+        }
+
+        private void ReassignToHost()
+        {
+            followPlayer = Main.player[0];
         }
     }
 }
