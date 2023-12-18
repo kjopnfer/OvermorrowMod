@@ -1,3 +1,4 @@
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Core;
 using System.IO;
@@ -63,6 +64,8 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             {
                 if (npc.active && npc.type == Type && npc != NPC) npc.life = 0;
             }
+
+            if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
         }
 
         public override void SaveData(TagCompound tag)
@@ -78,20 +81,24 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public enum AICase
         {
+            Idle = -1,
             Default = 0,
             Following = 1,
-            Fighting = 2,
+            Approach = 2,
+            Fighting = 3,
         }
 
-        public bool canFight = true;
+        public bool canFight = true; // TODO: Make this togglable through a UI
         public Player followPlayer = null;
-        public NPC target = null;
+        public NPC targetNPC = null;
 
         private int AICounter = 0;
 
         private int AIState;
+
         public override void AI()
         {
+            Main.NewText(AIState);
             // TODO: The NPC should check if their following player is active or exists, otherwise get reassigned to host
             if (followPlayer != null)
             {
@@ -100,12 +107,30 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             }
             else
             {
-                AIState = (int)AICase.Default;
+                if (OvermorrowWorld.savedFeyden) AIState = (int)AICase.Default;
+            }
+
+            if (targetNPC != null)
+            {
+                if (!targetNPC.active) targetNPC = null;
             }
 
             switch (AIState)
             {
-                case (int)AICase.Default:
+                case (int)AICase.Idle:
+                    // Feyden will constantly search for targets to fight before they are "rescued"
+                    if (!OvermorrowWorld.savedFeyden || targetNPC == null)
+                    {
+                        NPC.aiStyle = 0;
+                        targetNPC = NPC.FindClosestNPC(400f);
+
+                        if (targetNPC != null)
+                        {
+                            AIState = (int)AICase.Approach;
+                        }
+                    }
+                    break;
+                case (int)AICase.Default: // Behave like a normal town NPC
                     NPC.aiStyle = 7;
                     break;
                 case (int)AICase.Following:
@@ -116,7 +141,10 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
                     if (canFight)
                     {
-                        if (!target.active || target == null) target = NPC.FindClosestNPC(400f);
+                        if (targetNPC == null)
+                        {
+                            targetNPC = NPC.FindClosestNPC(400f);
+                        }
                     }
 
                     // The Pathfinder should reset every few seconds for any environmental changes
@@ -127,10 +155,34 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         SharedAIState.State1x2.Reset();
                     }
                     break;
+                case (int)AICase.Approach:
+                    // Move towards the NPC until they are 2 tiles away
+                    if (targetNPC != null)
+                    {
+                        _pf.SetTarget(targetNPC.position);
+                        _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
+
+                        if (NPC.Distance(targetNPC.position) < 32) AIState = (int)AICase.Fighting;
+                    }
+                    else
+                    {
+                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
+                        else AIState = (int)AICase.Default;
+                    }
+                    break;
                 case (int)AICase.Fighting:
+                    if (targetNPC != null)
+                    {
+                        // The NPC is dead, look for a new one
+                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
+                        else AIState = (int)AICase.Default;
+                    }
+                    else
+                    {
+                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
+                    }
                     break;
             }
-
         }
 
         public override bool? CanFallThroughPlatforms()
