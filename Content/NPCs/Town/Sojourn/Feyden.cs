@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Core;
@@ -60,6 +61,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public override void OnSpawn(IEntitySource source)
         {
+            Main.NewText("wtf");
             foreach (var npc in Main.npc)
             {
                 if (npc.active && npc.type == Type && npc != NPC) npc.life = 0;
@@ -81,8 +83,8 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public enum AICase
         {
-            Idle = -1,
-            Default = 0,
+            Idle = 0,
+            //Default = 0,
             Following = 1,
             Approach = 2,
             Fighting = 3,
@@ -92,6 +94,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         public Player followPlayer = null;
         public NPC targetNPC = null;
 
+        private Projectile swingAttack = null;
         private int AICounter = 0;
 
         private int AIState;
@@ -99,6 +102,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         public override void AI()
         {
             Main.NewText(AIState);
+            NPC.dontTakeDamage = true;
             // TODO: The NPC should check if their following player is active or exists, otherwise get reassigned to host
             if (followPlayer != null)
             {
@@ -107,12 +111,16 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             }
             else
             {
-                if (OvermorrowWorld.savedFeyden) AIState = (int)AICase.Default;
+                //if (OvermorrowWorld.savedFeyden) AIState = (int)AICase.Default;
             }
 
             if (targetNPC != null)
             {
                 if (!targetNPC.active) targetNPC = null;
+                else
+                {
+                    NPC.direction = targetNPC.Center.X > NPC.Center.X ? 1 : -1;
+                }
             }
 
             switch (AIState)
@@ -130,9 +138,9 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         }
                     }
                     break;
-                case (int)AICase.Default: // Behave like a normal town NPC
+                /*case (int)AICase.Default: // Behave like a normal town NPC
                     NPC.aiStyle = 7;
-                    break;
+                    break;*/
                 case (int)AICase.Following:
                     _pf.SetTarget(followPlayer.position);
                     _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
@@ -162,20 +170,34 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         _pf.SetTarget(targetNPC.position);
                         _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
 
-                        if (NPC.Distance(targetNPC.position) < 32) AIState = (int)AICase.Fighting;
+                        if (NPC.Distance(targetNPC.position) < 32)
+                        {
+                            Vector2 position = NPC.Center + new Vector2(32 * NPC.direction, -8);
+                            swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 12, 2f, Main.myPlayer);
+                            AIState = (int)AICase.Fighting;
+                        }
                     }
                     else
                     {
                         if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
-                        else AIState = (int)AICase.Default;
+                        //else AIState = (int)AICase.Default;
                     }
                     break;
                 case (int)AICase.Fighting:
+                    if (swingAttack != null)
+                    {
+                        if (swingAttack.active)
+                        {
+                            NPC.knockBackResist *= 0;
+                            return;
+                        }
+                    }
+
                     if (targetNPC != null)
                     {
                         // The NPC is dead, look for a new one
                         if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
-                        else AIState = (int)AICase.Default;
+                        //else AIState = (int)AICase.Default;
                     }
                     else
                     {
@@ -214,6 +236,33 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         private void ReassignToHost()
         {
             followPlayer = Main.player[0];
+        }
+    }
+
+    public class FeydenAttack : ModProjectile
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public override void SetDefaults()
+        {
+            Projectile.width = 32;
+            Projectile.height = 32;
+            Projectile.friendly = true;
+
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1; // 1 hit per npc max
+
+            Projectile.timeLeft = 30;
+        }
+
+        public override void AI()
+        {
+            base.AI();
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            base.OnKill(timeLeft);
         }
     }
 }

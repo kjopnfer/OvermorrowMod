@@ -132,6 +132,7 @@ Mods: {
 			AmethystSlicer_Shards.DisplayName: Amethyst Slicer_ Shards
 			AmethystCrystal.DisplayName: Amethyst Crystal
 			FeydenCaveHandler.DisplayName: Feyden Cave Handler
+			FeydenAttack.DisplayName: Feyden Attack
 		}
 
 		NPCs: {
