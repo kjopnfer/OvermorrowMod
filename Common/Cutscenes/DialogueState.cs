@@ -419,7 +419,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             parent.ExitText();
                             return;
-                        case "feyden_trigger":
+                        /*case "feyden_trigger":
 
                             bool spawnHandler = true;
                             foreach (Projectile projectile in Main.projectile)
@@ -429,7 +429,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, Main.myPlayer);
                             parent.ExitText();
-                            return;
+                            return;*/
                         case "exit":
                             parent.ExitText();
                             return;

@@ -1,7 +1,9 @@
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,5 +26,10 @@ namespace OvermorrowMod.Quests.ModQuests
                 new ItemReward(ItemID.DirtBlock, 1)
             };
         }
+        protected override bool IsValidFor(Player player)
+        {
+            return OvermorrowWorld.savedFeyden;
+        }
+
     }
 }

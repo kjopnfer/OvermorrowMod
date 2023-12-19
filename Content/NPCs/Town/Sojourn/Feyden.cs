@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Pathfinding;
+using OvermorrowMod.Content.Projectiles;
+using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using System.IO;
 using Terraria;
@@ -103,6 +105,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         {
             Main.NewText(AIState);
             NPC.dontTakeDamage = true;
+
             // TODO: The NPC should check if their following player is active or exists, otherwise get reassigned to host
             if (followPlayer != null)
             {
@@ -122,6 +125,8 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                     NPC.direction = targetNPC.Center.X > NPC.Center.X ? 1 : -1;
                 }
             }
+
+            CheckSlimeCaveHandler();
 
             switch (AIState)
             {
@@ -212,7 +217,6 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             return _pf.ShouldFallThroughPlatforms(NPC.velocity, NPC.position);
         }
 
-
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             return 0f;
@@ -236,6 +240,28 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         private void ReassignToHost()
         {
             followPlayer = Main.player[0];
+        }
+
+        private void CheckSlimeCaveHandler()
+        {
+            if (OvermorrowWorld.savedFeyden) return;
+
+            Player nearbyPlayer = NPC.FindClosestPlayer(16 * 16);
+            if (nearbyPlayer != null)
+            {
+                SpawnSlimeHandler();
+            }
+        }
+
+        private void SpawnSlimeHandler()
+        {
+            bool spawnHandler = true;
+            foreach (Projectile projectile in Main.projectile)
+            {
+                if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) spawnHandler = false;
+            }
+
+            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, Main.myPlayer);
         }
     }
 

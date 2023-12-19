@@ -43,7 +43,7 @@ namespace OvermorrowMod.Common.Detours
 
                     player.SetDialogue(npc.GetChat(), 20, doc);
                 }
-                else if (npc.type == ModContent.NPCType<Feyden_Bound>())
+                /*else if (npc.type == ModContent.NPCType<Feyden_Bound>())
                 {
                     // Check if the handler is active to prevent the player from interacting with this NPC
                     bool handlerActive = false;
@@ -57,7 +57,7 @@ namespace OvermorrowMod.Common.Detours
 
                     doc.LoadXml(text);
                     player.SetDialogue(npc.GetChat(), 20, doc);
-                }
+                }*/
                 else if (npc.type == ModContent.NPCType<Feyden>())
                 {
                     if (questPlayer.FindActiveQuest("FeydenEscort"))

@@ -23,7 +23,7 @@ namespace OvermorrowMod.Core
             return (bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType]);
         }
 
-        public static NPC FindClosestNPC(this NPC npc, float maxDetectDistance)
+        public static NPC FindClosestNPC(this Entity entity, float maxDetectDistance)
         {
             NPC closestNPC = null;
             float sqrMaxDetectDistance = maxDetectDistance * maxDetectDistance;
@@ -33,7 +33,7 @@ namespace OvermorrowMod.Core
                 NPC target = Main.npc[k];
                 if (target.CanBeChasedBy())
                 {
-                    float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, npc.Center);
+                    float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, entity.Center);
 
                     if (sqrDistanceToTarget < sqrMaxDetectDistance)
                     {
@@ -44,6 +44,29 @@ namespace OvermorrowMod.Core
             }
 
             return closestNPC;
+        }
+
+        public static Player FindClosestPlayer(this Entity entity, float maxDetectDistance)
+        {
+            Player closestPlayer = null;
+            float sqrMaxDetectDistance = maxDetectDistance * maxDetectDistance;
+
+            for (int k = 0; k < Main.maxPlayers; k++)
+            {
+                Player player = Main.player[k];
+                if (player.active)
+                {
+                    float sqrDistanceToTarget = Vector2.DistanceSquared(player.Center, entity.Center);
+
+                    if (sqrDistanceToTarget < sqrMaxDetectDistance)
+                    {
+                        sqrMaxDetectDistance = sqrDistanceToTarget;
+                        closestPlayer = player;
+                    }
+                }
+            }
+
+            return closestPlayer;
         }
 
         #region Vanilla Code Adaptions

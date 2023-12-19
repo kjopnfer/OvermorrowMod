@@ -128,14 +128,7 @@ namespace OvermorrowMod.Content.Projectiles
             if (finalWave && ActiveSlimes.Count <= 0)
             {
                 OvermorrowWorld.savedFeyden = true;
-
-                Main.NewText("Feyden has been freed!", new Color(45, 114, 233));
                 Main.NewText("Monster Den Cleared!", Color.Yellow);
-
-                foreach (NPC npc in Main.npc)
-                {
-                    if (npc.type == ModContent.NPCType<Feyden_Bound>()) npc.Transform(ModContent.NPCType<Feyden>());
-                }
             }
         }
     }

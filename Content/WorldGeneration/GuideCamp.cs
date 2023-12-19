@@ -200,7 +200,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                         if (i == repeat - 1)
                         {
                             GuideCamp.FeydenCavePosition = shapePosition.ToVector2() * 16;
-                            NPC.NewNPC(null, shapePosition.X * 16, shapePosition.Y * 16, ModContent.NPCType<Feyden_Bound>());
+                            NPC.NewNPC(null, shapePosition.X * 16, shapePosition.Y * 16, ModContent.NPCType<Feyden>());
                         }
                     }
                 }
