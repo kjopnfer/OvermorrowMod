@@ -365,7 +365,7 @@ namespace OvermorrowMod.Common.Cutscenes
                             if (isFeyden)
                             {
                                 questPlayer.SetTravelLocation(quest, "sojourn_travel");
-                                questPlayer.CompleteQuest(questPlayer.GetQuestIDByName("A Call for Help"));
+                                questPlayer.CompleteQuest(questPlayer.GetQuestID<FeydenRescue>());
                                 /*foreach (var req in quest.Requirements)
                                 {
                                     if (req is TravelRequirement travelReq) questPlayer.SelectedLocation = travelReq.ID;

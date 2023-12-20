@@ -46,6 +46,28 @@ namespace OvermorrowMod.Quests
             return completedQuests.Count() > 0;
         }
 
+        /// <summary>
+        /// Checks whether the player is currently doing a quest
+        /// </summary>
+        /// <typeparam name="ModQuest"></typeparam>
+        /// <returns></returns>
+        public bool IsDoingQuest<ModQuest>() where ModQuest : BaseQuest
+        {
+            var quests = Quests.State.GetActiveQuests(this).Where(q => q.Quest is ModQuest)?.ToList();
+            return quests.Count() > 0;
+        }
+
+        /// <summary>
+        /// Returns an active Quest's ID given the Quest's display name. Returns null if not found.
+        /// </summary>
+        public string GetQuestID<ModQuest>() where ModQuest : BaseQuest
+        {
+            var quest = Quests.State.GetActiveQuests(this).Where(q => q.Quest is ModQuest)?.ToList();
+            if (quest == null || !quest.Any()) return null;
+
+            return quest[0].Quest.QuestID;
+        }
+
         public BaseQuestState QuestByNPC(int npcId)
         {
             return CurrentQuests.FirstOrDefault(q => npcId == q.Quest.QuestGiver);
@@ -115,22 +137,6 @@ namespace OvermorrowMod.Quests
             UpdateTravelMarkers();
             AutoCompleteRequirements();
             GeneralUpdateActions();
-        }
-
-        // TODO: Why did I write it like this, uncringe this
-        /// <summary>
-        /// Determines whether the player has an active Quest of the specified name.
-        /// <para>Based off of the internal class name for the Quest.</para>
-        /// </summary>
-        public bool FindActiveQuest(string name)
-        {
-            foreach (var quest in CurrentQuests)
-            {
-                string questID = quest.Quest.QuestID.Split("OvermorrowMod.Quests.ModQuests.")[1];
-                if (questID == name) return true;
-            }
-
-            return false;
         }
     }
 }

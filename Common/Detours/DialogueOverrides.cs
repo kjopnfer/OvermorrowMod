@@ -60,7 +60,7 @@ namespace OvermorrowMod.Common.Detours
                 }*/
                 else if (npc.type == ModContent.NPCType<Feyden>())
                 {
-                    if (questPlayer.FindActiveQuest("FeydenEscort"))
+                    if (questPlayer.IsDoingQuest<FeydenEscort>())
                     {
                         text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "FeydenEscort.xml"));
                         doc.LoadXml(text);

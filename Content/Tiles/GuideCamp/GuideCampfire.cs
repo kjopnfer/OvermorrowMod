@@ -67,7 +67,7 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
                 if (campfire.FireOn)
                 { //player.GetModPlayer<DialoguePlayer>().AddNPCPopup(NPCID.Guide, )
                     QuestPlayer questPlayer = player.GetModPlayer<QuestPlayer>();
-                    if (questPlayer.FindActiveQuest("GuideCampfire"))
+                    if (questPlayer.IsDoingQuest<Quests.ModQuests.GuideCampfire>())
                     {
                         questPlayer.CompleteMiscRequirement("campfire");
                     }
@@ -126,7 +126,7 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
-                if (questPlayer.FindActiveQuest("GuideCampfire") && questPlayer.showCampfireArrow)
+                if (questPlayer.IsDoingQuest<Quests.ModQuests.GuideCampfire>() && questPlayer.showCampfireArrow)
                 {
                     Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                     Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;

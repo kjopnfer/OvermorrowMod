@@ -57,17 +57,6 @@ namespace OvermorrowMod.Quests
         }
 
         /// <summary>
-        /// Returns an active Quest's ID given the Quest's display name. Returns null if not found.
-        /// </summary>
-        public string GetQuestIDByName(string name)
-        {
-            var quest = Quests.State.GetActiveQuests(this).Where(q => q.Quest.QuestName == name)?.ToList();
-            if (quest == null || !quest.Any()) return null;
-
-            return quest[0].Quest.QuestID;
-        }
-
-        /// <summary>
         /// Sets the Player's travel marker to one of the TravelRequirements given their ID
         /// </summary>
         public void SetTravelLocation(BaseQuest quest, string id)
