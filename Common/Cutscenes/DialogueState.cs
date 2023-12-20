@@ -361,7 +361,7 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest":
                         case "feyden_escort":
-                            if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
+                            if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "GuideCampAxe.xml"));
                             if (isFeyden)
                             {
                                 questPlayer.SetTravelLocation(quest, "sojourn_travel");
