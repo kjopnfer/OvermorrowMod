@@ -26,10 +26,10 @@ namespace OvermorrowMod.Quests.ModQuests
                 new ItemReward(ItemID.DirtBlock, 1)
             };
         }
+
         protected override bool IsValidFor(Player player)
         {
             return OvermorrowWorld.savedFeyden;
         }
-
     }
 }

@@ -14,6 +14,7 @@ using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Items.Misc;
 using OvermorrowMod.Content.Items;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Common.Players
 {

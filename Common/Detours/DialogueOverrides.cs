@@ -38,7 +38,7 @@ namespace OvermorrowMod.Common.Detours
                     }
 
                     //text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
-                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.Popups + "GuideCamp.xml"));
                     doc.LoadXml(text);
 
                     player.SetDialogue(npc.GetChat(), 20, doc);
@@ -62,14 +62,14 @@ namespace OvermorrowMod.Common.Detours
                 {
                     if (questPlayer.FindActiveQuest("FeydenEscort"))
                     {
-                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenEscort.xml"));
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "FeydenEscort.xml"));
                         doc.LoadXml(text);
                         player.SetDialogue(npc.GetChat(), 20, doc);
 
                         return;
                     }
                     
-                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenFree.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "FeydenFree.xml"));
                     doc.LoadXml(text);
                     player.SetDialogue(npc.GetChat(), 20, doc);
                 }

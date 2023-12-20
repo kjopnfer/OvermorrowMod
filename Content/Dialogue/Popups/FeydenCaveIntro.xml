@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Popup>
+	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Hey, you there! Yeah, you with the weapon. Mind giving me a hand here?</Text>
+	<Text npcPortrait="Guide" drawTime="100" displayTime="120" color="34C9EB">These slimy critters just won't quit. Thought I could snag some mushrooms for the village, not become slime fodder.</Text>
+</Popup>

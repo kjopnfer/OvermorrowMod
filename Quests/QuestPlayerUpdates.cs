@@ -29,7 +29,7 @@ namespace OvermorrowMod.Quests
                     grabbedAxe = true;
                     break;
                 case "wood":
-                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampGel.xml"));
+                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "GuideCampGel.xml"));
 
                     float offset = 64 * (Main.rand.NextBool() ? 16 : -16); // Spawn a slime on the left or right side 64 tiles away
                     Vector2 position = dialoguePlayer.Player.Center + new Vector2(offset, -720);
@@ -38,7 +38,7 @@ namespace OvermorrowMod.Quests
                     NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.GreenSlime, 0);
                     break;
                 case "gel":
-                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampTorch.xml"));
+                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "GuideCampTorch.xml"));
 
                     break;
                 case "torches":
@@ -84,7 +84,7 @@ namespace OvermorrowMod.Quests
             if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (150 * 16) && !reachedSlimeCave)
             {
                 reachedSlimeCave = true;
-                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenHelp.xml"));
+                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "FeydenHelp.xml"));
 
                 var possibleQuests = Quests.QuestList.Values
                 .Where(q => q.QuestName == "A Call for Help")

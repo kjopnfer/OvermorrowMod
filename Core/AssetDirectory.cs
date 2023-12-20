@@ -9,7 +9,6 @@ namespace OvermorrowMod.Core
 
         public const string Textures = Assets + "Textures/";
 
-
         public const string Gores = Assets + "Gores/";
 
         public const string Chains = Textures + "Chains/";
@@ -44,9 +43,8 @@ namespace OvermorrowMod.Core
         #endregion
 
         #region Other
-        public const string Dialogue = "OvermorowMod/Common/Cutscenes/Dialogue/";
+        public const string DialogWindow = "Content/Dialogue/Windows/";
+        public const string Popups = "Content/Dialogue/Popups/";
         #endregion
-
-        public const string Popup = "Content/UI/Popups/";
     }
 }

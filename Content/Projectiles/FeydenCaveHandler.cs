@@ -35,7 +35,7 @@ namespace OvermorrowMod.Content.Projectiles
 
             if (Projectile.ai[0]++ == 0)
             {
-                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenCaveIntro.xml"));
+                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "FeydenCaveIntro.xml"));
             }
 
             SpawnSlimes(finalWave);
@@ -63,7 +63,7 @@ namespace OvermorrowMod.Content.Projectiles
                     finalWave = true;
                     Main.NewText("final wave");
 
-                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "FeydenCaveBoss.xml"));
+                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "FeydenCaveBoss.xml"));
                 }
                 else if (finalWave)
                 {

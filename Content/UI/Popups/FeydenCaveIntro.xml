@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Popup>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Aw shit. Looks like you're gonna have to fight your way outta this one.</Text>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Looks like there's quite a bit of them. Be careful not to get overwhelmed.</Text>
-</Popup>
