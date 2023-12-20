@@ -133,7 +133,7 @@ namespace OvermorrowMod.Content.Skies
                 int x = (int)(Main.screenPosition.X * 0.8f * ParallaxMultiplier);
                 x %= (int)(midTexture.Width * midScale);
                 int y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
-                y -= 1520; // 1000
+                y -= 1420; // 1000
                 Vector2 position = midTexture.Size() / 2f * midScale;
                 for (int k = -1; k <= 1; k++)
                 {
