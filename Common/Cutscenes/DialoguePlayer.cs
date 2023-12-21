@@ -6,6 +6,7 @@ using Terraria.ModLoader.IO;
 using System.Linq;
 using Terraria.GameInput;
 using OvermorrowMod.Quests;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -69,6 +70,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 PopupStates.Add(npcID, new PopupState(new Popup(xmlDoc, nodeID)));
         }
 
+        public bool CheckPopupAlreadyActive(int npcID) => PopupStates.ContainsKey(npcID);
+
         public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
             CurrentDialogue = new Dialogue(displayText, drawTime, xmlDoc);
@@ -128,9 +131,20 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private void UpdatePopupQueue()
         {
+            List<int> DequeuedPopups = new List<int>();
+
             foreach (KeyValuePair<int, Popup> popup in QueuedPopups)
             {
-                if (!PopupStates.ContainsKey(popup.Key)) PopupStates.Add(popup.Key, new PopupState(popup.Value));
+                if (!PopupStates.ContainsKey(popup.Key))
+                {
+                    PopupStates.Add(popup.Key, new PopupState(popup.Value));
+                    DequeuedPopups.Add(popup.Key);
+                }
+            }
+
+            foreach (int popup in DequeuedPopups)
+            {
+                QueuedPopups.Remove(popup);
             }
         }
 
