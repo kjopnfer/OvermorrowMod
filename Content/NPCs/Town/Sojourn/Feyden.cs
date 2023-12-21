@@ -1,13 +1,16 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Content.Projectiles;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
+using System;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -272,6 +275,61 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             }
 
             if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, -1);
+        }
+
+        int xFrame = 0;
+
+        int frameCounter = 0;
+        int yFrame = 0;
+        private void NPCTextureHandler(out Texture2D texture, out int yFrameCount)
+        {
+            switch (AIState)
+            {
+                case (int)AICase.Approach:
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden_Run").Value;
+                    yFrameCount = 6;
+
+                    if (yFrame >= 5) yFrame = 0;
+
+                    int frameRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
+                    frameCounter += frameRate;
+
+                    if (frameCounter > 5)
+                    {
+                        yFrame++;
+                        frameCounter = 0;
+                    }
+                    break;
+                case (int)AICase.Fighting:
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden_Attack").Value;
+                    yFrameCount = 6;
+
+                    if (yFrame >= 5) yFrame = 0;
+
+                    frameCounter++;
+                    if (frameCounter >= 5)
+                    {
+                        yFrame++;
+                        frameCounter = 0;
+                    }
+                    break;
+                default:
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden").Value;
+                    yFrameCount = 1;
+                    break;
+            }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            NPCTextureHandler(out Texture2D texture, out int yFrameCount);
+
+            Rectangle drawRectangle = new Rectangle(0, texture.Height / yFrameCount * yFrame, texture.Width, texture.Height / yFrameCount);
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            spriteBatch.Draw(texture, NPC.Center - screenPos, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2f, NPC.scale, spriteEffects, 0);
+
+            return false;
         }
     }
 
