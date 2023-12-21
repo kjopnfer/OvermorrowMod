@@ -19,13 +19,13 @@ namespace OvermorrowMod.Content.Skies
         private const float Scale = 2f;
         private const float ParallaxMultiplier = 0.4f;
         float starOpacity => SetStarOpacity();
- 
+
         public override float GetCloudAlpha() => 0f;
 
         public override Color OnTileColor(Color inColor)
         {
             Main.NewText(Main.time + " / slot: " + timeSlot);
-            
+
             Color defaultColor = base.OnTileColor(inColor);
             Color tileColor = Color.Lerp(GetStartAndEndTileColors(defaultColor).Item1, GetStartAndEndTileColors(defaultColor).Item2, timeProgress);
             if (!Main.dayTime) tileColor = GetStartAndEndTileColors(defaultColor).Item1;
@@ -122,6 +122,20 @@ namespace OvermorrowMod.Content.Skies
                 }
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);*/
+                float offset = (0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f);
+
+                float midScale = 0.5f;
+                Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                x = (int)(Main.screenPosition.X * 0.3f);
+                x %= (int)(midTexture.Width * midScale);
+                y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
+                y -= 1420; // 1000
+                position = midTexture.Size() / 2f * midScale;
+                for (int k = -1; k <= 1; k++)
+                {
+                    var pos = new Vector2(width - x + midTexture.Width * k * midScale, height - y);
+                    spriteBatch.Draw(midTexture, pos - position - new Vector2(950, 45 * offset), null, Color.White, 0f, origin, midScale, SpriteEffects.None, 0f);
+                }
             }
 
 
