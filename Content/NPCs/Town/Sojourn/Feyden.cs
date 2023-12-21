@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Content.Projectiles;
 using OvermorrowMod.Content.WorldGeneration;
@@ -63,7 +64,6 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public override void OnSpawn(IEntitySource source)
         {
-            Main.NewText("wtf");
             foreach (var npc in Main.npc)
             {
                 if (npc.active && npc.type == Type && npc != NPC) npc.life = 0;
@@ -103,7 +103,8 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public override void AI()
         {
-            Main.NewText(AIState);
+            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+
             NPC.dontTakeDamage = true;
 
             // TODO: The NPC should check if their following player is active or exists, otherwise get reassigned to host
@@ -135,7 +136,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                     if (!OvermorrowWorld.savedFeyden || targetNPC == null)
                     {
                         NPC.aiStyle = 0;
-                        targetNPC = NPC.FindClosestNPC(400f);
+                        targetNPC = NPC.FindClosestNPC(45 * 16f);
 
                         if (targetNPC != null)
                         {
@@ -175,11 +176,20 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         _pf.SetTarget(targetNPC.position);
                         _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
 
-                        if (NPC.Distance(targetNPC.position) < 32)
+                        if (NPC.Distance(targetNPC.position) <= 32)
                         {
                             Vector2 position = NPC.Center + new Vector2(32 * NPC.direction, -8);
-                            swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 12, 2f, Main.myPlayer);
+                            swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 10, 2f, Main.myPlayer);
                             AIState = (int)AICase.Fighting;
+
+                            if (!OvermorrowWorld.savedFeyden && dialoguePlayer.Player.Distance(NPC.Center) < 32 * 16)
+                            {
+                                if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))
+                                {
+                                    int attackID = Main.rand.Next(1, 9);
+                                    dialoguePlayer.AddNPCPopup(ModContent.NPCType<Feyden>(), ModUtils.GetXML(AssetDirectory.Popups + "FeydenCave.xml"), "ATTACK_" + attackID);
+                                }
+                            }
                         }
                     }
                     else
@@ -246,7 +256,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         {
             if (OvermorrowWorld.savedFeyden) return;
 
-            Player nearbyPlayer = NPC.FindClosestPlayer(16 * 16);
+            Player nearbyPlayer = NPC.FindClosestPlayer(24 * 16);
             if (nearbyPlayer != null)
             {
                 SpawnSlimeHandler();
@@ -261,7 +271,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                 if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) spawnHandler = false;
             }
 
-            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, Main.myPlayer);
+            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, -1);
         }
     }
 

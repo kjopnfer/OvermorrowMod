@@ -49,6 +49,7 @@ namespace OvermorrowMod.Content.Projectiles
                     secondWave = true;
 
                     Main.NewText("second wave");
+                    dialoguePlayer.AddNPCPopup(ModContent.NPCType<Feyden>(), ModUtils.GetXML(AssetDirectory.Popups + "FeydenCave.xml"), "SECOND_WAVE");
                 }
                 else if (secondWave)
                 {
@@ -56,6 +57,7 @@ namespace OvermorrowMod.Content.Projectiles
                     thirdWave = true;
 
                     Main.NewText("third wave");
+                    dialoguePlayer.AddNPCPopup(ModContent.NPCType<Feyden>(), ModUtils.GetXML(AssetDirectory.Popups + "FeydenCave.xml"), "MID_WAVE");
                 }
                 else if (thirdWave)
                 {
@@ -94,7 +96,7 @@ namespace OvermorrowMod.Content.Projectiles
         float previousOffset = 999;
         private void SpawnSlimes(bool bigSlime = false)
         {
-            int maxIterations = bigSlime ? 1 : 3;
+            int maxIterations = bigSlime ? 1 : 5;
 
             // Pick random spots to spawn the slimes, staggered by a counter
             if (Projectile.ai[1]++ % 25 == 0 && iterations < maxIterations)
@@ -107,8 +109,9 @@ namespace OvermorrowMod.Content.Projectiles
                 Vector2 position = new Vector2(Projectile.Center.X + randomOffset * 64, (int)Projectile.Center.Y);
                 Vector2 spawnPosition = ModUtils.FindNearestGround(position) * 16;
 
-                int slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.BlueSlime);
+                int slime;
                 if (bigSlime) slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.BlueSlime, 0, 0, ItemID.IronPickaxe);
+                else slime = NPC.NewNPC(null, (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.BlueSlime);
 
                 Player nearestPlayer = ModUtils.GetNearestPlayer(Main.npc[slime]);
 

@@ -1,54 +1,54 @@
 <Popups>
 	<Popup id="INTRO">
-		<Text npcPortrait="Guide" drawTime="90" displayTime="120">Hey, you there! Yeah, you with the weapon. Mind giving me a hand here?</Text>
-		<Text npcPortrait="Guide" drawTime="100" displayTime="120">These slimy critters just won't quit. Thought I could snag some mushrooms for the village, not become slime fodder.</Text>
+		<Text npcPortrait="Feyden" drawTime="90" displayTime="120">Hey, you there! Yeah, you with the weapon. Mind giving me a hand here?</Text>
+		<Text npcPortrait="Feyden" drawTime="100" displayTime="120">These slimy critters just won't quit. Thought I could snag some mushrooms for the village, not become slime fodder.</Text>
+		<Text npcPortrait="Feyden" drawTime="60" displayTime="90">I've got your back, let's get through this mess.</Text>
 	</Popup>
 
-	<Popup id="DAMAGE_SLIME">
-		<Text npcPortrait="Guide" drawTime="75" displayTime="90">I take it you're just passing through, looking for a quick coin or some adventure? Like a wandering hero from those old tales...</Text>
-		<Text npcPortrait="Guide" drawTime="75" displayTime="90">But there's something about the way you fight. It's calculated.</Text>
-		<Text npcPortrait="Guide" drawTime="60" displayTime="110">I somehow feel you've faced worse than slimes.</Text>
-		<Text npcPortrait="Guide" drawTime="60" displayTime="90">I've got your back, let's get through this mess.</Text>
+	<Popup id="SECOND_WAVE">
+		<Text npcPortrait="Feyden" drawTime="75" displayTime="90">I take it you're just passing through, looking for a quick coin or some adventure?</Text>
+		<Text npcPortrait="Feyden" drawTime="75" displayTime="120">Like a wandering hero from those old tales... But there's something about the way you fight. It's calculated.</Text>
+		<Text npcPortrait="Feyden" drawTime="60" displayTime="120">I somehow feel you've faced worse than slimes.</Text>
 	</Popup>
 
 	<Popup id="MID_WAVE">
-		<Text npcPortrait="Guide" drawTime="75" displayTime="90">You're not half bad at this. Not many folks would jump into a slime den without a second thought.</Text>
+		<Text npcPortrait="Feyden" drawTime="75" displayTime="120">You're not half bad at this. Not many folks would jump into a slime den without a second thought.</Text>
 	</Popup>
 
 	<Popup id="BOSS">
-		<Text npcPortrait="Guide" drawTime="75" displayTime="90">Oh, look who's trying to be the king of slimes! Not on my watch!</Text>
+		<Text npcPortrait="Feyden" drawTime="75" displayTime="90">Oh, look who's trying to be the king of slimes! Not on my watch!</Text>
 	</Popup>
 
 	<Popup id="ATTACK_1">
-		<Text npcPortrait="Guide" drawTime="60" displayTime="90">Eat my dust, slimeballs!</Text>
+		<Text npcPortrait="Feyden" drawTime="30" displayTime="90">Eat my dust, slimeballs!</Text>
 	</Popup>
 
 	<Popup id="ATTACK_2">
-		<Text npcPortrait="Guide" drawTime="60" displayTime="90">Down you go!</Text>
+		<Text npcPortrait="Feyden" drawTime="20" displayTime="90">Down you go!</Text>
 	</Popup>
 
 	<Popup id="ATTACK_3">
-		<Text npcPortrait="Guide" drawTime="60" displayTime="90">It's all in the footwork.</Text>
+		<Text npcPortrait="Feyden" drawTime="30" displayTime="90">It's all in the footwork.</Text>
 	</Popup>
 
 	<Popup id="ATTACK_4">
-		<Text npcPortrait="Guide" drawTime="90" displayTime="90">Oh sorry was that your friend? Don't worry, you're next!</Text>
+		<Text npcPortrait="Feyden" drawTime="90" displayTime="90">Oh sorry was that your friend? Don't worry, you're next!</Text>
 	</Popup>
 
 	<Popup id="ATTACK_5">
-		<Text npcPortrait="Guide" drawTime="60" displayTime="90">Slime your way out of this!</Text>
+		<Text npcPortrait="Feyden" drawTime="60" displayTime="90">Slime your way out of this!</Text>
 	</Popup>
 
 	<Popup id="ATTACK_6">
-		<Text npcPortrait="Guide" drawTime="60" displayTime="90">Gooey pest!</Text>
+		<Text npcPortrait="Feyden" drawTime="20" displayTime="90">Gooey pest!</Text>
 	</Popup>
 
 	<Popup id="ATTACK_7">
-		<Text npcPortrait="Guide" drawTime="60" displayTime="90">Dicing slimes like onions in the kitchen!</Text>
+		<Text npcPortrait="Feyden" drawTime="60" displayTime="90">Dicing slimes like onions in the kitchen!</Text>
 	</Popup>
 
 	<Popup id="ATTACK_8">
-		<Text npcPortrait="Guide" drawTime="90" displayTime="90">Nice try, but I've seen scarier jelly at the dessert table!</Text>
+		<Text npcPortrait="Feyden" drawTime="90" displayTime="90">Nice try, but I've seen scarier jelly at the dessert table!</Text>
 	</Popup>
 </Popups>
 
