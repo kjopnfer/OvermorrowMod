@@ -131,6 +131,7 @@ Mods: {
 			AmethystSlicer_Thrown.DisplayName: Amethyst Slicer_ Thrown
 			AmethystSlicer_Shards.DisplayName: Amethyst Slicer_ Shards
 			AmethystCrystal.DisplayName: Amethyst Crystal
+			FeydenCaveHandler.DisplayName: Feyden Cave Handler
 		}
 
 		NPCs: {
@@ -294,6 +295,22 @@ Mods: {
 			Ruin3.DisplayName: Ruin3
 			Spin.DisplayName: Spin
 			BlueThrasher.DisplayName: Blue Thrasher
+			Feyden_Bound.DisplayName: Feyden
+
+			Feyden: {
+				DisplayName: Feyden
+
+				TownNPCMood: {
+					Content: I am content.
+					NoHome: I hate not having a home.
+					FarFromHome: I am too far from home.
+					LoveSpace: I love having so much space.
+					DislikeCrowded: I dislike how crowded I am.
+					HateCrowded: I hate how crowded I am.
+					LikeNPC_Princess: I like {NPCName}.
+					Princess_LovesNPC: I like {NPCName}.
+				}
+			}
 		}
 
 		Items: {
@@ -928,6 +945,11 @@ Mods: {
 			WaterCaveBiome: {
 				DisplayName: Water Cave Biome
 				TownNPCDialogueName: the Water Cave Biome
+			}
+
+			Ravensfell: {
+				DisplayName: Ravensfell
+				TownNPCDialogueName: the Ravensfell
 			}
 		}
 

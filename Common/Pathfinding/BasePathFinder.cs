@@ -70,9 +70,21 @@ namespace OvermorrowMod.Common.Pathfinding
         public HashSet<(int, int)> LocalVisitedState { get; set; }
         public (int X, int Y) EntitySize { get; }
 
+        /// <summary>
+        /// Set the width and height of the entity in tiles
+        /// </summary>
+        /// <param name="width">The width of the entity in tiles</param>
+        /// <param name="height">The height of the entity in tiles</param>
         public PathFinderState(int width, int height)
         {
             EntitySize = (width, height);
+        }
+
+        public void Reset()
+        {
+            CanFitInTile.Clear();
+            CanStandOnTile.Clear();
+            CanFallThroughTile.Clear();
         }
 
         public void Visualize()

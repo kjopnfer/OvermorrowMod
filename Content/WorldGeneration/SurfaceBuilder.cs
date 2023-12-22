@@ -67,7 +67,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             var logger = OvermorrowModFile.Instance.Logger;
 
             // Make the middle spawn area flatter 
-            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4)) weight = 0.7f;
+            float flatDelay = Main.maxTilesX * 0.1f;
+            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4) + flatDelay) weight = 0.7f;
             else weight = 0.6f;
 
             Vector2 tileLocation = new Vector2((int)position.X, (int)position.Y);
@@ -188,7 +189,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             // Push the tunnels downwards so they don't intersect with the spawn
             int yOffset = 65;
-            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4))
+            float flatDelay = Main.maxTilesX * 0.1f;
+            if (position.X >= (Main.maxTilesX / 7 * 3) && position.X <= (Main.maxTilesX / 7 * 4) + flatDelay)
             {
                 // The distance between the flat area of the spawn
                 int totalDistance = (Main.maxTilesX / 7 * 4) - (Main.maxTilesX / 7 * 3);
@@ -224,7 +226,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         public override void OnRunEnd(Vector2 position)
         {
-            if (position.X <= (Main.maxTilesX / 7 * 3) || position.X >= (Main.maxTilesX / 7 * 4))
+            float flatDelay = Main.maxTilesX * 0.1f;
+            if (position.X <= (Main.maxTilesX / 7 * 3) || position.X >= (Main.maxTilesX / 7 * 4) + flatDelay)
             {
                 //if (Main.rand.NextBool(2))
                 {

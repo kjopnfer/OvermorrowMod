@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.VanillaOverrides
 {
-    public abstract class VanillaNPCOverride : GlobalNPC
+    public class VanillaNPCOverride : GlobalNPC
     {
         public override bool InstancePerEntity => true;
         protected Entity target = null;
@@ -18,6 +18,11 @@ namespace OvermorrowMod.Common.VanillaOverrides
         {
             if (target.Center.X < npc.Center.X) npc.direction = -1;
             else npc.direction = 1;
+        }
+
+        public void SetTarget(Entity target)
+        {
+            if (target != null && target.active) this.target = target;
         }
     }
 }

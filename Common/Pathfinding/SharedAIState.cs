@@ -9,5 +9,6 @@ namespace OvermorrowMod.Common.Pathfinding
     public static class SharedAIState
     {
         public static PathFinderState State2x2 { get; } = new PathFinderState(2, 2);
+        public static PathFinderState State1x2 { get; } = new PathFinderState(1, 2);
     }
 }

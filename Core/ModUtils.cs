@@ -36,6 +36,12 @@ namespace OvermorrowMod.Core
             }
         }
 
+        private static bool CanStandOn(int x, int y)
+        {
+            var tile = Main.tile[x, y];
+            return tile.HasTile && (Main.tileSolid[tile.TileType] || Main.tileSolidTop[tile.TileType]);
+        }
+
         public static bool CheckKeyPress()
         {
             if (Main.keyState.IsKeyDown(Keys.Q) || Main.keyState.IsKeyDown(Keys.W) || Main.keyState.IsKeyDown(Keys.E) || Main.keyState.IsKeyDown(Keys.R) ||
@@ -120,6 +126,27 @@ namespace OvermorrowMod.Core
             return item.GetGlobalItem<GlobalGun>().GunType;
         }
 
+        // Adapted from Mod of Redemption, I don't know what that distance is supposed to be.
+        /// <summary>
+        /// Gets the nearest player. Defaults to the first player in the Main.player array.
+        /// </summary>
+        /// <param name="entity">The entity to compare to</param>
+        public static Player GetNearestPlayer(this Entity entity)
+        {
+            float nearestPlayerDist = 4815162342f;
+            Player nearestPlayer = Main.player[0];
+
+            foreach (Player player in Main.player)
+            {
+                if (!(player.Distance(entity.Center) < nearestPlayerDist) || !player.active) continue;
+
+                nearestPlayerDist = player.Distance(entity.Center);
+                nearestPlayer = player;
+            }
+
+            return nearestPlayer;
+        }
+
         public static NPC FindClosestNPC(this Projectile projectile, float maxDetectDistance, NPC ignoreNPC = null)
         {
             NPC closestNPC = null;
@@ -155,7 +182,6 @@ namespace OvermorrowMod.Core
 
             return closestNPC;
         }
-
 
         public static void PlaceTilePile<T, TE>(int x, int y) where T : ModTilePile<TE> where TE : BaseTilePile
         {
@@ -455,7 +481,26 @@ namespace OvermorrowMod.Core
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
 
-        
+        /// <summary>
+        /// Gets the nearest solid ground tile given a starting position. Set convert to tile to true only if the initial 
+        /// input is via world coordinates and not tile coordinates (i.e., used during world generation)
+        /// </summary>
+        /// <param name="startPosition">Initial position to start looping downwards from</param>
+        /// <param name="convertToTile">Whether to divide the input by 16</param>
+        /// <returns></returns>
+        public static Vector2 FindNearestGround(Vector2 startPosition, bool convertToTile = true)
+        {
+            Vector2 position = startPosition;
+            if (convertToTile) position /= 16;
+            Tile tile = Framing.GetTileSafely((int)position.X, (int)position.Y);
+            while (!tile.HasTile || tile.TileType == TileID.Trees || !Main.tileSolid[tile.TileType])
+            {
+                position.Y += 1;
+                tile = Framing.GetTileSafely((int)position.X, (int)position.Y);
+            }
+
+            return position;
+        }
 
         /// <summary>
         /// Modified version of Player.Hurt, which ignores defense.

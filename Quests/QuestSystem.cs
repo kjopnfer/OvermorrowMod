@@ -79,7 +79,7 @@ namespace OvermorrowMod.Quests
                 PlayerInput.SetZoom_UI();
                 var uiScale = Main.UIScale;
 
-                var labelPosition = FontAssets.MouseText.Value.MeasureString(requirement.ID);
+                var labelPosition = FontAssets.MouseText.Value.MeasureString(requirement.displayName);
                 var labelPositionYNegative = 0f;
                 if (Main.LocalPlayer.chatOverhead.timeLeft > 0)
                 {
@@ -87,7 +87,7 @@ namespace OvermorrowMod.Quests
                 }
 
                 var screenCenter = new Vector2(screenWidth / 2 + screenPosition.X, screenHeight / 2 + screenPosition.Y);
-                var travelPosition = requirement.Location * 16f;
+                var travelPosition = requirement.Location;
                 travelPosition += (travelPosition - screenCenter) * (Main.GameViewMatrix.Zoom - Vector2.One);
 
                 var distance2 = 0f;
@@ -127,7 +127,7 @@ namespace OvermorrowMod.Quests
                 }
 
                 labelPosition *= 1f / uiScale;
-                var LabelPosition2 = FontAssets.MouseText.Value.MeasureString(requirement.ID);
+                var LabelPosition2 = FontAssets.MouseText.Value.MeasureString(requirement.displayName);
                 labelPosition += LabelPosition2 * (1f - uiScale) / 4f;
                 if (distance2 > 0f)
                 {
@@ -147,13 +147,17 @@ namespace OvermorrowMod.Quests
                 }
 
                 // Draw the black outline around the text for the location
-                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X - 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X + 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X, labelPosition.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X, labelPosition.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.displayName, new Vector2(labelPosition.X - 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.displayName, new Vector2(labelPosition.X + 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.displayName, new Vector2(labelPosition.X, labelPosition.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.displayName, new Vector2(labelPosition.X, labelPosition.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
 
                 // Draw the actual text for the location
-                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, labelPosition, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.displayName, labelPosition, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+
+                Texture2D arrow = ModContent.Request<Texture2D>(AssetDirectory.UI + "DirectionArrow").Value;
+                float rotation = modPlayer.Player.DirectionTo(travelPosition).ToRotation() + MathHelper.PiOver2;
+                Main.spriteBatch.Draw(arrow, labelPosition + new Vector2(arrow.Width + 6, 32), null, Color.White, rotation, arrow.Size() / 2f, 1f, SpriteEffects.None, 0);
             }
         }
     }

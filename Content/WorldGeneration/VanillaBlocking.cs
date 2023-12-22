@@ -45,12 +45,28 @@ namespace OvermorrowMod.Content.WorldGeneration
                 //tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain", TestGenerateTerrain));
             }
 
+            // Re-add Vanilla Passes that have been modified
+            int TunnelIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tunnels"));
+            if (TunnelIndex != -1)
+            {
+                tasks.Insert(TunnelIndex + 1, new PassLegacy("Mountains", MountainGeneration.GenerateMountains));
+            }
+
+            int SlushIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Slush"));
+            if (SlushIndex != -1)
+            {
+                tasks.Insert(SlushIndex + 1, new PassLegacy("Mountain Tunnels", MountainGeneration.GenerateMountainCaves));
+            }
+
+
             //RemovePass(tasks, "Terrain");
 
             //RemovePass(tasks, "Tunnels");
-            //RemovePass(tasks, "Mount Caves");
+            RemovePass(tasks, "Mount Caves"); 
+            RemovePass(tasks, "Mountain Caves");
+
             RemovePass(tasks, "Small Holes");
-            //RemovePass(tasks, "Surface Caves");
+            RemovePass(tasks, "Surface Caves");
             //RemovePass(tasks, "Dirt Layer Caves");
 
             //RemovePass(tasks, "Rock Layer Caves");

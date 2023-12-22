@@ -23,6 +23,7 @@ using static OvermorrowMod.Content.NPCs.Mercenary.Paladin.Paladin;
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.TilePiles;
 using OvermorrowMod.Common.Configs;
+using OvermorrowMod.Content.Skies;
 
 namespace OvermorrowMod.Common
 {
@@ -49,6 +50,7 @@ namespace OvermorrowMod.Common
         public Asset<Effect> ContainedFlash;
         public Asset<Effect> Dissolve;
         public Asset<Effect> Flash;
+        public Asset<Effect> ImageLerp;
         public Asset<Effect> RadialBlur;
         public Asset<Effect> Ring;
         public Asset<Effect> Shockwave;
@@ -146,6 +148,10 @@ namespace OvermorrowMod.Common
 
             if (!Main.dedServ)
             {
+                // Activate this with ManageSpecialBiomeVisuals probably... 
+                //Filters.Scene["OM:RavensfellSky"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(0.2f, 0f, 0.3f).UseOpacity(0.5f), EffectPriority.Medium);
+                SkyManager.Instance["OM:RavensfellSky"] = new RavensfellSky();
+
                 lastScreenSize = new Vector2(Main.screenWidth, Main.screenHeight);
                 lastViewSize = Main.ViewSize;
                 lastViewPort = Main.graphics.GraphicsDevice.Viewport;
@@ -159,6 +165,7 @@ namespace OvermorrowMod.Common
                 ContainedFlash = Assets.Request<Effect>("Effects/ContainedFlash");
                 Dissolve = Assets.Request<Effect>("Effects/Dissolve");
                 Flash = Assets.Request<Effect>("Effects/Flash");
+                ImageLerp = Assets.Request<Effect>("Effects/ImageLerp");
                 Ring = Assets.Request<Effect>("Effects/Ring");
                 Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
                 Shockwave2 = Assets.Request<Effect>("Effects/ShockwaveEffect");
@@ -239,6 +246,7 @@ namespace OvermorrowMod.Common
             BeamShader = null;
             Dissolve = null;
             Flash = null;
+            ImageLerp = null;
             RadialBlur = null;
             Ring = null;
             Shockwave = null;

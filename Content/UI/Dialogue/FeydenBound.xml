@@ -1,0 +1,33 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text portrait="Guide" time="60">wow holy shit i thought i was gonna die</Text>
+			<Text portrait="Guide" time="60">how convenient of u to show up at this exact time</Text>
+		</Dialogue>
+		<Options>
+			<Option link="chat_1">who the fuck are u, identify yourself.</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="chat_1">
+		<Dialogue>
+			<Text portrait="Guide" time="60">the names feyden, im cool asf boi dont u forget it</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" action="feyden_trigger">ok nerd</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="chat_2">
+		<Dialogue>
+			<Text portrait="Guide" time="60">the names feyden, im cool asf boi dont u forget it</Text>
+			<Text portrait="Guide" time="60">i was headin around lookin for some loot when this big ass boar came outta nowhere</Text>
+			<Text portrait="Guide" time="60">mean lookin mf, biggest one ive ever seen. chased me all the way down here this here hole</Text>
+			<Text portrait="Guide" time="60">i thought i was safe but then i couldnt get out, before i knew i got captured by slimes.</Text>
+			<Text portrait="Guide" time="30">speaking of which, we better get outta here before...</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" action="feyden_trigger">before wut</Option>
+		</Options>
+	</DialogueNode>
+</Dialogue>
