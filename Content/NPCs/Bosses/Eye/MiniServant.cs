@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using Terraria;
@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Drainer of Cthulhu");
+            // DisplayName.SetDefault("Drainer of Cthulhu");
             Main.npcFrameCount[NPC.type] = 2;
 
             NPCID.Sets.TrailCacheLength[NPC.type] = 100;
@@ -151,11 +151,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         particles.Add(0f);
 
-                        /*if (parentNPC.active && parentNPC.type == NPCID.EyeofCthulhu)
-                        {
-                            parentNPC.HealEffect(10);
-                            parentNPC.life += 10;
-                        }*/
+                        //if (parentNPC.active && parentNPC.type == NPCID.EyeofCthulhu)
+                        //{
+                        //    parentNPC.HealEffect(10);
+                        //    parentNPC.life += 10;
+                        //}
 
                     }
                     else if (HealCounter % 240 == 180) // and after a second has passed( particle has touched eoc)
@@ -196,7 +196,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (latchCounter > 0 && AICounter++ % 3 == 0) latchCounter -= Main.rand.Next(1, 3);
                     if (latchCounter < 0) latchCounter = 0;
 
-                    //Main.NewText(latchCounter);
                     if (latchCounter >= 25 || player.wet || player.HasBuff(BuffID.OnFire) || latchPlayer.statLife <= 0)
                     {
                         NPC.velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 8;
@@ -309,4 +308,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
         }
     }
-}
+}*/

@@ -35,6 +35,17 @@ namespace OvermorrowMod.Quests
             Quests.State.AddQuest(this, quest);
         }
 
+        /// <summary>
+        /// Checks whether the player has completed the given quest before
+        /// </summary>
+        /// <typeparam name="ModQuest"></typeparam>
+        /// <returns></returns>
+        public bool HasCompletedQuest<ModQuest>() where ModQuest : BaseQuest
+        {
+            var completedQuests = Quests.State.GetPerPlayerQuests(this).Where(q => q.Quest is ModQuest).Where(q => q.Completed);
+            return completedQuests.Count() > 0;
+        }
+
         public BaseQuestState QuestByNPC(int npcId)
         {
             return CurrentQuests.FirstOrDefault(q => npcId == q.Quest.QuestGiver);
@@ -52,6 +63,21 @@ namespace OvermorrowMod.Quests
             quest.Quest.CompleteQuest(Player, true);
         }
 
+        /// <summary>
+        /// For choose your own reward type turn-ins
+        /// </summary>
+        public void CompleteQuest(string questId, string rewardIndex)
+        {
+            var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
+            // Should not happen!
+            if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
+            // Send message to server if the quest is being completed for the current player
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == Player)
+                NetworkMessageHandler.Quests.CompleteQuest(-1, -1, questId);
+
+            quest.Quest.CompleteQuest(Player, true, rewardIndex);
+        }
+
         public void TickQuestRequirements(string questId)
         {
             var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
@@ -65,11 +91,17 @@ namespace OvermorrowMod.Quests
         {
             tag["questStates"] = Quests.State.GetPerPlayerQuests(this).ToList();
             tag["PlayerUUID"] = PlayerUUID;
+            //tag["grabbedAxe"] = grabbedAxe;
+            //tag["showCampfireArrow"] = showCampfireArrow;
+
             base.SaveData(tag);
         }
 
         public override void LoadData(TagCompound tag)
         {
+            grabbedAxe = tag.GetBool("grabbedAxe");
+            showCampfireArrow = tag.GetBool("showCampfireArrow");
+
             PlayerUUID = tag.GetString("PlayerUUID");
             if (PlayerUUID == null) PlayerUUID = Guid.NewGuid().ToString();
 
@@ -84,6 +116,7 @@ namespace OvermorrowMod.Quests
             AutoCompleteRequirements();
         }
 
+        // TODO: Why did I write it like this, uncringe this
         /// <summary>
         /// Determines whether the player has an active Quest of the specified name.
         /// <para>Based off of the internal class name for the Quest.</para>

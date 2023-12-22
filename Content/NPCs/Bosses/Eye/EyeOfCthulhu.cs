@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.Graphics.Effects;
 using OvermorrowMod.Content.Buffs.Debuffs;
@@ -144,40 +144,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             //float progress = MathHelper.Lerp(0, 0.1f, (float)Math.Sin(npc.localAI[2]++ / 60f) / 2 + 0.5f);
             //float progress = MathHelper.Lerp(-0.066f, -0.106f, (float)Math.Sin(npc.localAI[2]++ / 30f));
 
-            #region commented out shit
-            /*if (Main.netMode != NetmodeID.Server)
-            {
-                if (!Filters.Scene["Flash"].IsActive())
-                {
-                    Filters.Scene.Activate("Flash");
-                }
-
-                if (Filters.Scene["Flash"].IsActive())
-                {
-                    Filters.Scene["Flash"].GetShader().UseTargetPosition(npc.Center);
-                    Filters.Scene["Flash"].GetShader().UseIntensity(progress);
-                }
-            }*/
-
-
-            /*if (npc.life <= npc.lifeMax * 0.5f && !TransitionPhase)
-            {
-                npc.dontTakeDamage = true;
-                npc.velocity = Vector2.Zero;
-                npc.ai[0] = (float)AIStates.Transition;
-
-                if (npc.ai[3] < 1f)
-                {
-                    npc.ai[3] += 0.05f;
-                }
-                else
-                {
-                    TransitionPhase = true;
-                    npc.ai[1] = 0;
-                    npc.ai[2] = 0;
-                }
-            }*/
-
 
             if (Main.netMode != NetmodeID.Server)
             {
@@ -215,7 +181,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
                 }
             }
-            #endregion
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;
 
@@ -335,30 +300,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                         }
                         
-
-                        /*foreach (NPC minions in Main.npc)
-                        {
-                            if (minions.type != NPCID.ServantofCthulhu && minions.type != ModContent.NPCType<MiniServant>() && !minions.active) continue;
-
-                            if (minions.type == NPCID.ServantofCthulhu && minions.active)
-                            {
-                                ServantOfCthulhu servant = minions.GetGlobalNPC<ServantOfCthulhu>();
-                                // Forces all servants to dash at the player
-                                if (!servant.BossDash)
-                                {
-                                    servant.BossDash = true;
-                                    servant.BossDelay = Main.rand.Next(0, 7) * 10;
-                                }
-                            }
-                            else
-                            {
-                                if (!((MiniServant)minions.ModNPC).shadowForm && minions.ai[0] != 1)
-                                {
-                                    ((MiniServant)minions.ModNPC).shadowForm = true;
-                                    ((MiniServant)minions.ModNPC).shadowCounter = Main.rand.Next(5, 8) * 60;
-                                }
-                            }
-                        }*/
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
                         npc.ai[0] = (float)AIStates.Selector;
                         npc.ai[1] = 0;
@@ -465,4 +406,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
     }
-}
+}*/

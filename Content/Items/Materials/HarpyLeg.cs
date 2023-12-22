@@ -7,8 +7,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Harpy Leg");
-            Tooltip.SetDefault("'dude what'");
+            // DisplayName.SetDefault("Harpy Leg");
+            // Tooltip.SetDefault("'dude what'");
         }
 
         public override void SetDefaults()

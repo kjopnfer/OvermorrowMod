@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Buffs.Pets
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Atomic Heart");
-            Description.SetDefault("'Atomguy? Atomgirl? She's cute either way!'");
+            // DisplayName.SetDefault("Atomic Heart");
+            // Description.SetDefault("'Atomguy? Atomgirl? She's cute either way!'");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
             Main.lightPet[Type] = true;

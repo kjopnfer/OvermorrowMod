@@ -9,11 +9,11 @@ namespace OvermorrowMod.Content.Items.Accessories.PracticeTarget
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Practice Target");
-            Tooltip.SetDefault("For every consecutive arrow that hits a target, bow draw speed increases by 5%\n" +
-                "Draw speed bonus stacks up to a maximum of 20%\n" +
+            // DisplayName.SetDefault("Practice Target");
+            /* Tooltip.SetDefault("For every consecutive {Type:Arrow} that hits a target, bow draw speed increases by {Increase:5%}\n" +
+                "Draw speed bonus stacks up to a maximum of {Increase:20%}\n" +
                 "On missed shot, reset draw speed bonus\n" +
-                "'Huh, I guess they never miss.'");
+                "'Huh, I guess they never miss.'"); */
         }
 
         public override void SetDefaults()

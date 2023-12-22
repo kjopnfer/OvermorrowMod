@@ -109,8 +109,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public void ActivateNextChain(int projectileID)
         {
-            //Main.NewText(ShardID + " attempting to arm to " + projectileID);
-
             for (int i = 0; i < 18; i++)
             {
                 float randomScale = Main.rand.NextFloat(0.25f, 0.35f);

@@ -67,30 +67,16 @@ namespace OvermorrowMod.Common.VanillaOverrides
             }
         }
 
-        /// <summary>
-        /// Determines whether or not the item is equipped in vanity based on if the 'Social' tooltip is displayed
-        /// </summary>
-        private bool CheckInVanity(List<TooltipLine> tooltips)
-        {
-            for (int lines = 0; lines < tooltips.Count; lines++)
-            {
-                if (tooltips[lines].Name == "Social") return true;
-            }
-
-            return false;
-        }
-
-
         public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
         {
-            //if (player.CheckArmorEquipped(ItemID.CowboyHat)) Main.NewText("a" + player.armor[0].ToString());
         }
 
         public override void ModifyWeaponCrit(Item item, Player player, ref float crit)
         {
             if (player.CheckArmorEquipped(ItemID.CowboyJacket) && item.DamageType == DamageClass.Ranged)
             {
-                if (item.GetWeaponType() == GunType.Revolver)
+                //if (item.GetWeaponType() == GunType.Revolver)
+                if (item.IsWeaponType(WeaponID.Revolver))
                     crit += 10f;
                 else
                     crit += 5f;
@@ -99,25 +85,11 @@ namespace OvermorrowMod.Common.VanillaOverrides
 
         public override void ModifyWeaponKnockback(Item item, Player player, ref StatModifier knockback)
         {
-            //Main.NewText("i" + player.armor[2].ToString());
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            if (CheckInVanity(tooltips)) return;
-
-            switch (item.type)
-            {
-                case ItemID.CowboyHat:
-                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike damage by 5%"));
-                    break;
-                case ItemID.CowboyJacket:
-                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike chance by 5%\nRevolvers gain an additional 5% critical strike chance"));
-                    break;
-                case ItemID.CowboyPants:
-                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased movement speed by 10%"));
-                    break;
-            }
+            
         }
     }
 }

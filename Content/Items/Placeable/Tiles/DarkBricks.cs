@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Tiles
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dark Bricks");
+            // DisplayName.SetDefault("Dark Bricks");
         }
 
         public override void SetDefaults()

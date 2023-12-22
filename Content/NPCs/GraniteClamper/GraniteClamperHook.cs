@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Granite Clamper");
+            // DisplayName.SetDefault("Granite Clamper");
             Main.projFrames[base.Projectile.type] = 2;
         }
 

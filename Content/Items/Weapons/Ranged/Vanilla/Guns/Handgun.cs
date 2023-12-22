@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
     {
         public override string Texture => AssetDirectory.Resprites + "Handgun";
         public override int ParentItem => Terraria.ID.ItemID.Handgun;
-        public override GunType GunType => GunType.Pistol;
+        public override GunType GunType => GunType.Handgun;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(10, 20), new Vector2(-10, -10));
@@ -47,8 +47,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
             if (shootCounter > 3)
             {
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Reload(BlendState.Additive);
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
 
@@ -59,8 +58,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
                 spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
                 spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
 
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
             }
         }
 

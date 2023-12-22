@@ -2,30 +2,26 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Xml;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ModLoader;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
     public class Dialogue
     {
-        public Texture2D speakerBody;
-
         public string displayText;
         public int drawTime;
 
-        public string bracketColor;
         public XmlDocument xmlDoc;
 
         private XmlNodeList textList;
 
         private int textIterator = 0;
 
-        public Dialogue(Texture2D speakerBody, string displayText, int drawTime, string bracketColor, XmlDocument xmlDoc)
+        public Dialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
-            this.speakerBody = speakerBody;
             this.displayText = displayText;
             this.drawTime = drawTime;
-
-            this.bracketColor = bracketColor;
             this.xmlDoc = xmlDoc;
 
             UpdateList("start");
@@ -90,13 +86,19 @@ namespace OvermorrowMod.Common.Cutscenes
                 drawTime = int.Parse(value);
             }
 
-            if (node.Attributes["color"] != null)
+            return node.InnerText;
+        }
+
+        public Texture2D GetPortrait()
+        {
+            XmlNode node = textList[textIterator];
+            if (node.Attributes["portrait"] != null)
             {
-                string value = node.Attributes["color"].Value;
-                bracketColor = value;
+                string textureName = node.Attributes["portrait"].Value;
+                return ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/" + textureName).Value;
             }
 
-            return node.InnerText;
+            return null;
         }
 
         public List<OptionButton> GetOptions(string id)
@@ -122,44 +124,32 @@ namespace OvermorrowMod.Common.Cutscenes
 
                         // click on button, open shop, exit dialogue
 
+                        var icon = option.Attributes["icon"] == null ? "chat" : option.Attributes["icon"].Value;
 
                         if (option.Attributes["action"] != null)
                         {
+                            OptionButton button = new OptionButton(icon, option.InnerText, option.Attributes["link"].Value, option.Attributes["action"].Value);
+
                             switch (option.Attributes["action"].Value)
                             {
-                                case "item":
-                                    if (option.Attributes["item-type"].Value != null)
-                                    {
-                                        var itemID = option.Attributes["item-type"].Value;
-                                        var isNumber = int.TryParse(itemID, out _);
-
-                                        int itemStack = option.Attributes["item-stack"] != null ? int.Parse(option.Attributes["item-stack"].Value) : 1;
-
-                                        if (isNumber) // The string could be parsed as a number, therefore it's vanilla.
-                                        {
-                                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, int.Parse(itemID), itemStack));
-                                        }
-                                        else // Otherwise, it's modded so don't parse.
-                                        {
-                                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, itemID, itemStack));
-                                        }
-                                    }
-                                    break;
                                 case "marker":
                                     if (option.Attributes["marker-type"].Value != "null")
                                     {
 
                                     }
                                     break;
-                                default:
-                                    optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, option.Attributes["action"].Value));
+                                case "quest_complete":
+                                    if (option.Attributes["rewardIndex"] != null)
+                                        button.rewardIndex = option.Attributes["rewardIndex"].Value;
                                     break;
                             }
+
+                            optionButtons.Add(button);
                         }
                         else if (option.Attributes["link"] != null)
                         {
-                            Main.NewText(option.Attributes["link"].Value);
-                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, "none"));
+                            //Main.NewText(icon + " / " + option.Attributes["link"].Value);
+                            optionButtons.Add(new OptionButton(icon, option.InnerText, option.Attributes["link"].Value, "none"));
                         }
                     }
                 }
@@ -177,7 +167,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (node.Attributes["flag"] != null)
                 {
                     Main.LocalPlayer.GetModPlayer<DialoguePlayer>().DialogueFlags.Add(node.Attributes["flag"].Value);
-                    //Main.NewText(node.Attributes["flag"].Value);
                 }
 
                 if (node.Attributes["id"].Value == id) return node;

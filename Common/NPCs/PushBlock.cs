@@ -1,10 +1,10 @@
-namespace OvermorrowMod.Common.NPCs
+/*namespace OvermorrowMod.Common.NPCs
 {
     public class PushBlock : PushableNPC
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("A");
+            // DisplayName.SetDefault("A");
         }
 
         public override void SetDefaults()
@@ -21,3 +21,4 @@ namespace OvermorrowMod.Common.NPCs
         }
     }
 }
+*/

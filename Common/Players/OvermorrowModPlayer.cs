@@ -6,6 +6,14 @@ using System.Collections.Generic;
 using Terraria.ID;
 using Terraria.GameInput;
 using Terraria.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
+using OvermorrowMod.Core;
+using ReLogic.Content;
+using OvermorrowMod.Content.Items.Weapons.Ranged;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Content.Items.Misc;
+using OvermorrowMod.Content.Items;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -14,10 +22,13 @@ namespace OvermorrowMod.Common.Players
         // All accessory booleans are ordered alphabetically
         #region Accessories
         public bool BearTrap;
+        public bool CapturedMirage;
         public bool EruditeDamage;
+        public bool GuideLantern;
         public bool ImbuementPouch;
         public bool SerpentTooth;
         public bool SickeningSnack;
+        public bool SimpleScabbard;
         public bool SnakeBite;
         public bool PracticeTarget;
         public bool PredatorTalisman;
@@ -33,6 +44,7 @@ namespace OvermorrowMod.Common.Players
         public int BearTrapCounter = 0;
 
         #endregion
+        
         public bool atomBuff;
         public bool smolBoi;
 
@@ -42,13 +54,18 @@ namespace OvermorrowMod.Common.Players
 
         public int PlatformTimer = 0;
 
+        public int NotInCombatDelay = 320;
+        public bool IsInCombat { get { return NotInCombatDelay != 320; } }
         public override void ResetEffects()
         {
             BearTrap = false;
+            CapturedMirage = false;
             EruditeDamage = false;
+            GuideLantern = false;
             ImbuementPouch = false;
             SerpentTooth = false;
             SickeningSnack = false;
+            SimpleScabbard = false;
             SnakeBite = false;
             PracticeTarget = false;
             PredatorTalisman = false;
@@ -57,31 +74,50 @@ namespace OvermorrowMod.Common.Players
             smolBoi = false;
         }
 
+        public override void UpdateLifeRegen()
+        {
+            //Player.lifeRegenTime = 300;
+            //Player.GetModPlayer<OvermorrowModPlayer>().natur
+            //Main.NewText("RT: " + Player.lifeRegenTime + " / RC:"  + Player.lifeRegenCount +  " / R: " + Player.lifeRegen);
+            base.UpdateLifeRegen();
+        }
+
+        public override IEnumerable<Item> AddStartingItems(bool mediumCoreDeath)
+        {
+            return new[] {
+                new Item(ModContent.ItemType<ModBook>()),
+                new Item(ModContent.ItemType<TesterBag>()),
+            };
+        }
+
         public override void ModifyStartingInventory(IReadOnlyDictionary<string, List<Item>> itemsByMod, bool mediumCoreDeath)
         {
             foreach (var list in itemsByMod)
             {
-                list.Value.Clear();
+                if (list.Key != "OvermorrowMod")
+                    list.Value.Clear();
             }
         }
 
         // Example of how to replace cursor texture to remember for later
         public override void PostUpdateMiscEffects()
         {
-            /*if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
+            if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
             {
-                Asset<Texture2D> emptyTex = ModContent.Request<Texture2D>(AssetDirectory.Empty);
+                Asset<Texture2D> emptyTexture = ModContent.Request<Texture2D>(AssetDirectory.Empty);
                 Asset<Texture2D> cursor0 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_0");
                 Asset<Texture2D> cursor1 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_1");
                 Asset<Texture2D> cursor11 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_11");
                 Asset<Texture2D> cursor12 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_12");
 
-                if (OvermorrowModSystem.Instance.ScreenColor.IsVisible())
+
+                if (Player.HeldItem.type == ModContent.ItemType<Farlander>() && Main.mouseRight &&
+                    Player.ownedProjectileCounts[ModContent.ProjectileType<Farlander_Scope>()] > 0)
                 {
-                    TextureAssets.Cursors[0] = emptyTex;
-                    TextureAssets.Cursors[1] = emptyTex;
-                    TextureAssets.Cursors[11] = emptyTex;
-                    TextureAssets.Cursors[12] = emptyTex;
+                    TextureAssets.Cursors[0] = emptyTexture;
+                    TextureAssets.Cursors[1] = emptyTexture;
+                    TextureAssets.Cursors[11] = emptyTexture;
+                    TextureAssets.Cursors[12] = emptyTexture;
                 }
                 else
                 {
@@ -90,45 +126,10 @@ namespace OvermorrowMod.Common.Players
                     TextureAssets.Cursors[11] = cursor11;
                     TextureAssets.Cursors[12] = cursor12;
                 }
-            }*/
-        }
-
-        private int FindFlaskBuff()
-        {
-            for (int i = 0; i < Player.buffType.Length; i++)
-            {
-                switch (Player.buffType[i])
-                {
-                    case BuffID.WeaponImbueCursedFlames:
-                        return BuffID.CursedInferno;
-                    case BuffID.WeaponImbueFire:
-                        return BuffID.OnFire;
-                    case BuffID.WeaponImbueGold:
-                        return BuffID.Midas;
-                    case BuffID.WeaponImbueIchor:
-                        return BuffID.Ichor;
-                    case BuffID.WeaponImbueNanites:
-                        return BuffID.Confused;
-                    case BuffID.WeaponImbuePoison:
-                        return BuffID.Poisoned;
-                    case BuffID.WeaponImbueVenom:
-                        return BuffID.Venom;
-                }
-            }
-
-            return -1;
-        }
-
-        private void ApplyFlaskBuffs(NPC target)
-        {
-            int buffID = FindFlaskBuff();
-            if (buffID != -1)
-            {
-                target.AddBuff(buffID, 360);
             }
         }
 
-        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Item, consider using OnHitNPC instead */
         {
             if (SnakeBite)
             {
@@ -149,7 +150,7 @@ namespace OvermorrowMod.Common.Players
         }
 
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (proj.DamageType == DamageClass.Ranged)
             {
@@ -164,7 +165,7 @@ namespace OvermorrowMod.Common.Players
                     if (Main.rand.NextBool(3)) target.AddBuff(ModContent.BuffType<FungalInfection>(), 180);
                 }
 
-                if (BearTrap && damage >= 70)
+                if (BearTrap && damageDone >= 70)
                 {
                     if (BearTrapCounter < 3)
                     {
@@ -179,9 +180,24 @@ namespace OvermorrowMod.Common.Players
             if (ImbuementPouch) ApplyFlaskBuffs(target);
         }
 
-        public override void OnHitByProjectile(Projectile proj, int damage, bool crit)
+        public override void OnHitAnything(float x, float y, Entity victim)
         {
+            NotInCombatDelay = 0;
+        }
 
+        public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
+        {
+            NotInCombatDelay = 0;
+        }
+
+        public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
+        {
+            NotInCombatDelay = 0;
+        }
+
+        public override void OnHurt(Player.HurtInfo info)
+        {
+            base.OnHurt(info);
         }
 
         public override void PreUpdate()
@@ -210,28 +226,12 @@ namespace OvermorrowMod.Common.Players
         {
             if (OvermorrowModFile.BearTrapKey.JustPressed && BearTrap && BearTrapCounter > 0 && CheckOnGround())
             {
-                Main.NewText(CheckOnGround());
                 BearTrapCounter--;
 
                 Projectile.NewProjectile(new EntitySource_Misc("PlayerTrap"), Player.Center, Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.BearTrap.PlacedBearTrap>(), 0, 0f, Player.whoAmI, 0f);
-
-                //Main.NewText("pressed bear trap");
             }
 
             base.ProcessTriggers(triggersSet);
-        }
-
-        private bool IsInRange(Vector2 coordinates)
-        {
-            float distance = Vector2.Distance(coordinates, Player.Center);
-            if (distance <= 80)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

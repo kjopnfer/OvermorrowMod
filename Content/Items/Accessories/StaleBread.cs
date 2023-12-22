@@ -8,8 +8,8 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Stale Bread");
-            Tooltip.SetDefault("Increases max life by 10");
+            // DisplayName.SetDefault("Stale Bread");
+            // Tooltip.SetDefault("Increases max life by {Increase:10}");
         }
 
         public override void SetDefaults()

@@ -1,5 +1,6 @@
 using OvermorrowMod.Common.TilePiles;
 using OvermorrowMod.Content.Items.Accessories;
+using OvermorrowMod.Content.Items.Consumable;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,10 +16,10 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp.TileObjects
             HitSound = SoundID.Dig;
             DeathSound = SoundID.Dig;
             GrabSound = SoundID.Dig;
-            ItemID = Terraria.ID.ItemID.WoodenArrow;
+            ItemID = ModContent.ItemType<GuideBag>();
             Durability = 160;
-            MinStack = 20;
-            MaxStack = 30;
+            MinStack = 1;
+            MaxStack = 1;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Inkwell");
+            // DisplayName.SetDefault("Inkwell");
         }
 
         public override void SetDefaults()

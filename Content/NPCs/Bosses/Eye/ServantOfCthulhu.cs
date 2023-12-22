@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using Terraria;
@@ -132,10 +132,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             npc.ai[0]++;
                         }
 
-                        /*if (npc.ai[3] < 630)
-                        {
-                            npc.ai[3]++;
-                        }*/
+                        
                         if (npc.ai[3]++ == 660)
                         {
                             npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[480] + TrailOffset;
@@ -157,7 +154,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 if (npc.alpha > 0 && !ExitFade && !EntranceFade) npc.alpha -= 10;
                             }
 
-                            if (npc.alpha == 0 /*&& npc.ai[0] == 120*/)
+                            if (npc.alpha == 0)
                             {
                                 npc.ai[1] = 0;
                             }
@@ -218,19 +215,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.TargetClosest(true);
                     Player player = Main.player[npc.target];
 
-                    /*foreach (NPC boss in Main.npc)
-                    {
-                        if (!boss.active || boss.type != NPCID.EyeofCthulhu) continue;
-
-                        if (npc.Hitbox.Intersects(boss.Hitbox))
-                        {
-                            boss.HealEffect(npc.life);
-                            boss.life += npc.life;
-
-                            npc.HitEffect(0, npc.damage);
-                            npc.Kill();
-                        }
-                    }*/
 
 
                     //npc.ai[1]++;
@@ -483,4 +467,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
     }
-}
+}*/

@@ -26,8 +26,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tri-Verutums");
-            Tooltip.SetDefault("Summons three magical Verutums to aid you in combat");
+            // DisplayName.SetDefault("Tri-Verutums");
+            // Tooltip.SetDefault("Summons three magical Verutums to aid you in combat");
         }
 
         public override void SetDefaults()

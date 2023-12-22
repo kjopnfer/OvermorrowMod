@@ -7,12 +7,6 @@ namespace OvermorrowMod.Content.Items.Accessories
 {
     public class ImbuementPouch : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Imbuement Pouch");
-            Tooltip.SetDefault("Flask buffs apply to ALL your projectiles");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 32;

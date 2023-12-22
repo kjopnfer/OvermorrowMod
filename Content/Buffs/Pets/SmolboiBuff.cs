@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Buffs.Pets
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lil' Rune Merchant");
-            Description.SetDefault("Here to bring you happiness");
+            // DisplayName.SetDefault("Lil' Rune Merchant");
+            // Description.SetDefault("Here to bring you happiness");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
             Main.vanityPet[Type] = true;

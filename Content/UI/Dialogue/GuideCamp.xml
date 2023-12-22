@@ -1,0 +1,70 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text portrait="GuideWave" time="60">Came across you unconscious so I took care of you for a bit, no big deal.</Text>
+			<Text portrait="Guide" time="60">RIP, looks like my fire got put out, wanna help me start it again?</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" icon="quest" action="quest">Fine.</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="quest_hint">
+		<Dialogue>
+			<Text portrait="Guide" time="30">Have you gotten those torches yet?</Text>
+			<Text portrait="Guide" time="40">The campfire is right here when you're ready.</Text>
+		</Dialogue>
+	</DialogueNode>
+
+	<DialogueNode id="quest_complete">
+		<Dialogue>
+			<Text portrait="Guide" time="180">You catch on pretty fast. I think that sums up everything I had to tell you... What are you planning to do next?</Text>
+		</Dialogue>
+		<Options>
+			<Option icon="chest" link="quest_complete_monster">Take on a powerful monster</Option>
+			<Option icon="chest" link="quest_complete_biome">Discover an uncharted biome</Option>
+			<Option icon="chest" link="quest_complete_build">Build a cozy place to live</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="quest_complete_monster">
+		<Dialogue>
+			<Text portrait="Guide" time="180">A monster eh? I have heard of some {giant floating eye} terrorizing travelers at night...</Text>
+			<Text portrait="Guide" time="60">Maybe look for a [caravan merchant] or someone who can confirm the rumors.</Text>
+			<Text portrait="Guide" time="240">Regardless, you'll have to get some better gear before you try anything like that. I don't get out much these days so why don't you borrow these for now. The rest you'll have to find on your own.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" icon="chest" rewardIndex="monster_reward" action="quest_complete">Turn In</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="quest_complete_biome">
+		<Dialogue>
+			<Text portrait="Guide" time="180">Quite the explorer you are! Well if uncharted biomes are what you're looking for you couldn't have come to a better place.</Text>
+			<Text portrait="Guide" time="90">There's a place they call the {Crimson} that no adventurer dares enter.</Text>
+			<Text portrait="Guide" time="240">Regardless, you'll have to get some better gear before you try anything like that. I don't get out much these days so why don't you borrow these for now. The rest you'll have to find on your own.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" icon="chest" rewardIndex="biome_reward" action="quest_complete">Turn In</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="quest_complete_build">
+		<Dialogue>
+			<Text portrait="Guide" time="180">Ah, settling down are we? You think you could find a place for these in that fancy new home of ours? Things start to get heavy after so many years.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="quest_complete_build_end">Don't get excited, it won't be anything too fancy</Option>
+			<Option link="quest_complete_build_end">I'll make them the best storage space you've ever seen</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="quest_complete_build_end">
+		<Dialogue>
+			<Text portrait="Guide" time="60">I'm sure whatever you build it will be great. Stay safe out there!</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" icon="chest" rewardIndex="build_reward" action="quest_complete">Turn In</Option>
+		</Options>
+	</DialogueNode>
+</Dialogue>

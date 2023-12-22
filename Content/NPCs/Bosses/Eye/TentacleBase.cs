@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.Graphics.Effects;
 using OvermorrowMod.Common;
@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Eye");
+            // DisplayName.SetDefault("Eye");
         }
 
         public override void SetDefaults()
@@ -60,7 +60,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.OnSpawn(source);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.netMode == NetmodeID.Server)
             {
@@ -116,16 +116,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (AICase == (float)AIStates.Death)
             {
-                /*var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
-
-                deathShader.UseOpacity(1f);
-                if (AICounter > 30f)
-                {
-                    deathShader.UseOpacity(1f - (AICounter - 30f) / 90f);
-                    Main.NewText(1f - (AICounter - 30f) / 90f);
-                }
-
-                deathShader.Apply(null);*/
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 float progress = Utils.Clamp(AICounter, 0, 90) / 90f;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
@@ -256,7 +246,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.netMode == NetmodeID.Server)
             {
@@ -265,8 +255,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (NPC.life <= 0)
             {
-                //Main.NewText("wtf");
-
                 int counter = 0;
 
                 var source = NPC.GetSource_Death();
@@ -302,15 +290,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (child.ai[3] == (float)VortexEye.AIStates.Death)
             {
-                /*var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
-
-                deathShader.UseOpacity(1f);
-                if (child.ai[1] > 30f)
-                {
-                    deathShader.UseOpacity(1f - (child.ai[1] - 30f) / 90f);
-                }
-
-                deathShader.Apply(null);*/
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 float progress = Utils.Clamp(child.ai[1], 0, 90) / 90f;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
@@ -371,7 +350,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override string Texture => AssetDirectory.Textures + "VortexCenter";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("???");
+            // DisplayName.SetDefault("???");
         }
 
         public override void SetDefaults()
@@ -522,3 +501,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         }
     }
 }
+*/

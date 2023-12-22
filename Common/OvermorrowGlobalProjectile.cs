@@ -1,11 +1,16 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Players;
 using OvermorrowMod.Common.VanillaOverrides.Bow;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Content.Items.Ammo;
 using OvermorrowMod.Core;
+using System;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,55 +22,79 @@ namespace OvermorrowMod.Common
         public override bool InstancePerEntity => true;
         public bool IsBullet { get; private set; } = false;
         public bool IsArrow { get; private set; } = false;
+        public bool IsPowerShot = false;
+        public bool IsPowerShotSniper = false;
+        public bool IsMirageArrow = false;
 
-        private bool spawnedBlood = false;
         public bool slowedTime = false;
 
         public bool RetractSlow = false;
         private bool HasRebounded = false;
         private bool PracticeTargetHit = false;
 
+        private bool Farlander = false;
+        private bool FarlanderPowerShot = false;
+        private bool FarlanderHit = false;
 
-        private bool WildEyeCrit = false;
         private bool Undertaker = false;
         private int UndertakerCounter = 0;
+        private bool WildEyeCrit = false;
 
-        public GunType SourceGunType = GunType.None;
+        public WeaponID SourceGunType = WeaponID.None;
 
-        public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override bool PreDraw(Projectile projectile, ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
+
+            if (IsMirageArrow)
+            {
+                Main.spriteBatch.Reload(BlendState.Additive, SpriteSortMode.Immediate);
+
+                int shaderID = GameShaders.Armor.GetShaderIdFromItemId(ItemID.MirageDye);
+
+                DrawData newData = new DrawData(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, texture.Size() / 2f, projectile.scale, 0, 0);
+                GameShaders.Armor.Apply(shaderID, projectile, newData);
+                newData.Draw(Main.spriteBatch);
+
+                Main.spriteBatch.Reload(BlendState.AlphaBlend, SpriteSortMode.Deferred);
+
+                return false;
+            }
+
+            return base.PreDraw(projectile, ref lightColor);
+        }
+
+
+        public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
 
-            if (WildEyeCrit) crit = true;
+            if (WildEyeCrit) modifiers.SetCrit();
 
             if (Undertaker)
             {
-                float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
-                damage += (int)(damage * pointBlankBonus);
+                float pointBlankBonus = 1 + MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
+                modifiers.SourceDamage *= pointBlankBonus;
+            }
+
+            if (IsPowerShot)
+            {
+                modifiers.SourceDamage *= 1.25f;
+            }
+
+            if (projectile.type == ModContent.ProjectileType<ObsidianArrowProjectile>())
+            {
+                modifiers.CritDamage *= 1.25f;
             }
 
             #region Armor
-            if (player.CheckArmorEquipped(ItemID.CowboyHat) && crit && projectile.DamageType == DamageClass.Ranged)
+            if (player.CheckArmorEquipped(ItemID.CowboyHat) && projectile.DamageType == DamageClass.Ranged)
             {
-                damage += (int)(damage * 0.10f);
+                modifiers.CritDamage *= 1.1f;
             }
 
-            if (player.GetModPlayer<GunPlayer>().CowBoySet && crit && SourceGunType == GunType.Revolver)
-            {
-                NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
-                if (closestNPC != null)
-                {
-                    projectile.usesLocalNPCImmunity = true;
-                    projectile.localNPCHitCooldown = -1;
-                    projectile.velocity = Vector2.Normalize(projectile.DirectionTo(closestNPC.Center)) * 12f;
-                    if (!HasRebounded)
-                    {
-                        projectile.penetrate = 2;
-                        HasRebounded = true;
-                    }
-                }
-            }
+
             #endregion
 
             #region Accessories
@@ -73,8 +102,7 @@ namespace OvermorrowMod.Common
             {
                 target.AddBuff(BuffID.Poisoned, 180);
 
-                float armorPenetration = player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged);
-                bool applyVenom = bowPlayer.ArrowArmorPenetration + armorPenetration > target.defense;
+                bool applyVenom = bowPlayer.ArrowArmorPenetration + projectile.ArmorPenetration > target.defense;
 
                 if (!player.GetModPlayer<OvermorrowModPlayer>().SnakeBiteHide)
                 {
@@ -111,9 +139,8 @@ namespace OvermorrowMod.Common
                     }
                 }
 
-                // Shitty way of handling armor penetration for arrows where you add the defense ignored if there is any remaining defense
-                if (bowPlayer.ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged) - target.defense > 5)
-                    damage += 5;
+                // Shitty way of handling armor penetration for this accessory, not sure if this even works
+                projectile.ArmorPenetration += bowPlayer.ArrowArmorPenetration;
 
                 if (applyVenom)
                 {
@@ -128,11 +155,22 @@ namespace OvermorrowMod.Common
             #endregion
         }
 
+        public Entity ownerEntity { get; private set; }
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
-            if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
+            if (source is EntitySource_Parent parent)
             {
-                if (gun.GetWeaponType() != GunType.None) SourceGunType = gun.GetWeaponType();
+                ownerEntity = parent.Entity;
+                /*if (parent.Entity is NPC npc)
+                    Main.NewText("from npc " + npc.FullName);
+
+                if (parent.Entity is Player player)
+                    Main.NewText("from player " + player.name);*/
+            }
+
+            if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item item)
+            {
+                if (item.IsGun()) SourceGunType = item.GetWeaponTypeID();
             }
 
 
@@ -177,6 +215,13 @@ namespace OvermorrowMod.Common
                 case "Undertaker":
                     Undertaker = true;
                     break;
+                case "Farlander":
+                    Farlander = true;
+                    break;
+                case "FarlanderPowerShot":
+                    Farlander = true;
+                    FarlanderPowerShot = true;
+                    break;
             }
         }
 
@@ -200,27 +245,58 @@ namespace OvermorrowMod.Common
             }
         }
 
-        public override void Kill(Projectile projectile, int timeLeft)
+        public override void OnKill(Projectile projectile, int timeLeft)
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
             if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
             {
                 SpawnPracticeTargetFail(player);
             }
 
-            base.Kill(projectile, timeLeft);
+            if (Farlander && !FarlanderHit)
+            {
+                gunPlayer.FarlanderSpeedBoost = 0;
+            }
         }
 
-        public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
             if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
             {
                 SpawnPracticeTargetHit(player);
+            }
+
+            if (Farlander)
+            {
+                FarlanderHit = true;
+
+                if (FarlanderPowerShot)
+                {
+                    if (gunPlayer.FarlanderSpeedBoost < 4) gunPlayer.FarlanderSpeedBoost++;
+                }
+            }
+
+            if (player.GetModPlayer<GunPlayer>().CowBoySet && hit.Crit && SourceGunType == WeaponID.Revolver)
+            {
+                NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
+                if (closestNPC != null)
+                {
+                    projectile.usesLocalNPCImmunity = true;
+                    projectile.localNPCHitCooldown = -1;
+                    projectile.velocity = Vector2.Normalize(projectile.DirectionTo(closestNPC.Center)) * 12f;
+                    if (!HasRebounded)
+                    {
+                        projectile.penetrate = 2;
+                        HasRebounded = true;
+                    }
+                }
             }
         }
 
@@ -228,10 +304,11 @@ namespace OvermorrowMod.Common
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
-            if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
+            if (Farlander && !FarlanderHit)
             {
-                SpawnPracticeTargetFail(player);
+                gunPlayer.FarlanderSpeedBoost = 0;
             }
 
             return base.OnTileCollide(projectile, oldVelocity);
@@ -269,5 +346,6 @@ namespace OvermorrowMod.Common
 
             base.GrappleRetreatSpeed(projectile, player, ref speed);
         }
+
     }
 }

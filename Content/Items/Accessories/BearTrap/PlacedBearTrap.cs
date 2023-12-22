@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
                         if (npc.friendly || !npc.active || !npc.Hitbox.Intersects(Projectile.Hitbox)) continue;
 
                         trappedNPC = npc;
-                        trappedNPC.StrikeNPC(69, 0f, 0);
+                        trappedNPC.StrikeNPC(new NPC.HitInfo { Damage = 69 });
 
                         AICase = (int)AIState.Triggered;
                         Projectile.timeLeft = 180;
@@ -91,14 +91,12 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            if (trappedNPC.active)
+            if (trappedNPC != null && trappedNPC.active)
             {
                 trappedNPC.GetGlobalNPC<OvermorrowGlobalNPC>().BearTrapped = false;
             }
-
-            base.Kill(timeLeft);
         }
 
         public override bool PreDraw(ref Color lightColor)

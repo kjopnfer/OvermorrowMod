@@ -57,7 +57,7 @@ namespace OvermorrowMod.Common.Detours
             }
         }
 
-        public static int CreateNPCTrail(On.Terraria.NPC.orig_NewNPC orig, IEntitySource source, int X, int Y, int Type, int start, float ai0, float ai1, float ai2, float ai3, int target)
+        public static int CreateNPCTrail(Terraria.On_NPC.orig_NewNPC orig, IEntitySource source, int X, int Y, int Type, int start, float ai0, float ai1, float ai2, float ai3, int target)
         {
             int a = orig(source, X, Y, Type, start, ai0, ai1, ai2, ai3, target);
             NPC npc = Main.npc[a];
@@ -73,9 +73,9 @@ namespace OvermorrowMod.Common.Detours
             }
             return a;
         }
-        public static int CreateProjectileTrail(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float orig, IEntitySource source, float X, float Y, float SpeedX, float SpeedY, int type, int damage, float Knockback, int owner, float ai0, float ai1)
+        public static int CreateProjectileTrail(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource source, float X, float Y, float SpeedX, float SpeedY, int type, int damage, float Knockback, int owner, float ai0, float ai1, float ai2)
         {
-            int p = orig(source, X, Y, SpeedX, SpeedY, type, damage, Knockback, owner, ai0, ai1);
+            int p = orig(source, X, Y, SpeedX, SpeedY, type, damage, Knockback, owner, ai0, ai1, ai2);
             Projectile projectile = Main.projectile[p];
             if (projectile.ModProjectile is ITrailEntity entity)
             {
@@ -88,17 +88,17 @@ namespace OvermorrowMod.Common.Detours
             }
             return p;
         }
-        public static void NPCLoot(On.Terraria.NPC.orig_NPCLoot orig, NPC self)
+        public static void NPCLoot(Terraria.On_NPC.orig_NPCLoot orig, NPC self)
         {
             orig(self);
             KillByID(self.whoAmI, DrawType.NPC);
         }
-        public static void Kill(On.Terraria.Projectile.orig_Kill orig, Projectile self)
+        public static void Kill(Terraria.On_Projectile.orig_Kill orig, Projectile self)
         {
             orig(self);
             KillByID(self.whoAmI);
         }
-        public static void DrawNPCTrails(On.Terraria.Main.orig_DrawNPCs orig, Main self, bool behind)
+        public static void DrawNPCTrails(Terraria.On_Main.orig_DrawNPCs orig, Main self, bool behind)
         {
             foreach (Trail trail in trails)
             {
@@ -111,7 +111,7 @@ namespace OvermorrowMod.Common.Detours
             }
             orig(self, behind);
         }
-        public static void DrawProjectileTrails(On.Terraria.Main.orig_DrawProjectiles orig, Main self)
+        public static void DrawProjectileTrails(Terraria.On_Main.orig_DrawProjectiles orig, Main self)
         {
             foreach (Trail trail in trails)
             {

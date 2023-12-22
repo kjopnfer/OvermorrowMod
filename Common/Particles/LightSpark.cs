@@ -91,4 +91,21 @@ namespace OvermorrowMod.Common.Particles
             spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
+
+    public class WhiteSpark : LightSpark
+    {
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+            float heightLerp = MathHelper.Lerp(particle.customData[0], 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+            float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+
+            float rotationOffset = particle.customData[1] == 1 ? MathHelper.PiOver2 : 0;
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha * 0.5f, particle.rotation + rotationOffset, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
 }

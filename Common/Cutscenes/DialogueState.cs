@@ -16,23 +16,7 @@ using System;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
-    /// <summary>
-    /// Literally just an invisible UIPanel to draw the buttons and content on
-    /// </summary>
-    internal class DummyPanel : UIPanel
-    {
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime); // don't remove.
-        }
-
-        protected override void DrawSelf(SpriteBatch spriteBatch)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
-        }
-    }
-
-    public class DialogueState : UIState
+    public partial class DialogueState : UIState
     {
         private int DrawTimer;
         private int DelayTimer;
@@ -48,6 +32,11 @@ namespace OvermorrowMod.Common.Cutscenes
         private DummyPanel DrawSpace = new DummyPanel();
         private UIText Text = new UIText("");
 
+        private Vector2 _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) - new Vector2(600, 180) / 2f;
+
+        /// <summary>
+        /// The starting ID of the dialogue that the XML traverser starts at
+        /// </summary>
         public string dialogueID = "start";
         public bool drawQuest = false;
         public bool shouldRedraw = true;
@@ -64,9 +53,14 @@ namespace OvermorrowMod.Common.Cutscenes
         public int interactDelay = 0;
 
         public bool hasInitialized = false;
+        float arrowOffset;
 
+        private const float PANEL_WIDTH = 300;
+        private const float PANEL_HEIGHT = 90;
         public override void Draw(SpriteBatch spriteBatch)
         {
+            _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight - PANEL_HEIGHT) - new Vector2(PANEL_WIDTH + 80, PANEL_HEIGHT + 35);
+
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
             if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
@@ -99,24 +93,29 @@ namespace OvermorrowMod.Common.Cutscenes
                 DrawText(player, spriteBatch, new Vector2(0, 0));
             }
 
+            // Handles the drawing of the UI after the dialogue has finished drawing
+            if (DrawTimer >= player.GetDialogue().drawTime)
+            {
+                Dialogue dialogue = player.GetDialogue();
+
+                var npc = Main.npc[Main.LocalPlayer.talkNPC];
+                var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+                // Draw the continue icon if there is more text to be read
+                if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                {
+                    Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
+                    Vector2 arrowPosition = _dialogueAnchor;
+
+                    arrowOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(continueButtonCounter++ / 20f) / 2 + 0.5f));
+                    Vector2 panelOffset = new Vector2(PANEL_WIDTH + 65, PANEL_HEIGHT) * 2;
+                    spriteBatch.Draw(texture, arrowPosition + panelOffset + new Vector2(-24, -28 + arrowOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
+
+                    canInteract = true;
+                }
+            }
+
             base.Draw(spriteBatch);
-        }
-
-        /// <summary>
-        /// Initializes the UI with the Quest dialogue if the player is doing a quest assigned by the NPC they are talking to.
-        /// </summary>
-        private void SetQuestDialogue()
-        {
-            var npc = Main.npc[Main.LocalPlayer.talkNPC];
-            var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-
-            if (!isDoing) return;
-
-            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-            var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
-
-            if (quest.CanHandInQuest(questPlayer, questState)) SetID("quest_complete");
-            else SetID("quest_hint");
         }
 
         public override void Update(GameTime gameTime)
@@ -126,25 +125,10 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (dialogue == null) return;
 
-            if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            if (Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
                 this.RemoveAllChildren(); // Removes the options and then readds the elements back
                 canInteract = true;
-
-                // Handles the drawing of the UI after the dialogue has finished drawing
-                if (DrawTimer >= player.GetDialogue().drawTime)
-                {
-                    var npc = Main.npc[Main.LocalPlayer.talkNPC];
-                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-
-                    if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
-                    {
-                        canInteract = true;
-                        ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
-                    }
-                }
-
-                //Main.NewText(dialogue.GetTextIteration() + " / " + (dialogue.GetTextListLength() - 1));
 
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
@@ -166,8 +150,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
-                        Vector2 position = OptionPosition(optionNumber);
-                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, this);
+                        Vector2 position = GetOptionPosition(optionNumber);
+                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 375, 45, this);
 
                         optionNumber++;
                     }
@@ -200,76 +184,13 @@ namespace OvermorrowMod.Common.Cutscenes
                 else
                 {
                     if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                    {
                         ExitText();
-                    }
                     else
-                    {
                         AdvanceText();
-                    }
                 }
             }
 
             if (interactDelay > 0) interactDelay--;
-        }
-
-        /// <summary>
-        /// Gets the next Text node by increment the reader index
-        /// </summary>
-        private void AdvanceText()
-        {
-            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-
-            player.GetDialogue().IncrementText();
-
-            ResetTimers();
-            shouldRedraw = true;
-        }
-
-        /// <summary>
-        /// Exits the conversation with the NPC and resets UI counters
-        /// </summary>
-        public void ExitText()
-        {
-            ResetTimers();
-            SetID("start");
-
-            hasInitialized = false;
-            Main.LocalPlayer.SetTalkNPC(-1);
-        }
-
-        private void LockPlayer()
-        {
-            Player player = Main.LocalPlayer;
-
-            player.mouseInterface = true;
-            player.immune = true;
-            player.immuneTime = 60;
-            player.immuneNoBlink = true;
-
-            player.GetModPlayer<DialoguePlayer>().LockPlayer = true;
-        }
-
-        /// <summary>
-        /// Determines the position that the Option button will be drawn at based on the id.
-        /// </summary>
-        private Vector2 OptionPosition(int optionNumber)
-        {
-            Vector2 screenPosition = new Vector2(Main.screenWidth, Main.screenHeight) / 2f;
-
-            switch (optionNumber)
-            {
-                case 1:
-                    return screenPosition + new Vector2(-300, 25);
-                case 2:
-                    return screenPosition + new Vector2(0, 25);
-                case 3:
-                    return screenPosition + new Vector2(-300, 150);
-                case 4:
-                    return screenPosition + new Vector2(0, 150);
-            }
-
-            return new Vector2(0, 0);
         }
 
         /// <summary>
@@ -283,178 +204,30 @@ namespace OvermorrowMod.Common.Cutscenes
             string text = player.GetDialogue().GetText();
             int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText().Length, DrawTimer / (float)player.GetDialogue().drawTime);
 
-            var displayText = text.Substring(0, progress);
-
-            // If for some reason there are no colors specified don't parse the brackets
-            if (player.GetDialogue().bracketColor != null)
-            {
-                // The number of opening brackets MUST be the same as the number of closing brackets
-                int numOpen = 0;
-                int numClose = 0;
-
-                // Create a new string, adding in hex tags whenever an opening bracket is found
-                var builder = new StringBuilder();
-                builder.Append("    "); // Appends to the beginning of the string
-
-                foreach (var character in displayText)
-                {
-                    if (character == '[') // Insert the hex tag if an opening bracket is found
-                    {
-                        builder.Append("[c/" + player.GetDialogue().bracketColor + ":");
-                        numOpen++;
-                    }
-                    else
-                    {
-                        if (character == ']')
-                        {
-                            numClose++;
-                        }
-
-                        builder.Append(character);
-                    }
-                }
-
-                if (numOpen != numClose)
-                {
-                    builder.Append(']');
-                }
-
-                // Final check for if the tag has two brackets but no characters inbetween
-                var hexTag = "[c/" + player.GetDialogue().bracketColor + ":]";
-                if (builder.ToString().Contains(hexTag))
-                {
-                    builder.Replace(hexTag, "[c/" + player.GetDialogue().bracketColor + ": ]");
-                }
-
-                displayText = builder.ToString();
-            }
-
+            var displayText = ParseColoredText(text.Substring(0, progress));
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
 
-            float MAX_LENGTH = 400;
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f) + new Vector2(-150, -200), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
-        }
-
-        private void DrawBackdrop(DialoguePlayer player, SpriteBatch spriteBatch)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
-            spriteBatch.Draw(texture, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f), null, Color.White * 0.75f, 0, texture.Size() / 2f, new Vector2(1.25f, 1), 0, 0);
-
-            Texture2D speaker = player.GetDialogue().speakerBody;
-            Vector2 offset = new Vector2(-200, -20);
-            spriteBatch.Draw(speaker, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, 0, 0);
-        }
-
-        public void ResetTimers()
-        {
-            DrawTimer = 0;
-            DelayTimer = 0;
-        }
-
-        public void SetID(string id)
-        {
-            Text.SetText("");
-
-            shouldRedraw = true;
-            dialogueID = id;
-
-            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            Dialogue dialogue = player.GetDialogue();
-
-            if (dialogue != null) dialogue.UpdateList(id);
-        }
-    }
-
-    /// <summary>
-    /// Literally just an arrow that bobs up and down.
-    /// </summary>
-    public class NextButton : UIElement
-    {
-        public NextButton() { }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-            bool isHovering = ContainsPoint(Main.MouseScreen);
-
-            if (isHovering)
-                Main.LocalPlayer.mouseInterface = true;
-
-
-            if (Parent is DialogueState parent)
-            {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
-
-                float xOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
-                spriteBatch.Draw(texture, pos + new Vector2(20, 10 + xOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
-            }
-        }
-
-        public override void MouseDown(UIMouseEvent evt)
-        {
-            SoundEngine.PlaySound(SoundID.MenuTick);
-
-            // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent is DialogueState parent)
-            {
-                DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-
-                player.GetDialogue().IncrementText();
-                parent.ResetTimers();
-                parent.shouldRedraw = true;
-            }
+            float MAX_LENGTH = 500;
+            Vector2 offsets = new Vector2(PANEL_WIDTH - 112, 24);
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, _dialogueAnchor + offsets, Color.White, 0f, Vector2.Zero, Vector2.One * 1.1f, out var hoveredSnippet, MAX_LENGTH);
         }
     }
 
     public class OptionButton : UIElement
     {
+        private string icon;
         private string displayText;
         private string linkID;
         private string action;
 
-        private int itemID;
-        private string itemName;
-        private int stack;
+        public string rewardIndex = "none";
 
-        public OptionButton(string displayText, string linkID, string action)
+        public OptionButton(string icon, string displayText, string linkID, string action)
         {
+            this.icon = icon;
             this.displayText = displayText;
             this.linkID = linkID;
             this.action = action;
-        }
-
-        /// <summary>
-        /// <para>Used to handle button with a vanilla item action. Vanilla uses static ids for their items which can be passed directly.</para> 
-        /// For modded items, the name of the file must be used instead.
-        /// </summary>
-        /// <param name="displayText">The text displayed on the dialogue option.</param>
-        /// <param name="itemID">The STATIC ID for the vanilla item.</param>
-        /// <param name="stack">The number of items given, defaults to 1.</param>
-        public OptionButton(string displayText, string linkID, int itemID, int stack = 1)
-        {
-            this.displayText = displayText;
-            this.linkID = linkID;
-            this.itemID = itemID;
-            this.itemName = null;
-            this.stack = stack;
-            this.action = "item";
-        }
-
-        /// <summary>
-        /// <para>Used to handle button with a modded item action. Modded items can be found by their file name string.</para> 
-        /// For vanilla items, the id of the item must be used instead.
-        /// </summary>
-        /// <param name="displayText">The text displayed on the dialogue option.</param>
-        /// <param name="itemName">The FILE NAME for the modded item.</param>
-        /// <param name="stack">The number of items given, defaults to 1.</param>
-        public OptionButton(string displayText, string linkID, string itemName, int stack = 1)
-        {
-            this.displayText = displayText;
-            this.linkID = linkID;
-            this.itemName = itemName;
-            this.itemID = -1;
-            this.stack = stack;
-            this.action = "item";
         }
 
         public string GetText() => displayText;
@@ -464,16 +237,43 @@ namespace OvermorrowMod.Common.Cutscenes
             Vector2 pos = GetDimensions().ToRectangle().TopLeft();
             bool isHovering = ContainsPoint(Main.MouseScreen);
 
+            Color color = new Color(22, 25, 62);
+
             if (isHovering)
             {
                 Main.LocalPlayer.mouseInterface = true;
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
+                color = new Color(32, 35, 78);
+                //spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
-            spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White * 0.75f, 0, texture.Size() / 2f, new Vector2(0.55f, 0.5f), 0, 0);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TEMP").Value;
+            spriteBatch.Draw(texture, GetDimensions().Center() + new Vector2(40, 0), null, Color.White * 0.75f, 0, texture.Size() / 2f, 1f, 0, 0);
+            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
 
-            Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(25, 0), Color.White);
+            //float height_padding = 30;
+            float height = Height.Pixels/* + height_padding*/;
+            Vector2 position = new Vector2(GetDimensions().X, GetDimensions().Center().Y - (height / 2));
+            Rectangle drawRectangle = new Rectangle((int)position.X, (int)position.Y, (int)Width.Pixels, (int)height);
+
+            //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
+            //Utils.DrawInvBG(Main.spriteBatch, drawRectangle, color * 0.925f);
+
+            Texture2D dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon").Value;
+            switch (icon)
+            {
+                case "quest":
+                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon").Value;
+                    break;
+                case "chest":
+                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon").Value;
+                    break;
+                case "sword":
+                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_SwordIcon").Value;
+                    break;
+            }
+
+            spriteBatch.Draw(dialogueIcon, pos + new Vector2(dialogueIcon.Width - 6, dialogueIcon.Height - 8), null, Color.White, 0f, dialogueIcon.Size() / 2f, 1f, 0, 0);
+            Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(64, 12), Color.White);
         }
 
         public static int NPCToShop(int type)
@@ -505,12 +305,11 @@ namespace OvermorrowMod.Common.Cutscenes
             }
         }
 
-        public override void MouseDown(UIMouseEvent evt)
+        public override void LeftMouseDown(UIMouseEvent evt)
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            //if (Parent.Parent is DialogueState parent)
             if (Parent is DialogueState parent)
             {
                 parent.ResetTimers();
@@ -526,13 +325,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
                     switch (action)
                     {
-                        case "item":
-                            if (itemID != -1 && itemName == null)
-                                Main.LocalPlayer.QuickSpawnItem(null, itemID, stack);
-                            else if (itemName != null && itemID == -1)
-                                Main.LocalPlayer.QuickSpawnItem(null, OvermorrowModFile.Instance.Find<ModItem>(itemName).Type, stack);
-                            //Main.LocalPlayer.SetTalkNPC(-1);
-                            break;
                         case "marker":
                             break;
                         case "shop":
@@ -578,7 +370,10 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest_complete":
                             var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
-                            questPlayer.CompleteQuest(quest.QuestID);
+                            if (rewardIndex != "none") // Provide the index of the reward to the method 
+                                questPlayer.CompleteQuest(quest.QuestID, rewardIndex);
+                            else  // If the quest doesn't offer a choose your own reward, use default behavior
+                                questPlayer.CompleteQuest(quest.QuestID);
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
                             {
@@ -603,46 +398,6 @@ namespace OvermorrowMod.Common.Cutscenes
                     parent.SetID(linkID);
                     return;
                 }
-
-                /*NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-                QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-                QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
-
-                var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-
-                switch (displayText)
-                {
-                    case "Accept":
-                        questPlayer.AddQuest(quest);
-                        questNPC.TakeQuest();
-
-                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
-                        {
-                            Volume = 0.9f,
-                            PitchVariance = 0.2f,
-                            MaxInstances = 3,
-                        }, npc.Center);
-
-                        // Run the Quest Accepted UI
-                        Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
-
-                        Main.LocalPlayer.SetTalkNPC(-1);
-                        break;
-                    case "Decline":
-                        Main.LocalPlayer.SetTalkNPC(-1);
-                        break;
-                    case "Turn In":
-                        questPlayer.CompleteQuest(quest.QuestID);
-                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
-                        {
-                            Volume = 0.9f,
-                            PitchVariance = 0.2f,
-                            MaxInstances = 3,
-                        }, npc.Center);
-
-                        Main.LocalPlayer.SetTalkNPC(-1);
-                        break;
-                }*/
             }
         }
     }

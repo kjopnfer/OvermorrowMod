@@ -27,13 +27,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             {
                 if (elementalWeakness.Contains(incomingElement))
                 {
-                    Main.NewText("dealing MORE DAMAGE");
                     result += 0.5f;
                 }
 
                 if (elementalResistance.Contains(incomingElement))
                 {
-                    Main.NewText("dealing LESS DAMAGE");
                     result -= 0.5f;
                 }
             }*/

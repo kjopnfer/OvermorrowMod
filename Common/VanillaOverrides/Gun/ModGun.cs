@@ -18,7 +18,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test Held Gun");
+            // DisplayName.SetDefault("Test Held Gun");
         }
 
         public virtual void SafeSetDefaults() { }
@@ -124,11 +124,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
     public class TestGun : ModGun<Minishark_Held>
     {
-        public override GunType GunType => GunType.Minigun;
+        public override GunType GunType => GunType.MachineGun;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Gamer Gun");
-            Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
+            // DisplayName.SetDefault("The Gamer Gun");
+            // Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
         }
 
         public override void SafeSetDefaults()

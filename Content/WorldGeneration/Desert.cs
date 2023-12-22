@@ -27,12 +27,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             DesertArenaCenter = tag.Get<Vector2>("DesertArenaCenter");
         }
 
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int DesertIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (DesertIndex != -1)
             {
-                tasks.Insert(DesertIndex + 1, new PassLegacy("Desert Temple", GenerateTemple));
+                //tasks.Insert(DesertIndex + 1, new PassLegacy("Desert Temple", GenerateTemple));
             }
         }
 
@@ -41,8 +41,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             progress.Message = "Generate Desert Temple";
 
 
-            int x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 2);
-            int y = WorldGen.UndergroundDesertLocation.Y + (WorldGen.UndergroundDesertLocation.Height / 2);
+            int x = GenVars.UndergroundDesertLocation.X + (GenVars.UndergroundDesertLocation.Width / 2);
+            int y = GenVars.UndergroundDesertLocation.Y + (GenVars.UndergroundDesertLocation.Height / 2);
 
             //Place_LowerTemple(x, y);
 
@@ -50,7 +50,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             // Position the temple's upper area to the left side of the desert, start the structure 450 pixels up into the air before dropping
             //x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 6);
             //y = WorldGen.UndergroundDesertLocation.Y - 200;
-            x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 2);
+            x = GenVars.UndergroundDesertLocation.X + (GenVars.UndergroundDesertLocation.Width / 2);
             y = (int)(Main.worldSurface * 0.35f) + 50;
             //y = WorldGen.UndergroundDesertLocation.Y + (WorldGen.UndergroundDesertLocation.Height / 2);
 

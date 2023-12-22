@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Players;
-using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,7 +11,7 @@ namespace OvermorrowMod.Common.Detours
 {
     public class CustomCollision
     {
-        public static void Player_UpdateNPCCollision(On.Terraria.Player.orig_Update_NPCCollision orig, Player self)
+        public static void Player_UpdateNPCCollision(Terraria.On_Player.orig_Update_NPCCollision orig, Player self)
         {
             for (int i = 0; i < Main.maxNPCs; i++)
             {
@@ -37,11 +36,6 @@ namespace OvermorrowMod.Common.Detours
 
                             if (self == Main.LocalPlayer)
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
-
-                            if (npc.type == ModContent.NPCType<Pillar>())
-                            {
-                                self.Hurt(PlayerDeathReason.ByCustomReason(self.name + " had an obelisk stuck up their ass"), 20, -1);
-                            }
 
                             orig(self);
                         }
@@ -118,7 +112,7 @@ namespace OvermorrowMod.Common.Detours
         }
 
         // Detour for moving platforms
-        public static void Player_PlatformCollision(On.Terraria.Player.orig_SlopingCollision orig, Player self, bool fallThrough, bool ignorePlats)
+        public static void Player_PlatformCollision(Terraria.On_Player.orig_SlopingCollision orig, Player self, bool fallThrough, bool ignorePlats)
         {
             if (self.GetModPlayer<OvermorrowModPlayer>().PlatformTimer > 0)
             {

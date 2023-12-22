@@ -1,11 +1,14 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Quests;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -24,8 +27,8 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Campfire");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Campfire");
             AddMapEntry(new Color(238, 145, 105), name);
         }
 
@@ -70,7 +73,6 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
                     }
                 }
             }
-            //else Main.NewText("Campfire Tile Entity not found");
 
             return base.RightClick(i, j);
         }
@@ -106,6 +108,49 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
         {
             Item.NewItem(null, i * 16, j * 16, 16, 32, ItemID.Campfire);
         }
+
+        int offsetCounter = 0;
+        int markerFrame = 2;
+        public override void AnimateTile(ref int frame, ref int frameCounter)
+        {
+            frameCounter++;
+            offsetCounter = frameCounter;
+            if (offsetCounter % 24 == 0) markerFrame = markerFrame == 2 ? 3 : 2;
+        }
+
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+
+            Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
+            {
+                if (questPlayer.FindActiveQuest("GuideCampfire") && questPlayer.showCampfireArrow)
+                {
+                    Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                    Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
+                    float yOffset = MathHelper.Lerp(8, 12, (float)Math.Sin(offsetCounter / 24f));
+
+
+                    Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Quests/QuestAlert").Value;
+                    Rectangle drawRectangle = new Rectangle(0, texture.Height / 6 * markerFrame, texture.Width, texture.Height / 6);
+
+                    spriteBatch.Draw(
+                        texture,
+                        new Vector2(drawPos.X + 26, drawPos.Y - yOffset),
+                        drawRectangle,
+                        Color.White,
+                        0f,
+                        new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
+                        1f,
+                        SpriteEffects.None,
+                        0f);
+                }
+            }
+
+            return base.PreDraw(i, j, spriteBatch);
+        }
     }
 
     public class GuideCampfire_TE : ModTileEntity
@@ -117,7 +162,8 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
         {
             FireOn = !FireOn;
             flameCounter = 0;
-            Main.NewText("set state to " + FireOn);
+
+            Main.LocalPlayer.GetModPlayer<QuestPlayer>().showCampfireArrow = false;
         }
 
         public override void Update()

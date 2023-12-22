@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phoenix Burst");
+            // DisplayName.SetDefault("Phoenix Burst");
         }
 
         public override void SetDefaults()
@@ -29,12 +29,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         }
 
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.OnFire, 180);
+            target.AddBuff(BuffID.OnFire, 240);
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.OnFire, 240);
         }
@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public ref float AICounter => ref Projectile.ai[0];
         public override void AI()
         {
-            if(AICounter < 20f) AICounter++;
+            if (AICounter < 20f) AICounter++;
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)

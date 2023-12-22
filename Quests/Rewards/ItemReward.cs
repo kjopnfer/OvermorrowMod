@@ -9,7 +9,7 @@ namespace OvermorrowMod.Quests.Rewards
         private readonly int type;
         private readonly int stack;
 
-        public ItemReward(int type, int stack)
+        public ItemReward(int type, int stack = 1)
         {
             if (stack <= 0) throw new ArgumentException($"Invalid stack size: {stack}");
             if (type <= 0) throw new ArgumentException($"Invalid type: {type}");

@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 {
     public class GuideCamp : ModSystem
     {
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
             if (GuideIndex != -1)
@@ -92,15 +92,18 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Vector2 origin = new Vector2(x - (TileGen.width / 2), y - TileGen.height);
 
-            ModUtils.PlaceObject((int)(origin.X + 10), (int)(origin.Y + 5), ModContent.TileType<GuideCampfire>());
-            ModContent.GetInstance<GuideCampfire_TE>().Place((int)(origin.X + 9), (int)(origin.Y + 4));
+            ModUtils.PlaceObject((int)(origin.X + 20), (int)(origin.Y + 5), ModContent.TileType<GuideCampfire>());
+            ModContent.GetInstance<GuideCampfire_TE>().Place((int)(origin.X + 19), (int)(origin.Y + 4));
 
-            ModUtils.PlaceTilePile<BowRock, BowRockObjects>((int)(origin.X + 2), (int)(origin.Y + 4));
-            ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(origin.X + 6), (int)(origin.Y + 5));
-            ModUtils.PlaceTilePile<GuideLog, GuideLogObjects>((int)(origin.X + 16), (int)(origin.Y + 4));
-            ModUtils.PlaceTilePile<GuideTent, GuideTentObjects>((int)(origin.X + 24), (int)(origin.Y + 3));
-            ModUtils.PlaceTilePile<BookRock, BookRockObjects>((int)(origin.X + 29), (int)(origin.Y + 3));
-            ModUtils.PlaceTilePile<AxeStump, AxeStumpObjects>((int)(origin.X + 32), (int)(origin.Y + 3));
+            ModUtils.PlaceTilePile<BowRock, BowRockObjects>((int)(origin.X + 12), (int)(origin.Y + 4));
+            //WorldGen.PlaceTile((int)(origin.X + 12), (int)(origin.Y + 4), TileID.Adamantite, false, true);
+            ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(origin.X + 16), (int)(origin.Y + 5));
+            //WorldGen.PlaceTile((int)(origin.X + 26), (int)(origin.Y + 5), TileID.Adamantite, false, true);
+
+            ModUtils.PlaceTilePile<GuideLog, GuideLogObjects>((int)(origin.X + 26), (int)(origin.Y + 4));
+            ModUtils.PlaceTilePile<GuideTent, GuideTentObjects>((int)(origin.X + 34), (int)(origin.Y + 3));
+            ModUtils.PlaceTilePile<BookRock, BookRockObjects>((int)(origin.X + 39), (int)(origin.Y + 3));
+            ModUtils.PlaceTilePile<AxeStump, AxeStumpObjects>((int)(origin.X + 42), (int)(origin.Y + 3));
         }
     }
 }

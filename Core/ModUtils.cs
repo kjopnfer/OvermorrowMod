@@ -2,10 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
-using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.TilePiles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
-using OvermorrowMod.Content.Tiles.TilePiles;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -13,7 +11,6 @@ using System.Xml;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
-using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -21,7 +18,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace OvermorrowMod.Core
 {
-    public static class ModUtils
+    public static partial class ModUtils
     {
         public static MethodInfo startRain;
         public static MethodInfo stopRain;
@@ -36,76 +33,6 @@ namespace OvermorrowMod.Core
             {
                 startRain = typeof(Main).GetMethod("StartRain", BindingFlags.Static | BindingFlags.NonPublic);
                 stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
-            }
-        }
-        public static void Move(this NPC npc, Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
-        {
-            if (npc.Center.X < targetPosition.X)
-            {
-                npc.velocity.X += moveSpeed;
-
-                if (npc.velocity.X > maxSpeed) npc.velocity.X = maxSpeed;
-            }
-            else if (npc.Center.X > targetPosition.X)
-            {
-                npc.velocity.X -= moveSpeed;
-
-                if (npc.velocity.X < -maxSpeed) npc.velocity.X = -maxSpeed;
-            }
-
-            /*if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].HasTile)
-            {
-                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
-                {
-                    npc.velocity.Y -= 12;
-                }
-
-                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
-                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
-                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
-                {
-                    npc.velocity.Y -= 12;
-                }
-
-                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
-                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
-                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
-                {
-                    npc.velocity.Y -= 12;
-                }
-            }*/
-
-            if (npc.collideY && npc.velocity.Y == 0)
-            {
-
-                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
-                {
-                    npc.velocity.Y -= jumpSpeed;
-                }
-
-                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
-                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
-                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
-                {
-                    npc.velocity.Y -= jumpSpeed;
-                }
-
-                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
-                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
-                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
-                {
-                    npc.velocity.Y -= jumpSpeed;
-                }
-
-                Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, false, 0);
-
-                #region Jump Handling
-                if (npc.collideX || CheckGap(npc))
-                {
-                    npc.velocity.Y -= jumpSpeed;
-                }
-
-                #endregion
             }
         }
 
@@ -132,19 +59,9 @@ namespace OvermorrowMod.Core
             return false;
         }
 
-        private static bool CheckGap(NPC npc)
+        public static OvermorrowGlobalProjectile GlobalProjectile(this Projectile projectile)
         {
-            Rectangle npcHitbox = npc.getRect();
-
-            Vector2 checkLeft = new Vector2(npcHitbox.BottomLeft().X, npcHitbox.BottomLeft().Y);
-            Vector2 checkRight = new Vector2(npcHitbox.BottomRight().X, npcHitbox.BottomRight().Y);
-            Vector2 hitboxDetection = (npc.velocity.X < 0 ? checkLeft : checkRight) / 16;
-
-            int directionOffset = npc.direction;
-
-            Tile tile = Framing.GetTileSafely((int)hitboxDetection.X + directionOffset, (int)hitboxDetection.Y);
-
-            return !tile.HasTile;
+            return projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>();
         }
 
         public static void SandstormStuff()
@@ -158,7 +75,7 @@ namespace OvermorrowMod.Core
         public static void PlaceObject(int x, int y, int TileType, int style = 0, int direction = -1)
         {
             WorldGen.PlaceObject(x, y, TileType, true, style, 0, -1, direction);
-            NetMessage.SendObjectPlacment(-1, x, y, TileType, style, 0, -1, direction);
+            NetMessage.SendObjectPlacement(-1, x, y, TileType, style, 0, -1, direction);
         }
 
         public static void StartRain()
@@ -195,12 +112,12 @@ namespace OvermorrowMod.Core
 
         public static void SetWeaponType(this Item item, GunType gunType)
         {
-            item.GetGlobalItem<GlobalGun>().WeaponType = gunType;
+            item.GetGlobalItem<GlobalGun>().GunType = gunType;
         }
 
         public static GunType GetWeaponType(this Item item)
         {
-            return item.GetGlobalItem<GlobalGun>().WeaponType;
+            return item.GetGlobalItem<GlobalGun>().GunType;
         }
 
         public static NPC FindClosestNPC(this Projectile projectile, float maxDetectDistance, NPC ignoreNPC = null)
@@ -327,6 +244,7 @@ namespace OvermorrowMod.Core
         {
             return player.GetModPlayer<OvermorrowModPlayer>();
         }
+
         public static void SafeSetParameter(this Effect effect, string name, float value)
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
@@ -537,35 +455,7 @@ namespace OvermorrowMod.Core
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
 
-        public static float EaseOutQuad(float x)
-        {
-            return 1 - (1 - x) * (1 - x);
-        }
-
-        public static float EaseOutCirc(float x)
-        {
-            return (float)Math.Sqrt(1 - Math.Pow(x - 1, 2));
-        }
-
-        public static float EaseOutQuint(float x)
-        {
-            return (float)(1 - Math.Pow(1 - x, 5));
-        }
-
-        public static float EaseInQuad(float x)
-        {
-            return x * x;
-        }
-
-        public static float EaseInCubic(float x)
-        {
-            return x * x * x;
-        }
-
-        public static float EaseInQuart(float x)
-        {
-            return x * x * x * x;
-        }
+        
 
         /// <summary>
         /// Modified version of Player.Hurt, which ignores defense.
@@ -636,8 +526,6 @@ namespace OvermorrowMod.Core
                 {
                     Item item = player.inventory[i];
                     if (item.type == ItemID.None || item.ammo != ammoID) continue;
-
-                    //Main.NewText("Swapping " + i + " with " + (54 + j));
 
                     Item tempItem = ammoItem;
                     player.inventory[54 + j] = item;

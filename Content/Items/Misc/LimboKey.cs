@@ -12,8 +12,8 @@ namespace OvermorrowMod.Content.Items.Misc
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Limbo Key");
-            Tooltip.SetDefault("'Opens a lock that doesn't quite exist'");
+            // DisplayName.SetDefault("Limbo Key");
+            // Tooltip.SetDefault("'Opens a lock that doesn't quite exist'");
         }
 
         public override void SetDefaults()

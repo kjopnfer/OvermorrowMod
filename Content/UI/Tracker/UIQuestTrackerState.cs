@@ -43,11 +43,13 @@ namespace OvermorrowMod.Content.UI.Tracker
                 BaseQuest quest = questState.Quest;
 
                 List<QuestObjective> objectives = new List<QuestObjective>();
+
+                bool canTurnIn = true;
                 foreach (var task in quest.Requirements)
                 {
                     if (task is OrRequirement orRequirement)
                     {
-                        objectives.Add(AddOrQuestObjective(orRequirement, questPlayer, questState));
+                        objectives.Add(CreateOrQuestObjective(orRequirement, questPlayer, questState));
                     }
 
                     if (task is ChainRequirement chainRequirement)
@@ -55,22 +57,24 @@ namespace OvermorrowMod.Content.UI.Tracker
                         foreach (var completedClause in chainRequirement.AllClauses)
                         {
                             if (!completedClause.IsCompleted(questPlayer, questState)) continue;
-                            objectives.Add(AddQuestObjective(completedClause, questPlayer, questState));
+                            objectives.Add(CreateQuestObjective(completedClause, questPlayer, questState));
                         }
 
                         foreach (var chainRequirementClause in chainRequirement.GetActiveClauses(questPlayer, questState))
                         {
-                            objectives.Add(AddQuestObjective(chainRequirementClause, questPlayer, questState));
+                            objectives.Add(CreateQuestObjective(chainRequirementClause, questPlayer, questState));
                         }
                     }
                     else
                     {
-                        objectives.Add(AddQuestObjective(task, questPlayer, questState));
+                        objectives.Add(CreateQuestObjective(task, questPlayer, questState));
                     }
 
+                    // If any task is not completed, the quest cannot be turned in
+                    if (!task.IsCompleted(questPlayer, questState)) canTurnIn = false;
                 }
 
-                questEntries.Add(new QuestEntry(quest.QuestName, objectives));
+                questEntries.Add(new QuestEntry(quest.QuestName, objectives, canTurnIn));
             }
 
             //questEntries.Add(new QuestEntry("Stryke's Stryfe", new List<QuestObjective>() { new QuestObjective(0, 1, "Defeat Stryfe of Phantasia") }));
@@ -80,7 +84,7 @@ namespace OvermorrowMod.Content.UI.Tracker
             base.Update(gameTime);
         }
 
-        private QuestObjective AddOrQuestObjective(OrRequirement orRequirement, QuestPlayer questPlayer, BaseQuestState questState)
+        private QuestObjective CreateOrQuestObjective(OrRequirement orRequirement, QuestPlayer questPlayer, BaseQuestState questState)
         {
             int progress = 0;
             int amount = 0;
@@ -116,7 +120,13 @@ namespace OvermorrowMod.Content.UI.Tracker
             return new QuestObjective(progress, amount, description);
         }
 
-        private QuestObjective AddQuestObjective(IQuestRequirement requirementClause, QuestPlayer questPlayer, BaseQuestState questState)
+        /// <summary>
+        /// Creates the Quest Objective and determines whether or not it has been completed
+        /// </summary>
+        /// <param name="requirementClause"></param>
+        /// <param name="questPlayer"></param>
+        /// <param name="questState"></param>
+        private QuestObjective CreateQuestObjective(IQuestRequirement requirementClause, QuestPlayer questPlayer, BaseQuestState questState)
         {
             int progress = 0;
             int amount = 0;
@@ -147,46 +157,13 @@ namespace OvermorrowMod.Content.UI.Tracker
                 description = miscRequirement.description;
             }
 
-            return new QuestObjective(progress, amount, description);
+            return new QuestObjective(progress, amount, description, requirementClause.IsCompleted(questPlayer, questState));
         }
     }
 
     public class QuestTrackerPanel : DragableUIPanel
     {
-        // Code by Seraph
-        public void DrawNineSegmentTexturePanel(SpriteBatch spriteBatch, Texture2D texture, Rectangle dimensions, int cornerWidth, Color drawColor)
-        {
-            Rectangle cornerFrameTopLeft = new Rectangle(0, 0, cornerWidth, cornerWidth);
-            Rectangle cornerFrameBottomLeft = new Rectangle(0, texture.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle cornerFrameTopRight = new Rectangle(texture.Width - cornerWidth, 0, cornerWidth, cornerWidth);
-            Rectangle cornerFrameBottomRight = new Rectangle(texture.Width - cornerWidth, texture.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle sideFrameTop = new Rectangle(cornerWidth, 0, texture.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideFrameBottom = new Rectangle(cornerWidth, texture.Height - cornerWidth, texture.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideFrameLeft = new Rectangle(0, cornerWidth, cornerWidth, texture.Height - (cornerWidth * 2));
-            Rectangle sideFrameRight = new Rectangle(texture.Width - cornerWidth, cornerWidth, cornerWidth, texture.Height - (cornerWidth * 2));
-            Rectangle centreFrame = new Rectangle(cornerWidth, cornerWidth, texture.Width - (cornerWidth * 2), texture.Height - (cornerWidth * 2));
-
-            Rectangle cornerRectTopLeft = new Rectangle((int)dimensions.X, (int)dimensions.Y, cornerWidth, cornerWidth);
-            Rectangle cornerRectBottomLeft = new Rectangle((int)dimensions.X, (int)dimensions.Y + (int)dimensions.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle cornerRectTopRight = new Rectangle((int)dimensions.X + (int)dimensions.Width - cornerWidth, (int)dimensions.Y, cornerWidth, cornerWidth);
-            Rectangle cornerRectBottomRight = new Rectangle((int)dimensions.X + (int)dimensions.Width - cornerWidth, (int)dimensions.Y + (int)dimensions.Height - cornerWidth, cornerWidth, cornerWidth);
-            Rectangle sideRectTop = new Rectangle((int)dimensions.X + cornerWidth, (int)dimensions.Y, (int)dimensions.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideRectBottom = new Rectangle((int)dimensions.X + cornerWidth, (int)dimensions.Y + (int)dimensions.Height - cornerWidth, (int)dimensions.Width - (cornerWidth * 2), cornerWidth);
-            Rectangle sideRectLeft = new Rectangle((int)dimensions.X, (int)dimensions.Y + cornerWidth, cornerWidth, (int)dimensions.Height - (cornerWidth * 2));
-            Rectangle sideRectRight = new Rectangle((int)dimensions.X + (int)dimensions.Width - cornerWidth, (int)dimensions.Y + cornerWidth, cornerWidth, (int)dimensions.Height - (cornerWidth * 2));
-            Rectangle centreRect = new Rectangle((int)dimensions.X + cornerWidth, (int)dimensions.Y + cornerWidth, (int)dimensions.Width - (cornerWidth * 2), (int)dimensions.Height - (cornerWidth * 2));
-
-            spriteBatch.Draw(texture, cornerRectTopLeft, cornerFrameTopLeft, drawColor);
-            spriteBatch.Draw(texture, cornerRectTopRight, cornerFrameTopRight, drawColor);
-            spriteBatch.Draw(texture, cornerRectBottomLeft, cornerFrameBottomLeft, drawColor);
-            spriteBatch.Draw(texture, cornerRectBottomRight, cornerFrameBottomRight, drawColor);
-            spriteBatch.Draw(texture, sideRectTop, sideFrameTop, drawColor);
-            spriteBatch.Draw(texture, sideRectBottom, sideFrameBottom, drawColor);
-            spriteBatch.Draw(texture, sideRectLeft, sideFrameLeft, drawColor);
-            spriteBatch.Draw(texture, sideRectRight, sideFrameRight, drawColor);
-            spriteBatch.Draw(texture, centreRect, centreFrame, drawColor);
-        }
-
+        
         private int drawHeight = 160;
         public override void Update(GameTime gameTime)
         {
@@ -197,9 +174,6 @@ namespace OvermorrowMod.Content.UI.Tracker
             if (Parent is UIQuestTrackerState state)
             {
                 Height.Pixels = drawHeight;
-                //if (state.questEntries.Count == 0) drawHeight = 160;
-                //else drawHeight = 160;
-                //Main.NewText(state.questEntries[0].Name);
             }
         }
 
@@ -223,7 +197,7 @@ namespace OvermorrowMod.Content.UI.Tracker
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
             //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.25f, 0.25f), 0, 0);
             //spriteBatch.Draw(texture, new Vector2(GetDimensions().X, GetDimensions().Y), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.7f, 0.25f), 0, 0);
-            DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - (Height.Pixels / 2)), 272, drawHeight), 35, Color.White * 0.6f);
+            ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - (Height.Pixels / 2)), 272, drawHeight), 35, Color.White * 0.6f);
 
             if (Parent is UIQuestTrackerState state)
             {
@@ -243,22 +217,50 @@ namespace OvermorrowMod.Content.UI.Tracker
                 foreach (QuestEntry entry in state.questEntries)
                 {
                     int offset = 30 + entryCount * 10;
+                    Color titleColor = entry.CanTurnIn ? new Color(127, 255, 212) : Color.Yellow;
 
-                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, entry.Name, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + offset + entryOffset), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
+                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, entry.Name, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + offset + entryOffset), titleColor, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
 
                     int objectiveCount = 0;
                     int objectivePadding = 0;
-                    foreach (QuestObjective objective in entry.Objectives)
+                    if (entry.CanTurnIn)
                     {
                         objectiveCount++;
 
-                        string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
-                        Color textColor = objective.Progress >= objective.Quantity ? new Color(127, 255, 212) : Color.White;
+                        string objectiveText = "- Can be turned in!";
+
+                        Color textColor = new Color(127, 255, 212);
                         TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, textColor).ToArray();
                         ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
 
                         entryOffset += objectiveSnippets.Length * 15 + (GetNumberLines(objectiveText, (int)MAXIMUM_LENGTH) * 20);
-                        //objectivePadding += 5;
+                    }
+                    else
+                    {
+                        foreach (QuestObjective objective in entry.Objectives)
+                        {
+                            objectiveCount++;
+
+                            string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
+
+                            // Add spacing in the description for the check mark
+                            if (objective.IsCompleted) objectiveText = "    " + objective.Description; 
+
+                            Color textColor = objective.IsCompleted ? new Color(127, 255, 212) : Color.White;
+                            TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, textColor).ToArray();
+                            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
+
+                            // Add checkbox if completed
+                            if (objective.IsCompleted)
+                            {
+                                Vector2 checkBoxOffset = new Vector2(8, 8);
+                                Texture2D checkTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "QuestBox_Checked").Value;
+                                spriteBatch.Draw(checkTexture, checkBoxOffset + new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), null, Color.White, 0f, checkTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+                            }
+
+                            entryOffset += objectiveSnippets.Length * 15 + (GetNumberLines(objectiveText, (int)MAXIMUM_LENGTH) * 20);
+                            //objectivePadding += 5;
+                        }
                     }
 
                     entryOffset += 20; // Always increase by 20 because of the entry's name height is ~20
@@ -276,11 +278,13 @@ namespace OvermorrowMod.Content.UI.Tracker
     {
         public string Name;
         public List<QuestObjective> Objectives;
+        public bool CanTurnIn;
 
-        public QuestEntry(string name, List<QuestObjective> objectives)
+        public QuestEntry(string name, List<QuestObjective> objectives, bool canTurnIn)
         {
             Name = name;
             Objectives = objectives;
+            CanTurnIn = canTurnIn;
         }
     }
 
@@ -289,12 +293,14 @@ namespace OvermorrowMod.Content.UI.Tracker
         public int Progress;
         public int Quantity;
         public string Description;
+        public bool IsCompleted;
 
-        public QuestObjective(int progress, int quantity, string description)
+        public QuestObjective(int progress, int quantity, string description, bool isCompleted = false)
         {
             Progress = progress;
             Quantity = quantity;
             Description = description;
+            IsCompleted = isCompleted;
         }
     }
 }
