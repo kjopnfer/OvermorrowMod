@@ -49,8 +49,8 @@ namespace OvermorrowMod.Content.Skies
         {
             Color morning = new Color(243, 168, 160);
             Color day = defaultColor;
-            Color sunset = new Color(255, 151, 111);
-            Color night = new Color(21, 42, 63);
+            Color sunset = new Color(223, 93, 127);
+            Color night = new Color(53, 81, 130);
 
             if (!Main.dayTime) return (night, night);
 

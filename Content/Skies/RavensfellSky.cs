@@ -74,19 +74,6 @@ namespace OvermorrowMod.Content.Skies
             // Far
             if (maxDepth >= 8f && minDepth < 8f)
             {
-                float farScale = 0.5f;
-                Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Far", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int x = (int)(Main.screenPosition.X * 0.5f * ParallaxMultiplier);
-                x %= (int)(farTexture.Width * farScale);
-                int y = (int)(Main.screenPosition.Y * 0.45f * ParallaxMultiplier);
-                y -= 1360; // 900
-                Vector2 position = farTexture.Size() / 2f * farScale;
-                for (int k = -1; k <= 1; k++)
-                {
-                    var pos = new Vector2(width - x + farTexture.Width * k * farScale, height - y);
-                    spriteBatch.Draw(farTexture, pos - position, null, textureColor, 0f, origin, farScale, SpriteEffects.None, 0f);
-                }
-
                 /*Texture2D cloudsNight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/clouds_night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
                 int x = (int)(Main.screenPosition.X * 0.5f * ScreenParralaxMultiplier);
@@ -122,19 +109,46 @@ namespace OvermorrowMod.Content.Skies
                 }
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);*/
+
+                float farScale = 0.5f;
+                Texture2D farTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Far", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                int x = (int)(Main.screenPosition.X * 0.45f * ParallaxMultiplier);
+                x %= (int)(farTexture.Width * farScale);
+                int y = (int)(Main.screenPosition.Y * 0.4f * ParallaxMultiplier);
+                y -= 1160; // 900
+                Vector2 position = farTexture.Size() / 2f * farScale;
+                for (int k = -1; k <= 1; k++)
+                {
+                    var pos = new Vector2(width - x + farTexture.Width * k * farScale, height - y);
+                    spriteBatch.Draw(farTexture, pos - position - new Vector2(350, 0), null, textureColor, 0f, origin, farScale, SpriteEffects.None, 0f);
+                }
+
+                Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid3", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                x = (int)(Main.screenPosition.X * 0.5f * ParallaxMultiplier);
+                x %= (int)(midTexture.Width * farScale);
+                y = (int)(Main.screenPosition.Y * 0.45f * ParallaxMultiplier);
+                y -= 1260; // 900
+                position = midTexture.Size() / 2f * farScale;
+                for (int k = -1; k <= 1; k++)
+                {
+                    var pos = new Vector2(width - x + farTexture.Width * k * farScale, height - y);
+                    spriteBatch.Draw(midTexture, pos - position - new Vector2(300, 0), null, textureColor, 0f, origin, farScale, SpriteEffects.None, 0f);
+                }
+
+
                 float offset = (0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f);
 
                 float midScale = 0.5f;
-                Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                Texture2D midTexture2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 x = (int)(Main.screenPosition.X * 0.3f);
-                x %= (int)(midTexture.Width * midScale);
+                x %= (int)(midTexture2.Width * midScale);
                 y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
                 y -= 1420; // 1000
-                position = midTexture.Size() / 2f * midScale;
+                position = midTexture2.Size() / 2f * midScale;
                 for (int k = -1; k <= 1; k++)
                 {
-                    var pos = new Vector2(width - x + midTexture.Width * k * midScale, height - y);
-                    spriteBatch.Draw(midTexture, pos - position - new Vector2(950, 45 * offset), null, Color.White, 0f, origin, midScale, SpriteEffects.None, 0f);
+                    var pos = new Vector2(width - x + midTexture2.Width * k * midScale, height - y);
+                    spriteBatch.Draw(midTexture2, pos - position - new Vector2(950, 45 * offset), null, Color.White, 0f, origin, midScale, SpriteEffects.None, 0f);
                 }
             }
 
