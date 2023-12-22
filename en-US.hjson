@@ -1063,9 +1063,17 @@ Mods: {
 				Headers.AmmoQuickswapPosition: Ammo Quickswap Position Header
 			}
 
+			TextureSwapConfig: {
+				DisplayName: Replace Vanilla Textures
+				Headers.AmmoQuickswapPosition: Replace Vanilla Textures
+			}
+
 			Common: {
 				LocalizedLabel: Mouse Anchor
-				LocalziedTooltip: ""
+				LocalizedTooltip: ""
+				
+				TextureLabel: Texture Swap
+				TextureTooltip: ""
 			}
 		}
 	}
