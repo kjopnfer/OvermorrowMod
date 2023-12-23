@@ -85,6 +85,7 @@ namespace OvermorrowMod.Common
             TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
             TextureAssets.Item[ItemID.TheUndertaker] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Undertaker");
 
+            TextureAssets.Tile[TileID.Dirt] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tiles_0");
             TextureAssets.Tile[TileID.Stone] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tiles_1");
             TextureAssets.Tile[TileID.Trees] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Trees");
             TextureAssets.TreeBranch[9] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tree_Branches_9");
@@ -105,6 +106,7 @@ namespace OvermorrowMod.Common
             TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Revolver);
             TextureAssets.Item[ItemID.TheUndertaker] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.TheUndertaker);
 
+            TextureAssets.Tile[TileID.Dirt] = ModContent.Request<Texture2D>("Terraria/Images/Tiles_" + TileID.Dirt);
             TextureAssets.Tile[TileID.Stone] = ModContent.Request<Texture2D>("Terraria/Images/Tiles_" + TileID.Stone);
             TextureAssets.Tile[TileID.Trees] = ModContent.Request<Texture2D>("Terraria/Images/Tiles_" + TileID.Trees);
             TextureAssets.TreeBranch[9] = ModContent.Request<Texture2D>("Terraria/Images/Tree_Branches_9");
