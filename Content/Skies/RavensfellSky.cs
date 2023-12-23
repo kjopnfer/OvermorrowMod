@@ -156,18 +156,6 @@ namespace OvermorrowMod.Content.Skies
             // Middle
             if (maxDepth >= 7f && minDepth < 7f)
             {
-                /*float midScale = 0.5f;
-                Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int x = (int)(Main.screenPosition.X * 0.8f * ParallaxMultiplier);
-                x %= (int)(midTexture.Width * midScale);
-                int y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
-                y -= 1420; // 1000
-                Vector2 position = midTexture.Size() / 2f * midScale;
-                for (int k = -1; k <= 1; k++)
-                {
-                    var pos = new Vector2(width - x + midTexture.Width * k * midScale, height - y);
-                    spriteBatch.Draw(midTexture, pos - position, null, textureColor, 0f, origin, midScale, SpriteEffects.None, 0f);
-                }*/
                 DrawMidTextures(spriteBatch, width, height, textureColor, origin);
             }
 
