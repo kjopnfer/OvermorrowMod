@@ -9,7 +9,7 @@ sampler endTex = sampler_state
 	texture = tex;
 };
 
-float4 ImageLerp(float2 coords : TEXCOORD) : COLOR
+float4 ImageLerp(float2 coords : TEXCOORD, float4 sampleColor : COLOR0) : COLOR
 {
 	float4 t1 = tex2D(uImage0, coords);
 	float4 t2 = tex2D(endTex, coords);
@@ -17,7 +17,7 @@ float4 ImageLerp(float2 coords : TEXCOORD) : COLOR
 	float4 result = lerp(t2, t1, progress);
 	result *= t1.a;
 
-	return result;
+	return result * sampleColor;
 }
 
 technique technique1 {

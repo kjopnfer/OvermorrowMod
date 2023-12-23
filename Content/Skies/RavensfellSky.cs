@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Skies
 
         public override Color OnTileColor(Color inColor)
         {
-            Main.NewText(Main.time + " / slot: " + timeSlot);
+            Main.NewText(Main.time + " / slot: " + timeSlot + " / color: " + Main.ColorOfTheSkies);
 
             Color defaultColor = base.OnTileColor(inColor);
             Color tileColor = Color.Lerp(GetStartAndEndTileColors(defaultColor).Item1, GetStartAndEndTileColors(defaultColor).Item2, timeProgress);
@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Skies
 
             float width = Main.screenWidth / 2f;
             float height = Main.screenHeight / 2f;
-            Color textureColor = Color.White;
+            Color textureColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.45f);
             Vector2 origin = new Vector2(0f, biomeHeight);
 
             // Horizon
@@ -148,7 +148,7 @@ namespace OvermorrowMod.Content.Skies
                 for (int k = -1; k <= 1; k++)
                 {
                     var pos = new Vector2(width - x + midTexture2.Width * k * midScale, height - y);
-                    spriteBatch.Draw(midTexture2, pos - position - new Vector2(950, 45 * offset), null, Color.White, 0f, origin, midScale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(midTexture2, pos - position - new Vector2(950, 45 * offset), null, textureColor, 0f, origin, midScale, SpriteEffects.None, 0f);
                 }
             }
 
@@ -156,8 +156,8 @@ namespace OvermorrowMod.Content.Skies
             // Middle
             if (maxDepth >= 7f && minDepth < 7f)
             {
-                float midScale = 0.5f;
-                Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                /*float midScale = 0.5f;
+                Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 int x = (int)(Main.screenPosition.X * 0.8f * ParallaxMultiplier);
                 x %= (int)(midTexture.Width * midScale);
                 int y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
@@ -166,8 +166,9 @@ namespace OvermorrowMod.Content.Skies
                 for (int k = -1; k <= 1; k++)
                 {
                     var pos = new Vector2(width - x + midTexture.Width * k * midScale, height - y);
-                    spriteBatch.Draw(midTexture, pos - position, null, Color.White, 0f, origin, midScale, SpriteEffects.None, 0f);
-                }
+                    spriteBatch.Draw(midTexture, pos - position, null, textureColor, 0f, origin, midScale, SpriteEffects.None, 0f);
+                }*/
+                DrawMidTextures(spriteBatch, width, height, textureColor, origin);
             }
 
             // Close

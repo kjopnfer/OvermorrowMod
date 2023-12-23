@@ -43,14 +43,28 @@ namespace OvermorrowMod.Content.Skies
             };
         }
 
-        /// <param name="timeSlot"></param>
+        private (Texture2D, Texture2D) GetMidStartAndEndTextures()
+        {
+            if (!Main.dayTime) return (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night").Value);
+
+            return timeSlot switch
+            {
+                0 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Morning").Value),
+                1 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Morning").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Day").Value),
+                2 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Day").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Sunset").Value),
+                3 => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Sunset").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night").Value),
+                _ => (ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night").Value, ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night").Value),
+            };
+        }
+
+
         /// <param name="defaultColor">I don't know what vanilla uses.</param>
         private (Color, Color) GetStartAndEndTileColors(Color defaultColor)
         {
             Color morning = new Color(243, 168, 160);
             Color day = defaultColor;
             Color sunset = new Color(223, 93, 127);
-            Color night = new Color(53, 81, 130);
+            Color night = new Color(21, 42, 63);
 
             if (!Main.dayTime) return (night, night);
 
@@ -171,6 +185,44 @@ namespace OvermorrowMod.Content.Skies
             spriteBatch.Reload(BlendState.AlphaBlend);
         }
 
+        private void DrawMidTextures(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
+        {
+            float midScale = 0.5f;
+            Texture2D midTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Mid_Night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+
+            int x = (int)(Main.screenPosition.X * 0.8f * ParallaxMultiplier);
+            x %= (int)(midTexture.Width * midScale);
+
+            int y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
+            y -= 1420; // 1000
+
+            spriteBatch.Reload(SpriteSortMode.Immediate);
+            Texture2D startTexture = midTexture;
+
+            Effect effect = OvermorrowModFile.Instance.ImageLerp.Value;
+
+            var textures = GetMidStartAndEndTextures();
+            startTexture = textures.Item1;
+
+            if (Main.dayTime) effect.Parameters["progress"].SetValue(1 - timeProgress); // Don't know why this is reversed
+            else effect.Parameters["progress"].SetValue(1f);
+
+            effect.Parameters["tex"].SetValue(textures.Item2);
+
+            effect.CurrentTechnique.Passes["ImageLerp"].Apply();
+
+            Vector2 position = midTexture.Size() / 2f * midScale;
+
+            for (int k = -1; k <= 1; k++)
+            {
+                var pos = new Vector2(width - x + midTexture.Width * k * midScale, height - y);
+                if (Main.dayTime) spriteBatch.Draw(startTexture, pos - position, null, textureColor, 0f, origin, midScale, SpriteEffects.None, 0f);
+                else spriteBatch.Draw(startTexture, pos - position, null, textureColor, 0f, origin, midScale, SpriteEffects.None, 0f);
+            }
+
+            spriteBatch.Reload(SpriteSortMode.Deferred);
+        }
+
         private void DrawFarClouds(SpriteBatch spriteBatch, float width, float height, Color textureColor, Vector2 origin)
         {
             float farScale = 0.5f;
@@ -194,7 +246,6 @@ namespace OvermorrowMod.Content.Skies
             Color horizonColor = Color.Lerp(GetStartAndEndHorizonColors().Item1, GetStartAndEndHorizonColors().Item2, timeProgress);
             if (!Main.dayTime) horizonColor = GetStartAndEndHorizonColors().Item1;
             spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), horizonColor);
-
             float horizonScale = 1f;
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Backgrounds/Ravensfell_Horizon_Night", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
@@ -220,11 +271,13 @@ namespace OvermorrowMod.Content.Skies
             effect.CurrentTechnique.Passes["ImageLerp"].Apply();
 
             Vector2 position = texture.Size() / 2f * horizonScale;
+
             for (int k = -1; k <= 1; k++)
             {
                 var pos = new Vector2(width - x + texture.Width * k * horizonScale, height - y);
-                if (Main.dayTime) spriteBatch.Draw(startTexture, pos - position, null, Color.White, 0f, origin, horizonScale, SpriteEffects.None, 0f);
-                else spriteBatch.Draw(texture, pos - position, null, Color.White * 0.5f, 0f, origin, horizonScale, SpriteEffects.None, 0f);
+                if (Main.dayTime) spriteBatch.Draw(startTexture, pos - position, null, textureColor, 0f, origin, horizonScale, SpriteEffects.None, 0f);
+                else spriteBatch.Draw(texture, pos - position, null, textureColor, 0f, origin, horizonScale, SpriteEffects.None, 0f);
+
             }
 
             spriteBatch.Reload(SpriteSortMode.Deferred);
