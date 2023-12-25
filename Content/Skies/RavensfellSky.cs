@@ -28,7 +28,6 @@ namespace OvermorrowMod.Content.Skies
 
             Color defaultColor = base.OnTileColor(inColor);
             Color tileColor = Color.Lerp(GetStartAndEndTileColors(defaultColor).Item1, GetStartAndEndTileColors(defaultColor).Item2, timeProgress);
-            if (!Main.dayTime) tileColor = GetStartAndEndTileColors(defaultColor).Item1;
             tileColor.A = inColor.A;
 
             return Color.Lerp(inColor, tileColor, 1f);
