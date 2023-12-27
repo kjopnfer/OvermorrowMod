@@ -18,6 +18,7 @@ namespace OvermorrowMod.Content.Skies
         //int timeSlot => (int)Math.Floor(Main.time / 13500);
         //float timeProgress => MathHelper.Lerp(0f, 1f, (float)((Main.time % 13500) / 13500f));
 
+        // TODO: Increase the time frame for sunrise/sunset so that they dont last just an hour and are more visible
         int timeSlot
         {
             get
@@ -300,7 +301,7 @@ namespace OvermorrowMod.Content.Skies
             Effect effect = OvermorrowModFile.Instance.ImageLerp.Value;
 
             var textures = GetStartAndEndTextures("Mid");
-
+                
             startTexture = textures.Item1;
             effect.Parameters["progress"].SetValue(1 - timeProgress); // Don't know why this is reversed
             effect.Parameters["tex"].SetValue(textures.Item2);
