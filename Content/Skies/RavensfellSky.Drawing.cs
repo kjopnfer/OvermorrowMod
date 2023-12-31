@@ -140,8 +140,8 @@ namespace OvermorrowMod.Content.Skies
 
             return timeSlot switch
             {
-                1 => (morning, day),
-                2 => (day, day),
+                1 => (morning, morning),
+                2 => (morning, day),
                 3 => (day, sunset),
                 _ => (day, day),
             };
