@@ -11,6 +11,12 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
         UserInterface SpeechBubbleUI;
         internal UISpeechBubbleState SpeechBubbleState;
 
+        public static UISpeechBubbleSystem Instance { get; set; }
+        public UISpeechBubbleSystem()
+        {
+            Instance = this;
+        }
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -19,6 +25,11 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
                 SpeechBubbleUI = new UserInterface();
                 SpeechBubbleUI.SetState(SpeechBubbleState);
             }
+        }
+
+        public override void Unload()
+        {
+            Instance = null;
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)

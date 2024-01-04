@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Content.Projectiles;
+using OvermorrowMod.Content.UI.SpeechBubble;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using System;
@@ -191,11 +192,30 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
                             if (!OvermorrowWorld.savedFeyden && dialoguePlayer.Player.Distance(NPC.Center) < 32 * 16)
                             {
-                                if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))
+                                BaseSpeechBubble speechBubble = new BaseSpeechBubble();
+
+                                string[] randomText = { 
+                                    "Eat my dust, slimeballs!",
+                                    "Down you go!",
+                                    "It's all in the footwork.",
+                                    //"Oh sorry was that your friend? Don't worry, you're next!",
+                                    "Slime your way out of this!",
+                                    "Gooey pest!",
+                                    //"Dicing slimes like onions in the kitchen!",
+                                    //"Nice try, but I've seen scarier jelly at the dessert table!",
+                                };
+
+                                string text = randomText[Main.rand.Next(0, randomText.Length)];
+                                speechBubble.Add(new Text(text, 60, 120));
+
+                                UISpeechBubbleSystem.Instance.SpeechBubbleState.AddSpeechBubble(NPC, speechBubble);
+                                /*if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))
                                 {
                                     int attackID = Main.rand.Next(1, 9);
                                     dialoguePlayer.AddNPCPopup(ModContent.NPCType<Feyden>(), ModUtils.GetXML(AssetDirectory.Popups + "FeydenCave.xml"), "ATTACK_" + attackID);
-                                }
+                                }*/
+
+
                             }
                         }
                     }
@@ -329,7 +349,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         int yFrame = 0;
         private void NPCTextureHandler(out Texture2D texture, out int yFrameCount)
         {
-            Main.NewText("AISTATE: " + AIState + " YFRAME: " + yFrame);
+            //Main.NewText("AISTATE: " + AIState + " YFRAME: " + yFrame);
             switch (AIState)
             {
                 case (int)AICase.Approach:

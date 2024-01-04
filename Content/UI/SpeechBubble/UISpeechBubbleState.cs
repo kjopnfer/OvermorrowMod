@@ -31,37 +31,59 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
         public bool isFinished = false;
         private int drawTime = 0;
         private int holdTime = 0;
-        private int fadeTime { get; } = 60;
+        public int fadeTime { get; private set; } = 60;
 
         public Queue<Text> speechBubble = new Queue<Text>();
         public BaseSpeechBubble() { }
 
+        public void Add(Text text)
+        {
+            Main.NewText("added");
+            speechBubble.Enqueue(text);
+        }
+
         public void Update()
         {
-            if (speechBubble.Count == 0)
+            Main.NewText("update " + drawTime + " / " + holdTime);
+
+            // The last text should not be removed, since we need to fade out the text
+            if (speechBubble.Count == 1 && isFinished)
             {
-                isFinished = true;
+                if (fadeTime > 0) fadeTime--;
                 return;
             }
 
             Text currentText = speechBubble.Peek();
-
-            if (drawTime < currentText.drawTime)
-            {
-
-            }
+            if (drawTime < currentText.drawTime) drawTime++;
             else
             {
-                if (holdTime < currentText.holdTime)
+                if (holdTime < currentText.holdTime) holdTime++;
+                else
                 {
+                    if (speechBubble.Count > 1)
+                    {
+                        speechBubble.Dequeue();
+                        Main.NewText("dequeued");
 
+                        drawTime = 0;
+                        holdTime = 0;
+                    }
+                    else
+                    {
+                        isFinished = true;
+                    }
                 }
             }
         }
 
         public string GetText()
         {
-            return "";
+            Text currentText = speechBubble.Peek();
+
+            int progress = (int)MathHelper.Lerp(0, currentText.text.Length, drawTime / (float)currentText.drawTime);
+            var text = currentText.text.Substring(0, progress);
+
+            return text;
         }
     }
 
@@ -71,14 +93,13 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
 
         public void AddSpeechBubble(NPC npc, BaseSpeechBubble text)
         {
-            if (!SpeechInstances.ContainsKey(npc.type))
-            {
-                SpeechInstances.Add(npc.type, text);
-            }
+            if (!SpeechInstances.ContainsKey(npc.whoAmI)) SpeechInstances.Add(npc.whoAmI, text);
         }
 
         public override void Update(GameTime gameTime)
         {
+            if (Main.gamePaused) return;
+
             List<int> RemovalIndices = new List<int>();
 
             foreach (KeyValuePair<int, BaseSpeechBubble> instance in SpeechInstances)
@@ -88,17 +109,13 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
                 // Queue for removal from Dictionary if NPC is not active
                 if (!Main.npc[instance.Key].active) RemovalIndices.Add(instance.Key);
 
-                // Update counters
                 speech.Update();
 
                 // Remove from Dictionary if dialogue has finished
-                if (speech.isFinished)
-                {
-                    RemovalIndices.Add(instance.Key);
-                }
-
-                // Else move to next dialogue
+                if (speech.isFinished && speech.fadeTime <= 0) RemovalIndices.Add(instance.Key);
             }
+
+            foreach (int index in RemovalIndices) SpeechInstances.Remove(index);
 
             base.Update(gameTime);
         }
@@ -112,9 +129,17 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
                 NPC npc = Main.npc[instance.Key];
                 BaseSpeechBubble speech = instance.Value;
 
+                if (speech.speechBubble.Count == 0)
+                {
+                    Main.NewText("error somehow no text at all?");
+                    continue;
+                }
+
+                float alpha = MathHelper.Lerp(0f, 1f, speech.fadeTime / 60f);
+
                 // Draw current dialogue above the NPC
                 TextSnippet[] snippets = ChatManager.ParseMessage(speech.GetText(), Color.White).ToArray();
-                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, npc.getRect().TopLeft(), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, 150);
+                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, npc.getRect().TopLeft() - new Vector2(npc.width + speech.GetText().Length * 1.25f, snippets.Length * 28) - Main.screenPosition, Color.White * alpha, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, 150);
             }
 
             base.Draw(spriteBatch);
