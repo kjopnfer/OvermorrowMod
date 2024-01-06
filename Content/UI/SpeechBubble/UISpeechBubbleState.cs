@@ -144,6 +144,8 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
                 TextSnippet[] snippets = ChatManager.ParseMessage(speech.GetText(), Color.White * alpha).ToArray();
                 Vector2 position = npc.getRect().TopLeft() - new Vector2(npc.width + textLength * 0.5f, 40) - Main.screenPosition;
 
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "TrackerPanel").Value;
+                ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)position.X - 16, (int)position.Y - 16, (int)font.MeasureString(speech.GetText()).X + 24, 50), 15, Color.White * 0.6f * alpha);
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, speech.GetText(), position, Color.White * alpha, 0f, Vector2.Zero, Vector2.One * 0.9f);
 
                 //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, position, Color.White * alpha, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, 200);

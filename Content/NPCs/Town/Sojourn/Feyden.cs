@@ -107,6 +107,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         private int AICounter = 0;
         private int AttackDelay = 0;
 
+        private int prevTextIndex = -1;
         public override void AI()
         {
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -187,25 +188,29 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         if (NPC.Distance(targetNPC.position) <= 32)
                         {
                             Vector2 position = NPC.Center + new Vector2(32 * NPC.direction, -8);
-                            swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 10, 2f, Main.myPlayer);
+                            swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 10, 2f, Main.myPlayer, NPC.whoAmI);
                             AIState = (int)AICase.Fighting;
 
                             if (!OvermorrowWorld.savedFeyden && dialoguePlayer.Player.Distance(NPC.Center) < 32 * 16)
                             {
                                 BaseSpeechBubble speechBubble = new BaseSpeechBubble();
 
-                                string[] randomText = { 
+                                string[] randomText = {
                                     "Eat my dust, slimeballs!",
                                     "Down you go!",
                                     "It's all in the footwork.",
                                     //"Oh sorry was that your friend? Don't worry, you're next!",
                                     "Slime your way out of this!",
                                     "Gooey pest!",
-                                    //"Dicing slimes like onions in the kitchen!",
+                                    "Like dicing onions in the kitchen!",
                                     //"Nice try, but I've seen scarier jelly at the dessert table!",
                                 };
 
-                                string text = randomText[Main.rand.Next(0, randomText.Length)];
+                                int textIndex = Main.rand.Next(0, randomText.Length);
+                                while (textIndex == prevTextIndex) textIndex = Main.rand.Next(0, randomText.Length);
+                                prevTextIndex = textIndex;
+
+                                string text = randomText[textIndex];
                                 speechBubble.Add(new Text(text, 45, 100));
 
                                 UISpeechBubbleSystem.Instance.SpeechBubbleState.AddSpeechBubble(NPC, speechBubble);
@@ -250,7 +255,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                     break;
                 case (int)AICase.Dodge:
                     NPC.dontTakeDamage = true;
-                    
+
                     // Roll away from the NPC towards an open area
                     if (AICounter == 0)
                     {
@@ -291,6 +296,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                 if (AIState != (int)AICase.Fighting)
                 {
                     modifiers.FinalDamage *= 0;
+                    
                     AICounter = 0;
                     AIState = (int)AICase.Dodge;
 
@@ -420,12 +426,13 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
-            Projectile.width = 32;
+            Projectile.width = 72;
             Projectile.height = 32;
             Projectile.friendly = true;
 
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.tileCollide = false;
             Projectile.localNPCHitCooldown = -1; // 1 hit per npc max
 
             Projectile.timeLeft = 30;
@@ -433,7 +440,10 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public override void AI()
         {
-            base.AI();
+            NPC npc = Main.npc[(int)Projectile.ai[0]];
+            if (!npc.active) Projectile.Kill();
+
+            Projectile.Center = npc.Center + new Vector2(16 * npc.direction, -8);
         }
 
         public override void OnKill(int timeLeft)
