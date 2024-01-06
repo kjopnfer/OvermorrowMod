@@ -206,7 +206,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                                 };
 
                                 string text = randomText[Main.rand.Next(0, randomText.Length)];
-                                speechBubble.Add(new Text(text, 60, 120));
+                                speechBubble.Add(new Text(text, 45, 100));
 
                                 UISpeechBubbleSystem.Instance.SpeechBubbleState.AddSpeechBubble(NPC, speechBubble);
                                 /*if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))

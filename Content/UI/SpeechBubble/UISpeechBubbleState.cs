@@ -9,6 +9,7 @@ using Terraria.GameContent;
 using Terraria.UI.Chat;
 using System;
 using OvermorrowMod.Core.Interfaces;
+using ReLogic.Graphics;
 
 namespace OvermorrowMod.Content.UI.SpeechBubble
 {
@@ -31,7 +32,7 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
         public bool isFinished = false;
         private int drawTime = 0;
         private int holdTime = 0;
-        public int fadeTime { get; private set; } = 60;
+        public int fadeTime { get; private set; } = 30;
 
         public Queue<Text> speechBubble = new Queue<Text>();
         public BaseSpeechBubble() { }
@@ -44,7 +45,7 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
 
         public void Update()
         {
-            Main.NewText("update " + drawTime + " / " + holdTime);
+            Main.NewText("draw: " + drawTime + " / hold:" + holdTime + " / fade: " + fadeTime);
 
             // The last text should not be removed, since we need to fade out the text
             if (speechBubble.Count == 1 && isFinished)
@@ -135,11 +136,17 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
                     continue;
                 }
 
-                float alpha = MathHelper.Lerp(0f, 1f, speech.fadeTime / 60f);
+                DynamicSpriteFont font = FontAssets.MouseText.Value;
 
-                // Draw current dialogue above the NPC
-                TextSnippet[] snippets = ChatManager.ParseMessage(speech.GetText(), Color.White).ToArray();
-                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, npc.getRect().TopLeft() - new Vector2(npc.width + speech.GetText().Length * 1.25f, snippets.Length * 28) - Main.screenPosition, Color.White * alpha, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, 150);
+                int textLength = (int)(font.MeasureString(speech.GetText()).X * 0.5f);
+
+                float alpha = MathHelper.Lerp(0f, 1f, Utils.Clamp(speech.fadeTime, 0, 30) / 30f);
+                TextSnippet[] snippets = ChatManager.ParseMessage(speech.GetText(), Color.White * alpha).ToArray();
+                Vector2 position = npc.getRect().TopLeft() - new Vector2(npc.width + textLength * 0.5f, 40) - Main.screenPosition;
+
+                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, speech.GetText(), position, Color.White * alpha, 0f, Vector2.Zero, Vector2.One * 0.9f);
+
+                //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, position, Color.White * alpha, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, 200);
             }
 
             base.Draw(spriteBatch);
