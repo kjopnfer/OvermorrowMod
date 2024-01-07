@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -81,7 +82,7 @@ namespace OvermorrowMod.Common.Players
             TitleLength = showLength;
             ShowText = true;
         }
-
+        public Vector2? ScreenPos = null;
         public override void ModifyScreenPosition()
         {
             #region Camera Panning
@@ -172,6 +173,11 @@ namespace OvermorrowMod.Common.Players
                 }
             }
             #endregion
+
+            //bad code
+            if (ScreenPos != null)
+                //Main.screenPosition = new Vector2(MathHelper.Lerp(Main.screenPosition.X, ScreenPos.GetValueOrDefault().X, 1f), MathHelper.Lerp(Main.screenPosition.Y, ScreenPos.GetValueOrDefault().Y, 1f));
+                Main.screenPosition += (ScreenPos.GetValueOrDefault() - Main.screenPosition);
 
             #region Screenshake
             if (!Main.gamePaused)

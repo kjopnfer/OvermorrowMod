@@ -1,6 +1,8 @@
 Mods: {
 	OvermorrowMod: {
 		Projectiles: {
+			GraniteYoyoProj.DisplayName: Electro-Throw
+			GraniteYoyoOrbit.DisplayName: Electro-Throw
 			LightningBurst.DisplayName: Lightning Spark
 			StormBolt2.DisplayName: Storm Bolt
 			TestLightning.DisplayName: Lightning Bolt
@@ -131,6 +133,12 @@ Mods: {
 			AmethystSlicer_Thrown.DisplayName: Amethyst Slicer_ Thrown
 			AmethystSlicer_Shards.DisplayName: Amethyst Slicer_ Shards
 			AmethystCrystal.DisplayName: Amethyst Crystal
+			GlimsporeSpore.DisplayName: Glimspore Spore
+			SlashEffect.DisplayName: Slash Effect
+			SmallUvShard.DisplayName: Small Uv Shard
+			UvDaggerProjectile.DisplayName: Uv Dagger Projectile
+			GlimsporeBomb.DisplayName: Glimspore Bomb
+			RingCloud.DisplayName: Ring Cloud
 		}
 
 		NPCs: {
@@ -294,9 +302,92 @@ Mods: {
 			Ruin3.DisplayName: Ruin3
 			Spin.DisplayName: Spin
 			BlueThrasher.DisplayName: Blue Thrasher
+			GamerDust.DisplayName: Gamer Dust
+			ChargeEffect.DisplayName: Charge Effect
+			Background.DisplayName: Background
 		}
 
 		Items: {
+			StrangeSpore: {
+				Tooltip: Summons Glorb.
+				DisplayName: Strange Spore
+			}
+
+			GraniteYoyo: {
+				DisplayName: Electro-Throw
+				Tooltip: Magnetic Granite pebbles will emerge from this yo-yo on enemy hits.
+			}
+
+			GlimsporeItem: {
+				DisplayName: Glimspore Bulbs
+				Tooltip: Tastes like Gushers Fruit Snacks
+			}
+
+			uvStatue2Item: {
+				DisplayName: UV Gargoyle statue thing idk
+				Tooltip: Visible while the ultraviolet goggles are equipped.
+			}
+
+			uvStatue1Item: {
+				DisplayName: UV Gargoyle statue thing idk
+				Tooltip: Visible while the ultraviolet goggles are equipped.
+			}
+
+			UV4x7CrystalItem: {
+				DisplayName: Ultraviolet Crystal (4x7)
+				Tooltip: Visible while the ultraviolet goggles are equipped.
+			}
+
+			UV3x5CrystalItem: {
+				DisplayName: Ultraviolet Crystal (3x5)
+				Tooltip: Visible while the ultraviolet goggles are equipped.
+			}
+
+			UV3x3CrystalItem: {
+				DisplayName: Ultraviolet Crystal (3x3)
+				Tooltip: Visible while the ultraviolet goggles are equipped.
+			}
+
+			UV2x2CrystalItem: {
+				DisplayName: Ultraviolet Crystal (2x2)
+				Tooltip: Visible while the ultraviolet goggles are equipped.
+			}
+
+			UV1x1CrystalItem: {
+				DisplayName: Ultraviolet Crystal (1x1)
+				Tooltip: Visible while the ultraviolet goggles are equipped.
+			}
+
+			GlimsporeScepter: {
+				DisplayName: Glimspore Gasser
+				Tooltip: You smell like you farded. ( FARDED )
+			}
+
+			UVRubbleItem: {
+				DisplayName: Ultraviolet Rubble
+				Tooltip: Visible when exposed to ultraviolet light.
+			}
+
+			UVSoilItem: {
+				DisplayName: Ultraviolet Soil
+				Tooltip: Visible when exposed to ultraviolet light.
+			}
+
+			UVStoneItem: {
+				DisplayName: Ultraviolet Stone
+				Tooltip: Visible when exposed to ultraviolet light.
+			}
+
+			UVGoggles: {
+				DisplayName: Ultraviolet Goggles
+				Tooltip: Allows you to see Ultraviolet.
+			}
+
+			UvDagger: {
+				DisplayName: Blinding Blades
+				Tooltip: Throws 5 sharp and magical Tyfloite Taggers in a spread
+			}
+
 			Blurb: {
 				DisplayName: Blurb
 				Tooltip: "'THIS IS A TESTING ITEM'"
@@ -932,6 +1023,11 @@ Mods: {
 		}
 
 		Buffs: {
+			GlimsporeStomperBuff: {
+				DisplayName: Glorb
+				Description: IT'S GLORBIN TIME
+			}
+
 			BowDryfire: {
 				DisplayName: Dryfire Cooldown
 				Description: You were thinking too fast you forgot to load your bow, and ended up dryfiring it.

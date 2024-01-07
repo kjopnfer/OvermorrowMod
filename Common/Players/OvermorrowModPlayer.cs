@@ -14,6 +14,7 @@ using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Items.Misc;
 using OvermorrowMod.Content.Items;
+using Terraria.Graphics.Effects;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -32,10 +33,25 @@ namespace OvermorrowMod.Common.Players
         public bool SnakeBite;
         public bool PracticeTarget;
         public bool PredatorTalisman;
+
+        public List<UVBubble> UVBubbles = new List<UVBubble>();
+        public class UVBubble
+        {
+            public Vector2 Position;
+            public float Radius;
+            public UVBubble(Vector2 position, float radius)
+            {
+                Position = position;
+                Radius = radius;
+            }
+        }
+
+
         #endregion
 
         #region Accessory Visibility
         public bool BearTrapHide;
+        public bool DashShadow;
         public bool SnakeBiteHide;
         public bool PracticeTargetHide;
         #endregion
@@ -60,6 +76,7 @@ namespace OvermorrowMod.Common.Players
         {
             BearTrap = false;
             CapturedMirage = false;
+            DashShadow = false;
             EruditeDamage = false;
             GuideLantern = false;
             ImbuementPouch = false;
@@ -72,6 +89,8 @@ namespace OvermorrowMod.Common.Players
 
             atomBuff = false;
             smolBoi = false;
+
+            UVBubbles.Clear();
         }
 
         public override void UpdateLifeRegen()
@@ -98,12 +117,36 @@ namespace OvermorrowMod.Common.Players
                     list.Value.Clear();
             }
         }
+        public override void PostUpdateEquips()
+        {
+            // Basic player shadow trail
+            if (DashShadow)
+            {
+                Player.eocDash = 50;
+                Player.armorEffectDrawShadowEOCShield = true;
+            }
 
+        }
         // Example of how to replace cursor texture to remember for later
         public override void PostUpdateMiscEffects()
         {
             if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
             {
+                for (int i = 0; i < 6; i++)
+                {
+
+                    // activate shadre
+                    if (MathHelper.Clamp(UVBubbles.Count - 1, 0, 5) < i || UVBubbles.Count == 0)
+                    {
+                        if (Main.netMode != NetmodeID.Server && Filters.Scene[$"UVShader{i}"].IsActive())
+                        {
+                            Filters.Scene[$"UVShader{i}"].GetShader().UseColor(0f, 0f, 0f).UseTargetPosition(Vector2.Zero);
+                            Filters.Scene[$"UVShader{i}"].Deactivate();
+                        }
+                    }
+                }
+
+
                 Asset<Texture2D> emptyTexture = ModContent.Request<Texture2D>(AssetDirectory.Empty);
                 Asset<Texture2D> cursor0 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_0");
                 Asset<Texture2D> cursor1 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_1");

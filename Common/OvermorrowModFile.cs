@@ -159,6 +159,30 @@ namespace OvermorrowMod.Common
                 ReplaceVanillaTextures();
             }
 
+            // RadianShadoo shadres :dread:
+            Ref<Effect> specialRef = new Ref<Effect>(Assets.Request<Effect>("Effects/UVBG").Value);
+            GameShaders.Misc["UVBG"] = new MiscShaderData(specialRef, "UVBG");//.UseImage0("OvermorrowMod/Effects/IMAGE");
+
+            Ref<Effect> screenRef = new Ref<Effect>(Assets.Request<Effect>("Effects/UVShader").Value); // The path to the compiled shader file.
+            Filters.Scene["UVShader0"] = new Filter(new ScreenShaderData(screenRef, "UVShader"), EffectPriority.VeryHigh);
+            Filters.Scene["UVShader0"].Load();
+
+            Filters.Scene["UVShader1"] = new Filter(new ScreenShaderData(screenRef, "UVShader"), EffectPriority.VeryHigh);
+            Filters.Scene["UVShader1"].Load();
+
+            Filters.Scene["UVShader2"] = new Filter(new ScreenShaderData(screenRef, "UVShader"), EffectPriority.VeryHigh);
+            Filters.Scene["UVShader2"].Load();
+
+            Filters.Scene["UVShader3"] = new Filter(new ScreenShaderData(screenRef, "UVShader"), EffectPriority.VeryHigh);
+            Filters.Scene["UVShader3"].Load();
+
+            Filters.Scene["UVShader4"] = new Filter(new ScreenShaderData(screenRef, "UVShader"), EffectPriority.VeryHigh);
+            Filters.Scene["UVShader4"].Load();
+
+            Filters.Scene["UVShader5"] = new Filter(new ScreenShaderData(screenRef, "UVShader"), EffectPriority.VeryHigh);
+            Filters.Scene["UVShader5"].Load();
+
+
             ModDetours.Load();
 
             //On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
