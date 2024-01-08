@@ -295,7 +295,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             {
                 if (AIState != (int)AICase.Fighting)
                 {
-                    modifiers.FinalDamage *= 0;
+                    modifiers.SourceDamage *= 0;
                     
                     AICounter = 0;
                     AIState = (int)AICase.Dodge;

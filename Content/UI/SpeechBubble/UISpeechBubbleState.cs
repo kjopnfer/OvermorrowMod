@@ -92,8 +92,19 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
     {
         private Dictionary<int, BaseSpeechBubble> SpeechInstances = new Dictionary<int, BaseSpeechBubble>();
 
-        public void AddSpeechBubble(NPC npc, BaseSpeechBubble text)
+        /// <summary>
+        /// Set clear to true to remove all instances of the NPC's dialogue. Used for important dialogue.
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="text"></param>
+        /// <param name="clear">Determine whether to clear the NPC's current speech with a new one immediately</param>
+        public void AddSpeechBubble(NPC npc, BaseSpeechBubble text, bool clear = false)
         {
+            if (clear)
+            {
+                if (SpeechInstances.ContainsKey(npc.whoAmI)) SpeechInstances.Remove(npc.whoAmI);
+            }
+
             if (!SpeechInstances.ContainsKey(npc.whoAmI)) SpeechInstances.Add(npc.whoAmI, text);
         }
 

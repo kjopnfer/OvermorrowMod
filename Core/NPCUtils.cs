@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using System;
+using System.Linq;
 using Terraria;
 
 namespace OvermorrowMod.Core
@@ -21,6 +22,19 @@ namespace OvermorrowMod.Core
             Tile bottomRightTile = Main.tile[(int)entity.Hitbox.BottomRight().X / 16, (int)entity.Hitbox.BottomRight().Y / 16];
 
             return (bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType]);
+        }
+
+        /// <summary>
+        /// Searches through Main.npc and returns the first instance of the specified NPC. Returns null if not found.
+        /// </summary>
+        public static NPC FindFirstNPC(int type)
+        {
+            foreach (NPC npc in Main.npc.Where(npc => npc.type == type))
+            {
+                return npc;
+            }
+
+            return null;
         }
 
         public static NPC FindClosestNPC(this Entity entity, float maxDetectDistance)
@@ -118,7 +132,7 @@ namespace OvermorrowMod.Core
                     npc.velocity *= 0.8f;
                 }
             }
-            else if (npc.velocity.X < moveSpeed && targetPosition.X > npc.Center.X) 
+            else if (npc.velocity.X < moveSpeed && targetPosition.X > npc.Center.X)
             {
                 if (npc.confused && !npc.boss)
                 {
@@ -137,7 +151,7 @@ namespace OvermorrowMod.Core
                     }
                 }
             }
-            else if (npc.velocity.X > -moveSpeed && targetPosition.X < npc.Center.X) 
+            else if (npc.velocity.X > -moveSpeed && targetPosition.X < npc.Center.X)
             {
                 if (npc.confused && !npc.boss)
                 {
@@ -455,7 +469,7 @@ namespace OvermorrowMod.Core
             }
             return false;
         }
-        
+
         /// <summary>
         /// Checks to see if there is a gap in front of the NPC
         /// </summary>
