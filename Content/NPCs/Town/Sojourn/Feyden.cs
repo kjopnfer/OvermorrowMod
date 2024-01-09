@@ -295,12 +295,13 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             {
                 if (AIState != (int)AICase.Fighting)
                 {
-                    modifiers.SourceDamage *= 0;
-                    
+                    // Dodging can't completely ignore the damage this is the lowest that can be set
+                    modifiers.ModifyHitInfo += (ref NPC.HitInfo hitInfo) => {
+                        hitInfo.Damage = 1;
+                    };
+
                     AICounter = 0;
                     AIState = (int)AICase.Dodge;
-
-                    Main.NewText("try dodge");
                 }
             }
         }
