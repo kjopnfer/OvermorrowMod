@@ -198,27 +198,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
                             if (!OvermorrowWorld.savedFeyden && dialoguePlayer.Player.Distance(NPC.Center) < 32 * 16)
                             {
-                                BaseSpeechBubble speechBubble = new BaseSpeechBubble();
-
-                                string[] randomText = {
-                                    "Eat my dust, slimeballs!",
-                                    "Down you go!",
-                                    "It's all in the footwork.",
-                                    //"Oh sorry was that your friend? Don't worry, you're next!",
-                                    "Slime your way out of this!",
-                                    "Gooey pest!",
-                                    "Like dicing onions in the kitchen!",
-                                    //"Nice try, but I've seen scarier jelly at the dessert table!",
-                                };
-
-                                int textIndex = Main.rand.Next(0, randomText.Length);
-                                while (textIndex == prevTextIndex) textIndex = Main.rand.Next(0, randomText.Length);
-                                prevTextIndex = textIndex;
-
-                                string text = randomText[textIndex];
-                                speechBubble.Add(new Text(text, 45, 100));
-
-                                UISpeechBubbleSystem.Instance.SpeechBubbleState.AddSpeechBubble(NPC, speechBubble);
+                                
                                 /*if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))
                                 {
                                     int attackID = Main.rand.Next(1, 9);
