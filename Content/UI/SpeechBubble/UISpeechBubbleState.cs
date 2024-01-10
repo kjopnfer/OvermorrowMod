@@ -39,14 +39,11 @@ namespace OvermorrowMod.Content.UI.SpeechBubble
 
         public void Add(Text text)
         {
-            Main.NewText("added");
             speechBubble.Enqueue(text);
         }
 
         public void Update()
         {
-            Main.NewText("draw: " + drawTime + " / hold:" + holdTime + " / fade: " + fadeTime);
-
             // The last text should not be removed, since we need to fade out the text
             if (speechBubble.Count == 1 && isFinished)
             {
