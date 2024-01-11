@@ -25,7 +25,7 @@ namespace OvermorrowMod.Content.Projectiles
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.NonPremultiplied);
+            Main.spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
             return base.PreDraw(ref lightColor);
         }
         public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, 255 - Projectile.alpha);

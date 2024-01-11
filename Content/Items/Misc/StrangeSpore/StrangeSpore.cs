@@ -49,20 +49,17 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
             MountData.spawnDust = ModContent.DustType<Dusts.GlimsporeDust>();
             MountData.buff = ModContent.BuffType<Buffs.GlimsporeStomperBuff>();
 
-            MountData.heightBoost = 60;
             MountData.fallDamage = 0.25f;
             MountData.dashSpeed = 0f;
             MountData.blockExtraJumps = true; //false
-            List<int> MountedCenterPerFrame = new List<int>();
-            for (int i = 0; MountData.heightBoost > i; i++)
-                MountedCenterPerFrame.Add(55);
+            
             int[] aaaa = { 64, 62, 64, 68, 68, 62, 64, 68, 68, 58, 68 };
             MountData.playerYOffsets = aaaa;
             MountData.xOffset = 16;
             MountData.yOffset = 10;
             MountData.bodyFrame = 3;
 
-            MountData.playerHeadOffset = 64;
+            MountData.playerHeadOffset = 50;
             MountData.flightTimeMax = 0;
             MountData.totalFrames = 11;
 
@@ -132,6 +129,13 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
         }
         public override void UpdateEffects(Player player)
         {
+            MountData.heightBoost = 100;
+            /*MountData.heightBoost = 50; //50
+            MountData.playerHeadOffset = 50; //50
+            MountData.yOffset = 10; //10*/
+
+            // debug area ^
+
             if (glow > 0f)
                 glow -= 0.05f;
             if (!CanStomp && !player.controlDown)

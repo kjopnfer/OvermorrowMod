@@ -7,19 +7,20 @@ using Terraria.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Players;
+using OvermorrowMod.Core;
+using System.Diagnostics;
 
 namespace OvermorrowMod.Content.Items.Accessories.UVGoggles
 {
 	[AutoloadEquip(new EquipType[] { EquipType.Face })]
 	public class UVGoggles : ModItem
 	{
-		private int feef;
+		public static bool visible = false;
 		public override void SetStaticDefaults()
 		{
 			ArmorIDs.Head.Sets.DrawFullHair[Item.faceSlot] = true;
 			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
 		}
-
 		public override void SetDefaults()
 		{
 			Item.width = 26;
@@ -30,6 +31,7 @@ namespace OvermorrowMod.Content.Items.Accessories.UVGoggles
 
 		public override void UpdateAccessory(Player player, bool hideVisual)
 		{
+			visible = !hideVisual;
 			player.GetModPlayer<OvermorrowModPlayer>().UVBubbles.Add(new OvermorrowModPlayer.UVBubble(player.MountedCenter, 360f));
 			/*player.GetModPlayer<UVGogglesPplayer>().UVReveal(player.Center, 360);
 			//player.GetModPlayer<UVGogglesPplayer>().UVEffect = true; //old and bad code do not use bad idea just changes textures n shit
@@ -40,9 +42,16 @@ namespace OvermorrowMod.Content.Items.Accessories.UVGoggles
     {
 		public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
-			for (int i = 0; drawInfo.drawPlayer.armor.Length > i; i++)
-				if (drawInfo.drawPlayer.armor[i].type == ModContent.ItemType<UVGoggles>())
-					return true;
+			Player player = drawInfo.drawPlayer;
+			if (!UVGoggles.visible) return false;
+			for (int i = 0; player.armor.Length > i; i++)
+				if (player.armor[i].type == ModContent.ItemType<UVGoggles>())
+				{
+					if (player.armor[10].netID == ItemID.FamiliarWig || (player.armor[10].netID == 0 && (player.armor[0].netID == 0 || player.armor[0].netID == ItemID.FamiliarWig)))
+						return true;
+					else 
+						return false;
+				}
 			return false;
         }
 		public override Position GetDefaultPosition() => new AfterParent(PlayerDrawLayers.FaceAcc);
@@ -52,8 +61,16 @@ namespace OvermorrowMod.Content.Items.Accessories.UVGoggles
 			if (drawInfo.drawPlayer.name.ToLower().Contains("frankfires"))
 				Glowmask = (Texture2D)ModContent.Request<Texture2D>("OvermorrowMod/Content/Items/Accessories/UVGoggles/UVGoggles_Face_Glowmask_Dev");
 
-			Vector2 Position = drawInfo.Center + (Vector2.UnitY * drawInfo.mountOffSet / 2) - Main.screenPosition - Vector2.UnitY * 9f;
-			Position = Position.ToPoint().ToVector2();
+			//Vector2 Position = drawInfo.Center + (Vector2.UnitY * drawInfo.mountOffSet / 2f) - Main.screenPosition - Vector2.UnitY * 9f;
+			Vector2 Position = drawInfo.Position + new Vector2(drawInfo.drawPlayer.width / 2, drawInfo.drawPlayer.width - 8f) - Main.screenPosition;
+			if (drawInfo.drawPlayer.mount.Active)
+			{
+				Position.Y += drawInfo.drawPlayer.mount.HeightBoost;
+
+				Main.NewText(drawInfo.drawPlayer.mount.HeightBoost);
+			}
+
+            Position = Position.ToPoint().ToVector2();
 
 			float alpha = (255 - drawInfo.drawPlayer.immuneAlpha) / 255f;
 			Color color = Color.White;
