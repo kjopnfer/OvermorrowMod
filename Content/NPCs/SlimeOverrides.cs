@@ -331,11 +331,8 @@ namespace OvermorrowMod.Content.NPCs
             NPC feyden = ModUtils.FindFirstNPC(ModContent.NPCType<Feyden>());
             if (feyden == null) return;
 
-
             if (projectile.ModProjectile is FeydenAttack && npc.life <= 0)
             {
-                Main.NewText("what");
-
                 BaseSpeechBubble speechBubble = new BaseSpeechBubble();
                 string[] randomText = {
                     "Eat my dust, slimeballs!",

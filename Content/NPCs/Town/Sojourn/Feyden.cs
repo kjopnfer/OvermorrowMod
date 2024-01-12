@@ -142,7 +142,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             switch (AIState)
             {
                 case (int)AICase.Idle:
-                    SpawnIdleSlimes();
+                    if (!OvermorrowWorld.savedFeyden) SpawnIdleSlimes();
 
                     // Feyden will constantly search for targets to fight before they are "rescued"
                     if (!OvermorrowWorld.savedFeyden || targetNPC == null)
@@ -198,7 +198,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
                             if (!OvermorrowWorld.savedFeyden && dialoguePlayer.Player.Distance(NPC.Center) < 32 * 16)
                             {
-                                
+
                                 /*if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))
                                 {
                                     int attackID = Main.rand.Next(1, 9);
@@ -256,7 +256,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                     if (++AICounter % 20 == 0)
                     {
                         AICounter = 0;
-                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
+                        AIState = (int)AICase.Idle;
                     }
                     break;
             }
