@@ -1,7 +1,7 @@
 <Dialogue>
 	<DialogueNode id="start">
 		<Dialogue>
-			<Text portrait="Guide" time="150">Alright, you're not as useless as I thought. Thanks for the help. Just... don't expect me to write you a hero's ballad or anything.</Text>
+			<Text portrait="Feyden" time="150">Alright, you're not as useless as I thought. Thanks for the help. Just... don't expect me to write you a hero's ballad or anything.</Text>
 		</Dialogue>
 		<Options>
 			<Option link="feyden_1">Well, can't let a damsel in distress handle slimes alone, right?</Option>
@@ -10,7 +10,7 @@
 
 	<DialogueNode id="feyden_1">
 		<Dialogue>
-			<Text portrait="Guide" time="100">Damsel? Please. I've dealt with worse. But, I'll give you credit for showing up when I needed a hand.</Text>
+			<Text portrait="Feyden" time="100">Damsel? Please. I've dealt with worse. But, I'll give you credit for showing up when I needed a hand.</Text>
 		</Dialogue>
 		<Options>
 			<Option link="feyden_2">Foraging in a slime den? You've got some guts.</Option>
@@ -19,11 +19,11 @@
 
 	<DialogueNode id="feyden_2">
 		<Dialogue>
-			<Text portrait="Guide" time="100">Yeah I know, Enza would want me to stick to the safer parts of the forest, but safe is for the meek.</Text>
-			<Text portrait="Guide" time="100">We need some real grub, not the usual bland stuff. Plus, mushrooms from here are rare and extra tasty.</Text>
-			<Text portrait="Guide" time="180">Our village is in a sorry state, you know. Bandits, wild creatures, you name it. And the tavern's running low on supplies. Figured I'd brave the cave for something to spice up our meals.</Text>
-			<Text portrait="Guide" time="60">Anyways, I should head back before someone notices I'm gone.</Text>
-			<Text portrait="Guide" time="80">You might as well tag along, at the very least I owe you a drink for your help.</Text>
+			<Text portrait="Feyden" time="100">Yeah I know, Enza would want me to stick to the safer parts of the forest, but safe is for the meek.</Text>
+			<Text portrait="Feyden" time="100">We need some real grub, not the usual bland stuff. Plus, mushrooms from here are rare and extra tasty.</Text>
+			<Text portrait="Feyden" time="180">Our village is in a sorry state, you know. Bandits, wild creatures, you name it. And the tavern's running low on supplies. Figured I'd brave the cave for something to spice up our meals.</Text>
+			<Text portrait="Feyden" time="60">Anyways, I should head back before someone notices I'm gone.</Text>
+			<Text portrait="Feyden" time="80">You might as well tag along, at the very least I owe you a drink for your help.</Text>
 		</Dialogue>
 		<Options>
 			<Option link="exit" icon="quest" action="feyden_escort">That works for me.</Option>
@@ -32,7 +32,7 @@
 
 	<DialogueNode id="quest_complete">
 		<Dialogue>
-			<Text portrait="Guide" time="90">Well, here we are. Don't mind Oakley, you really saved my skin back there. I owe you one.</Text>
+			<Text portrait="Feyden" time="90">Well, here we are. Don't mind Oakley, you really saved my skin back there. I owe you one.</Text>
 		</Dialogue>
 		<Options>
 			<Option link="quest_complete_1">No problem.</Option>
@@ -41,7 +41,7 @@
 
 	<DialogueNode id="quest_complete_1">
 		<Dialogue>
-			<Text portrait="Guide" time="120">Well, not everyone's willing to jump into the fray like you did. Most folks around here are on edge with the bandit trouble and all.</Text>
+			<Text portrait="Feyden" time="120">Well, not everyone's willing to jump into the fray like you did. Most folks around here are on edge with the bandit trouble and all.</Text>
 		</Dialogue>
 		<Options>
 			<Option link="quest_complete_2">Bandits? Maybe I can lend a hand.</Option>
@@ -50,7 +50,7 @@
 
 	<DialogueNode id="quest_complete_2">
 		<Dialogue>
-			<Text portrait="Guide" time="150">You're turning into quite the village savior. Just watch out for Enza. The one with antlers. If she catches wind of our little escapade, she'll give me an earful.</Text>
+			<Text portrait="Feyden" time="150">You're turning into quite the village savior. Just watch out for Enza. The one with antlers. If she catches wind of our little escapade, she'll give me an earful.</Text>
 		</Dialogue>
 		<Options>
 			<Option icon="chest" link="exit" action="quest_complete">Got it. Let's keep this between us then.</Option>

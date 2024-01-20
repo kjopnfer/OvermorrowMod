@@ -17,7 +17,6 @@ namespace OvermorrowMod.Quests
     {
         public bool grabbedAxe = false;
         public bool showCampfireArrow = false;
-        public bool reachedSlimeCave = false;
         DialoguePlayer dialoguePlayer => Player.GetModPlayer<DialoguePlayer>();
 
         // TODO: Make this not cringe by putting them in the Quest or Requirements or something
@@ -70,11 +69,8 @@ namespace OvermorrowMod.Quests
         private void GeneralUpdateActions()
         {
             #region Slime Cave
-            if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (150 * 16) && !reachedSlimeCave)
+            if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (150 * 16) && !dialoguePlayer.reachedSlimeCave)
             {
-                reachedSlimeCave = true;
-                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "FeydenHelp.xml"));
-
                 var possibleQuests = Quests.QuestList.Values
                 .Where(q => q.QuestName == "A Call for Help")
                 .GroupBy(q => q.Priority)
@@ -86,6 +82,9 @@ namespace OvermorrowMod.Quests
 
                 SetTravelLocation(quest, "feyden_cave");
                 AddQuest(quest);
+
+                // This is here because the other one in dialogue player runs first
+                dialoguePlayer.reachedSlimeCave = true;
             }
 
             if (OvermorrowWorld.savedFeyden) CompleteMiscRequirement("feyden_fight");

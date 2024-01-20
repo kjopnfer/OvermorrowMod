@@ -176,6 +176,7 @@ namespace OvermorrowMod.Common.Cutscenes
             UpdatePopupQueue();
             UpdatePopupStates();
             RemovePopupStates();
+            GeneralUpdateDialogue();
 
             QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();

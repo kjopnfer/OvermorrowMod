@@ -3,15 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Pathfinding;
-using OvermorrowMod.Content.Projectiles;
-using OvermorrowMod.Content.UI.SpeechBubble;
-using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
-using System;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -138,14 +133,15 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             }
 
             TrySpawnSlimeCaveHandler();
-
+            HandleNPCDialogue();
+                
             switch (AIState)
             {
                 case (int)AICase.Idle:
                     if (!OvermorrowWorld.savedFeyden) SpawnIdleSlimes();
 
                     // Feyden will constantly search for targets to fight before they are "rescued"
-                    if (!OvermorrowWorld.savedFeyden || targetNPC == null)
+                    if (!OvermorrowWorld.savedFeyden && targetNPC == null)
                     {
                         NPC.aiStyle = 0;
                         targetNPC = NPC.FindClosestNPC(45 * 16f);
@@ -195,18 +191,6 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                             Vector2 position = NPC.Center + new Vector2(32 * NPC.direction, -8);
                             swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 10, 2f, Main.myPlayer, NPC.whoAmI);
                             AIState = (int)AICase.Fighting;
-
-                            if (!OvermorrowWorld.savedFeyden && dialoguePlayer.Player.Distance(NPC.Center) < 32 * 16)
-                            {
-
-                                /*if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))
-                                {
-                                    int attackID = Main.rand.Next(1, 9);
-                                    dialoguePlayer.AddNPCPopup(ModContent.NPCType<Feyden>(), ModUtils.GetXML(AssetDirectory.Popups + "FeydenCave.xml"), "ATTACK_" + attackID);
-                                }*/
-
-
-                            }
                         }
                     }
                     else
@@ -230,7 +214,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                     if (targetNPC != null)
                     {
                         // The NPC is dead, look for a new one
-                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
+                        AIState = (int)AICase.Idle;
                         //else AIState = (int)AICase.Default;
                     }
                     else AIState = (int)AICase.Idle;

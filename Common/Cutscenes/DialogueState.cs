@@ -208,7 +208,7 @@ namespace OvermorrowMod.Common.Cutscenes
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
             string text = player.GetDialogue().GetText();
-            int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText().Length, DrawTimer / (float)player.GetDialogue().drawTime);
+            int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)player.GetDialogue().drawTime, 0, 1));
 
             var displayText = ParseColoredText(text.Substring(0, progress));
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
