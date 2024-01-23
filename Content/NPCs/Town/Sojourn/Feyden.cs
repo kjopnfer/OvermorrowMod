@@ -35,10 +35,6 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         // Legends never die
         public override bool CheckDead() => false;
 
-        public override void SetStaticDefaults()
-        {
-            Main.npcFrameCount[NPC.type] = 25;
-        }
 
         public override void SetDefaults()
         {
