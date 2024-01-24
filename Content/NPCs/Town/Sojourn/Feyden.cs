@@ -3,21 +3,17 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Pathfinding;
-using OvermorrowMod.Content.Projectiles;
-using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
-using System;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 {
-    public class Feyden : ModNPC
+    public partial class Feyden : ModNPC
     {
         private WalkPathFinder _pf = new WalkPathFinder(SharedAIState.State1x2, new WalkPathFinderProperties
         {
@@ -35,10 +31,10 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         public override bool UsesPartyHat() => false;
         public override bool CheckActive() => false;
         public override bool CanChat() => true;
-        public override void SetStaticDefaults()
-        {
-            Main.npcFrameCount[NPC.type] = 25;
-        }
+
+        // Legends never die
+        public override bool CheckDead() => false;
+
 
         public override void SetDefaults()
         {
@@ -77,7 +73,6 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public override void SaveData(TagCompound tag)
         {
-
             base.SaveData(tag);
         }
 
@@ -106,6 +101,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         private int AICounter = 0;
         private int AttackDelay = 0;
 
+        private int prevTextIndex = -1;
         public override void AI()
         {
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -132,13 +128,16 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                 }
             }
 
-            CheckSlimeCaveHandler();
-
+            TrySpawnSlimeCaveHandler();
+            HandleNPCDialogue();
+                
             switch (AIState)
             {
                 case (int)AICase.Idle:
+                    if (!OvermorrowWorld.savedFeyden) SpawnIdleSlimes();
+
                     // Feyden will constantly search for targets to fight before they are "rescued"
-                    if (!OvermorrowWorld.savedFeyden || targetNPC == null)
+                    if (!OvermorrowWorld.savedFeyden && targetNPC == null)
                     {
                         NPC.aiStyle = 0;
                         targetNPC = NPC.FindClosestNPC(45 * 16f);
@@ -186,17 +185,8 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         if (NPC.Distance(targetNPC.position) <= 32)
                         {
                             Vector2 position = NPC.Center + new Vector2(32 * NPC.direction, -8);
-                            swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 10, 2f, Main.myPlayer);
+                            swingAttack = Projectile.NewProjectileDirect(NPC.GetSource_FromAI("FriendyAttack"), position, Vector2.Zero, ModContent.ProjectileType<FeydenAttack>(), 10, 2f, Main.myPlayer, NPC.whoAmI);
                             AIState = (int)AICase.Fighting;
-
-                            if (!OvermorrowWorld.savedFeyden && dialoguePlayer.Player.Distance(NPC.Center) < 32 * 16)
-                            {
-                                if (Main.rand.NextBool(5) && !dialoguePlayer.CheckPopupAlreadyActive(ModContent.NPCType<Feyden>()))
-                                {
-                                    int attackID = Main.rand.Next(1, 9);
-                                    dialoguePlayer.AddNPCPopup(ModContent.NPCType<Feyden>(), ModUtils.GetXML(AssetDirectory.Popups + "FeydenCave.xml"), "ATTACK_" + attackID);
-                                }
-                            }
                         }
                     }
                     else
@@ -220,21 +210,25 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                     if (targetNPC != null)
                     {
                         // The NPC is dead, look for a new one
-                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
+                        AIState = (int)AICase.Idle;
                         //else AIState = (int)AICase.Default;
                     }
-                    else
-                    {
-                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
-                    }
+                    else AIState = (int)AICase.Idle;
                     break;
                 case (int)AICase.Dodge:
                     NPC.dontTakeDamage = true;
-                    
-                    // Roll away from the NPC towards an open area
+
+                    // Check left and right side and move to the more open area
                     if (AICounter == 0)
                     {
-                        NPC.velocity.X = 6 * NPC.direction;
+                        var left = TRay.CastLength(NPC.Center, -Vector2.UnitX, 16 * 6);
+                        var right = TRay.CastLength(NPC.Center, Vector2.UnitX, 16 * 6);
+
+                        int rollDirection = NPC.direction;
+                        if (left > right) rollDirection = -1;
+                        else if (right > left) rollDirection = 1;
+
+                        NPC.velocity.X = 6 * rollDirection;
                     }
 
                     Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
@@ -242,7 +236,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                     if (++AICounter % 20 == 0)
                     {
                         AICounter = 0;
-                        if (!OvermorrowWorld.savedFeyden) AIState = (int)AICase.Idle;
+                        AIState = (int)AICase.Idle;
                     }
                     break;
             }
@@ -270,17 +264,17 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             {
                 if (AIState != (int)AICase.Fighting)
                 {
-                    modifiers.FinalDamage *= 0;
+                    // Dodging can't completely ignore the damage this is the lowest that can be set
+                    modifiers.ModifyHitInfo += (ref NPC.HitInfo hitInfo) =>
+                    {
+                        hitInfo.Damage = 1;
+                    };
+
                     AICounter = 0;
                     AIState = (int)AICase.Dodge;
-
-                    Main.NewText("try dodge");
                 }
             }
         }
-
-        // Legends never die
-        public override bool CheckDead() => false;
 
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -294,92 +288,6 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             AIState = reader.ReadInt16();
             AICounter = reader.ReadInt16();
             AttackDelay = reader.ReadInt16();
-        }
-
-        private void ReassignToHost()
-        {
-            followPlayer = Main.player[0];
-        }
-
-        private void CheckSlimeCaveHandler()
-        {
-            if (OvermorrowWorld.savedFeyden) return;
-
-            Player nearbyPlayer = NPC.FindClosestPlayer(24 * 16);
-            if (nearbyPlayer != null)
-            {
-                SpawnSlimeHandler();
-            }
-        }
-
-        private void SpawnSlimeHandler()
-        {
-            bool spawnHandler = true;
-            foreach (Projectile projectile in Main.projectile)
-            {
-                if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) spawnHandler = false;
-            }
-
-            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, -1);
-        }
-
-        int xFrame = 0;
-
-        int frameCounter = 0;
-        int yFrame = 0;
-        private void NPCTextureHandler(out Texture2D texture, out int yFrameCount)
-        {
-            Main.NewText("AISTATE: " + AIState + " YFRAME: " + yFrame);
-            switch (AIState)
-            {
-                case (int)AICase.Approach:
-                    texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden_Run").Value;
-                    yFrameCount = 6;
-
-                    if (yFrame >= 5) yFrame = 0;
-
-                    int frameRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                    if (!Main.gamePaused) frameCounter += frameRate;
-
-                    if (frameCounter >= 5)
-                    {
-                        yFrame++;
-                        frameCounter = 0;
-                    }
-                    break;
-                case (int)AICase.Fighting:
-                    texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden_Attack").Value;
-                    yFrameCount = 6;
-
-                    if (yFrame >= 5) yFrame = 0;
-
-                    if (!Main.gamePaused) frameCounter++;
-                    if (frameCounter >= 5)
-                    {
-                        yFrame++;
-                        frameCounter = 0;
-                    }
-                    break;
-                case (int)AICase.Dodge:
-                    texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden_Roll").Value;
-                    yFrameCount = 5;
-
-                    if (yFrame >= 5) yFrame = 0;
-
-                    if (!Main.gamePaused) frameCounter++;
-                    if (frameCounter >= 4)
-                    {
-                        yFrame++;
-                        frameCounter = 0;
-                    }
-                    break;
-                default:
-                    texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden").Value;
-                    yFrameCount = 1;
-
-                    yFrame = 0;
-                    break;
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -400,12 +308,13 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
-            Projectile.width = 32;
+            Projectile.width = 72;
             Projectile.height = 32;
             Projectile.friendly = true;
 
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.tileCollide = false;
             Projectile.localNPCHitCooldown = -1; // 1 hit per npc max
 
             Projectile.timeLeft = 30;
@@ -413,7 +322,10 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
         public override void AI()
         {
-            base.AI();
+            NPC npc = Main.npc[(int)Projectile.ai[0]];
+            if (!npc.active) Projectile.Kill();
+
+            Projectile.Center = npc.Center + new Vector2(16 * npc.direction, -8);
         }
 
         public override void OnKill(int timeLeft)

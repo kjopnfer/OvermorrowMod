@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
@@ -471,6 +472,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             for (int i = 0; i < 17; i++)
                 WorldGen.PlaceTile(x - 213 - i, y - 96, ModContent.TileType<CastlePlatform>(), true, false);
+
+            NPC.NewNPC(null, (x - 215 - 20) * 16, (y - 96 + 6) * 16, ModContent.NPCType<Moxley>());
             #endregion
         }
 

@@ -16,6 +16,8 @@ using OvermorrowMod.Common.Particles;
 using Terraria.ModLoader.IO;
 using System.IO;
 using OvermorrowMod.Common.VanillaOverrides;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Content.UI.SpeechBubble;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -280,7 +282,7 @@ namespace OvermorrowMod.Content.NPCs
             {
                 // During the singular run instance, reset ai0 to be 0
                 if (SlimeOverrideIDs.Contains(npc.netID))
-                {        
+                {
                     //if (AIState < 0) AIState = 0;
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
@@ -318,7 +320,36 @@ namespace OvermorrowMod.Content.NPCs
                         Entity ownerEntity = projectile.GlobalProjectile().ownerEntity;
                         target = ownerEntity;
                     }
+
+                    FeydenKillSpeechBubble(npc, projectile);         
                 }
+            }
+        }
+
+        private void FeydenKillSpeechBubble(NPC npc, Projectile projectile)
+        {
+            NPC feyden = ModUtils.FindFirstNPC(ModContent.NPCType<Feyden>());
+            if (feyden == null) return;
+
+            if (projectile.ModProjectile is FeydenAttack && npc.life <= 0)
+            {
+                BaseSpeechBubble speechBubble = new BaseSpeechBubble();
+                string[] randomText = {
+                    "Eat my dust, slimeballs!",
+                    "Down you go!",
+                    "It's all in the footwork.",
+                    //"Oh sorry was that your friend? Don't worry, you're next!",
+                    "Slime your way out of this!",
+                    "Gooey pest!",
+                    "Like dicing onions in the kitchen!",
+                    //"Nice try, but I've seen scarier jelly at the dessert table!",
+                };
+
+                int textIndex = Main.rand.Next(0, randomText.Length);
+                string text = randomText[textIndex];
+                speechBubble.Add(new Text(text, 45, 100));
+
+                UISpeechBubbleSystem.Instance.SpeechBubbleState.AddSpeechBubble(feyden, speechBubble);
             }
         }
 
@@ -422,7 +453,7 @@ namespace OvermorrowMod.Content.NPCs
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Slime").Value;
                 var spriteEffects = npc.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 Rectangle drawRectangle = new Rectangle(xFrame * FRAME_WIDTH, yFrame * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
-    
+
                 if (SlimeOverrideIDs.Contains(npc.netID))
                 {
                     Color color = npc.color * Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);

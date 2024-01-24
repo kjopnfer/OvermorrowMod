@@ -3,6 +3,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Content.UI.SpeechBubble;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,15 @@ namespace OvermorrowMod.Content.Projectiles
                     finalWave = true;
                     Main.NewText("final wave");
 
-                    dialoguePlayer.AddNPCPopup(ModContent.NPCType<Feyden>(), ModUtils.GetXML(AssetDirectory.Popups + "FeydenCave.xml"), "BOSS");
+                    NPC npc = ModUtils.FindFirstNPC(ModContent.NPCType<Feyden>());
+                    if (npc != null)
+                    {
+                        BaseSpeechBubble speechBubble = new BaseSpeechBubble();
+                        speechBubble.Add(new Text("Look who's trying to be the king of slimes!", 45, 75));
+                        speechBubble.Add(new Text("Not on my watch!", 30, 60));
+
+                        UISpeechBubbleSystem.Instance.SpeechBubbleState.AddSpeechBubble(npc, speechBubble, true);
+                    }
                 }
                 else if (finalWave)
                 {
