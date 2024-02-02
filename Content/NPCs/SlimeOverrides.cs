@@ -18,6 +18,7 @@ using System.IO;
 using OvermorrowMod.Common.VanillaOverrides;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.UI.SpeechBubble;
+using OvermorrowMod.Common.Dialogue;
 
 namespace OvermorrowMod.Content.NPCs
 {

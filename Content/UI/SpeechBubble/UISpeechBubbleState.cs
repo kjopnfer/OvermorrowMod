@@ -10,23 +10,10 @@ using Terraria.UI.Chat;
 using System;
 using OvermorrowMod.Core.Interfaces;
 using ReLogic.Graphics;
+using OvermorrowMod.Common.Dialogue;
 
 namespace OvermorrowMod.Content.UI.SpeechBubble
 {
-    public class Text
-    {
-        public string text { get; }
-        public int drawTime { get; }
-        public int holdTime { get; }
-
-        public Text(string text, int drawTime, int holdTime)
-        {
-            this.text = text;
-            this.drawTime = drawTime;
-            this.holdTime = holdTime;
-        }
-    }
-
     public class BaseSpeechBubble
     {
         public bool isFinished = false;

@@ -7,6 +7,7 @@ using System.Linq;
 using Terraria.GameInput;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Common.Dialogue;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -75,6 +76,11 @@ namespace OvermorrowMod.Common.Cutscenes
         public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
             CurrentDialogue = new Dialogue(displayText, drawTime, xmlDoc);
+        }
+
+        public void SetDialogueWindow<Dialogue>() where Dialogue : DialogueWindow
+        {
+
         }
 
         public void SetDialogue(Dialogue dialogue) => CurrentDialogue = dialogue;
