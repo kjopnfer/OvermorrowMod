@@ -21,14 +21,17 @@ namespace OvermorrowMod.Common.Detours
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
             QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
 
-            if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            if (player.GetDialogueWindow() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
 
                 if (DialogueManagers.NPCDialogueManagers.ContainsKey(npc.type))
                 {
                     DialogueManager manager = DialogueManagers.NPCDialogueManagers[npc.type];
-                    player.SetDialogue(npc.GetChat(), 20, manager.GetDialogueWindow());
+                    //player.SetDialogue(npc.GetChat(), 20, manager.GetDialogueWindow());
+
+                    DialogueWindow window = manager.GetDialogueWindow();
+                    player.LoadDialogueWindow(window);
                 }
                 else
                 {

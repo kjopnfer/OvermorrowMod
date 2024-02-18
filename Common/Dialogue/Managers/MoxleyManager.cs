@@ -9,13 +9,15 @@ namespace OvermorrowMod.Common.Dialogue
     {
         public override int NPC => ModContent.NPCType<Moxley>();
 
-        public override XmlDocument GetDialogueWindow()
+        public override DialogueWindow GetDialogueWindow()
         {
-            XmlDocument doc = new XmlDocument();
+            return new GuideCamp();
+
+            /*XmlDocument doc = new XmlDocument();
             string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "MoxleyIntro.xml"));
             doc.LoadXml(text);
 
-            return doc;
+            return doc;*/
         }
     }
 }

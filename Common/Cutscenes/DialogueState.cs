@@ -4,7 +4,6 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
 using OvermorrowMod.Core;
-using System.Text;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
 using Terraria.ID;
@@ -13,11 +12,9 @@ using OvermorrowMod.Quests;
 using Terraria.Audio;
 using OvermorrowMod.Common.NPCs;
 using System;
-using OvermorrowMod.Content.Projectiles;
-using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
-using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.ModQuests;
+using OvermorrowMod.Common.Dialogue;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -60,6 +57,8 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool hasInitialized = false;
         float arrowOffset;
 
+        private DialogueWindow dialogueWindow => Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogueWindow();
+
         private const float PANEL_WIDTH = 300;
         private const float PANEL_HEIGHT = 90;
         public override void Draw(SpriteBatch spriteBatch)
@@ -68,9 +67,9 @@ namespace OvermorrowMod.Common.Cutscenes
 
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
+            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogueWindow() == null)
             {
-                player.ClearDialogue();
+                player.ClearWindow();
                 player.LockPlayer = false;
 
                 ResetTimers();
@@ -91,23 +90,23 @@ namespace OvermorrowMod.Common.Cutscenes
 
             DrawBackdrop(player, spriteBatch);
 
+            var dialogueText = dialogueWindow.GetText(dialogueID, textIterator);
+
             if (DelayTimer++ >= DIALOGUE_DELAY)
             {
-                if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
+                if (DrawTimer < dialogueText.drawTime) DrawTimer++;
 
                 DrawText(player, spriteBatch, new Vector2(0, 0));
             }
 
             // Handles the drawing of the UI after the dialogue has finished drawing
-            if (DrawTimer >= player.GetDialogue().drawTime)
+            if (DrawTimer >= dialogueText.drawTime)
             {
-                Dialogue dialogue = player.GetDialogue();
-
                 var npc = Main.npc[Main.LocalPlayer.talkNPC];
                 var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
                 // Draw the continue icon if there is more text to be read
-                if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                if (textIterator < dialogueWindow.GetTexts(dialogueID).Length - 1)
                 {
                     Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
                     Vector2 arrowPosition = _dialogueAnchor;
@@ -126,10 +125,10 @@ namespace OvermorrowMod.Common.Cutscenes
         public override void Update(GameTime gameTime)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            Dialogue dialogue = player.GetDialogue();
 
-            if (dialogue == null) return;
+            if (dialogueWindow == null) return;
 
+            var dialogueText = dialogueWindow.GetText(dialogueID, textIterator);
             if (Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
                 this.RemoveAllChildren(); // Removes the options and then readds the elements back
@@ -137,7 +136,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
-                if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
+                if (DrawTimer < dialogueText.drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
 
                 canInteract = false;
 
@@ -189,7 +188,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 else
                 {
                     // If there are no dialogue options left, then make it so clicking will exit out of the dialogue completely
-                    if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                    if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogueWindow.GetOptions(dialogueID) == null)
                         ExitText();
                     else
                         AdvanceText();
@@ -207,8 +206,10 @@ namespace OvermorrowMod.Common.Cutscenes
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
-            string text = player.GetDialogue().GetText();
-            int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)player.GetDialogue().drawTime, 0, 1));
+            var dialogueText = dialogueWindow.GetText(dialogueID, textIterator);
+
+            string text = dialogueText.text;
+            int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)dialogueText.drawTime, 0, 1));
 
             var displayText = ParseColoredText(text.Substring(0, progress));
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();

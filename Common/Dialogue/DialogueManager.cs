@@ -39,6 +39,6 @@ namespace OvermorrowMod.Common.Dialogue
     public abstract class DialogueManager
     {
         public abstract int NPC { get; }
-        public abstract XmlDocument GetDialogueWindow();
+        public abstract DialogueWindow GetDialogueWindow();
     }
 }

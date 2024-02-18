@@ -13,7 +13,7 @@ namespace OvermorrowMod.Common.Cutscenes
 {
     public partial class DialoguePlayer : ModPlayer
     {
-        private Dialogue CurrentDialogue;
+        private DialogueWindow CurrentWindow;
 
         //public Dictionary<int, Popup> NPCPopups = new Dictionary<int, Popup>();
 
@@ -73,21 +73,23 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public bool CheckPopupAlreadyActive(int npcID) => PopupStates.ContainsKey(npcID);
 
-        public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
+        /*public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
             CurrentDialogue = new Dialogue(displayText, drawTime, xmlDoc);
-        }
+        }*/
 
-        public void SetDialogueWindow<Dialogue>() where Dialogue : DialogueWindow
+        public void LoadDialogueWindow(DialogueWindow window)
         {
-
+            CurrentWindow = window;
         }
 
-        public void SetDialogue(Dialogue dialogue) => CurrentDialogue = dialogue;
+        public void ClearWindow() => CurrentWindow = null;
 
-        public void ClearDialogue() => CurrentDialogue = null;
+        public DialogueWindow GetDialogueWindow() => CurrentWindow;
 
-        public Dialogue GetDialogue() => CurrentDialogue;
+        //public void ClearDialogue() => CurrentDialogue = null;
+
+        //public Dialogue GetDialogue() => CurrentDialogue;
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {

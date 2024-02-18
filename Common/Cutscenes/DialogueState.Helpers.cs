@@ -57,7 +57,7 @@ namespace OvermorrowMod.Common.Cutscenes
         /// Change the node that the XML traverser is currently looking at
         /// </summary>
         /// <param name="id"></param>
-        public void SetID(string id)
+        /*public void SetID(string id)
         {
             Text.SetText("");
 
@@ -68,7 +68,7 @@ namespace OvermorrowMod.Common.Cutscenes
             Dialogue dialogue = player.GetDialogue();
 
             if (dialogue != null) dialogue.UpdateList(id);
-        }
+        }*/
 
         /// <summary>
         /// Prevents the player from moving and makes the player immune to all damage
