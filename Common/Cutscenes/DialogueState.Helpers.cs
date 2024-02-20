@@ -49,8 +49,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
             // Check if the player is currently doing the quest or is ready to turn it in
             // If ready, set the traverser to the quest complete chain
-            if (quest.CanHandInQuest(questPlayer, questState)) SetID("quest_complete"); 
-            else SetID("quest_hint");
+            if (quest.CanHandInQuest(questPlayer, questState)) SetDialogueID("quest_complete");
+            else SetDialogueID("quest_hint");
         }
 
         /// <summary>
@@ -69,6 +69,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (dialogue != null) dialogue.UpdateList(id);
         }*/
+
+        public void SetDialogueID(string id)
+        {
+            shouldRedraw = true;
+            dialogueID = id;
+        }
 
         /// <summary>
         /// Prevents the player from moving and makes the player immune to all damage
@@ -98,7 +104,8 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            player.GetDialogue().IncrementText();
+            //player.GetDialogue().IncrementText();
+            textIterator++;
 
             ResetTimers();
             shouldRedraw = true;
@@ -160,9 +167,9 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
             }
 
-            if (openSquareBrackets != closedSquareBrackets)         
+            if (openSquareBrackets != closedSquareBrackets)
                 builder.Append(']');
-            
+
             // Final check for if the tag has two brackets but no characters inbetween which does weird things
             var hexTag = "[c/34c9eb:]";
             if (builder.ToString().Contains("[c/34c9eb:]"))
@@ -190,7 +197,9 @@ namespace OvermorrowMod.Common.Cutscenes
             // Get any exit actions from the dialogue here
 
             ResetTimers();
-            SetID("start");
+            SetDialogueID("start");
+
+            textIterator = 0;
 
             hasInitialized = false;
             Main.LocalPlayer.SetTalkNPC(-1);
@@ -248,7 +257,7 @@ namespace OvermorrowMod.Common.Cutscenes
             #region Face
             //Texture2D speaker = player.GetDialogue().speakerBody;
             //Texture2D speaker = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide").Value;
-            Texture2D speaker = player.GetDialogue().GetPortrait();
+            Texture2D speaker = dialogueWindow.GetText(dialogueID, textIterator).texture;
             if (speaker != null)
             {
                 Vector2 offset = new Vector2(speaker.Width / 2f + 5, 30f);

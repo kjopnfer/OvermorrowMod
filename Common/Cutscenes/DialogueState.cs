@@ -58,6 +58,8 @@ namespace OvermorrowMod.Common.Cutscenes
         float arrowOffset;
 
         private DialogueWindow dialogueWindow => Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogueWindow();
+        private Text dialogueText => dialogueWindow.GetText(dialogueID, textIterator);
+        private int dialogueTextLength => dialogueWindow.GetTexts(dialogueID).Length - 1;
 
         private const float PANEL_WIDTH = 300;
         private const float PANEL_HEIGHT = 90;
@@ -73,7 +75,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 player.LockPlayer = false;
 
                 ResetTimers();
-                SetID("start");
+                SetDialogueID("start");
                 hasInitialized = false;
 
                 return;
@@ -89,8 +91,6 @@ namespace OvermorrowMod.Common.Cutscenes
             HandlePlayerInteraction();
 
             DrawBackdrop(player, spriteBatch);
-
-            var dialogueText = dialogueWindow.GetText(dialogueID, textIterator);
 
             if (DelayTimer++ >= DIALOGUE_DELAY)
             {
@@ -128,7 +128,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (dialogueWindow == null) return;
 
-            var dialogueText = dialogueWindow.GetText(dialogueID, textIterator);
             if (Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
                 this.RemoveAllChildren(); // Removes the options and then readds the elements back
@@ -136,11 +135,11 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
-                if (DrawTimer < dialogueText.drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
+                if (DrawTimer < dialogueText.drawTime || textIterator < dialogueTextLength) return;
 
                 canInteract = false;
 
-                if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                if (textIterator >= dialogueTextLength && dialogueWindow.GetOptions(dialogueID) == null)
                 {
                     canInteract = true;
                 }
@@ -150,10 +149,12 @@ namespace OvermorrowMod.Common.Cutscenes
                     canInteract = false;
                 }
 
-                if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
+                if (dialogueWindow != null && dialogueWindow.GetOptions(dialogueID) != null && !drawQuest)
                 {
-                    foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
+                    foreach (DialogueChoice choice in dialogueWindow.GetOptions(dialogueID))
                     {
+                        OptionButton button = new OptionButton(choice.texture, choice.text, choice.link, "idk");
+
                         Vector2 position = GetOptionPosition(optionNumber);
                         ModUtils.AddElement(button, (int)position.X, (int)position.Y, 375, 45, this);
 
@@ -177,18 +178,16 @@ namespace OvermorrowMod.Common.Cutscenes
             if ((Main.mouseLeft || ModUtils.CheckKeyPress()) && interactDelay == 0 && DelayTimer >= DIALOGUE_DELAY)
             {
                 DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-                Dialogue dialogue = player.GetDialogue();
-
                 interactDelay = 10;
 
-                if (DrawTimer < dialogue.drawTime)
+                if (DrawTimer < dialogueText.drawTime)
                 {
-                    DrawTimer = dialogue.drawTime;
+                    DrawTimer = dialogueText.drawTime;
                 }
                 else
                 {
                     // If there are no dialogue options left, then make it so clicking will exit out of the dialogue completely
-                    if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogueWindow.GetOptions(dialogueID) == null)
+                    if (textIterator >= dialogueTextLength && dialogueWindow.GetOptions(dialogueID) == null)
                         ExitText();
                     else
                         AdvanceText();
@@ -206,8 +205,6 @@ namespace OvermorrowMod.Common.Cutscenes
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
-            var dialogueText = dialogueWindow.GetText(dialogueID, textIterator);
-
             string text = dialogueText.text;
             int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)dialogueText.drawTime, 0, 1));
 
@@ -222,14 +219,14 @@ namespace OvermorrowMod.Common.Cutscenes
 
     public class OptionButton : UIElement
     {
-        private string icon;
+        private Texture2D icon;
         private string displayText;
         private string linkID;
         private string action;
 
         public string rewardIndex = "none";
 
-        public OptionButton(string icon, string displayText, string linkID, string action)
+        public OptionButton(Texture2D icon, string displayText, string linkID, string action)
         {
             this.icon = icon;
             this.displayText = displayText;
@@ -265,21 +262,7 @@ namespace OvermorrowMod.Common.Cutscenes
             //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
             //Utils.DrawInvBG(Main.spriteBatch, drawRectangle, color * 0.925f);
 
-            Texture2D dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon").Value;
-            switch (icon)
-            {
-                case "quest":
-                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon").Value;
-                    break;
-                case "chest":
-                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon").Value;
-                    break;
-                case "sword":
-                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_SwordIcon").Value;
-                    break;
-            }
-
-            spriteBatch.Draw(dialogueIcon, pos + new Vector2(dialogueIcon.Width - 6, dialogueIcon.Height - 8), null, Color.White, 0f, dialogueIcon.Size() / 2f, 1f, 0, 0);
+            spriteBatch.Draw(icon, pos + new Vector2(icon.Width - 6, icon.Height - 8), null, Color.White, 0f, icon.Size() / 2f, 1f, 0, 0);
             Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(64, 12), Color.White);
         }
 
@@ -439,7 +422,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 if (!parent.drawQuest)
                 {
-                    parent.SetID(linkID);
+                    parent.SetDialogueID(linkID);
                     return;
                 }
             }

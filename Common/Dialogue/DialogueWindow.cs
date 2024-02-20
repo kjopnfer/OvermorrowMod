@@ -20,6 +20,7 @@ namespace OvermorrowMod.Common.Dialogue
 
         public DialogueChoice[] GetOptions(string id) => Dialogue.Where(node => node.id == id).First().choice;
 
+
         /*new DialogueNode(
               "start",
               new Text[]
