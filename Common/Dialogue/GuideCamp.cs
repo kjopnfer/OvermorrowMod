@@ -16,10 +16,10 @@ namespace OvermorrowMod.Common.Dialogue
                     new Text[]
                     {
                         new Text(
-                            ModContent.Request<Texture2D>(AssetDirectory.Portrait + "GuideWave").Value,
+                            ModContent.Request<Texture2D>(AssetDirectory.Portrait + "GuideWave", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value,
                             "Came across you unconscious so I took care of you for a bit, no big deal.", 60),
                         new Text(
-                            ModContent.Request<Texture2D>(AssetDirectory.Portrait + "GuideWave").Value,
+                            ModContent.Request<Texture2D>(AssetDirectory.Portrait + "Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value,
                             "RIP, looks like my fire got put out, wanna help me start it again?", 60)
                     },
                     new DialogueChoice[]

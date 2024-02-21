@@ -74,9 +74,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 player.ClearWindow();
                 player.LockPlayer = false;
 
-                ResetTimers();
-                SetDialogueID("start");
-                hasInitialized = false;
+                ExitText();
 
                 return;
             }

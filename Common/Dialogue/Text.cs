@@ -20,10 +20,11 @@ namespace OvermorrowMod.Common.Dialogue
         // This gets used for the DialogueWindows where you don't need to hold the text
         public Text(Texture2D texture, string text, int drawTime)
         {
+            this.texture = texture;
             this.text = text;
             this.drawTime = drawTime;
             this.holdTime = 1;
-        }
+        }   
 
         public Text(Texture2D texture, string text, int drawTime, int holdTime)
         {
