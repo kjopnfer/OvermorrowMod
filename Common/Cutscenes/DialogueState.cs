@@ -151,7 +151,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     foreach (DialogueChoice choice in dialogueWindow.GetOptions(dialogueID))
                     {
-                        OptionButton button = new OptionButton(choice.texture, choice.text, choice.link, "idk");
+                        OptionButton button = new OptionButton(choice.texture, choice.text, choice.link, choice.dialogueAction);
 
                         Vector2 position = GetOptionPosition(optionNumber);
                         ModUtils.AddElement(button, (int)position.X, (int)position.Y, 375, 45, this);
@@ -220,11 +220,11 @@ namespace OvermorrowMod.Common.Cutscenes
         private Texture2D icon;
         private string displayText;
         private string linkID;
-        private string action;
+        private Action action;
 
         public string rewardIndex = "none";
 
-        public OptionButton(Texture2D icon, string displayText, string linkID, string action)
+        public OptionButton(Texture2D icon, string displayText, string linkID, Action action)
         {
             this.icon = icon;
             this.displayText = displayText;
@@ -304,7 +304,24 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 parent.ResetTimers();
 
-                if (action != "none")
+                if (action != null) action.Invoke();
+
+                if (linkID != null)
+                {
+                    if (!parent.drawQuest)
+                    {
+                        parent.SetDialogueID(linkID);
+                        return;
+                    }
+                }
+                else
+                {
+                    parent.ExitText();
+                    return;
+                }
+
+
+                /*if (action != "none")
                 {
                     DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
                     QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
@@ -348,10 +365,6 @@ namespace OvermorrowMod.Common.Cutscenes
                             {
                                 questPlayer.SetTravelLocation(quest, "sojourn_travel");
                                 questPlayer.CompleteQuest(questPlayer.GetQuestID<FeydenRescue>());
-                                /*foreach (var req in quest.Requirements)
-                                {
-                                    if (req is TravelRequirement travelReq) questPlayer.SelectedLocation = travelReq.ID;
-                                }*/
                                 var feyden = npc.ModNPC as Feyden;
                                 feyden.followPlayer = questPlayer.Player;
 
@@ -401,17 +414,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             parent.ExitText();
                             return;
-                        /*case "feyden_trigger":
-
-                            bool spawnHandler = true;
-                            foreach (Projectile projectile in Main.projectile)
-                            {
-                                if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) spawnHandler = false;
-                            }
-
-                            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, Main.myPlayer);
-                            parent.ExitText();
-                            return;*/
                         case "exit":
                             parent.ExitText();
                             return;
@@ -422,7 +424,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     parent.SetDialogueID(linkID);
                     return;
-                }
+                }*/
             }
         }
     }

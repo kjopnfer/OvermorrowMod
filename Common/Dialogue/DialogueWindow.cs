@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.ModLoader;
@@ -69,18 +70,22 @@ namespace OvermorrowMod.Common.Dialogue
 
         public Texture2D texture { get; }
 
-        public DialogueChoice(Texture2D texture, string text, string link)
+        public Action dialogueAction { get; }
+
+        public DialogueChoice(Texture2D texture, string text, string link = null, Action dialogueAction = null)
         {
             this.texture = texture;
             this.text = text;
             this.link = link;
+            this.dialogueAction = dialogueAction;
         }
 
-        public DialogueChoice(string text, string link = null)
+        public DialogueChoice(string text, string link = null, Action dialogueAction = null)
         {
-            this.texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon").Value;
+            this.texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             this.text = text;
             this.link = link;
+            this.dialogueAction = dialogueAction;
         }
     }
 
