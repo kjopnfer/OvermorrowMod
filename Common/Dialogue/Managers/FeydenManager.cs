@@ -1,8 +1,6 @@
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
-using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.ModQuests;
-using System.Xml;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -14,7 +12,13 @@ namespace OvermorrowMod.Common.Dialogue
 
         public override DialogueWindow GetDialogueWindow()
         {
-            return new GuideCamp();
+            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+            if (questPlayer.IsDoingQuest<Quests.ModQuests.FeydenEscort>())
+            {
+                return new FeydenEscort();
+            }
+
+            return new FeydenFree();
 
             /*QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             XmlDocument doc = new XmlDocument();

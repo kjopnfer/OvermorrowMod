@@ -5,14 +5,8 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using OvermorrowMod.Core;
 using System.Text;
-using Terraria.GameContent;
-using Terraria.UI.Chat;
-using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Quests;
-using Terraria.Audio;
-using OvermorrowMod.Common.NPCs;
-using System;
 
 namespace OvermorrowMod.Common.Cutscenes
 {

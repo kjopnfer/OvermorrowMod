@@ -295,8 +295,6 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
-            // TODO: This shit is gonna SUCK in the long run, gotta fix it
-
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
             if (Parent is DialogueState parent)
             {
@@ -357,72 +355,7 @@ namespace OvermorrowMod.Common.Cutscenes
                             Main.instance.shop[Main.npcShop].SetupShop(Main.npcShop < Main.MaxShopIDs - 1 ? Main.npcShop : type);
 
                             return;
-                        case "quest":
-                        case "feyden_escort":
-                            if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "GuideCampAxe.xml"));
-                            if (isFeyden)
-                            {
-                                questPlayer.SetTravelLocation(quest, "sojourn_travel");
-                                questPlayer.CompleteQuest(questPlayer.GetQuestID<FeydenRescue>());
-                                var feyden = npc.ModNPC as Feyden;
-                                feyden.followPlayer = questPlayer.Player;
-
-                                // TODO: complete the cave quest here
-                                //questPlayer.CompleteQuest("");
-                            }
-
-                            questPlayer.AddQuest(quest);
-                            questNPC.TakeQuest();
-
-                            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
-                            {
-                                Volume = 0.9f,
-                                PitchVariance = 0.2f,
-                                MaxInstances = 3,
-                            }, npc.Center);
-
-                            // Run the Quest Accepted UI
-                            Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
-
-                            parent.ExitText();
-                            return;
-                        case "quest_complete":
-                            var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
-                            if (isFeyden && quest is FeydenEscort)
-                            {
-                                Main.NewText("reset npc tracking");
-
-                                var feyden = npc.ModNPC as Feyden;
-                                feyden.followPlayer = null;
-                            }
-
-                            if (rewardIndex != "none") // Provide the index of the reward to the method 
-                                questPlayer.CompleteQuest(quest.QuestID, rewardIndex);
-                            else  // If the quest doesn't offer a choose your own reward, use default behavior
-                                questPlayer.CompleteQuest(quest.QuestID);
-
-                            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
-                            {
-                                Volume = 0.9f,
-                                PitchVariance = 0.2f,
-                                MaxInstances = 3,
-                            }, npc.Center);
-
-                            // Run the Quest Complete UI
-                            Main.NewText("COMPLETED QUEST: " + quest.QuestName, Color.Yellow);
-
-                            parent.ExitText();
-                            return;
-                        case "exit":
-                            parent.ExitText();
-                            return;
                     }
-                }
-
-                if (!parent.drawQuest)
-                {
-                    parent.SetDialogueID(linkID);
-                    return;
                 }*/
             }
         }
