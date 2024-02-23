@@ -72,7 +72,7 @@ namespace OvermorrowMod.Common.Dialogue
 
         public Action<Player, NPC> dialogueAction { get; }
 
-        public DialogueChoice(Texture2D texture, string text, string link = null, Action<Player, NPC> dialogueAction = null)
+        public DialogueChoice(Texture2D texture, string text, Action<Player, NPC> dialogueAction = null, string link = null)
         {
             this.texture = texture;
             this.text = text;
@@ -80,7 +80,7 @@ namespace OvermorrowMod.Common.Dialogue
             this.dialogueAction = dialogueAction;
         }
 
-        public DialogueChoice(string text, string link = null, Action<Player, NPC> dialogueAction = null)
+        public DialogueChoice(string text, Action<Player, NPC> dialogueAction = null, string link = null)
         {
             this.texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             this.text = text;

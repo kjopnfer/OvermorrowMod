@@ -222,8 +222,6 @@ namespace OvermorrowMod.Common.Cutscenes
         private string linkID;
         private Action<Player, NPC> action;
 
-        public string rewardIndex = "none";
-
         public OptionButton(Texture2D icon, string displayText, string linkID, Action<Player, NPC> action)
         {
             this.icon = icon;

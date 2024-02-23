@@ -1,9 +1,11 @@
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Dialogue
@@ -27,7 +29,7 @@ namespace OvermorrowMod.Common.Dialogue
                     },
                     new DialogueChoice[]
                     {
-                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Fine", null, StartQuest)
+                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Fine", StartQuest)
                     }
                 ),
 
@@ -54,9 +56,9 @@ namespace OvermorrowMod.Common.Dialogue
                     },
                     new DialogueChoice[]
                     {
-                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Take on a powerful monster", "quest_complete_monster"),
-                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Discover an uncharted biome", "quest_complete_biome"),
-                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Build a cozy place to live", "quest_complete_build"),
+                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Take on a powerful monster", null, "quest_complete_monster"),
+                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Discover an uncharted biome", null, "quest_complete_biome"),
+                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Build a cozy place to live", null, "quest_complete_build"),
                     }
                 ),
 
@@ -76,7 +78,7 @@ namespace OvermorrowMod.Common.Dialogue
                     },
                     new DialogueChoice[]
                     {
-                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Turn In", null, QuestRewardMonster)
+                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Turn In", QuestRewardMonster)
                     }
                 ),
 
@@ -96,7 +98,7 @@ namespace OvermorrowMod.Common.Dialogue
                     },
                     new DialogueChoice[]
                     {
-                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Turn In", null, QuestRewardBiome)
+                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Turn In", QuestRewardBiome)
                     }
                 ),
 
@@ -110,8 +112,8 @@ namespace OvermorrowMod.Common.Dialogue
                     },
                     new DialogueChoice[]
                     {
-                        new DialogueChoice("Don't get excited, it won't be anything too fancy", "quest_complete_build_end"),
-                        new DialogueChoice("I'll make them the best storage space you've ever seen", "quest_complete_build_end"),
+                        new DialogueChoice("Don't get excited, it won't be anything too fancy", null, "quest_complete_build_end"),
+                        new DialogueChoice("I'll make them the best storage space you've ever seen", null, "quest_complete_build_end"),
                     }
                 ),
 
@@ -125,7 +127,7 @@ namespace OvermorrowMod.Common.Dialogue
                     },
                     new DialogueChoice[]
                     {
-                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Turn In", null, QuestRewardBuild)
+                        new DialogueChoice(ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value, "Turn In", QuestRewardBuild)
                     }
                 ),
             };
@@ -137,6 +139,9 @@ namespace OvermorrowMod.Common.Dialogue
             QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
 
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+            DialoguePlayer dialoguePlayer = player.GetModPlayer<DialoguePlayer>();
+            dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "GuideCampAxe.xml"));
 
             questPlayer.AddQuest(quest);
             questNPC.TakeQuest();
