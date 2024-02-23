@@ -220,11 +220,11 @@ namespace OvermorrowMod.Common.Cutscenes
         private Texture2D icon;
         private string displayText;
         private string linkID;
-        private Action action;
+        private Action<Player, NPC> action;
 
         public string rewardIndex = "none";
 
-        public OptionButton(Texture2D icon, string displayText, string linkID, Action action)
+        public OptionButton(Texture2D icon, string displayText, string linkID, Action<Player, NPC> action)
         {
             this.icon = icon;
             this.displayText = displayText;
@@ -304,7 +304,8 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 parent.ResetTimers();
 
-                if (action != null) action.Invoke();
+                NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                if (action != null) action.Invoke(Main.LocalPlayer, npc);
 
                 if (linkID != null)
                 {
