@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Common.Dialogue;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.UI.SpeechBubble;

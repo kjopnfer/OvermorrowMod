@@ -22,6 +22,7 @@ using OvermorrowMod.Content.NPCs.Mercenary;
 using static OvermorrowMod.Content.NPCs.Mercenary.Paladin.Paladin;
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.TilePiles;
+using OvermorrowMod.Common.Dialogue;
 
 namespace OvermorrowMod.Common
 {
@@ -170,6 +171,7 @@ namespace OvermorrowMod.Common
             ILEdits.Load();
             Particle.Load();
             TileObjects.Load();
+            DialogueManagers.Load();
             Quests.Quests.Load(this);
 
             foreach (Type type in Code.GetTypes())
@@ -177,6 +179,7 @@ namespace OvermorrowMod.Common
                 HexLoader.TryRegisteringHex(type);
                 Particle.TryRegisteringParticle(type);
                 TileObjects.RegisterTileObject(type);
+                DialogueManagers.RegisterDialogueManagers(type);
             }
 
             base.Load();
@@ -220,10 +223,11 @@ namespace OvermorrowMod.Common
 
             ModUtils.Load(true);
             HexLoader.Load(true);
-            Quests.Quests.Unload();
             ILEdits.Unload();
             Particle.Unload();
             TileObjects.Unload();
+            DialogueManagers.Unload();
+            Quests.Quests.Unload();
 
             SandModeKey = null;
             AmuletKey = null;

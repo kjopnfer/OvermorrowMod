@@ -17,6 +17,8 @@ namespace OvermorrowMod.Core
 
         public const string UI = Textures + "UI/";
 
+        public const string Portrait = UI + "Full/";
+
         public const string TilePiles = Textures + "TilePiles/";
 
         public const string Bestiary = Textures + "Bestiary/";

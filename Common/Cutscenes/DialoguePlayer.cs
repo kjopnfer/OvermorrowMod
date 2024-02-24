@@ -7,14 +7,13 @@ using System.Linq;
 using Terraria.GameInput;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Common.Dialogue;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
     public partial class DialoguePlayer : ModPlayer
     {
-        private Dialogue CurrentDialogue;
-
-        //public Dictionary<int, Popup> NPCPopups = new Dictionary<int, Popup>();
+        private DialogueWindow CurrentWindow;
 
         /// <summary>
         /// This contains Popup states based on an ID, usually the NPC's ID.
@@ -72,16 +71,15 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public bool CheckPopupAlreadyActive(int npcID) => PopupStates.ContainsKey(npcID);
 
-        public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
+
+        public void LoadDialogueWindow(DialogueWindow window)
         {
-            CurrentDialogue = new Dialogue(displayText, drawTime, xmlDoc);
+            CurrentWindow = window;
         }
 
-        public void SetDialogue(Dialogue dialogue) => CurrentDialogue = dialogue;
+        public void ClearWindow() => CurrentWindow = null;
 
-        public void ClearDialogue() => CurrentDialogue = null;
-
-        public Dialogue GetDialogue() => CurrentDialogue;
+        public DialogueWindow GetDialogueWindow() => CurrentWindow;
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -199,15 +197,6 @@ namespace OvermorrowMod.Common.Cutscenes
             }
 
             greetCounter++;
-
-            /*if (questPlayer.FindActiveQuest("GuideCampfire"))
-            {
-                if (guideCampfireCounter++ == 30)
-                {
-                    XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
-                    dialoguePlayer.AddPopup(doc);
-                }
-            }*/
 
             base.PreUpdate();
         }

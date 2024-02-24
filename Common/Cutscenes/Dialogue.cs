@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Graphics;
+/*using Microsoft.Xna.Framework.Graphics;
 using System.Xml;
 using System.Collections.Generic;
 using Terraria;
@@ -12,17 +12,17 @@ namespace OvermorrowMod.Common.Cutscenes
         public string displayText;
         public int drawTime;
 
-        public XmlDocument xmlDoc;
+        //public XmlDocument xmlDoc;
 
         private XmlNodeList textList;
 
         private int textIterator = 0;
 
-        public Dialogue(string displayText, int drawTime, XmlDocument xmlDoc)
+        public Dialogue(string displayText, int drawTime)
         {
             this.displayText = displayText;
             this.drawTime = drawTime;
-            this.xmlDoc = xmlDoc;
+            //this.xmlDoc = xmlDoc;
 
             UpdateList("start");
         }
@@ -41,19 +41,6 @@ namespace OvermorrowMod.Common.Cutscenes
         /// Gets the next Text node within the current DialogueNode
         /// </summary>
         public void IncrementText() => textIterator++;
-
-        /*public string GetText(string id)
-        {
-            XmlNode starting = FindNode(id);
-
-            var children = starting.ChildNodes;
-            foreach (XmlNode child in children)
-            {
-                if (child.Name == "Message") return child.InnerText;
-            }
-
-            return null;
-        }*/
 
         /// <summary>
         /// Grabs a list of texts based on the node ID
@@ -175,4 +162,4 @@ namespace OvermorrowMod.Common.Cutscenes
             return null;
         }
     }
-}
+}*/

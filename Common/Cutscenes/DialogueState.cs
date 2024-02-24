@@ -4,7 +4,6 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
 using OvermorrowMod.Core;
-using System.Text;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
 using Terraria.ID;
@@ -13,11 +12,9 @@ using OvermorrowMod.Quests;
 using Terraria.Audio;
 using OvermorrowMod.Common.NPCs;
 using System;
-using OvermorrowMod.Content.Projectiles;
-using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
-using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.ModQuests;
+using OvermorrowMod.Common.Dialogue;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -35,7 +32,6 @@ namespace OvermorrowMod.Common.Cutscenes
         public int textIterator = 0;
 
         private DummyPanel DrawSpace = new DummyPanel();
-        private UIText Text = new UIText("");
 
         private Vector2 _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) - new Vector2(600, 180) / 2f;
 
@@ -60,6 +56,10 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool hasInitialized = false;
         float arrowOffset;
 
+        private DialogueWindow dialogueWindow => Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogueWindow();
+        private Text dialogueText => dialogueWindow.GetText(dialogueID, textIterator);
+        private int dialogueTextLength => dialogueWindow.GetTexts(dialogueID).Length - 1;
+
         private const float PANEL_WIDTH = 300;
         private const float PANEL_HEIGHT = 90;
         public override void Draw(SpriteBatch spriteBatch)
@@ -68,14 +68,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
+            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogueWindow() == null)
             {
-                player.ClearDialogue();
+                player.ClearWindow();
                 player.LockPlayer = false;
 
-                ResetTimers();
-                SetID("start");
-                hasInitialized = false;
+                ExitText();
 
                 return;
             }
@@ -93,21 +91,19 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (DelayTimer++ >= DIALOGUE_DELAY)
             {
-                if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
+                if (DrawTimer < dialogueText.drawTime) DrawTimer++;
 
                 DrawText(player, spriteBatch, new Vector2(0, 0));
             }
 
             // Handles the drawing of the UI after the dialogue has finished drawing
-            if (DrawTimer >= player.GetDialogue().drawTime)
+            if (DrawTimer >= dialogueText.drawTime)
             {
-                Dialogue dialogue = player.GetDialogue();
-
                 var npc = Main.npc[Main.LocalPlayer.talkNPC];
                 var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
                 // Draw the continue icon if there is more text to be read
-                if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                if (textIterator < dialogueWindow.GetTexts(dialogueID).Length - 1)
                 {
                     Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
                     Vector2 arrowPosition = _dialogueAnchor;
@@ -126,9 +122,8 @@ namespace OvermorrowMod.Common.Cutscenes
         public override void Update(GameTime gameTime)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            Dialogue dialogue = player.GetDialogue();
 
-            if (dialogue == null) return;
+            if (dialogueWindow == null) return;
 
             if (Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
@@ -137,11 +132,11 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
-                if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
+                if (DrawTimer < dialogueText.drawTime || textIterator < dialogueTextLength) return;
 
                 canInteract = false;
 
-                if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                if (textIterator >= dialogueTextLength && dialogueWindow.GetOptions(dialogueID) == null)
                 {
                     canInteract = true;
                 }
@@ -151,10 +146,12 @@ namespace OvermorrowMod.Common.Cutscenes
                     canInteract = false;
                 }
 
-                if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
+                if (dialogueWindow != null && dialogueWindow.GetOptions(dialogueID) != null && !drawQuest)
                 {
-                    foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
+                    foreach (DialogueChoice choice in dialogueWindow.GetOptions(dialogueID))
                     {
+                        OptionButton button = new OptionButton(choice.texture, choice.text, choice.link, choice.dialogueAction);
+
                         Vector2 position = GetOptionPosition(optionNumber);
                         ModUtils.AddElement(button, (int)position.X, (int)position.Y, 375, 45, this);
 
@@ -177,19 +174,16 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if ((Main.mouseLeft || ModUtils.CheckKeyPress()) && interactDelay == 0 && DelayTimer >= DIALOGUE_DELAY)
             {
-                DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-                Dialogue dialogue = player.GetDialogue();
-
                 interactDelay = 10;
 
-                if (DrawTimer < dialogue.drawTime)
+                if (DrawTimer < dialogueText.drawTime)
                 {
-                    DrawTimer = dialogue.drawTime;
+                    DrawTimer = dialogueText.drawTime;
                 }
                 else
                 {
                     // If there are no dialogue options left, then make it so clicking will exit out of the dialogue completely
-                    if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                    if (textIterator >= dialogueTextLength && dialogueWindow.GetOptions(dialogueID) == null)
                         ExitText();
                     else
                         AdvanceText();
@@ -205,10 +199,9 @@ namespace OvermorrowMod.Common.Cutscenes
         private void DrawText(DialoguePlayer player, SpriteBatch spriteBatch, Vector2 textPosition)
         {
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
-            var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
-            string text = player.GetDialogue().GetText();
-            int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)player.GetDialogue().drawTime, 0, 1));
+            string text = dialogueText.text;
+            int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)dialogueText.drawTime, 0, 1));
 
             var displayText = ParseColoredText(text.Substring(0, progress));
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
@@ -221,14 +214,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
     public class OptionButton : UIElement
     {
-        private string icon;
+        private Texture2D icon;
         private string displayText;
         private string linkID;
-        private string action;
+        private Action<Player, NPC> action;
 
-        public string rewardIndex = "none";
-
-        public OptionButton(string icon, string displayText, string linkID, string action)
+        public OptionButton(Texture2D icon, string displayText, string linkID, Action<Player, NPC> action)
         {
             this.icon = icon;
             this.displayText = displayText;
@@ -264,21 +255,7 @@ namespace OvermorrowMod.Common.Cutscenes
             //ModUtils.DrawNineSegmentTexturePanel(spriteBatch, texture, drawRectangle, 35, Color.White * 0.6f);
             //Utils.DrawInvBG(Main.spriteBatch, drawRectangle, color * 0.925f);
 
-            Texture2D dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChatIcon").Value;
-            switch (icon)
-            {
-                case "quest":
-                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_QuestIcon").Value;
-                    break;
-                case "chest":
-                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_ChestIcon").Value;
-                    break;
-                case "sword":
-                    dialogueIcon = ModContent.Request<Texture2D>(AssetDirectory.UI + "Dialogue_SwordIcon").Value;
-                    break;
-            }
-
-            spriteBatch.Draw(dialogueIcon, pos + new Vector2(dialogueIcon.Width - 6, dialogueIcon.Height - 8), null, Color.White, 0f, dialogueIcon.Size() / 2f, 1f, 0, 0);
+            spriteBatch.Draw(icon, pos + new Vector2(icon.Width - 6, icon.Height - 8), null, Color.White, 0f, icon.Size() / 2f, 1f, 0, 0);
             Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(64, 12), Color.White);
         }
 
@@ -315,14 +292,30 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
-            // TODO: This shit is gonna SUCK in the long run, gotta fix it
-
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
             if (Parent is DialogueState parent)
             {
                 parent.ResetTimers();
 
-                if (action != "none")
+                NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                if (action != null) action.Invoke(Main.LocalPlayer, npc);
+
+                if (linkID != null)
+                {
+                    if (!parent.drawQuest)
+                    {
+                        parent.SetDialogueID(linkID);
+                        return;
+                    }
+                }
+                else
+                {
+                    parent.ExitText();
+                    return;
+                }
+
+
+                /*if (action != "none")
                 {
                     DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
                     QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
@@ -359,88 +352,8 @@ namespace OvermorrowMod.Common.Cutscenes
                             Main.instance.shop[Main.npcShop].SetupShop(Main.npcShop < Main.MaxShopIDs - 1 ? Main.npcShop : type);
 
                             return;
-                        case "quest":
-                        case "feyden_escort":
-                            if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "GuideCampAxe.xml"));
-                            if (isFeyden)
-                            {
-                                questPlayer.SetTravelLocation(quest, "sojourn_travel");
-                                questPlayer.CompleteQuest(questPlayer.GetQuestID<FeydenRescue>());
-                                /*foreach (var req in quest.Requirements)
-                                {
-                                    if (req is TravelRequirement travelReq) questPlayer.SelectedLocation = travelReq.ID;
-                                }*/
-                                var feyden = npc.ModNPC as Feyden;
-                                feyden.followPlayer = questPlayer.Player;
-
-                                // TODO: complete the cave quest here
-                                //questPlayer.CompleteQuest("");
-                            }
-
-                            questPlayer.AddQuest(quest);
-                            questNPC.TakeQuest();
-
-                            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
-                            {
-                                Volume = 0.9f,
-                                PitchVariance = 0.2f,
-                                MaxInstances = 3,
-                            }, npc.Center);
-
-                            // Run the Quest Accepted UI
-                            Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
-
-                            parent.ExitText();
-                            return;
-                        case "quest_complete":
-                            var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
-                            if (isFeyden && quest is FeydenEscort)
-                            {
-                                Main.NewText("reset npc tracking");
-
-                                var feyden = npc.ModNPC as Feyden;
-                                feyden.followPlayer = null;
-                            }
-
-                            if (rewardIndex != "none") // Provide the index of the reward to the method 
-                                questPlayer.CompleteQuest(quest.QuestID, rewardIndex);
-                            else  // If the quest doesn't offer a choose your own reward, use default behavior
-                                questPlayer.CompleteQuest(quest.QuestID);
-
-                            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
-                            {
-                                Volume = 0.9f,
-                                PitchVariance = 0.2f,
-                                MaxInstances = 3,
-                            }, npc.Center);
-
-                            // Run the Quest Complete UI
-                            Main.NewText("COMPLETED QUEST: " + quest.QuestName, Color.Yellow);
-
-                            parent.ExitText();
-                            return;
-                        /*case "feyden_trigger":
-
-                            bool spawnHandler = true;
-                            foreach (Projectile projectile in Main.projectile)
-                            {
-                                if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) spawnHandler = false;
-                            }
-
-                            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, Main.myPlayer);
-                            parent.ExitText();
-                            return;*/
-                        case "exit":
-                            parent.ExitText();
-                            return;
                     }
-                }
-
-                if (!parent.drawQuest)
-                {
-                    parent.SetID(linkID);
-                    return;
-                }
+                }*/
             }
         }
     }
