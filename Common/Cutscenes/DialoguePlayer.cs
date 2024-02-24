@@ -15,8 +15,6 @@ namespace OvermorrowMod.Common.Cutscenes
     {
         private DialogueWindow CurrentWindow;
 
-        //public Dictionary<int, Popup> NPCPopups = new Dictionary<int, Popup>();
-
         /// <summary>
         /// This contains Popup states based on an ID, usually the NPC's ID.
         /// </summary>
@@ -73,10 +71,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public bool CheckPopupAlreadyActive(int npcID) => PopupStates.ContainsKey(npcID);
 
-        /*public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
-        {
-            CurrentDialogue = new Dialogue(displayText, drawTime, xmlDoc);
-        }*/
 
         public void LoadDialogueWindow(DialogueWindow window)
         {
@@ -86,10 +80,6 @@ namespace OvermorrowMod.Common.Cutscenes
         public void ClearWindow() => CurrentWindow = null;
 
         public DialogueWindow GetDialogueWindow() => CurrentWindow;
-
-        //public void ClearDialogue() => CurrentDialogue = null;
-
-        //public Dialogue GetDialogue() => CurrentDialogue;
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -207,15 +197,6 @@ namespace OvermorrowMod.Common.Cutscenes
             }
 
             greetCounter++;
-
-            /*if (questPlayer.FindActiveQuest("GuideCampfire"))
-            {
-                if (guideCampfireCounter++ == 30)
-                {
-                    XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
-                    dialoguePlayer.AddPopup(doc);
-                }
-            }*/
 
             base.PreUpdate();
         }

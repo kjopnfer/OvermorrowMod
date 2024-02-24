@@ -19,20 +19,6 @@ namespace OvermorrowMod.Common.Dialogue
             }
 
             return new FeydenFree();
-
-            /*QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-            XmlDocument doc = new XmlDocument();
-
-            if (questPlayer.IsDoingQuest<FeydenEscort>())
-            {
-                doc.LoadXml(System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "FeydenEscort.xml")));
-            }
-            else
-            {
-                doc.LoadXml(System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "FeydenFree.xml")));
-            }
-
-            return doc;*/
         }
     }
 }

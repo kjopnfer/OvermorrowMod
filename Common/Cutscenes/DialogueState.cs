@@ -32,7 +32,6 @@ namespace OvermorrowMod.Common.Cutscenes
         public int textIterator = 0;
 
         private DummyPanel DrawSpace = new DummyPanel();
-        private UIText Text = new UIText("");
 
         private Vector2 _dialogueAnchor = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) - new Vector2(600, 180) / 2f;
 
@@ -175,7 +174,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if ((Main.mouseLeft || ModUtils.CheckKeyPress()) && interactDelay == 0 && DelayTimer >= DIALOGUE_DELAY)
             {
-                DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
                 interactDelay = 10;
 
                 if (DrawTimer < dialogueText.drawTime)
@@ -201,7 +199,6 @@ namespace OvermorrowMod.Common.Cutscenes
         private void DrawText(DialoguePlayer player, SpriteBatch spriteBatch, Vector2 textPosition)
         {
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
-            var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
             string text = dialogueText.text;
             int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)dialogueText.drawTime, 0, 1));
