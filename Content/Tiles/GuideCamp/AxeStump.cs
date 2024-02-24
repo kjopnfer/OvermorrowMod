@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
 
-                if (questPlayer.FindActiveQuest("GuideCampfire") && !questPlayer.grabbedAxe)
+                if (questPlayer.IsDoingQuest<Quests.ModQuests.GuideCampfire>() && !questPlayer.grabbedAxe)
                 {
                     Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                     Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;

@@ -9,6 +9,7 @@ namespace OvermorrowMod.Quests.Requirements
     public class TravelRequirement : BaseQuestRequirement<TravelRequirementState>
     {
         public readonly string description;
+        public readonly string displayName;
         private Vector2? location = null;
         public Vector2 Location { get
             {
@@ -18,9 +19,10 @@ namespace OvermorrowMod.Quests.Requirements
         private readonly Func<Vector2> locationGenerator;
 
 
-        public TravelRequirement(Func<Vector2> locationGenerator, string description, string id) : base(id)
+        public TravelRequirement(string id, Func<Vector2> locationGenerator, string displayName, string description) : base(id)
         {
             this.locationGenerator = locationGenerator;
+            this.displayName = displayName;
             this.description = description;
         }
 

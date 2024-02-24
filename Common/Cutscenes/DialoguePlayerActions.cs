@@ -7,6 +7,10 @@ using System.Xml;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using System.Linq;
+using OvermorrowMod.Quests.ModQuests;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using Terraria.ID;
+using OvermorrowMod.Content.WorldGeneration;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -21,8 +25,21 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private int greetCounter = 0;
         private int guideCampfireCounter = 0;
-        
 
+        public bool reachedSlimeCave = false;
 
+        public bool feydenExitCave = false;
+        public bool feydenSojournClose = false;
+
+        QuestPlayer questPlayer => Player.GetModPlayer<QuestPlayer>();
+        DialoguePlayer dialoguePlayer => Player.GetModPlayer<DialoguePlayer>();
+
+        private void GeneralUpdateDialogue()
+        {
+            if (Player.Center.X >= GuideCamp.SlimeCaveEntrance.X - (150 * 16) && !dialoguePlayer.reachedSlimeCave)
+            {
+                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "FeydenHelp.xml"));
+            }
+        }
     }
 }

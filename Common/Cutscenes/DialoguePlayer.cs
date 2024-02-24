@@ -1,17 +1,12 @@
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Terraria;
 using System.Xml;
 using Terraria.ModLoader.IO;
 using System.Linq;
 using Terraria.GameInput;
-using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
-using System.Text;
-using Terraria.ID;
-using Terraria.Audio;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -50,23 +45,32 @@ namespace OvermorrowMod.Common.Cutscenes
             //kittFirst = tag.Get<bool>("kittFirst");
         }
 
-        public void AddNPCPopup(int id, XmlDocument xmlDoc)
+        /// <summary>
+        /// Adds a Popup instance into a Dictionary with the given ID (usually the NPC's ID).
+        /// If nodeId is not specified, the first Popup found within the file is used.
+        /// </summary>
+        /// <param name="npcID"></param>
+        /// <param name="xmlDoc"></param>
+        /// <param name="nodeID"></param>
+        public void AddNPCPopup(int npcID, XmlDocument xmlDoc, string nodeID = null)
         {
-            if (PopupStates.ContainsKey(id))
+            if (PopupStates.ContainsKey(npcID))
             {
-                if (!PopupStates[id].CanClose) // Replace the current Popup if it is not in a closed state
+                if (!PopupStates[npcID].CanClose) // Replace the current Popup if it is not in a closed state
                 {
-                    PopupStates[id].ReplacePopup(new Popup(xmlDoc));
+                    PopupStates[npcID].ReplacePopup(new Popup(xmlDoc, nodeID));
                 }
                 else // Otherwise, if it is in a closing state then add it into a Queue that will be given to a new state when ready
                 {
-                    if (!QueuedPopups.ContainsKey(id)) QueuedPopups.Add(id, new Popup(xmlDoc));
-                    else QueuedPopups[id] = new Popup(xmlDoc);
+                    if (!QueuedPopups.ContainsKey(npcID)) QueuedPopups.Add(npcID, new Popup(xmlDoc, nodeID));
+                    else QueuedPopups[npcID] = new Popup(xmlDoc, nodeID);
                 }
             }
             else
-                PopupStates.Add(id, new PopupState(new Popup(xmlDoc)));
+                PopupStates.Add(npcID, new PopupState(new Popup(xmlDoc, nodeID)));
         }
+
+        public bool CheckPopupAlreadyActive(int npcID) => PopupStates.ContainsKey(npcID);
 
         public void SetDialogue(string displayText, int drawTime, XmlDocument xmlDoc)
         {
@@ -127,9 +131,20 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private void UpdatePopupQueue()
         {
+            List<int> DequeuedPopups = new List<int>();
+
             foreach (KeyValuePair<int, Popup> popup in QueuedPopups)
             {
-                if (!PopupStates.ContainsKey(popup.Key)) PopupStates.Add(popup.Key, new PopupState(popup.Value));
+                if (!PopupStates.ContainsKey(popup.Key))
+                {
+                    PopupStates.Add(popup.Key, new PopupState(popup.Value));
+                    DequeuedPopups.Add(popup.Key);
+                }
+            }
+
+            foreach (int popup in DequeuedPopups)
+            {
+                QueuedPopups.Remove(popup);
             }
         }
 
@@ -161,6 +176,7 @@ namespace OvermorrowMod.Common.Cutscenes
             UpdatePopupQueue();
             UpdatePopupStates();
             RemovePopupStates();
+            GeneralUpdateDialogue();
 
             QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -197,161 +213,4 @@ namespace OvermorrowMod.Common.Cutscenes
         }
     }
 
-    public class PopupState
-    {
-        // if these are const then the fucking uistate cant read them
-        public readonly float DIALOGUE_DELAY = 30;
-        public readonly float OPEN_TIME = 15;
-        public readonly float CLOSE_TIME = 10;
-
-        public bool CanOpen { get; private set; } = true;
-        public bool CanClose { get; private set; } = false;
-        public bool CanBeRemoved { get; private set; } = false;
-
-        public int OpenTimer { get; private set; }
-        public int CloseTimer { get; private set; }
-
-        public Popup Popup { get; private set; }
-
-        public PopupState(Popup popup)
-        {
-            Popup = popup;
-        }
-
-        public void ReplacePopup(Popup popup)
-        {
-            if (SoundEngine.TryGetActiveSound(Popup.drawSound, out var result)) result.Stop();
-
-            Popup = popup;
-        }
-
-        public void Update()
-        {
-            if (CanOpen)
-            {
-                // This should only run once per state instance.
-                // Allows Popups of a state to override each other but not repeat the same opening animation if they do.
-
-                if (OpenTimer == 0)
-                {
-                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
-                    {
-                        Volume = 1.25f,
-                        PitchVariance = 1.1f,
-                        MaxInstances = 2,
-                    }, Main.LocalPlayer.Center);
-                }
-
-                if (OpenTimer < OPEN_TIME) OpenTimer++;
-                if (OpenTimer == OPEN_TIME)
-                {
-                    if (Popup.DelayTimer < DIALOGUE_DELAY) Popup.DelayTimer++;
-                    if (Popup.DelayTimer == DIALOGUE_DELAY) CanOpen = false;
-                }
-            }
-            else
-            {
-                if (Popup.DrawTimer < Popup.GetDrawTime()) // Draws the text for the specified time
-                {
-                    if (Popup.DrawTimer == 0)
-                    {
-                        if (!SoundEngine.TryGetActiveSound(Popup.drawSound, out var result))
-                        {
-                            Popup.drawSound = SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw")
-                            {
-                                Volume = 1.25f,
-                                PitchVariance = 1.1f,
-                                MaxInstances = 3,
-                            }, Main.LocalPlayer.Center);
-                        }
-                    }
-
-                    Popup.DrawTimer++;
-                }
-                else if (Popup.DisplayTimer < Popup.GetDisplayTime()) // Holds the text for the specified time
-                {
-                    if (SoundEngine.TryGetActiveSound(Popup.drawSound, out var result)) result.Stop();
-                    Popup.DisplayTimer++;
-                }
-                else if (Popup.GetNodeIteration() < Popup.GetListLength() - 1) // If there are any nodes left, reset timers and go to next
-                {
-                    Popup.GetNextNode();
-                }
-
-                //Main.NewText(Popup.DisplayTimer + " / " + Popup.GetDisplayTime());
-                if (Popup.ShouldClose() && Popup.DisplayTimer >= Popup.GetDisplayTime()) // If there are no nodes left and it has finished displaying
-                {
-                    CanClose = true;
-                }
-            }
-
-            if (CanClose)
-            {
-
-                if (CloseTimer < CLOSE_TIME) CloseTimer++;
-                if (CloseTimer == CLOSE_TIME)
-                {
-                    //Main.NewText("flag removal");
-                    CanBeRemoved = true;
-                }
-            }
-        }
-
-        public string GetPopupText()
-        {
-            int progress = (int)MathHelper.Lerp(0, Popup.GetText().Length, Popup.DrawTimer / (float)Popup.GetDrawTime());
-            var text = Popup.GetText().Substring(0, progress);
-
-            // If for some reason there are no colors specified don't parse the brackets
-            if (Popup.GetColorHex() != null)
-            {
-                // The number of opening brackets MUST be the same as the number of closing brackets
-                int numOpen = 0;
-                int numClose = 0;
-
-                // Create a new string, adding in hex tags whenever an opening bracket is found
-                var builder = new StringBuilder();
-                builder.Append("    "); // Appends to the beginning of the string
-
-                foreach (var character in text)
-                {
-                    if (character == '[') // Insert the hex tag if an opening bracket is found
-                    {
-                        builder.Append("[c/" + Popup.GetColorHex() + ":");
-                        numOpen++;
-                    }
-                    else
-                    {
-                        if (character == ']')
-                        {
-                            numClose++;
-                        }
-
-                        builder.Append(character);
-                    }
-                }
-
-                if (numOpen != numClose)
-                {
-                    builder.Append(']');
-                }
-
-                // Final check for if the tag has two brackets but no characters inbetween
-                var hexTag = "[c/" + Popup.GetColorHex() + ":]";
-                if (builder.ToString().Contains(hexTag))
-                {
-                    builder.Replace(hexTag, "[c/" + Popup.GetColorHex() + ": ]");
-                }
-
-                text = builder.ToString();
-            }
-
-            return text;
-        }
-
-        public Texture2D GetPopupFace()
-        {
-            return Popup.GetPortrait();
-        }
-    }
 }

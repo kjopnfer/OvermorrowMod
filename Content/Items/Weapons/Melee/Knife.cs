@@ -29,7 +29,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddRecipeGroup("IronBar", 8)
+                .AddRecipeGroup("IronBar", 4)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

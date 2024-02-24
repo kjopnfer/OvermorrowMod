@@ -1,0 +1,10 @@
+<Popups>
+	<Popup id="EXIT_CAVE">
+		<Text npcPortrait="Feyden" drawTime="90" displayTime="120">It's just over to the East. And be ready for a sight when we get there.</Text>
+		<Text npcPortrait="Feyden" drawTime="90" displayTime="120">The village hasn't been the same since that cursed bandit gang started causing trouble.</Text>
+	</Popup>
+
+	<Popup id="CLOSE_SOJOURN">
+		<Text npcPortrait="Feyden" drawTime="60" displayTime="120">Getting close, it's just over there.</Text>
+	</Popup>
+</Popups>

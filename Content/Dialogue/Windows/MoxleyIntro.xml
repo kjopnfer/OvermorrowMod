@@ -1,0 +1,14 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text portrait="Moxley" time="150">Hold it right there Feyden. What's your business outside the village, especially with a stranger in tow?</Text>
+			<Text portrait="Moxley" time="60">I hope you have a good reason for sneaking out... again.</Text>
+			<Text portrait="Feyden" time="150">Easy there, Moxley. Just thought,  after Clayton found those new berries, maybe I'd gather some new ingredients myself.</Text>
+			<Text portrait="Feyden" time="150">I had a bit of trouble with some slimes, but my friend here helped me out. We're just heading back to the tavern.</Text>
+			<Text portrait="Moxley" time="150">Slimes, huh? I suppose that explains the racket. What about your friend? Got a name and a reason for being here?</Text>
+			<Text portrait="Feyden" time="150">Moxley, they're harmless, and I'm here safe thanks to their help. Just wanted to share a drink at the tavern, that's all.</Text>
+			<Text portrait="Moxley" time="100">Alright, go on, then. But keep it peaceful. Bandit business has everyone on edge.</Text>
+			<Text portrait="Feyden" time="60">Appreciate it, Moxley. No surprises, I promise.</Text>
+		</Dialogue>
+	</DialogueNode>
+</Dialogue>

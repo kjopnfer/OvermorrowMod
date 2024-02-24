@@ -13,6 +13,11 @@ using OvermorrowMod.Quests;
 using Terraria.Audio;
 using OvermorrowMod.Common.NPCs;
 using System;
+using OvermorrowMod.Content.Projectiles;
+using OvermorrowMod.Content.WorldGeneration;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.ModQuests;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -183,6 +188,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
                 else
                 {
+                    // If there are no dialogue options left, then make it so clicking will exit out of the dialogue completely
                     if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
                         ExitText();
                     else
@@ -202,7 +208,7 @@ namespace OvermorrowMod.Common.Cutscenes
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
             string text = player.GetDialogue().GetText();
-            int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText().Length, DrawTimer / (float)player.GetDialogue().drawTime);
+            int progress = (int)MathHelper.Lerp(0, text.Length, Utils.Clamp(DrawTimer / (float)player.GetDialogue().drawTime, 0, 1));
 
             var displayText = ParseColoredText(text.Substring(0, progress));
             TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
@@ -309,6 +315,8 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
+            // TODO: This shit is gonna SUCK in the long run, gotta fix it
+
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
             if (Parent is DialogueState parent)
             {
@@ -318,10 +326,14 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
                     QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+
+                    if (Main.LocalPlayer.talkNPC == -1) return;
+
                     NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                     QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
 
                     var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+                    bool isFeyden = (npc.ModNPC is Feyden); // Temporary
 
                     switch (action)
                     {
@@ -348,13 +360,25 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             return;
                         case "quest":
+                        case "feyden_escort":
+                            if (quest.QuestName == "Rekindle the Flame") dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popups + "GuideCampAxe.xml"));
+                            if (isFeyden)
+                            {
+                                questPlayer.SetTravelLocation(quest, "sojourn_travel");
+                                questPlayer.CompleteQuest(questPlayer.GetQuestID<FeydenRescue>());
+                                /*foreach (var req in quest.Requirements)
+                                {
+                                    if (req is TravelRequirement travelReq) questPlayer.SelectedLocation = travelReq.ID;
+                                }*/
+                                var feyden = npc.ModNPC as Feyden;
+                                feyden.followPlayer = questPlayer.Player;
+
+                                // TODO: complete the cave quest here
+                                //questPlayer.CompleteQuest("");
+                            }
+
                             questPlayer.AddQuest(quest);
                             questNPC.TakeQuest();
-
-                            if (quest.QuestName == "Rekindle the Flame")
-                            {
-                                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
-                            }
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
                             {
@@ -370,6 +394,14 @@ namespace OvermorrowMod.Common.Cutscenes
                             return;
                         case "quest_complete":
                             var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
+                            if (isFeyden && quest is FeydenEscort)
+                            {
+                                Main.NewText("reset npc tracking");
+
+                                var feyden = npc.ModNPC as Feyden;
+                                feyden.followPlayer = null;
+                            }
+
                             if (rewardIndex != "none") // Provide the index of the reward to the method 
                                 questPlayer.CompleteQuest(quest.QuestID, rewardIndex);
                             else  // If the quest doesn't offer a choose your own reward, use default behavior
@@ -387,6 +419,17 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             parent.ExitText();
                             return;
+                        /*case "feyden_trigger":
+
+                            bool spawnHandler = true;
+                            foreach (Projectile projectile in Main.projectile)
+                            {
+                                if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) spawnHandler = false;
+                            }
+
+                            if (spawnHandler) Projectile.NewProjectile(null, GuideCamp.FeydenCavePosition + new Vector2(16 * 16, 0), Vector2.Zero, ModContent.ProjectileType<FeydenCaveHandler>(), 0, 0f, Main.myPlayer);
+                            parent.ExitText();
+                            return;*/
                         case "exit":
                             parent.ExitText();
                             return;

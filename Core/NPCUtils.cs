@@ -1,20 +1,8 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Players;
-using OvermorrowMod.Common.TilePiles;
-using OvermorrowMod.Common.VanillaOverrides.Gun;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Xml;
+using System.Linq;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Events;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.UI;
-using Microsoft.Xna.Framework.Input;
 
 namespace OvermorrowMod.Core
 {
@@ -36,6 +24,64 @@ namespace OvermorrowMod.Core
             return (bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType]);
         }
 
+        /// <summary>
+        /// Searches through Main.npc and returns the first instance of the specified NPC. Returns null if not found.
+        /// </summary>
+        public static NPC FindFirstNPC(int type)
+        {
+            foreach (NPC npc in Main.npc.Where(npc => npc.type == type))
+            {
+                return npc;
+            }
+
+            return null;
+        }
+
+        public static NPC FindClosestNPC(this Entity entity, float maxDetectDistance)
+        {
+            NPC closestNPC = null;
+            float sqrMaxDetectDistance = maxDetectDistance * maxDetectDistance;
+
+            for (int k = 0; k < Main.maxNPCs; k++)
+            {
+                NPC target = Main.npc[k];
+                if (target.CanBeChasedBy())
+                {
+                    float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, entity.Center);
+
+                    if (sqrDistanceToTarget < sqrMaxDetectDistance)
+                    {
+                        sqrMaxDetectDistance = sqrDistanceToTarget;
+                        closestNPC = target;
+                    }
+                }
+            }
+
+            return closestNPC;
+        }
+
+        public static Player FindClosestPlayer(this Entity entity, float maxDetectDistance)
+        {
+            Player closestPlayer = null;
+            float sqrMaxDetectDistance = maxDetectDistance * maxDetectDistance;
+
+            for (int k = 0; k < Main.maxPlayers; k++)
+            {
+                Player player = Main.player[k];
+                if (player.active)
+                {
+                    float sqrDistanceToTarget = Vector2.DistanceSquared(player.Center, entity.Center);
+
+                    if (sqrDistanceToTarget < sqrMaxDetectDistance)
+                    {
+                        sqrMaxDetectDistance = sqrDistanceToTarget;
+                        closestPlayer = player;
+                    }
+                }
+            }
+
+            return closestPlayer;
+        }
 
         #region Vanilla Code Adaptions
         /// <summary>
@@ -86,7 +132,7 @@ namespace OvermorrowMod.Core
                     npc.velocity *= 0.8f;
                 }
             }
-            else if (npc.velocity.X < moveSpeed && targetPosition.X > npc.Center.X) 
+            else if (npc.velocity.X < moveSpeed && targetPosition.X > npc.Center.X)
             {
                 if (npc.confused && !npc.boss)
                 {
@@ -105,7 +151,7 @@ namespace OvermorrowMod.Core
                     }
                 }
             }
-            else if (npc.velocity.X > -moveSpeed && targetPosition.X < npc.Center.X) 
+            else if (npc.velocity.X > -moveSpeed && targetPosition.X < npc.Center.X)
             {
                 if (npc.confused && !npc.boss)
                 {
@@ -423,7 +469,7 @@ namespace OvermorrowMod.Core
             }
             return false;
         }
-        
+
         /// <summary>
         /// Checks to see if there is a gap in front of the NPC
         /// </summary>

@@ -22,6 +22,7 @@ namespace OvermorrowMod.Common.TilePiles
         public override bool CreateDust(int i, int j, ref int type) => false;
         public override bool CanKillTile(int i, int j, ref bool blockDamaged) => false;
         public override bool KillSound(int i, int j, bool fail) => false;
+        public override bool CanDrop(int i, int j) => false;
         public virtual TileStyle GridStyle => TileStyle.Style3x3;
         public override string Texture => GetGridTexture();
 

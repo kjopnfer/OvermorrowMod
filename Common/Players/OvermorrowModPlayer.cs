@@ -14,6 +14,7 @@ using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Items.Misc;
 using OvermorrowMod.Content.Items;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -84,10 +85,10 @@ namespace OvermorrowMod.Common.Players
 
         public override IEnumerable<Item> AddStartingItems(bool mediumCoreDeath)
         {
-            return new[] {
-                new Item(ModContent.ItemType<ModBook>()),
-                new Item(ModContent.ItemType<TesterBag>()),
-            };
+            yield return new Item(ModContent.ItemType<ModBook>());
+            yield return new Item(ModContent.ItemType<TesterBag>());
+
+            if (OvermorrowWorld.savedFeyden) yield return new Item(ItemID.IronPickaxe);
         }
 
         public override void ModifyStartingInventory(IReadOnlyDictionary<string, List<Item>> itemsByMod, bool mediumCoreDeath)

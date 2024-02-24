@@ -16,6 +16,8 @@ using OvermorrowMod.Common.Particles;
 using Terraria.ModLoader.IO;
 using System.IO;
 using OvermorrowMod.Common.VanillaOverrides;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Content.UI.SpeechBubble;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -31,6 +33,8 @@ namespace OvermorrowMod.Content.NPCs
             return base.CanBeHitByProjectile(npc, projectile);
         }
 
+        public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) => AIState != (int)AICase.Spawn;
+
         public override void SetDefaults(NPC npc)
         {
             // This doesn't do anything
@@ -39,12 +43,20 @@ namespace OvermorrowMod.Content.NPCs
         int idleJumpDirection = 1;
         public override void OnSpawn(NPC npc, IEntitySource source)
         {
-            // This shit doesn't run
+            if (npc.type == NPCID.BlueSlime)
+            {
+                if (SlimeOverrideIDs.Contains(npc.netID))
+                {
+                    npc.scale = 0;
+                    AIState = (int)AICase.Spawn;
+                }
+            }
             base.OnSpawn(npc, source);
         }
 
         public enum AICase
         {
+            Spawn = -1,
             Idle = 0,
             PreJump = 1,
             Jump = 2,
@@ -57,10 +69,10 @@ namespace OvermorrowMod.Content.NPCs
             NPCID.GreenSlime, NPCID.BlueSlime, NPCID.RedSlime, NPCID.PurpleSlime, NPCID.YellowSlime, NPCID.BlackSlime, NPCID.JungleSlime, NPCID.Pinky
         };
 
-        private float AIState = 0;
-        private float AICycles = 0;
-        private float AICounter = 0;
-        private float FrameCounter = 0;
+        public float AIState = 0;
+        public float AICycles = 0;
+        public float AICounter = 0;
+        public float FrameCounter = 0;
 
         private bool oldCollision = true;
         public override bool PreAI(NPC npc)
@@ -85,6 +97,21 @@ namespace OvermorrowMod.Content.NPCs
 
                     switch (AIState)
                     {
+                        #region Spawn
+                        case (int)AICase.Spawn:
+
+                            FrameCounter++;
+                            npc.scale = MathHelper.Lerp(0, 1f, AICounter / 60f);
+                            Dust.NewDust(npc.BottomLeft, npc.width, 10, DustID.t_Slime, 0, Main.rand.NextFloat(-3f, -1f), 0, npc.color, npc.scale * 1.2f);
+                            if (AICounter++ >= 60)
+                            {
+                                AIState = (int)AICase.Idle;
+                                AICounter = 0;
+                                FrameCounter = 0;
+                                AICycles = 0;
+                            }
+                            break;
+                        #endregion
                         #region Idle
                         case (int)AICase.Idle:
                             //Main.NewText("idle " + npc.collideY + ", velocity:" + npc.velocity.ToString());
@@ -103,7 +130,16 @@ namespace OvermorrowMod.Content.NPCs
                                 }
                             }
 
-                            if (FrameCounter++ >= 40) FrameCounter = 1;
+                            if (FrameCounter++ >= 40)
+                            {
+                                // Set the NPC's direction towards the target periodically
+                                if (target != null)
+                                {
+                                    idleJumpDirection = npc.Center.X > target.Center.X ? -1 : 1;
+                                }
+
+                                FrameCounter = 1;
+                            }
 
                             if (AICounter++ >= 40)
                             {
@@ -247,11 +283,12 @@ namespace OvermorrowMod.Content.NPCs
                 // During the singular run instance, reset ai0 to be 0
                 if (SlimeOverrideIDs.Contains(npc.netID))
                 {
-                    if (AIState < 0) AIState = 0;
+                    //if (AIState < 0) AIState = 0;
 
                     // For some stupid reason I can't do this in SetDefaults or OnSpawn
                     //npc.lifeMax = npc.life = 100;
-                    idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
+                    Player nearestPlayer = ModUtils.GetNearestPlayer(npc);
+                    idleJumpDirection = npc.Center.X > nearestPlayer.Center.X ? -1 : 1;
                 }
             }
 
@@ -283,7 +320,36 @@ namespace OvermorrowMod.Content.NPCs
                         Entity ownerEntity = projectile.GlobalProjectile().ownerEntity;
                         target = ownerEntity;
                     }
+
+                    FeydenKillSpeechBubble(npc, projectile);         
                 }
+            }
+        }
+
+        private void FeydenKillSpeechBubble(NPC npc, Projectile projectile)
+        {
+            NPC feyden = ModUtils.FindFirstNPC(ModContent.NPCType<Feyden>());
+            if (feyden == null) return;
+
+            if (projectile.ModProjectile is FeydenAttack && npc.life <= 0)
+            {
+                BaseSpeechBubble speechBubble = new BaseSpeechBubble();
+                string[] randomText = {
+                    "Eat my dust, slimeballs!",
+                    "Down you go!",
+                    "It's all in the footwork.",
+                    //"Oh sorry was that your friend? Don't worry, you're next!",
+                    "Slime your way out of this!",
+                    "Gooey pest!",
+                    "Like dicing onions in the kitchen!",
+                    //"Nice try, but I've seen scarier jelly at the dessert table!",
+                };
+
+                int textIndex = Main.rand.Next(0, randomText.Length);
+                string text = randomText[textIndex];
+                speechBubble.Add(new Text(text, 45, 100));
+
+                UISpeechBubbleSystem.Instance.SpeechBubbleState.AddSpeechBubble(feyden, speechBubble);
             }
         }
 
@@ -321,7 +387,6 @@ namespace OvermorrowMod.Content.NPCs
         private const int MAX_FRAMES = 6;
         private const int FRAME_HEIGHT = 36;
         private const int FRAME_WIDTH = 40;
-
         public override void FindFrame(NPC npc, int frameHeight)
         {
             // For some reason, SOMETHING is being called that messes with the frames if I use npc.frame.
@@ -337,6 +402,10 @@ namespace OvermorrowMod.Content.NPCs
 
                     switch (AIState)
                     {
+                        case (int)AICase.Spawn:
+                            xFrame = 1;
+                            if (FrameCounter % 8 == 0) yFrame = yFrame == 2 ? 1 : 2;
+                            break;
                         case (int)AICase.Idle:
                             xFrame = 0;
                             if (FrameCounter % 8 == 0)
@@ -389,6 +458,8 @@ namespace OvermorrowMod.Content.NPCs
                 {
                     Color color = npc.color * Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                     float alpha = npc.alpha / 255f;
+                    float scale = npc.scale;
+                    #region Bonus Drop
                     if (npc.ai[1] != -1)
                     {
                         Texture2D bonusDrop = TextureAssets.Item[(int)npc.ai[1]].Value;
@@ -445,8 +516,15 @@ namespace OvermorrowMod.Content.NPCs
                         float drawDirection = npc.direction == 0 ? 1 : -1;
                         spriteBatch.Draw(bonusDrop, npc.Center + new Vector2(drawOffset * drawDirection, 0) - screenPos, null, Color.White, npc.rotation, bonusDrop.Size() / 2, dropScale, SpriteEffects.None, 0);
                     }
+                    #endregion
 
-                    spriteBatch.Draw(texture, npc.Center - screenPos, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
+                    float spawnOffset = 0;
+                    if (AIState == (int)AICase.Spawn) spawnOffset = MathHelper.Lerp(8f, 0f, AICounter / 60f);
+
+                    // This is the pickaxe slime in the Feyden cave
+                    if (npc.ai[1] == ItemID.IronPickaxe) scale = 1.5f;
+
+                    spriteBatch.Draw(texture, npc.Center + new Vector2(0, spawnOffset) - screenPos, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, scale, spriteEffects, 0);
                     return npc.IsABestiaryIconDummy;
                 }
             }

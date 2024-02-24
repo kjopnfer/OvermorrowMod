@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Content.Projectiles;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.ModQuests;
@@ -26,7 +28,6 @@ namespace OvermorrowMod.Common.Detours
                 string text;
                 #region Dialogue Overrides
 
-                // I'm sorry but apparently there is no other way lol
                 // TODO: This is dogshit someone fix this
                 if (npc.type == NPCID.Guide)
                 {
@@ -37,9 +38,45 @@ namespace OvermorrowMod.Common.Detours
                     }
 
                     //text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
-                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/GuideCamp.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.Popups + "GuideCamp.xml"));
                     doc.LoadXml(text);
 
+                    player.SetDialogue(npc.GetChat(), 20, doc);
+                }
+                /*else if (npc.type == ModContent.NPCType<Feyden_Bound>())
+                {
+                    // Check if the handler is active to prevent the player from interacting with this NPC
+                    bool handlerActive = false;
+                    foreach (Projectile projectile in Main.projectile)
+                    {
+                        if (projectile.active && projectile.type == ModContent.ProjectileType<FeydenCaveHandler>()) handlerActive = true;
+                    }
+
+                    if (handlerActive) return;
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/FeydenBound.xml"));
+
+                    doc.LoadXml(text);
+                    player.SetDialogue(npc.GetChat(), 20, doc);
+                }*/
+                else if (npc.type == ModContent.NPCType<Feyden>())
+                {
+                    if (questPlayer.IsDoingQuest<FeydenEscort>())
+                    {
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "FeydenEscort.xml"));
+                        doc.LoadXml(text);
+                        player.SetDialogue(npc.GetChat(), 20, doc);
+
+                        return;
+                    }
+
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "FeydenFree.xml"));
+                    doc.LoadXml(text);
+                    player.SetDialogue(npc.GetChat(), 20, doc);
+                }
+                else if (npc.type == ModContent.NPCType<Moxley>())
+                {
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(AssetDirectory.DialogWindow + "MoxleyIntro.xml"));
+                    doc.LoadXml(text);
                     player.SetDialogue(npc.GetChat(), 20, doc);
                 }
                 /*else if (npc.type == NPCID.Merchant)
