@@ -7,6 +7,7 @@ using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.Tiles.GuideCamp;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
+using OvermorrowMod.Content.Tiles.Underground.Slime;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -172,7 +173,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             ShapeData slimeShapeData = new ShapeData();
             WorldUtils.Gen(shapePosition, new Shapes.Slime(10, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-            if (Main.rand.NextBool(3)) WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(TileID.SlimeBlock, true)));
+            if (Main.rand.NextBool(3)) WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
 
             WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe)));
         }
@@ -194,7 +195,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                         ShapeData slimeShapeData = new ShapeData();
                         WorldUtils.Gen(shapePosition, new Shapes.Slime(20, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-                        WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(TileID.SlimeBlock, true)));
+                        WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
                         WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe), /*new Modifiers.Blotches(3, 0.65f), new Modifiers.Dither(.85),*/ new Actions.PlaceWall(WallID.Slime, true)));
 
                         if (i == repeat - 1)
