@@ -24,8 +24,6 @@ namespace OvermorrowMod.Content.Skies
 
         public override Color OnTileColor(Color inColor)
         {
-            Main.NewText(Main.time + " / slot: " + timeSlot + " / color: " + Main.ColorOfTheSkies);
-
             Color defaultColor = base.OnTileColor(inColor);
             Color tileColor = Color.Lerp(GetStartAndEndTileColors(defaultColor).Item1, GetStartAndEndTileColors(defaultColor).Item2, timeProgress);
             tileColor.A = inColor.A;

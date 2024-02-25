@@ -77,14 +77,14 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             {
                 case (int)AICase.Approach:
                     texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Town/Sojourn/Feyden_Run").Value;
-                    yFrameCount = 6;
+                    yFrameCount = 9;
 
-                    if (yFrame >= 5) yFrame = 0;
+                    if (yFrame >= 8) yFrame = 0;
 
                     int frameRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
                     if (!Main.gamePaused) frameCounter += frameRate;
 
-                    if (frameCounter >= 5)
+                    if (frameCounter >= 8)
                     {
                         yFrame++;
                         frameCounter = 0;

@@ -130,7 +130,8 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
             TrySpawnSlimeCaveHandler();
             HandleNPCDialogue();
-                
+
+            Main.NewText("aistate: " + AIState + " delay: " + AttackDelay);
             switch (AIState)
             {
                 case (int)AICase.Idle:
@@ -148,6 +149,15 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         {
                             AIState = (int)AICase.Approach;
                         }
+                    }
+
+                    if (targetNPC != null && AttackDelay <= 0)
+                    {
+                        AIState = (int)AICase.Approach;
+                    }
+                    else
+                    {
+                        if (AttackDelay > 0) AttackDelay--;
                     }
                     break;
                 /*case (int)AICase.Default: // Behave like a normal town NPC
