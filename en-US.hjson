@@ -962,6 +962,11 @@ Mods: {
 				DisplayName: Water Cave Biome
 				TownNPCDialogueName: the Water Cave Biome
 			}
+
+			Ravensfell: {
+				DisplayName: Ravensfell
+				TownNPCDialogueName: the Ravensfell
+			}
 		}
 
 		Buffs: {
@@ -1074,9 +1079,20 @@ Mods: {
 				Headers.AmmoQuickswapPosition: Ammo Quickswap Position Header
 			}
 
+			TextureSwapConfig: {
+				DisplayName: Replace Vanilla Textures
+
+				Headers: {
+					AmmoQuickswapPosition: Replace Vanilla Textures
+					ReplaceVanillaTextures: Replace Vanilla Textures Header
+				}
+			}
+
 			Common: {
 				LocalizedLabel: Mouse Anchor
-				LocalziedTooltip: ""
+				LocalizedTooltip: ""
+				TextureLabel: Texture Swap
+				TextureTooltip: ""
 			}
 		}
 	}

@@ -12,7 +12,7 @@ namespace OvermorrowMod.Common.Configs
         //[Tooltip("The UI is drawn on either the player or the mouse.\nIf disabled then it is drawn on the player instead.")] // A tooltip is a description showed when you hover your mouse over the option. It can be used as a more in-depth explanation of the option.
         
         [LabelKey("$Mods.OvermorrowMod.Configs.Common.LocalizedLabel")]
-        [TooltipKey("$Mods.OvermorrowMod.Configs.Common.LocalziedTooltip")]
+        [TooltipKey("$Mods.OvermorrowMod.Configs.Common.LocalizedTooltip")]
 
         [DefaultValue(true)] // This sets the configs default value.
         public bool MouseAnchor; // To see the implementation of this option, see ExampleWings.cs
