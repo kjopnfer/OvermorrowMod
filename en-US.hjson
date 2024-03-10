@@ -1063,6 +1063,13 @@ Mods: {
 			FakeitePlatinum.MapEntry: '''"Platinum"'''
 			RockEgg.MapEntry: Crawler Egg
 			TrollToll.MapEntry: Troll Toll
+			SlimeRock1.MapEntry: Slime Rock1
+			SlimeRock2.MapEntry: Slime Rock2
+			SlimeRock3.MapEntry: Slime Rock3
+			SlimeRock4.MapEntry: Slime Rock4
+			SlimeRock5.MapEntry: Slime Rock5
+			SlimeRock6.MapEntry: Slime Rock6
+			SlimeRock7.MapEntry: Slime Rock7
 		}
 
 		Keybinds: {

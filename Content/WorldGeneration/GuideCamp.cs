@@ -17,6 +17,16 @@ using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.WorldBuilding;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Core;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {
@@ -172,8 +182,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             float xScale = 0.8f + Main.rand.NextFloat() * 0.5f; // Randomize the width of the shrine area
 
             ShapeData slimeShapeData = new ShapeData();
+            int scale = Main.rand.Next(5, 10);
+
             WorldUtils.Gen(shapePosition, new Shapes.Slime(10, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-            if (Main.rand.NextBool(3)) WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
+            if (Main.rand.NextBool(3)) WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(scale, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
+
+            GenerateSlimeRocks(shapePosition.ToVector2());
 
             WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe)));
         }
@@ -193,10 +207,14 @@ namespace OvermorrowMod.Content.WorldGeneration
                         int radius = Main.rand.Next(32, 48);
                         Point shapePosition = new Point((int)position.X + -15 * i, (int)position.Y + Main.rand.Next(5, 10));
 
+                        int scale = Main.rand.Next(5, 10);
+
                         ShapeData slimeShapeData = new ShapeData();
                         WorldUtils.Gen(shapePosition, new Shapes.Slime(20, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-                        WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(3, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
+                        WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(scale, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
                         WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe), /*new Modifiers.Blotches(3, 0.65f), new Modifiers.Dither(.85),*/ new Actions.PlaceWall(WallID.Slime, true)));
+
+                        GenerateSlimeRocks(shapePosition.ToVector2());
 
                         if (i == repeat - 1)
                         {
@@ -216,6 +234,44 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
 
             base.OnRunEnd(position);
+        }
+
+        private void GenerateSlimeRocks(Vector2 shapePosition)
+        {
+            for (int x = 0; x < Main.rand.Next(18, 25); x++)
+            {
+                Vector2 randomOffset = Vector2.UnitX * Main.rand.Next(-20, 20);
+                Vector2 rockPosition = ModUtils.FindNearestGround(shapePosition + randomOffset, false);
+
+                // Mod.Find and ModContent.Find won't work. This works so I don't give a fuck anymore.
+                int type = 1;
+                switch (Main.rand.Next(1, 8))
+                {
+                    case 1:
+                        type = ModContent.TileType<SlimeRock1>();
+                        break;
+                    case 2:
+                        type = ModContent.TileType<SlimeRock2>();
+                        break;
+                    case 3:
+                        type = ModContent.TileType<SlimeRock3>();
+                        break;
+                    case 4:
+                        type = ModContent.TileType<SlimeRock4>();
+                        break;
+                    case 5:
+                        type = ModContent.TileType<SlimeRock5>();
+                        break;
+                    case 6:
+                        type = ModContent.TileType<SlimeRock6>();
+                        break;
+                    case 7:
+                        type = ModContent.TileType<SlimeRock7>();
+                        break;
+                }
+
+                WorldGen.PlaceTile((int)rockPosition.X, (int)rockPosition.Y - 1, type, true, false);
+            }
         }
     }
 }
