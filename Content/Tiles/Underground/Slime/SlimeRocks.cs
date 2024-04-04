@@ -9,7 +9,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace OvermorrowMod.Content.Tiles.Underground.Slime
+namespace OvermorrowMod.Content.Tiles.Underground
 {
     public abstract class SlimeRock : ModTile
     {
@@ -53,6 +53,8 @@ namespace OvermorrowMod.Content.Tiles.Underground.Slime
 
     public class SlimeRock1 : SlimeRock
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimeRock1";
+
         public override int Width => 3;
         public override int Height => 2;
         public override Point16 Origin => new Point16(0, 1);
@@ -60,6 +62,7 @@ namespace OvermorrowMod.Content.Tiles.Underground.Slime
 
     public class SlimeRock2 : SlimeRock
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimeRock2";
         public override int Width => 3;
         public override int Height => 2;
         public override Point16 Origin => new Point16(0, 1);
@@ -68,6 +71,7 @@ namespace OvermorrowMod.Content.Tiles.Underground.Slime
 
     public class SlimeRock3 : SlimeRock
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimeRock3";
         public override int Width => 1;
         public override int Height => 1;
         public override int[] CoordinateHeights => new int[] { 16 };
@@ -75,6 +79,7 @@ namespace OvermorrowMod.Content.Tiles.Underground.Slime
 
     public class SlimeRock4 : SlimeRock
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimeRock4";
         public override int Width => 3;
         public override int Height => 2;
         public override Point16 Origin => new Point16(0, 1);
@@ -82,6 +87,7 @@ namespace OvermorrowMod.Content.Tiles.Underground.Slime
 
     public class SlimeRock5 : SlimeRock
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimeRock5";
         public override int Width => 3;
         public override int Height => 2;
         public override Point16 Origin => new Point16(0, 1);
@@ -90,6 +96,7 @@ namespace OvermorrowMod.Content.Tiles.Underground.Slime
 
     public class SlimeRock6 : SlimeRock
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimeRock6";
         public override int Width => 4;
         public override int Height => 3;
         public override int[] CoordinateHeights => new int[] { 16, 16, 16 };
@@ -98,6 +105,7 @@ namespace OvermorrowMod.Content.Tiles.Underground.Slime
 
     public class SlimeRock7 : SlimeRock
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimeRock7";
         public override int Width => 3;
         public override int Height => 2;
         public override Point16 Origin => new Point16(0, 1);

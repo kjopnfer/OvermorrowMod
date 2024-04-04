@@ -1,5 +1,5 @@
 using OvermorrowMod.Content.Tiles.Town;
-using OvermorrowMod.Content.Tiles.Underground.Slime;
+using OvermorrowMod.Content.Tiles.Underground;
 using OvermorrowMod.Core;
 using Terraria.ID;
 using Terraria.ModLoader;

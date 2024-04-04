@@ -7,7 +7,6 @@ using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.Tiles.GuideCamp;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
-using OvermorrowMod.Content.Tiles.Underground.Slime;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -27,6 +26,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Content.Tiles.Underground;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {

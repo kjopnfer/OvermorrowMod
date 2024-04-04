@@ -1,12 +1,15 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles.Underground.Slime
+namespace OvermorrowMod.Content.Tiles.Underground
 {
     public class SlimedStone : ModTile
     {
+        public override string Texture => AssetDirectory.Content + "Tiles/Underground/Slime/SlimedStone";
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
