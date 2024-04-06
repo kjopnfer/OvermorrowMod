@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Content.Tiles;
-using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Content.Tiles.Ores;
 using OvermorrowMod.Content.Tiles.WaterCave;
 using System;
@@ -113,19 +112,7 @@ namespace OvermorrowMod.Common
 
         private void GenerateAmbientObjects(GenerationProgress progress, GameConfiguration config)
         {
-            // Place ambient objects for the Flooded Caverns
-            for (int i = 0; i < Main.maxTilesY * 45; i++)
-            {
-                int[] rockFormations = { ModContent.TileType<Rock1>(), ModContent.TileType<Rock2>(), ModContent.TileType<Rock3>(), ModContent.TileType<Rock4>(), ModContent.TileType<Stalagmite1>(), ModContent.TileType<Stalagmite2>(), ModContent.TileType<Stalagmite3>(), ModContent.TileType<Stalagmite4>(), ModContent.TileType<Stalagmite5>() };
-                int x = WorldGen.genRand.Next(300, Main.maxTilesX - 300);
-                int y = WorldGen.genRand.Next((int)GenVars.rockLayer, Main.maxTilesY - 200);
-                int type = rockFormations[Main.rand.Next(9)];
-                if (Main.tile[x, y].TileType == ModContent.TileType<GlowBlock>())
-                {
-                    WorldGen.PlaceObject(x, y, (ushort)type);
-                    NetMessage.SendObjectPlacement(-1, x, y, (ushort)type, 0, 0, -1, -1);
-                }
-            }
+            
         }
         #endregion
     }

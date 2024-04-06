@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 tasks.Insert(SurfaceCaves + 1, new PassLegacy("Spawn Camp", GenerateCamp));
             }
 
-            int TunnelIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tunnels"));
+            int TunnelIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Rocks In Dirt"));
             if (TunnelIndex != -1)
             {
                 tasks.Insert(TunnelIndex + 1, new PassLegacy("Feyden Cave", GenerateSlimeCave));
@@ -184,10 +184,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             ShapeData slimeShapeData = new ShapeData();
             int scale = Main.rand.Next(5, 10);
 
-            WorldUtils.Gen(shapePosition, new Shapes.Slime(10, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
-            if (Main.rand.NextBool(3)) WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(scale, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
+            ushort tileType = Main.rand.NextBool() ? (ushort)ModContent.TileType<SlimedStone>() : TileID.Stone;
 
-            GenerateSlimeRocks(shapePosition.ToVector2());
+            WorldUtils.Gen(shapePosition, new Shapes.Slime(10, xScale, 1f), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(slimeShapeData)));
+            if (Main.rand.NextBool(3)) WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(scale, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile(tileType, true)));
+
+            GenerateSlimeRocks(shapePosition.ToVector2(), tileType == (ushort)ModContent.TileType<SlimedStone>());
 
             WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe)));
         }
@@ -203,8 +205,6 @@ namespace OvermorrowMod.Content.WorldGeneration
                     for (int i = 0; i < repeat; i++)
                     {
                         float xScale = 0.8f + Main.rand.NextFloat() * 0.5f;
-                        float yScale = Main.rand.NextFloat(0.6f, 0.8f);
-                        int radius = Main.rand.Next(32, 48);
                         Point shapePosition = new Point((int)position.X + -15 * i, (int)position.Y + Main.rand.Next(5, 10));
 
                         int scale = Main.rand.Next(5, 10);
@@ -214,7 +214,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                         WorldUtils.Gen(shapePosition, new ModShapes.InnerOutline(slimeShapeData, true), Actions.Chain(new Modifiers.Blotches(scale, 0.65f), new Modifiers.IsSolid(), new Actions.SetTile((ushort)ModContent.TileType<SlimedStone>(), true)));
                         WorldUtils.Gen(shapePosition, new ModShapes.All(slimeShapeData), Actions.Chain(new Actions.PlaceWall(WallID.DirtUnsafe), /*new Modifiers.Blotches(3, 0.65f), new Modifiers.Dither(.85),*/ new Actions.PlaceWall(WallID.Slime, true)));
 
-                        GenerateSlimeRocks(shapePosition.ToVector2());
+                        GenerateSlimeRocks(shapePosition.ToVector2(), true);
 
                         if (i == repeat - 1)
                         {
@@ -236,39 +236,31 @@ namespace OvermorrowMod.Content.WorldGeneration
             base.OnRunEnd(position);
         }
 
-        private void GenerateSlimeRocks(Vector2 shapePosition)
+        private void GenerateSlimeRocks(Vector2 shapePosition, bool isSlime)
         {
-            for (int x = 0; x < Main.rand.Next(18, 25); x++)
+            for (int x = 0; x < Main.rand.Next(6, 8); x++)
             {
                 Vector2 randomOffset = Vector2.UnitX * Main.rand.Next(-20, 20);
                 Vector2 rockPosition = ModUtils.FindNearestGround(shapePosition + randomOffset, false);
 
+                //var logger = OvermorrowModFile.Instance.Logger;
+                //logger.Debug(rockPosition + " ?? " + tile.HasTile + " : " + tile.ToString());
+                
+                int variant = Main.rand.Next(1, 8);
+
                 // Mod.Find and ModContent.Find won't work. This works so I don't give a fuck anymore.
-                int type = 1;
-                switch (Main.rand.Next(1, 8))
+                int type = variant switch
                 {
-                    case 1:
-                        type = ModContent.TileType<SlimeRock1>();
-                        break;
-                    case 2:
-                        type = ModContent.TileType<SlimeRock2>();
-                        break;
-                    case 3:
-                        type = ModContent.TileType<SlimeRock3>();
-                        break;
-                    case 4:
-                        type = ModContent.TileType<SlimeRock4>();
-                        break;
-                    case 5:
-                        type = ModContent.TileType<SlimeRock5>();
-                        break;
-                    case 6:
-                        type = ModContent.TileType<SlimeRock6>();
-                        break;
-                    case 7:
-                        type = ModContent.TileType<SlimeRock7>();
-                        break;
-                }
+                    1 => isSlime ? ModContent.TileType<SlimeRock1>() : ModContent.TileType<Rock1>(),
+                    2 => isSlime ? ModContent.TileType<SlimeRock2>() : ModContent.TileType<Rock2>(),
+                    3 => isSlime ? ModContent.TileType<SlimeRock3>() : ModContent.TileType<Rock3>(),
+                    4 => isSlime ? ModContent.TileType<SlimeRock4>() : ModContent.TileType<Rock4>(),
+                    5 => isSlime ? ModContent.TileType<SlimeRock5>() : ModContent.TileType<Rock5>(),
+                    6 => isSlime ? ModContent.TileType<SlimeRock6>() : ModContent.TileType<Rock6>(),
+                    7 => isSlime ? ModContent.TileType<SlimeRock7>() : ModContent.TileType<Rock7>(),
+                    _ => ModContent.TileType<Rock1>()
+                };
+
 
                 WorldGen.PlaceTile((int)rockPosition.X, (int)rockPosition.Y - 1, type, true, false);
             }
