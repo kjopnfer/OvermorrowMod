@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
             Main.tileMerge[Type][TileID.Ash] = true;
             Main.tileMerge[TileID.Ash][Type] = true;
 
-            AddMapEntry(new Color(142, 179, 255));
+            AddMapEntry(new Color(32, 90, 212));
         }
     }
 }
