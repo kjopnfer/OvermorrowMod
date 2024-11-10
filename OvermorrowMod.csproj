@@ -10,7 +10,9 @@
 
 	<!-- References -->
 	<ItemGroup>
-		
+		<Reference Include="SubworldLibrary">
+		  <HintPath>lib\SubworldLibrary.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 </Project>
