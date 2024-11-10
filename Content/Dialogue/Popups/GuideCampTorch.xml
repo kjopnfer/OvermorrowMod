@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Popup>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Looks like you got all the necessary materials.</Text>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Craft some [torches] and light the fire.</Text>
-</Popup>

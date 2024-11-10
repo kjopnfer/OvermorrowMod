@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Popup>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Gathering [wood] I see, good thinking. Wood's useful for all sorts of things.</Text>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">If you need ideas just bring me some and I'll show you what you can make with it.</Text>
-</Popup>

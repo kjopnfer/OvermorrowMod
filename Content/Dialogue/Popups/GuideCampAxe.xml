@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Popup>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">You'll need to get some wood first.</Text>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Grab the [axe] over there and chop down a tree for some wood.</Text>
-</Popup>
