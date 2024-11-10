@@ -3,3 +3,4 @@ author = dhood
 version = 0.1
 homepage = https://discord.gg/5CStmQTWrp
 includePDB = false
+modReferences = SubworldLibrary
