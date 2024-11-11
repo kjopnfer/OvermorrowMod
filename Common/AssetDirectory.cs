@@ -1,4 +1,4 @@
-namespace OvermorrowMod.Core
+namespace OvermorrowMod.Common
 {
     public static class AssetDirectory
     {
