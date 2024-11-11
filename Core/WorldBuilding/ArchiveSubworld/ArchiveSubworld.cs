@@ -12,7 +12,17 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 
         public override List<GenPass> Tasks => new()
         {
-
+            new SetupGenPass("Loading", 1)
         };
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+        }
     }
 }

@@ -1,9 +1,14 @@
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using ReLogic.Content;
+using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.IO;
+using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
@@ -22,9 +27,23 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
             Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
 
+            Dictionary<Color, int> tileMapping = new()
+            {
+                [new Color(105, 106, 106)] = TileID.GrayBrick,
+                [new Color(143, 86, 59)] = TileID.WoodBlock,
+                [new Color(150, 150, 150)] = -2,
+                [Color.Black] = -1
+            };
+
+            Dictionary<Color, int> wallMapping = new()
+            {
+                [Color.Black] = -1
+            };
+
             SystemUtils.InvokeOnMainThread(() =>
             {
-
+                TexGen gen = TexGen.GetTexGenerator(tiles, tileMapping, walls, wallMapping);
+                gen.Generate(0, 0, true, true);
             });
         }
     }
