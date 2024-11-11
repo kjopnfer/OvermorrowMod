@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Core.WorldBuilding.ArchiveSubworld;
+using SubworldLibrary;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,11 +26,11 @@ namespace OvermorrowMod.Content.Items
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                // Transport the player to the subworld here.
                 Main.NewText("The key does something.", Color.Red);
+                SubworldSystem.Enter<ArchiveSubworld>();
             }
 
-            return base.UseItem(player);
+            return true;
         }
     }
 }
