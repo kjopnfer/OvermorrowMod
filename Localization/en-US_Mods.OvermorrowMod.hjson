@@ -1,1 +1,6 @@
-
+Items: {
+	TowerKey: {
+		DisplayName: Mysterious Key
+		Tooltip: "Used to access The Tower"
+	}
+}
