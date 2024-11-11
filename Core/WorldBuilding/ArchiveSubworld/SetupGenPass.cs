@@ -1,5 +1,10 @@
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
+using ReLogic.Content;
 using Terraria;
 using Terraria.IO;
+using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
@@ -14,6 +19,13 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             Main.spawnTileX = 387;
             Main.spawnTileY = 136;
 
+            Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
+
+            SystemUtils.InvokeOnMainThread(() =>
+            {
+
+            });
         }
     }
 }
