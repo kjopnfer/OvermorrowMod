@@ -6,9 +6,14 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 {
     public class ArchiveSubworld : Subworld
     {
+
         public override int Width => 536;
 
         public override int Height => 241;
+
+        public static int GetWidth() => new ArchiveSubworld().Width;
+        public static int GetHeight() => new ArchiveSubworld().Height;
+
 
         public override List<GenPass> Tasks => new()
         {
@@ -17,6 +22,8 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 
         public override void OnEnter()
         {
+            // Create a popup message or title card or something
+
             base.OnEnter();
         }
 

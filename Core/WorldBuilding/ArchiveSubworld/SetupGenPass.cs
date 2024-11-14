@@ -24,8 +24,13 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             Main.spawnTileX = 387;
             Main.spawnTileY = 136;
 
+            // Move the backgrounds somewhere else
+            Main.worldSurface = ArchiveSubworld.GetHeight();
+            Main.rockLayer = ArchiveSubworld.GetHeight();
+
             Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
             Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D slopes = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
 
             Dictionary<Color, int> tileMapping = new()
             {
@@ -42,7 +47,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 
             SystemUtils.InvokeOnMainThread(() =>
             {
-                TexGen gen = TexGen.GetTexGenerator(tiles, tileMapping, walls, wallMapping);
+                TexGen gen = TexGen.GetTexGenerator(tiles, tileMapping, walls, wallMapping, null);
                 gen.Generate(0, 0, true, true);
             });
         }
