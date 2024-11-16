@@ -30,26 +30,67 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
 
-        RobotArm robotarm;
+        RobotArm lanternArm;
+        RobotArm backArm;
+        RobotArm frontLeg;
+        RobotArm backLeg;
+
         int segLen = 64;
         int numSegs = 2;
         public override void OnSpawn(IEntitySource source)
         {
+            Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Arm").Value;
+            Texture2D legTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Leg").Value;
+
+            Texture2D[] armTextures = new Texture2D[]{ armTexture, armTexture};
+            Texture2D[] legTextures = new Texture2D[] { legTexture, legTexture };
+
             float[] segmentLengths = new float[] { 60f, 120f }; // Different lengths for each segment
-            robotarm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0f); // 3 segments, initial angle 0
+            lanternArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
+            backArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
+            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, segmentLengths, 0, legTextures);
+            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, segmentLengths, 0, legTextures);
+
+            backArm.Update(NPC.Center + new Vector2(0, 200));
+            lanternArm.Update(NPC.Center + new Vector2(0, 200));
+
+            frontLeg.Update(NPC.Center + new Vector2(0, 200));
+            backLeg.Update(NPC.Center + new Vector2(-10, 200));
         }
 
         public override void AI()
         {
             NPC.TargetClosest();
-            robotarm.BasePosition = NPC.Center;
-            robotarm.Update(Main.player[NPC.target].Center);
+
+            lanternArm.BasePosition = NPC.Center;
+            backArm.BasePosition = NPC.Center;
+            frontLeg.BasePosition = NPC.Center + new Vector2(0, 20);
+            backLeg.BasePosition = NPC.Center + new Vector2(0, 20);
+
+            backArm.Update(NPC.Center + new Vector2(-80, -40));
+            lanternArm.Update(NPC.Center + new Vector2(-80, 20));
+
+            backLeg.Update(NPC.Center + new Vector2(-20, 200));
+            frontLeg.Update(NPC.Center + new Vector2(0, 200));
+
+            NPC.velocity.Y = 4;
+
+            var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
+            if (tileDistance <= 120)
+            {
+                NPC.velocity.Y = 0;
+            }
+
+            NPC.velocity.X = 0;
         }
 
         float link1Length = 48f;  // Upper arm length
         float link2Length = 48f;  // Lower arm length
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
+            backArm.Draw(spriteBatch);
+            backLeg.Draw(spriteBatch);
 
             return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
@@ -58,9 +99,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
 
-            //robotarm.Update(Main.MouseWorld.X, Main.MouseWorld.Y);
-            //robotarm.Show(spriteBatch, magicPixel);
-            robotarm.Draw(spriteBatch);
+            //lanternArm.Update(Main.MouseWorld.X, Main.MouseWorld.Y);
+            //lanternArm.Show(spriteBatch, magicPixel);
+            lanternArm.Draw(spriteBatch);
+            frontLeg.Draw(spriteBatch);
 
             base.PostDraw(spriteBatch, screenPos, drawColor);
         }
@@ -72,12 +114,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public float Length { get; private set; }
         public float Angle { get; set; }
         public Segment Parent { get; set; }
+        public Texture2D Texture { get; set; }  // Texture property for each segment
 
-        public Segment(float x, float y, float length, float angle)
+        public Segment(float x, float y, float length, float angle, Texture2D texture)
         {
             A = new Vector2(x, y);
             Length = length;
             Angle = angle;
+            Texture = texture;
+
             Recalculate();
         }
 
@@ -103,13 +148,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public void Draw(SpriteBatch spriteBatch, Color color)
         {
+            if (Texture == null)
+                Texture = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
+
             Texture2D pixel = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
             Vector2 scale = new Vector2(Length, 4f); // Adjust thickness as needed
             float rotation = Angle;
             Rectangle rect = new Rectangle(0, 0, 1, 1);
 
             spriteBatch.Draw(
-                pixel,
+                Texture,
                 A - Main.screenPosition,
                 rect,
                 color,
@@ -128,7 +176,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public Segment[] Segments;
 
         // Constructor now accepts an array of lengths for each segment
-        public RobotArm(float x, float y, int numSegments, float[] segmentLengths, float initialAngle)
+        public RobotArm(float x, float y, int numSegments, float[] segmentLengths, float initialAngle, Texture2D[] segmentTextures)
         {
             if (segmentLengths.Length != numSegments)
             {
@@ -139,12 +187,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Segments = new Segment[numSegments];
 
             // Create the first segment at the base
-            Segments[0] = new Segment(x, y, segmentLengths[0], initialAngle);
+            Segments[0] = new Segment(x, y, segmentLengths[0], initialAngle, segmentTextures[0]);
 
             // Create the remaining segments with their respective lengths
             for (int i = 1; i < numSegments; i++)
             {
-                Segments[i] = new Segment(0, 0, segmentLengths[i], 0);
+                Segments[i] = new Segment(0, 0, segmentLengths[i], 0, segmentTextures[i]);
                 Segments[i - 1].Parent = Segments[i];
             }
         }
@@ -180,7 +228,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Draw each segment, customize the color as needed
             foreach (Segment segment in Segments)
             {
-                segment.Draw(spriteBatch, Color.Red);
+                segment.Draw(spriteBatch, Color.White);
             }
         }
     }

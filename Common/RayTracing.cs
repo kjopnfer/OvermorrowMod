@@ -3,7 +3,7 @@ using Terraria;
 
 namespace OvermorrowMod.Common
 {
-    public static class RayTracking
+    public static class RayTracing
     {
         /// <summary>
         /// Casts a ray in a specified direction from a start position for a given length and checks for tile collisions along the way.
