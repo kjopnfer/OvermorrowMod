@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using SteelSeries.GameSense;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Animations;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -70,8 +72,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backArm.Update(NPC.Center + new Vector2(-80, -40));
             lanternArm.Update(NPC.Center + new Vector2(-80, 20));
 
-            backLeg.Update(NPC.Center + new Vector2(-20, 200));
-            frontLeg.Update(NPC.Center + new Vector2(0, 200));
+            backLeg.Update(NPC.Center + new Vector2(50, 200));
+
+            Dust.NewDust(TileUtils.FindNearestGround(Main.player[NPC.target].Center), 1, 1, DustID.Torch);
+            frontLeg.Update(TileUtils.FindNearestGround(frontLeg.GetEndPosition()));
 
             NPC.velocity.Y = 4;
 
@@ -230,6 +234,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 segment.Draw(spriteBatch, Color.White);
             }
+        }
+
+        /// <summary>
+        /// Gets the position of the last segment's endpoint, which represents the moving limb's tip.
+        /// </summary>
+        /// <returns>The <see cref="Vector2"/> position of the last segment's endpoint.</returns>
+        public Vector2 GetEndPosition()
+        {
+            // Return the 'B' position of the last segment, which is the endpoint of the last limb
+            return Segments[Segments.Length - 1].B;
         }
     }
 }

@@ -1,6 +1,8 @@
 using Terraria.ObjectData;
 using Terraria;
 using Microsoft.Xna.Framework;
+using Terraria.ID;
+using Microsoft.CodeAnalysis.Text;
 
 namespace OvermorrowMod.Common.Utilities
 {
@@ -30,5 +32,36 @@ namespace OvermorrowMod.Common.Utilities
 
             return new Vector2(x, y); // Return the adjusted top-left position
         }
+
+        /// <summary>
+        /// Finds the nearest solid or sloped ground tile beneath a given starting position.
+        /// The method starts from the given position and moves downwards to find the first tile that is either solid or sloped.
+        /// </summary>
+        /// <param name="startPosition">The starting position to begin the search from. This position is in world coordinates.</param>
+        /// <returns>
+        /// A <see cref="Vector2"/> representing the position of the nearest solid or sloped ground tile. The X coordinate remains unchanged, while the Y coordinate is updated to the Y position of the found ground tile.
+        /// </returns>
+        public static Vector2 FindNearestGround(Vector2 startPosition)
+        {
+            Vector2 position = startPosition;
+
+            // Convert the start position to tile coordinates
+            Point tilePosition = position.ToTileCoordinates();
+
+            // Search downwards for a solid or sloped ground tile
+            while (!WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
+            {
+                tilePosition.Y++; // Move down one tile
+            }
+
+            // If a solid or sloped tile is found, update the Y position of the input vector
+            if (WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
+            {
+                position.Y = tilePosition.ToWorldCoordinates(0f, 0f).Y; // Update the Y position to the found tile's world Y coordinate
+            }
+
+            return position; // Return the updated position with the Y of the nearest ground tile
+        }
+
     }
 }
