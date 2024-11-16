@@ -31,19 +31,19 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
 
         RobotArm robotarm;
-        int segLen = 48;
+        int segLen = 64;
         int numSegs = 2;
         public override void OnSpawn(IEntitySource source)
         {
-            robotarm = new RobotArm(NPC.Center.X, NPC.Center.Y, numSegs, segLen, 0);
+            float[] segmentLengths = new float[] { 60f, 120f }; // Different lengths for each segment
+            robotarm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0f); // 3 segments, initial angle 0
         }
 
         public override void AI()
         {
             NPC.TargetClosest();
             robotarm.BasePosition = NPC.Center;
-            robotarm.Update(Main.MouseWorld);
-
+            robotarm.Update(Main.player[NPC.target].Center);
         }
 
         float link1Length = 48f;  // Upper arm length
@@ -127,15 +127,24 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public Vector2 BasePosition { get; set; }
         public Segment[] Segments;
 
-        public RobotArm(float x, float y, int numSegments, float segmentLength, float initialAngle)
+        // Constructor now accepts an array of lengths for each segment
+        public RobotArm(float x, float y, int numSegments, float[] segmentLengths, float initialAngle)
         {
+            if (segmentLengths.Length != numSegments)
+            {
+                Main.NewText("The number of segment lengths must match the number of segments.");
+            }
+
             BasePosition = new Vector2(x, y);
             Segments = new Segment[numSegments];
 
-            Segments[0] = new Segment(x, y, segmentLength, initialAngle);
+            // Create the first segment at the base
+            Segments[0] = new Segment(x, y, segmentLengths[0], initialAngle);
+
+            // Create the remaining segments with their respective lengths
             for (int i = 1; i < numSegments; i++)
             {
-                Segments[i] = new Segment(0, 0, segmentLength, 0);
+                Segments[i] = new Segment(0, 0, segmentLengths[i], 0);
                 Segments[i - 1].Parent = Segments[i];
             }
         }
@@ -168,10 +177,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Color color = Color.Red; // Replace with desired coloring logic
+            // Draw each segment, customize the color as needed
             foreach (Segment segment in Segments)
             {
-                segment.Draw(spriteBatch, color);
+                segment.Draw(spriteBatch, Color.Red);
             }
         }
     }
