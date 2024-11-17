@@ -48,6 +48,12 @@ namespace OvermorrowMod.Common.Utilities
             // Convert the start position to tile coordinates
             Point tilePosition = position.ToTileCoordinates();
 
+            // If inside a solid tile, move upwards until an empty tile is found
+            while (WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
+            {
+                tilePosition.Y--; // Move up one tile
+            }
+
             // Search downwards for a solid or sloped ground tile
             while (!WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
             {
