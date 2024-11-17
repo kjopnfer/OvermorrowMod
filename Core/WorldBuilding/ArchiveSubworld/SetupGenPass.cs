@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
@@ -34,7 +35,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 
             Dictionary<Color, int> tileMapping = new()
             {
-                [new Color(105, 106, 106)] = TileID.GrayBrick,
+                [new Color(105, 106, 106)] = ModContent.TileType<CastleBrick>(),
                 [new Color(143, 86, 59)] = TileID.WoodBlock,
                 [new Color(150, 150, 150)] = -2,
                 [Color.Black] = -1
