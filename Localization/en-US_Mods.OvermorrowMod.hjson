@@ -4,3 +4,11 @@ Items: {
 		Tooltip: Used to access The Tower
 	}
 }
+
+Tiles: {
+	GarrisonBanner.MapEntry: Garrison Banner
+	Lamp.MapEntry: Lamp
+	SojournCandelabra.MapEntry: Sojourn Candelabra
+}
+
+NPCs.WaxBearer.DisplayName: Wax Bearer

@@ -41,10 +41,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
         int numSegs = 2;
         public override void OnSpawn(IEntitySource source)
         {
-            Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Arm").Value;
-            Texture2D legTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Leg").Value;
+            Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Arm", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D legTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Leg", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
-            Texture2D[] armTextures = new Texture2D[]{ armTexture, armTexture};
+            Texture2D[] armTextures = new Texture2D[] { armTexture, armTexture };
             Texture2D[] legTextures = new Texture2D[] { legTexture, legTexture };
 
             float[] segmentLengths = new float[] { 60f, 120f }; // Different lengths for each segment
@@ -56,36 +56,87 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backArm.Update(NPC.Center + new Vector2(0, 200));
             lanternArm.Update(NPC.Center + new Vector2(0, 200));
 
-            frontLeg.Update(NPC.Center + new Vector2(0, 200));
-            backLeg.Update(NPC.Center + new Vector2(-10, 200));
+            frontLeg.Update(NPC.Center + new Vector2(-40, 200));
+            backLeg.Update(NPC.Center + new Vector2(-40, 200));
+
+            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(20, 200));
+            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-100, 0));
         }
 
+        Vector2 startPosition;
+        Vector2 targetPosition;
+
+        Vector2 currentFrontLegPosition;
+        Vector2 nextFrontLegPosition;
+
+        int moveCycle = 0;
         public override void AI()
         {
             NPC.TargetClosest();
 
             lanternArm.BasePosition = NPC.Center;
             backArm.BasePosition = NPC.Center;
-            frontLeg.BasePosition = NPC.Center + new Vector2(0, 20);
-            backLeg.BasePosition = NPC.Center + new Vector2(0, 20);
 
             backArm.Update(NPC.Center + new Vector2(-80, -40));
             lanternArm.Update(NPC.Center + new Vector2(-80, 20));
 
-            backLeg.Update(NPC.Center + new Vector2(50, 200));
-
-            Dust.NewDust(TileUtils.FindNearestGround(Main.player[NPC.target].Center), 1, 1, DustID.Torch);
-            frontLeg.Update(TileUtils.FindNearestGround(frontLeg.GetEndPosition()));
-
             NPC.velocity.Y = 4;
 
+            frontLeg.BasePosition = NPC.Center + new Vector2(0, 20);
+            backLeg.BasePosition = NPC.Center + new Vector2(0, 20);
+
+            // Determine if NPC is on the ground
             var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
             if (tileDistance <= 120)
             {
                 NPC.velocity.Y = 0;
+                NPC.ai[1]++; // Advance cycle timer
             }
 
-            NPC.velocity.X = 0;
+            float CYCLE_TIME = 60;
+
+            // Calculate offsets for leg animation
+            float xOffsetCounter = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0, 1f);
+            //float yOffsetCounter = (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.TwoPi) / 2 + 0.5f;
+
+            var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.Torch);
+            current.noGravity = true;
+
+            var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.IceTorch);
+            next.noGravity = true;
+
+            //backLeg.Update(TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 100)));
+            frontLeg.Update(currentFrontLegPosition);
+
+            if (NPC.ai[1] >= CYCLE_TIME)
+            {
+                moveCycle++;
+                if (moveCycle % 2 == 0) Main.NewText("move back leg");
+                else
+                {
+                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-100, 0));
+                    Main.NewText("move front leg");
+                }
+
+                NPC.ai[1] = 0; // Reset cycle timer
+            }
+            else
+            {
+                if (moveCycle % 2 == 0)
+                {
+
+                }
+                else
+                {
+                    //float yOffset = MathHelper.Lerp(0, -60, yOffsetCounter);
+                    float yOffset = -60 * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> -1 -> 0
+
+                    Main.NewText(yOffset);
+                    currentFrontLegPosition = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, xOffsetCounter) + Vector2.UnitY * yOffset;
+                }
+            }
+
+            //NPC.velocity.X = NPC.ai[1] < 30 ? -0.5f : 0;
         }
 
         float link1Length = 48f;  // Upper arm length
