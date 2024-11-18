@@ -60,7 +60,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backLeg.Update(NPC.Center + new Vector2(-40, 200));
 
             currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(20, 200));
-            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-100, 0));
+            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
+
+            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(10, 200));
+            nextBackLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
         }
 
         Vector2 startPosition;
@@ -68,6 +71,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         Vector2 currentFrontLegPosition;
         Vector2 nextFrontLegPosition;
+
+        Vector2 currentBackLegPosition;
+        Vector2 nextBackLegPosition;
 
         int moveCycle = 0;
         public override void AI()
@@ -87,17 +93,25 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             // Determine if NPC is on the ground
             var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
+            Main.NewText(tileDistance);
+
+            // Make sure the NPC is always a certain distance above the ground
             if (tileDistance <= 120)
             {
-                NPC.velocity.Y = 0;
+                if (tileDistance != 120)
+                {
+                    NPC.velocity.Y -= 5f;
+                }
+                else NPC.velocity.Y = 0;
+
+                //NPC..Y = 0;
                 NPC.ai[1]++; // Advance cycle timer
             }
 
             float CYCLE_TIME = 60;
+            float ARC_HEIGHT = 10;
 
-            // Calculate offsets for leg animation
             float xOffsetCounter = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0, 1f);
-            //float yOffsetCounter = (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.TwoPi) / 2 + 0.5f;
 
             var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.Torch);
             current.noGravity = true;
@@ -105,16 +119,20 @@ namespace OvermorrowMod.Content.NPCs.Archives
             var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.IceTorch);
             next.noGravity = true;
 
-            //backLeg.Update(TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 100)));
+            backLeg.Update(currentBackLegPosition);
             frontLeg.Update(currentFrontLegPosition);
 
             if (NPC.ai[1] >= CYCLE_TIME)
             {
                 moveCycle++;
-                if (moveCycle % 2 == 0) Main.NewText("move back leg");
+                if (moveCycle % 2 == 0)
+                {
+                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-135, 0));
+                    Main.NewText("move back leg");
+                }
                 else
                 {
-                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-100, 0));
+                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
                     Main.NewText("move front leg");
                 }
 
@@ -122,21 +140,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
             else
             {
+                float yOffset = -ARC_HEIGHT * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> -1 -> 0
+                if (tileDistance <= 120) NPC.velocity.X = NPC.ai[1] < 15 ? -4f : 0;
+
                 if (moveCycle % 2 == 0)
                 {
-
+                    currentBackLegPosition = Vector2.Lerp(currentBackLegPosition, nextBackLegPosition, xOffsetCounter) + Vector2.UnitY * yOffset;
                 }
                 else
                 {
                     //float yOffset = MathHelper.Lerp(0, -60, yOffsetCounter);
-                    float yOffset = -60 * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> -1 -> 0
-
-                    Main.NewText(yOffset);
                     currentFrontLegPosition = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, xOffsetCounter) + Vector2.UnitY * yOffset;
                 }
             }
 
-            //NPC.velocity.X = NPC.ai[1] < 30 ? -0.5f : 0;
+            //NPC.velocity.X = NPC.ai[1] < 30 ? -4f : 0;
         }
 
         float link1Length = 48f;  // Upper arm length
