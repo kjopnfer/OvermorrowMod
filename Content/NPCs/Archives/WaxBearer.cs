@@ -2,17 +2,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using SteelSeries.GameSense;
 using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
+using System.IO.Pipelines;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.Animations;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -93,7 +89,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             // Determine if NPC is on the ground
             var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
-            Main.NewText(tileDistance);
 
             // Make sure the NPC is always a certain distance above the ground
             if (tileDistance <= 120)
@@ -154,6 +149,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }
 
+
             //NPC.velocity.X = NPC.ai[1] < 30 ? -4f : 0;
         }
 
@@ -177,7 +173,34 @@ namespace OvermorrowMod.Content.NPCs.Archives
             lanternArm.Draw(spriteBatch);
             frontLeg.Draw(spriteBatch);
 
+            Main.NewText($"Upper leg angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
+            DrawAngleVisualization(frontLeg.Segments[0].A - Main.screenPosition, frontLeg.Segments[0].Angle, 2f, Color.Red);
+
+            Main.NewText($"Upper leg angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
+            DrawAngleVisualization(frontLeg.Segments[1].A - Main.screenPosition, frontLeg.Segments[1].Angle, 2f, Color.Green);
+
             base.PostDraw(spriteBatch, screenPos, drawColor);
+        }
+
+        void DrawAngleVisualization(Vector2 center, float angle, float radius, Color color)
+        {
+            Texture2D pixel = TextureAssets.MagicPixel.Value;
+
+            Vector2 start = center;
+            Vector2 end = center + radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+            // Draw a line indicating the angle
+            Main.spriteBatch.Draw(
+                pixel,
+                start,
+                null,
+                color,
+                (end - start).ToRotation(),
+                Vector2.Zero,
+                new Vector2((end - start).Length(), 2f), // Width = 2
+                SpriteEffects.None,
+                0f
+            );
         }
     }
     public class Segment
