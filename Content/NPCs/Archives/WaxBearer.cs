@@ -46,20 +46,45 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float[] segmentLengths = new float[] { 60f, 120f }; // Different lengths for each segment
             lanternArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
             backArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
+
+            #region Front Leg
             frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, segmentLengths, 0, legTextures);
+
+            // Set constraints for the knee joint
+            frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
+            frontLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
+
+            // Set constraints for the lower leg
+            frontLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
+            frontLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
+
+            frontLeg.Update(NPC.Center + new Vector2(-40, 200));
+
+            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(20, 200));
+            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(125, 0));
+
+            #endregion
+
+            #region Back Leg
             backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, segmentLengths, 0, legTextures);
+
+            // Set constraints for the knee joint
+            backLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
+            backLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
+
+            // Set constraints for the lower leg
+            backLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
+            backLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
+
+            backLeg.Update(NPC.Center + new Vector2(-40, 200));
+
+            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(100, 0));
+            nextBackLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-120, 0));
+            #endregion
+
 
             backArm.Update(NPC.Center + new Vector2(0, 200));
             lanternArm.Update(NPC.Center + new Vector2(0, 200));
-
-            frontLeg.Update(NPC.Center + new Vector2(-40, 200));
-            backLeg.Update(NPC.Center + new Vector2(-40, 200));
-
-            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(20, 200));
-            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
-
-            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(10, 200));
-            nextBackLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
         }
 
         Vector2 startPosition;
@@ -114,8 +139,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.IceTorch);
             next.noGravity = true;
 
-            backLeg.Update(currentBackLegPosition);
+            frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
+            frontLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
+
             frontLeg.Update(currentFrontLegPosition);
+            backLeg.Update(currentBackLegPosition);
 
             if (NPC.ai[1] >= CYCLE_TIME)
             {
@@ -168,15 +196,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
 
-            //lanternArm.Update(Main.MouseWorld.X, Main.MouseWorld.Y);
-            //lanternArm.Show(spriteBatch, magicPixel);
             lanternArm.Draw(spriteBatch);
             frontLeg.Draw(spriteBatch);
 
-            Main.NewText($"Upper leg angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
+            Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
             DrawAngleVisualization(frontLeg.Segments[0].A - Main.screenPosition, frontLeg.Segments[0].Angle, 2f, Color.Red);
 
-            Main.NewText($"Upper leg angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
+            Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
             DrawAngleVisualization(frontLeg.Segments[1].A - Main.screenPosition, frontLeg.Segments[1].Angle, 2f, Color.Green);
 
             base.PostDraw(spriteBatch, screenPos, drawColor);
@@ -209,6 +235,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public Vector2 B { get; private set; } // Only allow setting B inside the class
         public float Length { get; private set; }
         public float Angle { get; set; }
+        public float MinAngle { get; set; } = -MathHelper.Pi; // Default: -180 degrees
+        public float MaxAngle { get; set; } = MathHelper.Pi;  // Default: 180 degrees
         public Segment Parent { get; set; }
         public Texture2D Texture { get; set; }  // Texture property for each segment
 
@@ -225,7 +253,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public void Follow(Vector2 target)
         {
             Vector2 direction = target - A;
-            Angle = direction.ToRotation();
+            //Angle = direction.ToRotation();
+
+            float targetAngle = direction.ToRotation();
+            targetAngle = (targetAngle + MathHelper.TwoPi) % MathHelper.TwoPi;
+            Angle = MathHelper.Clamp(targetAngle, MinAngle, MaxAngle);
 
             direction = direction.SafeNormalize(Vector2.Zero) * Length;
             A = target - direction;
