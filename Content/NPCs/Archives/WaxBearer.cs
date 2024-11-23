@@ -60,8 +60,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             frontLeg.Update(NPC.Center + new Vector2(-40, 200));
 
-            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(20, 200));
-            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(125, 0));
+            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(40, 200));
+            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
 
             #endregion
 
@@ -97,8 +97,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
         Vector2 nextBackLegPosition;
 
         int moveCycle = 0;
+
+        float maxReach = 150f; // Maximum leg reach
+        float cycleTime = 30f; // Time for one step
+        float arcHeight = 10f; // Height of leg arc during step
         public override void AI()
         {
+            float CYCLE_TIME = 60;
+            float ARC_HEIGHT = 10;
+
             NPC.TargetClosest();
 
             lanternArm.BasePosition = NPC.Center;
@@ -110,7 +117,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.velocity.Y = 4;
 
             frontLeg.BasePosition = NPC.Center + new Vector2(0, 20);
-            backLeg.BasePosition = NPC.Center + new Vector2(0, 20);
+            backLeg.BasePosition = NPC.Center + new Vector2(10, 20);
 
             // Determine if NPC is on the ground
             var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
@@ -128,10 +135,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 NPC.ai[1]++; // Advance cycle timer
             }
 
-            float CYCLE_TIME = 60;
-            float ARC_HEIGHT = 10;
+            // Synchronize body velocity with leg motion
+            Vector2 legDisplacement = moveCycle % 2 == 0
+                ? nextBackLegPosition - currentBackLegPosition
+                : nextFrontLegPosition - currentFrontLegPosition;
 
-            float xOffsetCounter = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0, 1f);
+            //NPC.velocity.X = legDisplacement.X / cycleTime;
+
+            Vector2 averageLegPosition = (currentFrontLegPosition + currentBackLegPosition) / 2f;
+            NPC.Center = Vector2.Lerp(NPC.Center, averageLegPosition + new Vector2(0, -120), 0.2f);
 
             var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.Torch);
             current.noGravity = true;
@@ -150,7 +162,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 moveCycle++;
                 if (moveCycle % 2 == 0)
                 {
-                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-135, 0));
+                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-205, 0));
                     Main.NewText("move back leg");
                 }
                 else
@@ -163,17 +175,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
             else
             {
+                float progress = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0, 1f);
                 float yOffset = -ARC_HEIGHT * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> -1 -> 0
-                if (tileDistance <= 120) NPC.velocity.X = NPC.ai[1] < 15 ? -4f : 0;
+                if (tileDistance <= 120) NPC.velocity.X = NPC.ai[1] < 15 ? -5f : 0;
 
                 if (moveCycle % 2 == 0)
                 {
-                    currentBackLegPosition = Vector2.Lerp(currentBackLegPosition, nextBackLegPosition, xOffsetCounter) + Vector2.UnitY * yOffset;
+                    currentBackLegPosition = Vector2.Lerp(currentBackLegPosition, nextBackLegPosition, progress) + Vector2.UnitY * yOffset;
                 }
                 else
                 {
                     //float yOffset = MathHelper.Lerp(0, -60, yOffsetCounter);
-                    currentFrontLegPosition = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, xOffsetCounter) + Vector2.UnitY * yOffset;
+                    currentFrontLegPosition = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, progress) + Vector2.UnitY * yOffset;
                 }
             }
 
