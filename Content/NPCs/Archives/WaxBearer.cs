@@ -61,7 +61,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             frontLeg.Update(NPC.Center + new Vector2(-40, 200));
 
             currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(40, 200));
-            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
+            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-105, 0));
 
             #endregion
 
@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backLeg.Update(NPC.Center + new Vector2(-40, 200));
 
             currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(100, 0));
-            nextBackLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-120, 0));
+            nextBackLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-55, 0));
             #endregion
 
 
@@ -101,6 +101,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float maxReach = 150f; // Maximum leg reach
         float cycleTime = 30f; // Time for one step
         float arcHeight = 10f; // Height of leg arc during step
+        bool firstStep = false;
         public override void AI()
         {
             float CYCLE_TIME = 60;
@@ -116,7 +117,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.velocity.Y = 4;
 
-            
+
 
             // Determine if NPC is on the ground
             var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
@@ -234,7 +235,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
             DrawAngleVisualization(frontLeg.Segments[1].A - Main.screenPosition, frontLeg.Segments[1].Angle, 2f, Color.Green);
-            
+
             base.PostDraw(spriteBatch, screenPos, drawColor);
         }
 
