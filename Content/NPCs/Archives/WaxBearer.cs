@@ -116,16 +116,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.velocity.Y = 4;
 
-            frontLeg.BasePosition = NPC.Center + new Vector2(0, 20);
-            backLeg.BasePosition = NPC.Center + new Vector2(10, 20);
+            
 
             // Determine if NPC is on the ground
             var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
 
+            float STAND_HEIGHT = 150;
             // Make sure the NPC is always a certain distance above the ground
-            if (tileDistance <= 120)
+            if (tileDistance <= STAND_HEIGHT)
             {
-                if (tileDistance != 120)
+                if (tileDistance != STAND_HEIGHT)
                 {
                     NPC.velocity.Y -= 5f;
                 }
@@ -140,34 +140,32 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 ? nextBackLegPosition - currentBackLegPosition
                 : nextFrontLegPosition - currentFrontLegPosition;
 
-            //NPC.velocity.X = legDisplacement.X / cycleTime;
-
-            Vector2 averageLegPosition = (currentFrontLegPosition + currentBackLegPosition) / 2f;
-            NPC.Center = Vector2.Lerp(NPC.Center, averageLegPosition + new Vector2(0, -120), 0.2f);
-
-            var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.Torch);
-            current.noGravity = true;
-
-            var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.IceTorch);
-            next.noGravity = true;
+            NPC.velocity.X = legDisplacement.X / CYCLE_TIME;
 
             frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
             frontLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
 
-            frontLeg.Update(currentFrontLegPosition);
-            backLeg.Update(currentBackLegPosition);
+            Vector2 averageLegPosition = (currentFrontLegPosition + currentBackLegPosition) / 2f;
+            NPC.Center = Vector2.Lerp(NPC.Center, averageLegPosition + new Vector2(0, -STAND_HEIGHT), 0.2f);
+
 
             if (NPC.ai[1] >= CYCLE_TIME)
             {
                 moveCycle++;
                 if (moveCycle % 2 == 0)
                 {
-                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-205, 0));
+                    //currentBackLegPosition = nextBackLegPosition;
+                    //nextBackLegPosition = ClampLegReach(TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-125, 0)), NPC.Center);
+
+                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-105, 0));
                     Main.NewText("move back leg");
                 }
                 else
                 {
-                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0));
+                    //currentFrontLegPosition = nextFrontLegPosition;
+                    //nextFrontLegPosition = ClampLegReach(TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0)), NPC.Center);
+
+                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-105, 0));
                     Main.NewText("move front leg");
                 }
 
@@ -177,19 +175,38 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 float progress = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0, 1f);
                 float yOffset = -ARC_HEIGHT * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> -1 -> 0
-                if (tileDistance <= 120) NPC.velocity.X = NPC.ai[1] < 15 ? -5f : 0;
+                //if (tileDistance <= 120) NPC.velocity.X = NPC.ai[1] < 15 ? -5f : 0;
 
                 if (moveCycle % 2 == 0)
                 {
                     currentBackLegPosition = Vector2.Lerp(currentBackLegPosition, nextBackLegPosition, progress) + Vector2.UnitY * yOffset;
+                    currentBackLegPosition.Y = Math.Min(currentBackLegPosition.Y + yOffset, TileUtils.FindNearestGround(currentBackLegPosition).Y);
                 }
                 else
                 {
                     //float yOffset = MathHelper.Lerp(0, -60, yOffsetCounter);
                     currentFrontLegPosition = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, progress) + Vector2.UnitY * yOffset;
+                    currentFrontLegPosition.Y = Math.Min(currentFrontLegPosition.Y + yOffset, TileUtils.FindNearestGround(currentFrontLegPosition).Y);
                 }
             }
 
+            frontLeg.BasePosition = NPC.Center + new Vector2(0, 20);
+            frontLeg.Update(currentFrontLegPosition);
+
+            var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.Torch);
+            current.noGravity = true;
+
+            var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.IceTorch);
+            next.noGravity = true;
+
+            backLeg.BasePosition = NPC.Center + new Vector2(10, 20);
+            backLeg.Update(currentBackLegPosition);
+
+            var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.CursedTorch);
+            current2.noGravity = true;
+
+            var next2 = Dust.NewDustDirect(nextBackLegPosition, 1, 1, DustID.HallowedTorch);
+            next2.noGravity = true;
 
             //NPC.velocity.X = NPC.ai[1] < 30 ? -4f : 0;
         }
@@ -217,7 +234,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
             DrawAngleVisualization(frontLeg.Segments[1].A - Main.screenPosition, frontLeg.Segments[1].Angle, 2f, Color.Green);
-
+            
             base.PostDraw(spriteBatch, screenPos, drawColor);
         }
 
@@ -240,6 +257,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 SpriteEffects.None,
                 0f
             );
+        }
+
+        Vector2 ClampLegReach(Vector2 legTarget, Vector2 bodyPosition)
+        {
+            Vector2 toTarget = legTarget - bodyPosition;
+            if (toTarget.Length() > maxReach)
+            {
+                toTarget = toTarget.SafeNormalize(Vector2.Zero) * maxReach;
+            }
+            return bodyPosition + toTarget;
         }
     }
     public class Segment
