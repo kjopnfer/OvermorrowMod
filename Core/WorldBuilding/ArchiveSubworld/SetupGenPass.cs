@@ -43,7 +43,9 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 
             Dictionary<Color, int> wallMapping = new()
             {
-                [Color.Black] = -1
+                [Color.Black] = -1,
+                [new Color(66, 64, 61)] = ModContent.WallType<CastleWall>(),
+                [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWall>()
             };
 
             SystemUtils.InvokeOnMainThread(() =>

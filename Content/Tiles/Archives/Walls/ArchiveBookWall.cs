@@ -5,13 +5,13 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
-    public class CastleWall : ModWall
+    public class ArchiveBookWall : ModWall
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
 
         public override void SetStaticDefaults()
         {
-            AddMapEntry(new Color(72, 74, 77));
+            AddMapEntry(new Color(97, 66, 17));
         }
     }
 }
