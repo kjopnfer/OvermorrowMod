@@ -8,6 +8,8 @@ namespace OvermorrowMod.Common.Utilities
 {
     public static class TileUtils
     {
+        public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
+
         /// <summary>
         /// Returns the top-left coordinates of a tile object, adjusting for its frame offsets.
         /// If the tile is not part of a tile object, the original coordinates are returned.

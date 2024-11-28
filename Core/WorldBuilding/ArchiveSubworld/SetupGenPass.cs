@@ -45,7 +45,8 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             {
                 [Color.Black] = -1,
                 [new Color(66, 64, 61)] = ModContent.WallType<CastleWall>(),
-                [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWall>()
+                [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWallFrame>(),
+                [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>()
             };
 
             SystemUtils.InvokeOnMainThread(() =>
