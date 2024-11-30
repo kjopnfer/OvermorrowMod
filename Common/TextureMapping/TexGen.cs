@@ -93,10 +93,17 @@ namespace OvermorrowMod.Common.TextureMapping
                     // Place object if applicable
                     if (info.objectID != (0, 0))
                     {
+                        Core.OvermorrowMod.Instance.Logger.Debug("Generating Object " + info.objectID.ToString());
+
                         int objectId = info.objectID.Item1;
                         int styleRange = info.objectID.Item2;
-                        WorldGen.PlaceObject(x2, y2, objectId, true, Main.rand.Next(0, styleRange));
-                        NetMessage.SendObjectPlacement(-1, x2, y2, objectId, 0, 0, -1, -1);
+
+                        string name = TileLoader.GetTile(objectId).GetLocalizedValue("en");
+
+                        bool status = WorldGen.PlaceObject(x2, y2, objectId, true, Main.rand.Next(0, styleRange));
+                        Core.OvermorrowMod.Instance.Logger.Debug("Generating Object" + name + " Status: " + status);
+
+                        NetMessage.SendObjectPlacement(-1, x2, y2, objectId, Main.rand.Next(0, styleRange), 0, -1, -1);
                     }
                 }
             }
@@ -178,7 +185,7 @@ namespace OvermorrowMod.Common.TextureMapping
         /// Old implementation, does not work on dedicated servers, prefer to use <see cref="GetTexGenerator(TexGenData, Dictionary{Color, int}, TexGenData?, Dictionary{Color, int}, TexGenData?, TexGenData?, TexGenData?, Dictionary{Color, int})"> GetTexGenerator(TexGenData...) </see> instead 
         /// NOTE: all textures MUST be the same size or horrible things happen! 
         /// </summary>
-        public static TexGen GetTexGenerator(Texture2D tileTex, Dictionary<Color, int> colorToTile, Texture2D wallTex = null, Dictionary<Color, int> colorToWall = null, Texture2D liquidTex = null, Texture2D slopeTex = null, Texture2D objectTex = null, Dictionary<Color, (int, int)> colorToObject = null)
+        public static TexGen GetTexGenerator(Texture2D tileTex, Dictionary<Color, int> colorToTile, Texture2D wallTex = null, Dictionary<Color, int> colorToWall = null, Texture2D liquidTex = null, Texture2D slopeTex = null, Texture2D objectTex = null, Dictionary<Color, (int objectId, int styleRange)> colorToObject = null)
         {
             if (colorToLiquid == null)
             {
