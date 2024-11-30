@@ -15,13 +15,21 @@ namespace OvermorrowMod.Common.TextureMapping
     {
         private class TileInfo
         {
-            public int tileID = -1, tileStyle, wallID = -1, objectID;
+            public int tileID = -1, tileStyle, wallID = -1;
+            public (int, int) objectID;
             public int liquidType = -1, liquidAmt; //liquidType can be 0 (water), 1 (lava), 2 (honey)
             public int slope = -2, wire = -1;
 
-            public TileInfo(int id, int style, int wid = -1, int lType = -1, int lAmt = 0, int sl = -2, int ob = 0, int w = -1)
+            public TileInfo(int id, int style, int wallId = -1, int liquidType = -1, int liquidAmount = 0, int slope = -2, (int, int) objectId = default, int wire = -1)
             {
-                tileID = id; tileStyle = style; wallID = wid; liquidType = lType; liquidAmt = lAmt; slope = sl; objectID = ob; wire = w;
+                tileID = id; 
+                tileStyle = style; 
+                wallID = wallId; 
+                this.liquidType = liquidType; 
+                liquidAmt = liquidAmount; 
+                this.slope = slope; 
+                objectID = objectId; 
+                this.wire = wire;
             }
         }
 
@@ -83,10 +91,12 @@ namespace OvermorrowMod.Common.TextureMapping
                     }
 
                     // Place object if applicable
-                    if (info.objectID != 0)
+                    if (info.objectID != (0, 0))
                     {
-                        WorldGen.PlaceObject(x2, y2, info.objectID);
-                        NetMessage.SendObjectPlacement(-1, x2, y2, info.objectID, 0, 0, -1, -1);
+                        int objectId = info.objectID.Item1;
+                        int styleRange = info.objectID.Item2;
+                        WorldGen.PlaceObject(x2, y2, objectId, true, Main.rand.Next(0, styleRange));
+                        NetMessage.SendObjectPlacement(-1, x2, y2, objectId, 0, 0, -1, -1);
                     }
                 }
             }
@@ -118,7 +128,7 @@ namespace OvermorrowMod.Common.TextureMapping
         /// Creates a <see cref="TexGen"/> from <see cref="TexGenData"/>s. 
         /// NOTE: all textures MUST be the same size or horrible things happen! 
         /// </summary>
-        public static TexGen GetTexGenerator(TexGenData tileData, Dictionary<Color, int> colorToTile, TexGenData wallData = null, Dictionary<Color, int> colorToWall = null, TexGenData liquidData = null, TexGenData slopeData = null, TexGenData objectData = null, Dictionary<Color, int> colorToObject = null)
+        public static TexGen GetTexGenerator(TexGenData tileData, Dictionary<Color, int> colorToTile, TexGenData wallData = null, Dictionary<Color, int> colorToWall = null, TexGenData liquidData = null, TexGenData slopeData = null, TexGenData objectData = null, Dictionary<Color, (int, int)> colorToObject = null)
         {
             if (colorToLiquid == null)
             {
@@ -154,7 +164,7 @@ namespace OvermorrowMod.Common.TextureMapping
                 int wallID = colorToWall != null && colorToWall.ContainsKey(wallColor) ? colorToWall[wallColor] : -1;
                 int liquidID = colorToLiquid != null && colorToLiquid.ContainsKey(liquidColor) ? colorToLiquid[liquidColor] : -1;
                 int slopeID = colorToSlope != null && colorToSlope.ContainsKey(slopeColor) ? colorToSlope[slopeColor] : -1;
-                int objectID = colorToObject != null && colorToObject.ContainsKey(objectColor) ? colorToObject[objectColor] : 0;
+                (int, int) objectID = colorToObject != null && colorToObject.ContainsKey(objectColor) ? colorToObject[objectColor] : (0, 0);
                 gen.tileGen[x, y] = new TileInfo(tileID, 0, wallID, liquidID, liquidID == -1 ? 0 : 255, slopeID, objectID);
                 x++;
                 if (x >= tileData.Width) { x = 0; y++; }
@@ -168,7 +178,7 @@ namespace OvermorrowMod.Common.TextureMapping
         /// Old implementation, does not work on dedicated servers, prefer to use <see cref="GetTexGenerator(TexGenData, Dictionary{Color, int}, TexGenData?, Dictionary{Color, int}, TexGenData?, TexGenData?, TexGenData?, Dictionary{Color, int})"> GetTexGenerator(TexGenData...) </see> instead 
         /// NOTE: all textures MUST be the same size or horrible things happen! 
         /// </summary>
-        public static TexGen GetTexGenerator(Texture2D tileTex, Dictionary<Color, int> colorToTile, Texture2D wallTex = null, Dictionary<Color, int> colorToWall = null, Texture2D liquidTex = null, Texture2D slopeTex = null, Texture2D objectTex = null, Dictionary<Color, int> colorToObject = null)
+        public static TexGen GetTexGenerator(Texture2D tileTex, Dictionary<Color, int> colorToTile, Texture2D wallTex = null, Dictionary<Color, int> colorToWall = null, Texture2D liquidTex = null, Texture2D slopeTex = null, Texture2D objectTex = null, Dictionary<Color, (int, int)> colorToObject = null)
         {
             if (colorToLiquid == null)
             {
@@ -218,7 +228,7 @@ namespace OvermorrowMod.Common.TextureMapping
                 int wallID = colorToWall != null && colorToWall.ContainsKey(wallColor) ? colorToWall[wallColor] : -1;
                 int liquidID = colorToLiquid != null && colorToLiquid.ContainsKey(liquidColor) ? colorToLiquid[liquidColor] : -1;
                 int slopeID = colorToSlope != null && colorToSlope.ContainsKey(slopeColor) ? colorToSlope[slopeColor] : -1;
-                int objectID = colorToObject != null && colorToObject.ContainsKey(objectColor) ? colorToObject[objectColor] : 0;
+                (int, int) objectID = colorToObject != null && colorToObject.ContainsKey(objectColor) ? colorToObject[objectColor] : (0, 0);
                 gen.tileGen[x, y] = new TileInfo(tileID, 0, wallID, liquidID, liquidID == -1 ? 0 : 255, slopeID, objectID);
                 x++;
                 if (x >= tileTex.Width) { x = 0; y++; }
