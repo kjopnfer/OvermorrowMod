@@ -19,6 +19,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileNoAttach[Type] = true;
             Main.tileLighted[Type] = true;
 
+            // TexGen doesn't like Anchors for some reason
             //TileObjectData.newTile.CopyFrom(TileObjectData.StyleOnTable1x1);
 
             TileObjectData.newTile.Width = 2;

@@ -7,7 +7,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
     public class ArchiveSubworld : Subworld
     {
 
-        public override int Width => 536;
+        public override int Width => 644;
 
         public override int Height => 241;
 

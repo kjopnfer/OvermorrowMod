@@ -37,6 +37,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             Dictionary<Color, int> tileMapping = new()
             {
                 [new Color(105, 106, 106)] = ModContent.TileType<CastleBrick>(),
+                [new Color(89, 86, 82)] = ModContent.TileType<DarkCastleBrick>(),
                 [new Color(143, 86, 59)] = TileID.WoodBlock,
                 [new Color(150, 150, 150)] = -2,
                 [Color.Black] = -1
@@ -45,10 +46,11 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             Dictionary<Color, int> wallMapping = new()
             {
                 [Color.Black] = -1,
-                //[new Color(113, 193, 107)] = ModContent.WallType<ArchiveBackground>(),
+                [new Color(113, 193, 107)] = ModContent.WallType<ArchiveBackground>(),
                 [new Color(66, 64, 61)] = ModContent.WallType<CastleWall>(),
                 [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWallFrame>(),
-                [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>()
+                [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>(),
+                [new Color(66, 57, 46)] = ModContent.WallType<CastleWall>(),
             };
 
             Dictionary<Color, (int objectId, int styleRange)> objectMapping = new()

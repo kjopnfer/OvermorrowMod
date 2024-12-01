@@ -53,8 +53,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             var frame = new Rectangle(i % 16 * 16, j % 28 * 16, 16, 16);
             var frame2 = new Rectangle(tile.WallFrameX, tile.WallFrameY, 32, 32);
-            //if (!(frame2.Intersects(new Rectangle(36, 36, 36 * 3, 36)) || frame2.Intersects(new Rectangle(36 * 6, 36, 36 * 3, 36 * 2)) || frame2.Intersects(new Rectangle(36 * 10, 0, 36 * 2, 36 * 3))))
-            //    Main.tileBatch.Draw(ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "ArchiveBookWallFrame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X + Main.offScreenRange - 8, j * 16 - (int)Main.screenPosition.Y + Main.offScreenRange - 8), frame2, vertices, Vector2.Zero, 1f, SpriteEffects.None);
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "ArchiveBookWallFrame").Value;
             Vector2 drawPosition = new Vector2(i * 16 - (int)Main.screenPosition.X + Main.offScreenRange - 8, j * 16 - (int)Main.screenPosition.Y + Main.offScreenRange - 8);
@@ -72,7 +70,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
                 // Middle Frame Sections
                 if (tileLeft.WallType == ModContent.WallType<ArchiveBookWallFrame>() || tileRight.WallType == ModContent.WallType<ArchiveBookWallFrame>())
+                {
                     DrawMiddleFrameSegment(texture, i, j);
+                    return false;
+                }
+
+                DrawVerticalFrameSegment(texture, i, j);
                 return false;
             }
 
@@ -120,10 +123,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 return false;
             }
 
-
-
-
-
             if (frame2.Intersects(new Rectangle(36, 36, 36 * 3, 36)))
             {
                 //Main.tileBatch.Draw(ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "ArchiveBookWall").Value, new Vector2(i * 16 - (int)Main.screenPosition.X + Main.offScreenRange - 8, j * 16 - (int)Main.screenPosition.Y + Main.offScreenRange - 8), frame2, vertices, Vector2.Zero, 1f, SpriteEffects.None);
@@ -131,7 +130,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             //Main.tileBatch.Draw(ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "ArchiveBookWall").Value, new Vector2(i * 16 - (int)Main.screenPosition.X + Main.offScreenRange, j * 16 - (int)Main.screenPosition.Y + Main.offScreenRange), frame, vertices, Vector2.Zero, 1f, SpriteEffects.None);
             Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 1, 36 * 1, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
 
-            return true;
+            return false;
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
