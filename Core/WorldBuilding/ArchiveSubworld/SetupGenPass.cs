@@ -58,6 +58,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 3),
                 [new Color(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
                 [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
+                [new Color(123, 24, 92)] = (ModContent.TileType<WoodenPillar>(), 1),
             };
 
 

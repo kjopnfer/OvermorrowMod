@@ -24,8 +24,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.6f;
-            g = 0.45f;
+            r = 0.3f;
+            g = 0.25f;
             b = 0f;
         }
 
