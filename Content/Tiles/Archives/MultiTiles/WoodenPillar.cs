@@ -19,12 +19,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
 
-            TileObjectData.newTile.Width = 2;
-            TileObjectData.newTile.Height = 24;
-            TileObjectData.newTile.CoordinateHeights = [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16];
+            TileObjectData.newTile.Width = 3;
+            TileObjectData.newTile.Height = 26;
+            TileObjectData.newTile.CoordinateHeights = [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16];
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.Origin = new Point16(0, 23);
+            TileObjectData.newTile.Origin = new Point16(0, 25);
 
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
@@ -34,5 +34,13 @@ namespace OvermorrowMod.Content.Tiles.Archives
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTable);
             AddMapEntry(new Color(100, 61, 41));
         }
+    }
+
+    public class WoodenPillar2 : WoodenPillar
+    {
+    }
+
+    public class WoodenPillar3 : WoodenPillar
+    {
     }
 }
