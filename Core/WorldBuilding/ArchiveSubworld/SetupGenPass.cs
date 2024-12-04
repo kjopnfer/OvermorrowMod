@@ -22,7 +22,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
         {
             progress.Message = "Generating tiles";
-            Main.spawnTileX = 387;
+            Main.spawnTileX = 345;
             Main.spawnTileY = 136;
 
             // Move the backgrounds somewhere else
@@ -85,7 +85,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             });
 
             // ...yet I have to do it manually for these fucking things anyways because they don't work??
-            WorldGen.PlaceObject(322, 111, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(307, 111, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(363, 111, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(404, 111, ModContent.TileType<WoodenArch>());
         }
