@@ -61,10 +61,15 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
-                [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
+                [new Color(198, 74, 118)] = (ModContent.TileType<WoodenArch>(), 1),
+                [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArchL1>(), 1),
+                [new Color(176, 16, 73)] = (ModContent.TileType<WoodenArchL2>(), 1),
+                [new Color(189, 44, 95)] = (ModContent.TileType<WoodenArchL3>(), 1),
+                [new Color(88, 68, 75)] = (ModContent.TileType<WoodenArchR1>(), 1),
+                [new Color(79, 38, 52)] = (ModContent.TileType<WoodenArchR2>(), 1),
+                [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
             };
 
-            //WorldGen.PlaceTile(319, 115, TileID.Adamantite);
             SystemUtils.InvokeOnMainThread(() =>
             {
                 TexGen gen = TexGen.GetTexGenerator(tiles, tileMapping, walls, wallMapping, null, null, objects, objectMapping);
@@ -79,9 +84,10 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 objectGen.Generate(0, 0, true, true);
             });
 
-            //WorldGen.PlaceObject(319, 115 + 1, ModContent.TileType<WoodenArch>());
-            //WorldGen.PlaceObject(442, 116, ModContent.TileType<WoodenArch>());
-
+            // ...yet I have to do it manually for these fucking things anyways because they don't work??
+            WorldGen.PlaceObject(322, 111, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(363, 111, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(404, 111, ModContent.TileType<WoodenArch>());
         }
     }
 }
