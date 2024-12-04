@@ -3,6 +3,11 @@ Items: {
 		DisplayName: Mysterious Key
 		Tooltip: Used to access The Tower
 	}
+
+	TestPlaceable: {
+		DisplayName: Test Placeable
+		Tooltip: ""
+	}
 }
 
 Tiles: {

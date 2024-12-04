@@ -38,6 +38,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             {
                 [new Color(105, 106, 106)] = ModContent.TileType<CastleBrick>(),
                 [new Color(89, 86, 82)] = ModContent.TileType<DarkCastleBrick>(),
+                [new Color(138, 111, 48)] = ModContent.TileType<CastlePlatform>(),
                 [new Color(143, 86, 59)] = TileID.WoodBlock,
                 [new Color(150, 150, 150)] = -2,
                 [Color.Black] = -1
@@ -60,14 +61,27 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
+                [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
             };
 
-
+            //WorldGen.PlaceTile(319, 115, TileID.Adamantite);
             SystemUtils.InvokeOnMainThread(() =>
             {
                 TexGen gen = TexGen.GetTexGenerator(tiles, tileMapping, walls, wallMapping, null, null, objects, objectMapping);
                 gen.Generate(0, 0, true, true);
             });
+
+            // Run TexGen a second time for just the objects.
+            // Object anchors do not behave properly for whatever reason if done within the first pass.
+            SystemUtils.InvokeOnMainThread(() =>
+            {
+                TexGen objectGen = TexGen.GetTexGenerator(tiles, tileMapping, null, null, null, null, objects, objectMapping);
+                objectGen.Generate(0, 0, true, true);
+            });
+
+            //WorldGen.PlaceObject(319, 115 + 1, ModContent.TileType<WoodenArch>());
+            //WorldGen.PlaceObject(442, 116, ModContent.TileType<WoodenArch>());
+
         }
     }
 }

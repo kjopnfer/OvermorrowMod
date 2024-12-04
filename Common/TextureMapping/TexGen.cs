@@ -185,6 +185,9 @@ namespace OvermorrowMod.Common.TextureMapping
         /// Old implementation, does not work on dedicated servers, prefer to use <see cref="GetTexGenerator(TexGenData, Dictionary{Color, int}, TexGenData?, Dictionary{Color, int}, TexGenData?, TexGenData?, TexGenData?, Dictionary{Color, int})"> GetTexGenerator(TexGenData...) </see> instead 
         /// NOTE: all textures MUST be the same size or horrible things happen! 
         /// </summary>
+        /// <remarks>
+        /// NOTE: tileTex CANNOT be null.
+        /// </remarks>
         public static TexGen GetTexGenerator(Texture2D tileTex, Dictionary<Color, int> colorToTile, Texture2D wallTex = null, Dictionary<Color, int> colorToWall = null, Texture2D liquidTex = null, Texture2D slopeTex = null, Texture2D objectTex = null, Dictionary<Color, (int objectId, int styleRange)> colorToObject = null)
         {
             if (colorToLiquid == null)
