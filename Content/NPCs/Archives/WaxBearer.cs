@@ -60,7 +60,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             frontLeg.Update(NPC.Center + new Vector2(-40, 200));
 
-            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(40, 200));
+            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 200));
             nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-105, 0));
 
             #endregion
@@ -101,7 +101,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float maxReach = 150f; // Maximum leg reach
         float cycleTime = 30f; // Time for one step
         float arcHeight = 10f; // Height of leg arc during step
-        bool firstStep = false;
+        bool firstStep = true;
+        int stepCount = 0;
         public override void AI()
         {
             float CYCLE_TIME = 60;
@@ -153,21 +154,25 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (NPC.ai[1] >= CYCLE_TIME)
             {
                 moveCycle++;
+                stepCount++;
                 if (moveCycle % 2 == 0)
                 {
                     //currentBackLegPosition = nextBackLegPosition;
                     //nextBackLegPosition = ClampLegReach(TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-125, 0)), NPC.Center);
+                    int stepDistance = stepCount != 0 ? -305 : -205;
+                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(stepDistance, 0));
+                    Main.NewText("move back leg " + stepDistance + " stepCount: " + stepCount);
 
-                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-105, 0));
-                    Main.NewText("move back leg");
+                    if (firstStep) firstStep = false;
                 }
                 else
                 {
                     //currentFrontLegPosition = nextFrontLegPosition;
                     //nextFrontLegPosition = ClampLegReach(TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0)), NPC.Center);
+                    int stepDistance = stepCount != 1 ? -305 : -205;
+                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(stepDistance, 0));
 
-                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-105, 0));
-                    Main.NewText("move front leg");
+                    Main.NewText("move front leg " + stepDistance + " stepCount: " + stepCount);
                 }
 
                 NPC.ai[1] = 0; // Reset cycle timer
@@ -230,10 +235,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             lanternArm.Draw(spriteBatch);
             frontLeg.Draw(spriteBatch);
 
-            Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
+            //Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
             DrawAngleVisualization(frontLeg.Segments[0].A - Main.screenPosition, frontLeg.Segments[0].Angle, 2f, Color.Red);
 
-            Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
+            //Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
             DrawAngleVisualization(frontLeg.Segments[1].A - Main.screenPosition, frontLeg.Segments[1].Angle, 2f, Color.Green);
 
             base.PostDraw(spriteBatch, screenPos, drawColor);
