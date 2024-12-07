@@ -97,6 +97,11 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             WorldGen.PlaceObject(363, 111, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(404, 111, ModContent.TileType<WoodenArch>());
 
+            WorldGen.PlaceObject(329, 118, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(338, 115, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(347, 118, ModContent.TileType<ArchiveBanner>());
+
+
             WorldGen.PlaceObject(337, 131, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());
             WorldGen.PlaceObject(337, 113, ModContent.TileType<WoodenArchSmall>());
