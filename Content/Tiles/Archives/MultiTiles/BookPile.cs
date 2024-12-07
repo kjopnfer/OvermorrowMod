@@ -16,10 +16,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
-            Main.tileNoAttach[Type] = true;
+
+            Main.tileSolid[Type] = true;
             Main.tileSolidTop[Type] = true;
 
-            TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleOnTable1x1);
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 1;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16 };
@@ -28,6 +29,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.RandomStyleRange = 3;
+
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, TileObjectData.newTile.Width, 0);

@@ -52,10 +52,12 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWallFrame>(),
                 [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>(),
                 [new Color(66, 57, 46)] = ModContent.WallType<CastleWall>(),
+                [new Color(101, 66, 14)] = WallID.BorealWood,
             };
 
             Dictionary<Color, (int objectId, int styleRange)> objectMapping = new()
             {
+                [new Color(75, 105, 47)] = (ModContent.TileType<BookPile>(), 1),
                 [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 3),
                 [new Color(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
                 [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
@@ -68,6 +70,8 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(88, 68, 75)] = (ModContent.TileType<WoodenArchR1>(), 1),
                 [new Color(79, 38, 52)] = (ModContent.TileType<WoodenArchR2>(), 1),
                 [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
+                [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
+
             };
 
             SystemUtils.InvokeOnMainThread(() =>
