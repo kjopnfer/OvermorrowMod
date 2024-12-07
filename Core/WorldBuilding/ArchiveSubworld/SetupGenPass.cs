@@ -63,6 +63,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(180, 58, 0)] = (ModContent.TileType<Fireplace>(), 1),
                 [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
                 [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 3),
+                [new Color(114, 70, 123)] = (ModContent.TileType<Moose>(), 1),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
                 [new Color(198, 74, 118)] = (ModContent.TileType<WoodenArch>(), 1),
@@ -72,6 +73,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(88, 68, 75)] = (ModContent.TileType<WoodenArchR1>(), 1),
                 [new Color(79, 38, 52)] = (ModContent.TileType<WoodenArchR2>(), 1),
                 [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
+                [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
 
             };
 
@@ -93,6 +95,10 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             WorldGen.PlaceObject(307, 111, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(363, 111, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(404, 111, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(337, 131, ModContent.TileType<WoodenArchSmall>());
+            WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());
+            WorldGen.PlaceObject(337, 113, ModContent.TileType<WoodenArchSmall>());
         }
     }
 }
