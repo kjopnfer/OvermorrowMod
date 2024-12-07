@@ -14,6 +14,7 @@ Tiles: {
 	GarrisonBanner.MapEntry: Garrison Banner
 	Lamp.MapEntry: Lamp
 	SojournCandelabra.MapEntry: Sojourn Candelabra
+	Candelabra.MapEntry: Candelabra
 }
 
 NPCs.WaxBearer.DisplayName: THE ZANCIENT ONE

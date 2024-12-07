@@ -75,7 +75,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(79, 38, 52)] = (ModContent.TileType<WoodenArchR2>(), 1),
                 [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
-
+                [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
             };
 
             SystemUtils.InvokeOnMainThread(() =>

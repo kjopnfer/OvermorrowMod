@@ -20,10 +20,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileSolid[Type] = true;
             Main.tileSolidTop[Type] = true;
 
-            TileObjectData.newAlternate.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 1;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16 };
+            TileObjectData.newTile.CoordinateHeights = [16];
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
 
@@ -35,11 +34,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, TileObjectData.newTile.Width, 0);
 
             TileObjectData.addTile(Type);
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            //Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 28, 16, ModContent.ItemType<Items.Placeable.Furniture.BookPile>());
         }
     }
 }
