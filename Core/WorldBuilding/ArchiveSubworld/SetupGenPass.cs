@@ -58,9 +58,11 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             Dictionary<Color, (int objectId, int styleRange)> objectMapping = new()
             {
                 [new Color(75, 105, 47)] = (ModContent.TileType<BookPile>(), 1),
-                [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 3),
                 [new Color(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
                 [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
+                [new Color(180, 58, 0)] = (ModContent.TileType<Fireplace>(), 1),
+                [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
+                [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 3),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
                 [new Color(198, 74, 118)] = (ModContent.TileType<WoodenArch>(), 1),
@@ -70,7 +72,6 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(88, 68, 75)] = (ModContent.TileType<WoodenArchR1>(), 1),
                 [new Color(79, 38, 52)] = (ModContent.TileType<WoodenArchR2>(), 1),
                 [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
-                [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
 
             };
 
