@@ -77,6 +77,8 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
                 [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
                 [new Color(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
+                [new Color(128, 50, 1)] = (ModContent.TileType<Napoleon>(), 1),
+                [new Color(159, 183, 204)] = (ModContent.TileType<Bismarck>(), 1),
             };
 
             SystemUtils.InvokeOnMainThread(() =>
@@ -98,9 +100,12 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             WorldGen.PlaceObject(363, 111, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(404, 111, ModContent.TileType<WoodenArch>());
 
-            WorldGen.PlaceObject(329, 117, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(329, 116, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(338, 115, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(347, 117, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(347, 116, ModContent.TileType<ArchiveBanner>());
+
+            WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
+            WorldGen.PlaceObject(347, 131, ModContent.TileType<Bismarck>());
 
             WorldGen.PlaceObject(337, 131, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());
