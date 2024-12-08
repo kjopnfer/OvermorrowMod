@@ -38,17 +38,19 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void OnSpawn(IEntitySource source)
         {
             Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Arm", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D legTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Leg", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D legTexture1 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassLeg1", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D legTexture2 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassLeg2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
             Texture2D[] armTextures = new Texture2D[] { armTexture, armTexture };
-            Texture2D[] legTextures = new Texture2D[] { legTexture, legTexture };
+            Texture2D[] legTextures = new Texture2D[] { legTexture1, legTexture2 };
 
             float[] segmentLengths = new float[] { 60f, 120f }; // Different lengths for each segment
             lanternArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
             backArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
 
             #region Front Leg
-            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, segmentLengths, 0, legTextures);
+            float[] legSegmentLengths = new float[] { 88f, 88f }; // Different lengths for each segment
+            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, legSegmentLengths, 0, legTextures);
 
             // Set constraints for the knee joint
             frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -66,7 +68,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             #endregion
 
             #region Back Leg
-            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, segmentLengths, 0, legTextures);
+            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, legSegmentLengths, 0, legTextures);
 
             // Set constraints for the knee joint
             backLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -326,18 +328,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 Texture = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
 
             Texture2D pixel = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
-            Vector2 scale = new Vector2(Length, 4f); // Adjust thickness as needed
+            //Vector2 scale = new Vector2(Length, 4f); // Adjust thickness as needed
             float rotation = Angle;
             Rectangle rect = new Rectangle(0, 0, 1, 1);
 
             spriteBatch.Draw(
-                Texture,
-                A - Main.screenPosition,
-                rect,
+                texture: Texture,
+                position: A - Main.screenPosition,
+                sourceRectangle: null,
                 color,
-                rotation,
-                new Vector2(0, 0.5f),
-                scale,
+                rotation - MathHelper.PiOver2,
+                origin: new Vector2(0, 0.5f),
+                scale: 1f,
                 SpriteEffects.None,
                 0f
             );
