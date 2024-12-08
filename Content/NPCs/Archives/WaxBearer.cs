@@ -14,11 +14,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class WaxBearer : ModNPC
     {
-        public override string Texture => AssetDirectory.ArchiveNPCs + Name + "Body";
+        public override string Texture => AssetDirectory.ArchiveNPCs + "Waxhead";
         public override void SetDefaults()
         {
-            NPC.width = 32;
-            NPC.height = 64;
+            NPC.width = 65;
+            NPC.height = 160;
             NPC.knockBackResist = 0.8f;
             NPC.lifeMax = 100;
             NPC.noGravity = true;
@@ -60,9 +60,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             frontLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
             frontLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
 
-            frontLeg.Update(NPC.Center + new Vector2(-40, 200));
 
-            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 200));
+            // ANCHOR
+            frontLeg.Update(NPC.Center + new Vector2(0, 300));
+
+            Main.NewText("FRONT LEG WHATEVER -105");
+
+            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 0));
             nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-105, 0));
 
             #endregion
@@ -78,15 +82,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
             backLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
 
-            backLeg.Update(NPC.Center + new Vector2(-40, 200));
+            backLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(100, 0));
-            nextBackLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-55, 0));
+            int STEP_DISTANCE = -55;
+            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 0));
+            nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(STEP_DISTANCE, 0));
             #endregion
 
 
-            backArm.Update(NPC.Center + new Vector2(0, 200));
-            lanternArm.Update(NPC.Center + new Vector2(0, 200));
+            //backArm.Update(NPC.Center + new Vector2(0, 200));
+            //lanternArm.Update(NPC.Center + new Vector2(0, 200));
         }
 
         Vector2 startPosition;
@@ -110,7 +115,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float CYCLE_TIME = 60;
             float ARC_HEIGHT = 10;
 
-            NPC.TargetClosest();
+            //NPC.TargetClosest();
+            NPC.direction = -1;
 
             lanternArm.BasePosition = NPC.Center;
             backArm.BasePosition = NPC.Center;
@@ -120,12 +126,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.velocity.Y = 4;
 
-
-
             // Determine if NPC is on the ground
             var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
 
-            float STAND_HEIGHT = 150;
+            float STAND_HEIGHT = 210;
             // Make sure the NPC is always a certain distance above the ground
             if (tileDistance <= STAND_HEIGHT)
             {
@@ -152,7 +156,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Vector2 averageLegPosition = (currentFrontLegPosition + currentBackLegPosition) / 2f;
             NPC.Center = Vector2.Lerp(NPC.Center, averageLegPosition + new Vector2(0, -STAND_HEIGHT), 0.2f);
 
-
+            /*// STEP HAS TO GO SMALL, LARGE, LARGE, LARGE, LARGE... IN ORDER FOR IT TO NOT SHUFFLE LIKE A FUCKING IDIOT
             if (NPC.ai[1] >= CYCLE_TIME)
             {
                 moveCycle++;
@@ -196,9 +200,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     currentFrontLegPosition = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, progress) + Vector2.UnitY * yOffset;
                     currentFrontLegPosition.Y = Math.Min(currentFrontLegPosition.Y + yOffset, TileUtils.FindNearestGround(currentFrontLegPosition).Y);
                 }
-            }
+            }*/
 
-            frontLeg.BasePosition = NPC.Center + new Vector2(0, 20);
+            int LEG_OFFSET = 10 * NPC.direction;
+            frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 40);
             frontLeg.Update(currentFrontLegPosition);
 
             var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.Torch);
@@ -207,7 +212,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.IceTorch);
             next.noGravity = true;
 
-            backLeg.BasePosition = NPC.Center + new Vector2(10, 20);
+            backLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 50);
             backLeg.Update(currentBackLegPosition);
 
             var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.CursedTorch);
@@ -223,19 +228,25 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float link2Length = 48f;  // Lower arm length
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
-            backArm.Draw(spriteBatch);
-            backLeg.Draw(spriteBatch);
+            // Calculate a darker shade of the drawColor for backArm and backLeg
+            Color darkerColor = Color.Lerp(drawColor, Color.Black, 0.55f); // 0.2f is the factor to darken the color
 
-            return base.PreDraw(spriteBatch, screenPos, drawColor);
+            backArm.Draw(spriteBatch, Color.White);
+            backLeg.Draw(spriteBatch, darkerColor);
+
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Vector2 spriteOffset = new Vector2(14, -16);
+            spriteBatch.Draw(texture, NPC.Center + spriteOffset - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+
+            return false;
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
 
-            lanternArm.Draw(spriteBatch);
-            frontLeg.Draw(spriteBatch);
+            lanternArm.Draw(spriteBatch, Color.White);
+            frontLeg.Draw(spriteBatch, drawColor);
 
             //Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
             DrawAngleVisualization(frontLeg.Segments[0].A - Main.screenPosition, frontLeg.Segments[0].Angle, 2f, Color.Red);
@@ -373,6 +384,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
         }
 
+        /// <summary>
+        /// Moves it towards this position.
+        /// </summary>
+        /// <param name="target"></param>
         public void Update(Vector2 target)
         {
             // Follow target starting from the last segment
@@ -399,12 +414,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Color drawColor)
         {
             // Draw each segment, customize the color as needed
             foreach (Segment segment in Segments)
             {
-                segment.Draw(spriteBatch, Color.White);
+                segment.Draw(spriteBatch, drawColor);
             }
         }
 
