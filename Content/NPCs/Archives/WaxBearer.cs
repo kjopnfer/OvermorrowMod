@@ -35,6 +35,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         int segLen = 64;
         int numSegs = 2;
+
+        int nextFrontLegOffset = 105;
+        int nextBackLegOffset = 55;
         public override void OnSpawn(IEntitySource source)
         {
             Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Arm", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -49,8 +52,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
 
             #region Front Leg
-            float[] legSegmentLengths = new float[] { 88f, 88f }; // Different lengths for each segment
-            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, legSegmentLengths, 0, legTextures);
+            float[] legSegmentLengths = new float[] { 75f, 88f }; // Different lengths for each segment
+            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures);
 
             // Set constraints for the knee joint
             frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -61,18 +64,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
             frontLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
 
 
-            // ANCHOR
+            // Set initial target to straight downwards
             frontLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            Main.NewText("FRONT LEG WHATEVER -105");
-
             currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 0));
-            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-105, 0));
+            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-nextFrontLegOffset, 0));
 
             #endregion
 
             #region Back Leg
-            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y + 20, 2, legSegmentLengths, 0, legTextures);
+            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures);
 
             // Set constraints for the knee joint
             backLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -82,11 +83,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
             backLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
 
+            // Set initial target to straight downwards
             backLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            int STEP_DISTANCE = -55;
-            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 0));
-            nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(STEP_DISTANCE, 0));
+            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(-10, 0));
+            nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-nextBackLegOffset, 0));
             #endregion
 
 
@@ -110,6 +111,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float arcHeight = 10f; // Height of leg arc during step
         bool firstStep = true;
         int stepCount = 0;
+
+        float tileDistance => RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
+        bool isOnGround = false;
+
+        public ref float AIState => ref NPC.ai[0];
+        public enum AICase
+        {
+            Idle = 0,
+            Walk = 1,
+        }
+
         public override void AI()
         {
             float CYCLE_TIME = 60;
@@ -124,11 +136,50 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backArm.Update(NPC.Center + new Vector2(-80, -40));
             lanternArm.Update(NPC.Center + new Vector2(-80, 20));
 
+            HandleGravity();
+
+            switch ((AICase)AIState)
+            {
+                case AICase.Idle:
+                    Neutral();
+                    if (NPC.ai[1]++ == 60)
+                    {
+                        Main.NewText("switch to moving");
+
+                        AIState = (int)AICase.Walk;
+                        NPC.ai[1] = 0;
+                    }
+                    break;
+                case AICase.Walk:
+                    if (NPC.ai[1]++ == 120)
+                    {
+                        Main.NewText("switch to idle");
+
+                        AIState = (int)AICase.Idle;
+                        NPC.ai[1] = 0;
+                    }
+                    break;
+            }
+            //WalkCycle(1);
+
+            #region Debug
+            var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.RedTorch);
+            current.noGravity = true;
+
+            var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.RedTorch);
+            next.noGravity = true;
+
+            var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.BlueTorch);
+            current2.noGravity = true;
+
+            var next2 = Dust.NewDustDirect(nextBackLegPosition, 1, 1, DustID.BlueTorch);
+            next2.noGravity = true;
+            #endregion
+            return;
+
             NPC.velocity.Y = 4;
 
             // Determine if NPC is on the ground
-            var tileDistance = RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
-
             float STAND_HEIGHT = 210;
             // Make sure the NPC is always a certain distance above the ground
             if (tileDistance <= STAND_HEIGHT)
@@ -203,25 +254,50 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }*/
 
             int LEG_OFFSET = 10 * NPC.direction;
-            frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 40);
+            frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
             frontLeg.Update(currentFrontLegPosition);
-
-            var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.Torch);
-            current.noGravity = true;
-
-            var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.IceTorch);
-            next.noGravity = true;
 
             backLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 50);
             backLeg.Update(currentBackLegPosition);
+        }
 
-            var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.CursedTorch);
-            current2.noGravity = true;
+        private void Neutral()
+        {
+            int LEG_OFFSET = 10 * NPC.direction;
+            frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
+            frontLeg.Update(currentFrontLegPosition);
 
-            var next2 = Dust.NewDustDirect(nextBackLegPosition, 1, 1, DustID.HallowedTorch);
-            next2.noGravity = true;
+            backLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
+            backLeg.Update(currentBackLegPosition);
+        }
 
-            //NPC.velocity.X = NPC.ai[1] < 30 ? -4f : 0;
+        private void WalkCycle(int steps)
+        {
+            if (isOnGround) NPC.ai[1]++;
+
+            bool isFrontLeg = stepCount % 0 == 0;
+            if (isFrontLeg)
+            {
+
+            }
+        }
+
+        private void HandleGravity()
+        {
+            isOnGround = false;
+            float STAND_HEIGHT = 130;
+
+            NPC.velocity.Y = 4;
+            if (tileDistance <= STAND_HEIGHT)
+            {
+                if (tileDistance != STAND_HEIGHT)
+                {
+                    NPC.velocity.Y -= 5f;
+                }
+                else NPC.velocity.Y = 0;
+
+                isOnGround = true;
+            }
         }
 
         float link1Length = 48f;  // Upper arm length
