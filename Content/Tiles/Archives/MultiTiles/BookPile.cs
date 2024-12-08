@@ -36,4 +36,29 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.addTile(Type);
         }
     }
+
+    public class BookPileTable : ModTile
+    {
+        public override string Texture => AssetDirectory.ArchiveTiles + "BookPile";
+
+        public override void SetStaticDefaults()
+        {
+            Main.tileFrameImportant[Type] = true;
+            Main.tileNoAttach[Type] = true;
+
+            TileObjectData.newTile.Width = 2;
+            TileObjectData.newTile.Height = 1;
+            TileObjectData.newTile.CoordinateHeights = [16];
+
+            TileObjectData.newTile.UsesCustomCanPlace = true;
+
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.RandomStyleRange = 3;
+
+            TileObjectData.newTile.CoordinateWidth = 16;
+            TileObjectData.newTile.CoordinatePadding = 2;
+
+            TileObjectData.addTile(Type);
+        }
+    }
 }

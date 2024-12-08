@@ -57,7 +57,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 
             Dictionary<Color, (int objectId, int styleRange)> objectMapping = new()
             {
-                [new Color(75, 105, 47)] = (ModContent.TileType<BookPile>(), 1),
+                [new Color(75, 105, 47)] = (ModContent.TileType<BookPileTable>(), 1),
                 [new Color(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
                 [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
                 [new Color(208, 61, 125)] = (ModContent.TileType<CozyChair>(), 1),
