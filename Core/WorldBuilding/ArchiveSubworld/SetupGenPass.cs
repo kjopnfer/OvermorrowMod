@@ -76,6 +76,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
                 [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
+                [new Color(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
             };
 
             SystemUtils.InvokeOnMainThread(() =>
@@ -101,6 +102,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             WorldGen.PlaceObject(338, 115, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(347, 118, ModContent.TileType<ArchiveBanner>());
 
+            //WorldGen.PlaceObject(326, 136, ModContent.TileType<SmallChair>());
 
             WorldGen.PlaceObject(337, 131, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());
