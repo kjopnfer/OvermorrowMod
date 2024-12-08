@@ -57,7 +57,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
 
             Dictionary<Color, (int objectId, int styleRange)> objectMapping = new()
             {
-                [new Color(75, 105, 47)] = (ModContent.TileType<BookPile>(), 1),
+                [new Color(75, 105, 47)] = (ModContent.TileType<BookPileTable>(), 1),
                 [new Color(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
                 [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
                 [new Color(208, 61, 125)] = (ModContent.TileType<CozyChair>(), 1),
@@ -75,7 +75,10 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(79, 38, 52)] = (ModContent.TileType<WoodenArchR2>(), 1),
                 [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
-
+                [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
+                [new Color(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
+                [new Color(128, 50, 1)] = (ModContent.TileType<Napoleon>(), 1),
+                [new Color(159, 183, 204)] = (ModContent.TileType<Bismarck>(), 1),
             };
 
             SystemUtils.InvokeOnMainThread(() =>
@@ -97,10 +100,12 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
             WorldGen.PlaceObject(363, 111, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(404, 111, ModContent.TileType<WoodenArch>());
 
-            WorldGen.PlaceObject(329, 118, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(329, 116, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(338, 115, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(347, 118, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(347, 116, ModContent.TileType<ArchiveBanner>());
 
+            WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
+            WorldGen.PlaceObject(347, 131, ModContent.TileType<Bismarck>());
 
             WorldGen.PlaceObject(337, 131, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());

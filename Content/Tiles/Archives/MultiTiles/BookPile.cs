@@ -20,10 +20,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileSolid[Type] = true;
             Main.tileSolidTop[Type] = true;
 
-            TileObjectData.newAlternate.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 1;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16 };
+            TileObjectData.newTile.CoordinateHeights = [16];
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
 
@@ -36,10 +35,30 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             TileObjectData.addTile(Type);
         }
+    }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
+    public class BookPileTable : ModTile
+    {
+        public override string Texture => AssetDirectory.ArchiveTiles + "BookPile";
+
+        public override void SetStaticDefaults()
         {
-            //Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 28, 16, ModContent.ItemType<Items.Placeable.Furniture.BookPile>());
+            Main.tileFrameImportant[Type] = true;
+            Main.tileNoAttach[Type] = true;
+
+            TileObjectData.newTile.Width = 2;
+            TileObjectData.newTile.Height = 1;
+            TileObjectData.newTile.CoordinateHeights = [16];
+
+            TileObjectData.newTile.UsesCustomCanPlace = true;
+
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.RandomStyleRange = 3;
+
+            TileObjectData.newTile.CoordinateWidth = 16;
+            TileObjectData.newTile.CoordinatePadding = 2;
+
+            TileObjectData.addTile(Type);
         }
     }
 }

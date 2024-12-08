@@ -93,7 +93,7 @@ namespace OvermorrowMod.Common.TextureMapping
                     // Place object if applicable
                     if (info.objectID != (0, 0))
                     {
-                        Core.OvermorrowMod.Instance.Logger.Debug("Generating Object " + info.objectID.ToString());
+                        //Core.OvermorrowMod.Instance.Logger.Debug("Generating Object " + info.objectID.ToString());
 
                         int objectId = info.objectID.Item1;
                         int styleRange = info.objectID.Item2;
