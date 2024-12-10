@@ -36,13 +36,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
         int segLen = 64;
         int numSegs = 2;
 
-        int nextFrontLegOffset = 105;
+        int nextFrontLegOffset = 55;
         int nextBackLegOffset = 55;
         public override void OnSpawn(IEntitySource source)
         {
             Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Arm", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Texture2D legTexture1 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassLeg1", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Texture2D legTexture2 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassLeg2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Vector2[] origins = new Vector2[] { new Vector2(legTexture1.Width / 2, 10), new Vector2(legTexture2.Width / 2, 10) };
 
             Texture2D[] armTextures = new Texture2D[] { armTexture, armTexture };
             Texture2D[] legTextures = new Texture2D[] { legTexture1, legTexture2 };
@@ -53,27 +54,31 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             #region Front Leg
             float[] legSegmentLengths = new float[] { 75f, 88f }; // Different lengths for each segment
-            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures);
+            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
 
             // Set constraints for the knee joint
             frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
             frontLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
 
             // Set constraints for the lower leg
-            frontLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
-            frontLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
-
+            //frontLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
+            //frontLeg.Segments[1].MaxAngle = MathHelper.PiOver2;  // 90 degrees
+            frontLeg.Segments[1].MinAngle = 0; // -90 degrees
+            frontLeg.Segments[1].MaxAngle = MathHelper.PiOver2;  // 90 degrees
 
             // Set initial target to straight downwards
             frontLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 0));
+            nextFrontLegOffset = 100;
+
+            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(-30, 0));
             nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-nextFrontLegOffset, 0));
 
             #endregion
 
             #region Back Leg
-            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures);
+
+            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
 
             // Set constraints for the knee joint
             backLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -83,13 +88,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
             backLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
 
+
             // Set initial target to straight downwards
             backLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(-10, 0));
+            nextBackLegOffset = 100;
+
+            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 0));
             nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-nextBackLegOffset, 0));
             #endregion
-
 
             //backArm.Update(NPC.Center + new Vector2(0, 200));
             //lanternArm.Update(NPC.Center + new Vector2(0, 200));
@@ -103,6 +110,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         Vector2 currentBackLegPosition;
         Vector2 nextBackLegPosition;
+
+        Vector2 currentCenterPosition;
+        Vector2 nextCenterPosition;
 
         int moveCycle = 0;
 
@@ -136,34 +146,48 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backArm.Update(NPC.Center + new Vector2(-80, -40));
             lanternArm.Update(NPC.Center + new Vector2(-80, 20));
 
+            int LEG_OFFSET = -5 * NPC.direction;
+            frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 54);
+            backLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 54);
+
             HandleGravity();
 
             switch ((AICase)AIState)
             {
                 case AICase.Idle:
                     Neutral();
-                    if (NPC.ai[1]++ == 60)
+                    /*if (NPC.ai[1]++ == 60)
                     {
                         Main.NewText("switch to moving");
-
                         AIState = (int)AICase.Walk;
                         NPC.ai[1] = 0;
-                    }
+                    }*/
                     break;
                 case AICase.Walk:
-                    if (NPC.ai[1]++ == 120)
+                    if (WalkCycle(1))
                     {
-                        Main.NewText("switch to idle");
+                        // TEMP COUNTER
+                        if (NPC.ai[2]++ == 120)
+                        {
+                            Main.NewText("switch to idle");
 
-                        AIState = (int)AICase.Idle;
-                        NPC.ai[1] = 0;
+                            // TEMP REMOVE THIS LATER
+                            NPC.Center = currentCenterPosition;
+
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
+                            AIState = (int)AICase.Idle;
+                        }
+                    }
+                    else
+                    {
                     }
                     break;
             }
             //WalkCycle(1);
 
             #region Debug
-            var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.RedTorch);
+            /*var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.RedTorch);
             current.noGravity = true;
 
             var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.RedTorch);
@@ -173,7 +197,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             current2.noGravity = true;
 
             var next2 = Dust.NewDustDirect(nextBackLegPosition, 1, 1, DustID.BlueTorch);
-            next2.noGravity = true;
+            next2.noGravity = true;*/
             #endregion
             return;
 
@@ -253,7 +277,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }*/
 
-            int LEG_OFFSET = 10 * NPC.direction;
+            //int LEG_OFFSET = 10 * NPC.direction;
             frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
             frontLeg.Update(currentFrontLegPosition);
 
@@ -263,23 +287,73 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void Neutral()
         {
-            int LEG_OFFSET = 10 * NPC.direction;
-            frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
-            frontLeg.Update(currentFrontLegPosition);
+            if (isOnGround)
+            {
+                currentCenterPosition = NPC.Center;
+                nextCenterPosition = NPC.Center + new Vector2(nextFrontLegOffset * NPC.direction, 0);
+            }
 
-            backLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
+            //frontLeg.Update(currentFrontLegPosition);
+            frontLeg.Update(Main.MouseWorld);
+
             backLeg.Update(currentBackLegPosition);
         }
 
-        private void WalkCycle(int steps)
+        private bool WalkCycle(int steps)
         {
+
+            float CYCLE_TIME = 60;
+            float ARC_HEIGHT = 100;
+            if (NPC.ai[1] >= CYCLE_TIME) return true;
+
+            // if i want to move the front leg forwards, have it move 50 pixels away from where the back leg is
+            // if i want to move the back leg forwards, have it move 50 pixels away from where the front leg is
             if (isOnGround) NPC.ai[1]++;
 
-            bool isFrontLeg = stepCount % 0 == 0;
+
+            bool isFrontLeg = stepCount % 2 == 0;
             if (isFrontLeg)
             {
+                float delay = 10;
+                // Step 1: First 10 ticks, move the leg upwards without horizontal movement
 
+                // Calculate the vertical arc for the first 10 ticks
+                float progress = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0f, 1f); // Progress from 0 to 1 in the first 10 ticks
+                float yOffset = -ARC_HEIGHT * (float)Math.Sin(progress * MathHelper.Pi); // Smooth upward arc
+
+                // Only move vertically, no horizontal movement
+                frontLeg.Update(currentFrontLegPosition + new Vector2(-50, 0));
+
+                var current = Dust.NewDustDirect(currentFrontLegPosition + new Vector2(0, -50), 1, 1, DustID.RedTorch);
+                current.noGravity = true;
+
+                /*else
+                {
+                    // Step 2: After 10 ticks, move both vertically and horizontally
+                    float progress = Math.Clamp((NPC.ai[1] - delay) / (CYCLE_TIME - delay), 0f, 1f); // Progress after 10 ticks
+                    float yOffset = -ARC_HEIGHT * (float)Math.Sin(MathHelper.Pi * (NPC.ai[1] / CYCLE_TIME)); // Full arc motion
+
+                    // Move horizontally from the current position towards the next position
+                    Vector2 target = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, progress);
+
+                    // Update the front leg's position with both horizontal and vertical movement
+                    frontLeg.Update(target + new Vector2(0, yOffset));
+
+                    // Update NPC's center (for walking)
+                    NPC.Center = Vector2.Lerp(currentCenterPosition, nextCenterPosition, progress);
+
+                }*/
+
+
+
+                backLeg.Update(currentBackLegPosition);
             }
+            else
+            {
+                backLeg.Update(nextBackLegPosition);
+            }
+
+            return NPC.ai[1] >= CYCLE_TIME;
         }
 
         private void HandleGravity()
@@ -324,10 +398,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             lanternArm.Draw(spriteBatch, Color.White);
             frontLeg.Draw(spriteBatch, drawColor);
 
-            //Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
+            Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
             DrawAngleVisualization(frontLeg.Segments[0].A - Main.screenPosition, frontLeg.Segments[0].Angle, 2f, Color.Red);
 
-            //Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightGreen);
+            Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightBlue);
             DrawAngleVisualization(frontLeg.Segments[1].A - Main.screenPosition, frontLeg.Segments[1].Angle, 2f, Color.Green);
 
             base.PostDraw(spriteBatch, screenPos, drawColor);
@@ -374,13 +448,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public float MaxAngle { get; set; } = MathHelper.Pi;  // Default: 180 degrees
         public Segment Parent { get; set; }
         public Texture2D Texture { get; set; }  // Texture property for each segment
+        public Vector2 Origin { get; set; }
 
-        public Segment(float x, float y, float length, float angle, Texture2D texture)
+        public Segment(float x, float y, float length, float angle, Texture2D texture, Vector2? origin = null, Vector2? textureOffset = null)
         {
             A = new Vector2(x, y);
             Length = length;
             Angle = angle;
             Texture = texture;
+
+            Origin = origin ?? new Vector2(Texture.Width / 2, 0f);  // Default to the center of the texture
 
             Recalculate();
         }
@@ -419,14 +496,34 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float rotation = Angle;
             Rectangle rect = new Rectangle(0, 0, 1, 1);
 
+            // the sprite is probably placed in the wrong direction, the origin of the sprite should be in the middle of the 
+            // left side rectangle and not to the right of it completely
+
+
             spriteBatch.Draw(
                 texture: Texture,
                 position: A - Main.screenPosition,
                 sourceRectangle: null,
                 color,
                 rotation - MathHelper.PiOver2,
-                origin: new Vector2(0, 0.5f),
+                origin: Origin,
                 scale: 1f,
+                SpriteEffects.None,
+                0f
+            );
+
+            Vector2 textureSize = new Vector2(Texture.Width, Texture.Height);
+            Rectangle boxRect = new Rectangle((int)(A.X - Main.screenPosition.X), (int)(A.Y - Main.screenPosition.Y), (int)textureSize.X, (int)textureSize.Y);
+
+            // Draw a simple rectangle around the texture (debugging purpose)
+            spriteBatch.Draw(
+                texture: pixel,
+                position: new Vector2(boxRect.X, boxRect.Y),
+                sourceRectangle: new Rectangle(boxRect.X, boxRect.Y, boxRect.Width, (int)Length),
+                color: Color.Red * 0.25f,  // You can change the color of the box
+                rotation: rotation - MathHelper.PiOver2,
+                origin: Vector2.Zero,
+                scale: 1f, // Set the size of the box
                 SpriteEffects.None,
                 0f
             );
@@ -439,23 +536,26 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public Segment[] Segments;
 
         // Constructor now accepts an array of lengths for each segment
-        public RobotArm(float x, float y, int numSegments, float[] segmentLengths, float initialAngle, Texture2D[] segmentTextures)
+        public RobotArm(float x, float y, int numSegments, float[] segmentLengths, float initialAngle, Texture2D[] segmentTextures, Vector2[] origins = null)
         {
-            if (segmentLengths.Length != numSegments)
+            if (segmentLengths.Length != numSegments || (origins != null && origins.Length != numSegments))
             {
-                Main.NewText("The number of segment lengths must match the number of segments.");
+                Main.NewText("The number of segment lengths, origins, and offsets must match the number of segments.");
             }
 
             BasePosition = new Vector2(x, y);
             Segments = new Segment[numSegments];
 
+            // Default origins and offsets if not provided
+            origins = origins ?? new Vector2[numSegments]; // Default to Vector2.Zero
+
             // Create the first segment at the base
-            Segments[0] = new Segment(x, y, segmentLengths[0], initialAngle, segmentTextures[0]);
+            Segments[0] = new Segment(x, y, segmentLengths[0], initialAngle, segmentTextures[0], origins[0]);
 
             // Create the remaining segments with their respective lengths
             for (int i = 1; i < numSegments; i++)
             {
-                Segments[i] = new Segment(0, 0, segmentLengths[i], 0, segmentTextures[i]);
+                Segments[i] = new Segment(0, 0, segmentLengths[i], 0, segmentTextures[i], origins[i]);
                 Segments[i - 1].Parent = Segments[i];
             }
         }
