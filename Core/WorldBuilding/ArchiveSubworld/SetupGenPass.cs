@@ -40,6 +40,7 @@ namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
                 [new Color(89, 86, 82)] = ModContent.TileType<DarkCastleBrick>(),
                 [new Color(138, 111, 48)] = ModContent.TileType<CastlePlatform>(),
                 [new Color(143, 86, 59)] = TileID.WoodBlock,
+                [new Color(74, 47, 33)] = ModContent.TileType<ArchiveWood>(),
                 [new Color(150, 150, 150)] = -2,
                 [Color.Black] = -1
             };
