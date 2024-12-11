@@ -13,7 +13,7 @@ using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
-namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
+namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 {
     public class SetupGenPass : GenPass
     {

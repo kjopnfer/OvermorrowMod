@@ -57,8 +57,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Rectangle tilePanelDown = new Rectangle(FRAME_SIZE * 2, FRAME_SIZE * 1, 16, 16);
 
             // Frames
-            
-
+            #region Outer Frames
             // Top Frame
             if (!tileAbove.HasTile || tileAbove.TileType != ModContent.TileType<ArchiveWood>())
             {
@@ -127,8 +126,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
                 return true;
             }
-            
-            
+            #endregion
 
             // Tiles are calculated from top left, going row by row until the bottom-right.
             #region Topmost Row
@@ -145,7 +143,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 //Main.tileBatch.Draw(texture, drawPosition, tilePanelUp, Color.Red, Vector2.Zero, 1f, SpriteEffects.None);
                 return true;
             }
-
 
             // If the top tile is not pointing up or down (frame), and the left tile is pointing up,
             // then draw the tile pointing down.
@@ -171,8 +168,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             #endregion
 
 
-
-
             #region Main Body
             if (isUpPanel(tileAbove))
             {
@@ -194,40 +189,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             #endregion
 
             return false;
-
-
-            // If the top tile is not pointing up or down (frame), and the right tile is not pointing up or down (frame),
-            // and the left frame is pointing down, then draw the tile pointing up.
-            if (!aboveFrame.Intersects(tilePanelUp) && !aboveFrame.Intersects(tilePanelDown) &&
-                !rightFrame.Intersects(tilePanelUp) && !rightFrame.Intersects(tilePanelDown) &&
-                leftFrame.Intersects(tilePanelDown))
-            {
-                Main.tileBatch.Draw(texture, drawPosition, tilePanelUp, Color.Orange, Vector2.Zero, 1f, SpriteEffects.None);
-                return false;
-            }
-
-
-
-            // If it is the purple crystal thing:
-            /*if (frame.Intersects(new Rectangle(FRAME_SIZE * 3, FRAME_SIZE * 1, 16, 16)))
-            {
-                if (aboveFrame.Intersects(tilePanelDown))
-                {
-                    Main.tileBatch.Draw(texture, drawPosition, tilePanelUp, Color.Red, Vector2.Zero, 1f, SpriteEffects.None);
-                    return false;
-                }
-
-                if (!aboveFrame.Intersects(tilePanelUp) && !aboveFrame.Intersects(tilePanelUp))
-                {
-                    //Main.tileBatch.Draw(texture, drawPosition, tilePanelDown, Color.Green, Vector2.Zero, 1f, SpriteEffects.None);
-                }
-
-                return false;
-            }*/
-
-            if (tile.TileFrameX == 1 && tile.TileFrameY == 1) return false;
-
-            return true;
         }
     }
 }

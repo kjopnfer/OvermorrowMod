@@ -2,7 +2,7 @@ using SubworldLibrary;
 using System.Collections.Generic;
 using Terraria.WorldBuilding;
 
-namespace OvermorrowMod.Core.WorldBuilding.ArchiveSubworld
+namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 {
     public class ArchiveSubworld : Subworld
     {
