@@ -18,3 +18,10 @@ Tiles: {
 }
 
 NPCs.WaxBearer.DisplayName: THE ZANCIENT ONE
+
+Biomes: {
+	Archives: {
+		DisplayName: Archives
+		TownNPCDialogueName: the Archives
+	}
+}

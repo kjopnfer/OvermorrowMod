@@ -1,5 +1,10 @@
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
+using ReLogic.Content;
 using SubworldLibrary;
 using System.Collections.Generic;
+using Terraria;
+using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
@@ -7,9 +12,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
     public class ArchiveSubworld : Subworld
     {
 
-        public override int Width => 644;
+        public override int Width => ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value.Width;
 
-        public override int Height => 241;
+        public override int Height => ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value.Height;
 
         public static int GetWidth() => new ArchiveSubworld().Width;
         public static int GetHeight() => new ArchiveSubworld().Height;
@@ -22,7 +27,11 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
         public override void OnEnter()
         {
+            Main.NewText("change time");
+
             // Create a popup message or title card or something
+            Main.dayTime = false;
+            Main.time = 4 * 3600 + 30 * 60;
 
             base.OnEnter();
         }
