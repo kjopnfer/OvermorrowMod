@@ -41,8 +41,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             target += new Vector2(TileUtils.TileAdj.X * 16, TileUtils.TileAdj.Y * 16);
 
             // Texture repeats after exceeding the width and height
-            var TILE_WIDTH = 14;
-            var TILE_HEIGHT = 25;
+            var TILE_WIDTH = 26;
+            var TILE_HEIGHT = 54;
             var source = new Rectangle(i % TILE_WIDTH * 16, j % TILE_HEIGHT * 16, 16, 16);
 
             Tile tile = Framing.GetTileSafely(i, j);
