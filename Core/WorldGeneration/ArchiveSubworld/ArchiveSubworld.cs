@@ -25,13 +25,29 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             new SetupGenPass("Loading", 1)
         };
 
+        public override void OnLoad()
+        {
+            Main.NewText("change time??");
+
+            if (Main.dayTime)
+            {
+                Main.dayTime = false;
+                Main.time = 0.0;
+            }
+        }
+
+        public override void Update()
+        {
+            Main.NewText("bruh");
+
+            Main.dayTime = false;
+            Main.time = 0.0;
+        }
+
         public override void OnEnter()
         {
-            Main.NewText("change time");
-
             // Create a popup message or title card or something
-            Main.dayTime = false;
-            Main.time = 4 * 3600 + 30 * 60;
+
 
             base.OnEnter();
         }
