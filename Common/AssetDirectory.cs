@@ -5,9 +5,12 @@ namespace OvermorrowMod.Common
         #region Base
         public const string Assets = "OvermorrowMod/Assets/";
 
+        public const string Empty = Assets + "Empty";
+
         public const string Items = Assets + "Sprites/Items/";
         public const string Tiles = Assets + "Sprites/Tiles/";
         public const string NPCs = Assets + "Sprites/NPCs/";
+        public const string Backgrounds = Assets + "Backgrounds/";
 
         // For TexGen mapping, not shader mapping
         public const string TextureMaps = Assets + "Maps/";
@@ -15,6 +18,5 @@ namespace OvermorrowMod.Common
 
         public const string ArchiveTiles = Tiles + "Archives/";
         public const string ArchiveNPCs = NPCs + "Archives/";
-
     }
 }
