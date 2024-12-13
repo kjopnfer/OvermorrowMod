@@ -26,8 +26,8 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void SetDefaults()
         {
-            NPC.width = 80;
-            NPC.height = 11;
+            NPC.width = 64;
+            NPC.height = 10;
             NPC.lifeMax = 1000;
             NPC.immortal = true;
             NPC.dontTakeDamage = true;
@@ -40,27 +40,38 @@ namespace OvermorrowMod.Content.NPCs
 
         public override bool PreAI()
         {
-            if (colliders == null || colliders.Length != 1)
+            if (colliders == null)
             {
+                var thirdEndpoint = NPC.TopRight + new Vector2(48, 0).RotatedBy(MathHelper.ToRadians(-30));
+                var fourthEndpoint = thirdEndpoint + new Vector2(54, 0);
+                var fifthEndpoint = fourthEndpoint + new Vector2(48, 0).RotatedBy(MathHelper.ToRadians(30));
+                var sixthEndpoint = fifthEndpoint + new Vector2(64, 0);
                 colliders = new CollisionSurface[] {
-                    new CollisionSurface(NPC.TopLeft, NPC.TopRight, new int[] { 1, 1, 0, 0 }, true) };
+                    new CollisionSurface(NPC.TopLeft, NPC.TopRight, new int[] { 1, 1, 0, 0 }, true),
+                    new CollisionSurface(NPC.TopRight, thirdEndpoint, new int[] { 1, 1, 0, 0 }, true),
+                    new CollisionSurface(thirdEndpoint, fourthEndpoint, new int[] { 1, 1, 0, 0 }, true),
+                    new CollisionSurface(fourthEndpoint, fifthEndpoint, new int[] { 1, 1, 0, 0 }, true),
+                    new CollisionSurface(fifthEndpoint, sixthEndpoint, new int[] { 1, 1, 0, 0 }, true),
+                };
             }
             return true;
         }
 
         public override void AI()
         {
-            if (colliders != null && colliders.Length == 1)
+            if (colliders != null && colliders.Length > 0)
             {
-                colliders[0].Update();
-                colliders[0].endPoints[0] = NPC.Center + (NPC.TopLeft - NPC.Center).RotatedBy(NPC.rotation);
-                colliders[0].endPoints[1] = NPC.Center + (NPC.TopRight - NPC.Center).RotatedBy(NPC.rotation);
+                foreach (var collider in colliders)
+                {
+                    collider.Update();  // Update each collider
 
-                var endPoint = Dust.NewDustDirect(colliders[0].endPoints[0], 1, 1, DustID.RedTorch);
-                endPoint.noGravity = true;
-
-                var endPoint2 = Dust.NewDustDirect(colliders[0].endPoints[1], 1, 1, DustID.RedTorch);
-                endPoint.noGravity = true;
+                    // Loop through each endpoint of the collider
+                    for (int i = 0; i < collider.endPoints.Length; i++)
+                    {
+                        var endPoint = Dust.NewDustDirect(collider.endPoints[i], 1, 1, DustID.RedTorch);
+                        endPoint.noGravity = true;
+                    }
+                }
             }
         }
 
