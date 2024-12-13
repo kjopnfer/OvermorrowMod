@@ -1,5 +1,6 @@
 using OvermorrowMod.Content.Backgrounds;
 using Terraria;
+using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Biomes
@@ -13,6 +14,20 @@ namespace OvermorrowMod.Core.Biomes
         public override bool IsBiomeActive(Player player)
         {
             return OvermorrowModSystem.ArchiveTiles >= 50;
+        }
+
+        public override void SpecialVisuals(Player player, bool isActive)
+        {
+            if (SkyManager.Instance["OM:ArchiveSky"] != null && isActive != SkyManager.Instance["OM:ArchiveSky"].IsActive())
+            {
+                if (isActive)
+                    SkyManager.Instance.Activate("OM:ArchiveSky");
+                else
+                    SkyManager.Instance.Deactivate("OM:ArchiveSky");
+
+            }
+
+            base.SpecialVisuals(player, isActive);
         }
     }
 }

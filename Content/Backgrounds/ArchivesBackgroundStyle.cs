@@ -9,12 +9,14 @@ namespace OvermorrowMod.Content.Backgrounds
     {
         public override int ChooseFarTexture()
         {
-            return BackgroundTextureLoader.GetBackgroundSlot(AssetDirectory.Backgrounds + "ArchiveBackground");
+            return BackgroundTextureLoader.GetBackgroundSlot(AssetDirectory.Backgrounds + "Empty");
+            //return BackgroundTextureLoader.GetBackgroundSlot(AssetDirectory.Backgrounds + "ArchiveBackground");
         }
 
         public override int ChooseCloseTexture(ref float scale, ref double parallax, ref float a, ref float b)
         {
-            return BackgroundTextureLoader.GetBackgroundSlot(AssetDirectory.Backgrounds + "ArchiveBackground");
+            return BackgroundTextureLoader.GetBackgroundSlot(AssetDirectory.Backgrounds + "Empty");
+            //return BackgroundTextureLoader.GetBackgroundSlot(AssetDirectory.Backgrounds + "ArchiveBackground");
         }
 
         public override void ModifyFarFades(float[] fades, float transitionSpeed)

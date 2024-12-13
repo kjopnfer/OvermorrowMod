@@ -27,8 +27,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
         public override void OnLoad()
         {
-            Main.NewText("change time??");
-
             if (Main.dayTime)
             {
                 Main.dayTime = false;
@@ -38,8 +36,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
         public override void Update()
         {
-            Main.NewText("bruh");
-
             Main.dayTime = false;
             Main.time = 0.0;
         }

@@ -52,6 +52,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(66, 64, 61)] = ModContent.WallType<CastleWall>(),
                 [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWallFrame>(),
                 [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>(),
+                [new Color(100, 61, 41)] = ModContent.WallType<ArchiveWoodWall>(),
                 [new Color(66, 57, 46)] = ModContent.WallType<CastleWall>(),
                 [new Color(101, 66, 14)] = WallID.BorealWood,
             };
@@ -112,6 +113,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(337, 131, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());
             WorldGen.PlaceObject(337, 113, ModContent.TileType<WoodenArchSmall>());
+
+            WorldGen.PlaceObject(379, 107, ModContent.TileType<ArchiveBridge>());
+
         }
     }
 }
