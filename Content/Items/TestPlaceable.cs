@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.Items
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 2000;
-            Item.createTile = TileType<BookPile>();
+            Item.createTile = TileType<ArchiveBridge>();
         }
     }
 }

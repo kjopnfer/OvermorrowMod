@@ -36,8 +36,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         int segLen = 64;
         int numSegs = 2;
 
-        int nextFrontLegOffset = 55;
-        int nextBackLegOffset = 55;
+        int nextFrontLegOffset = 75;
+        int nextBackLegOffset = 75;
         public override void OnSpawn(IEntitySource source)
         {
             Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + Name + "Arm", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -69,10 +69,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Set initial target to straight downwards
             frontLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            nextFrontLegOffset = 100;
-
-            currentFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(-30, 0));
-            nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-nextFrontLegOffset, 0));
+            startFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 300));
+            nextFrontLegPosition = TileUtils.FindNearestGround(startFrontLegPosition + new Vector2(-nextFrontLegOffset, 0));
 
             #endregion
 
@@ -94,7 +92,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             nextBackLegOffset = 100;
 
-            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 0));
+            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 300));
             nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-nextBackLegOffset, 0));
             #endregion
 
@@ -105,6 +103,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         Vector2 startPosition;
         Vector2 targetPosition;
 
+        Vector2 startFrontLegPosition;
         Vector2 currentFrontLegPosition;
         Vector2 nextFrontLegPosition;
 
@@ -156,44 +155,39 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 case AICase.Idle:
                     Neutral();
-                    /*if (NPC.ai[1]++ == 60)
+                    if (NPC.ai[1]++ == 60)
                     {
                         Main.NewText("switch to moving");
                         AIState = (int)AICase.Walk;
                         NPC.ai[1] = 0;
-                    }*/
+                    }
                     break;
                 case AICase.Walk:
                     if (WalkCycle(1))
                     {
                         // TEMP COUNTER
-                        if (NPC.ai[2]++ == 120)
-                        {
-                            Main.NewText("switch to idle");
+                        Main.NewText("switch to idle");
 
-                            // TEMP REMOVE THIS LATER
-                            NPC.Center = currentCenterPosition;
+                        // TEMP REMOVE THIS LATER
+                        NPC.Center = currentCenterPosition;
 
-                            NPC.ai[1] = 0;
-                            NPC.ai[2] = 0;
-                            AIState = (int)AICase.Idle;
-                        }
+                        NPC.ai[1] = 0;
+                        AIState = (int)AICase.Idle;
+
                     }
-                    else
-                    {
-                    }
+
                     break;
             }
             //WalkCycle(1);
 
             #region Debug
-            /*var current = Dust.NewDustDirect(currentFrontLegPosition, 1, 1, DustID.RedTorch);
-            current.noGravity = true;
+            var start = Dust.NewDustDirect(startFrontLegPosition, 1, 1, DustID.RedTorch);
+            start.noGravity = true;
 
             var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.RedTorch);
             next.noGravity = true;
 
-            var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.BlueTorch);
+            /*var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.BlueTorch);
             current2.noGravity = true;
 
             var next2 = Dust.NewDustDirect(nextBackLegPosition, 1, 1, DustID.BlueTorch);
@@ -221,14 +215,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Synchronize body velocity with leg motion
             Vector2 legDisplacement = moveCycle % 2 == 0
                 ? nextBackLegPosition - currentBackLegPosition
-                : nextFrontLegPosition - currentFrontLegPosition;
+                : nextFrontLegPosition - startFrontLegPosition;
 
             NPC.velocity.X = legDisplacement.X / CYCLE_TIME;
 
             frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
             frontLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
 
-            Vector2 averageLegPosition = (currentFrontLegPosition + currentBackLegPosition) / 2f;
+            Vector2 averageLegPosition = (startFrontLegPosition + currentBackLegPosition) / 2f;
             NPC.Center = Vector2.Lerp(NPC.Center, averageLegPosition + new Vector2(0, -STAND_HEIGHT), 0.2f);
 
             /*// STEP HAS TO GO SMALL, LARGE, LARGE, LARGE, LARGE... IN ORDER FOR IT TO NOT SHUFFLE LIKE A FUCKING IDIOT
@@ -279,7 +273,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             //int LEG_OFFSET = 10 * NPC.direction;
             frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
-            frontLeg.Update(currentFrontLegPosition);
+            frontLeg.Update(startFrontLegPosition);
 
             backLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 50);
             backLeg.Update(currentBackLegPosition);
@@ -293,18 +287,20 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 nextCenterPosition = NPC.Center + new Vector2(nextFrontLegOffset * NPC.direction, 0);
             }
 
-            //frontLeg.Update(currentFrontLegPosition);
-            frontLeg.Update(Main.MouseWorld);
+            frontLeg.Update(NPC.Center + new Vector2(0, 300));
+            //frontLeg.Update(Main.MouseWorld);
 
             backLeg.Update(currentBackLegPosition);
         }
 
         private bool WalkCycle(int steps)
         {
+            float CYCLE_TIME = 120;
+            float ARC_HEIGHT = -10;
 
-            float CYCLE_TIME = 60;
-            float ARC_HEIGHT = 100;
-            if (NPC.ai[1] >= CYCLE_TIME) return true;
+
+            //float CYCLE_TIME = 60;
+            //if (NPC.ai[1] >= CYCLE_TIME) return true;
 
             // if i want to move the front leg forwards, have it move 50 pixels away from where the back leg is
             // if i want to move the back leg forwards, have it move 50 pixels away from where the front leg is
@@ -315,35 +311,29 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (isFrontLeg)
             {
                 float delay = 10;
-                // Step 1: First 10 ticks, move the leg upwards without horizontal movement
 
-                // Calculate the vertical arc for the first 10 ticks
-                float progress = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0f, 1f); // Progress from 0 to 1 in the first 10 ticks
-                float yOffset = -ARC_HEIGHT * (float)Math.Sin(progress * MathHelper.Pi); // Smooth upward arc
+                // Step 2: After 10 ticks, move both vertically and horizontally
+                float progress = Math.Clamp((NPC.ai[1]) / (CYCLE_TIME), 0f, 1f); // Progress after 10 ticks
+                                                                                 //float yOffset = -ARC_HEIGHT * (float)Math.Sin(MathHelper.Pi * (NPC.ai[1] / CYCLE_TIME)); // Full arc motion
 
-                // Only move vertically, no horizontal movement
-                frontLeg.Update(currentFrontLegPosition + new Vector2(-50, 0));
+                //float yOffset = -ARC_HEIGHT * (float)Math.Sin(MathHelper.Pi * progress);  // Sin function to create an up-down arc
+                float yOffset = ARC_HEIGHT * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> 1 -> 0
 
-                var current = Dust.NewDustDirect(currentFrontLegPosition + new Vector2(0, -50), 1, 1, DustID.RedTorch);
-                current.noGravity = true;
+                Main.NewText(yOffset);
+                // Move horizontally from the current position towards the next position
+                currentFrontLegPosition = Vector2.Lerp(startFrontLegPosition, nextFrontLegPosition, progress);
+                //currentFrontLegPosition = new Vector2(0, yOffset);
 
-                /*else
-                {
-                    // Step 2: After 10 ticks, move both vertically and horizontally
-                    float progress = Math.Clamp((NPC.ai[1] - delay) / (CYCLE_TIME - delay), 0f, 1f); // Progress after 10 ticks
-                    float yOffset = -ARC_HEIGHT * (float)Math.Sin(MathHelper.Pi * (NPC.ai[1] / CYCLE_TIME)); // Full arc motion
+                var target = currentFrontLegPosition + new Vector2(0, 200).RotatedBy(MathHelper.Lerp(0, MathHelper.PiOver2, (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi)));
+                var start = Dust.NewDustDirect(target, 1, 1, DustID.GreenTorch);
+                start.noGravity = true;
 
-                    // Move horizontally from the current position towards the next position
-                    Vector2 target = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, progress);
+                // Update the front leg's position with both horizontal and vertical movement
+                frontLeg.Update(target);
+                //frontLeg.Update(Main.MouseWorld);
 
-                    // Update the front leg's position with both horizontal and vertical movement
-                    frontLeg.Update(target + new Vector2(0, yOffset));
-
-                    // Update NPC's center (for walking)
-                    NPC.Center = Vector2.Lerp(currentCenterPosition, nextCenterPosition, progress);
-
-                }*/
-
+                // Update NPC's center (for walking)
+                NPC.Center = Vector2.Lerp(currentCenterPosition, nextCenterPosition, progress);
 
 
                 backLeg.Update(currentBackLegPosition);
@@ -398,10 +388,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             lanternArm.Draw(spriteBatch, Color.White);
             frontLeg.Draw(spriteBatch, drawColor);
 
-            Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
+            //Main.NewText($"frontLeg.Segments[0] angle: {MathHelper.ToDegrees(frontLeg.Segments[0].Angle)}", Color.Red);
             DrawAngleVisualization(frontLeg.Segments[0].A - Main.screenPosition, frontLeg.Segments[0].Angle, 2f, Color.Red);
 
-            Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightBlue);
+            //Main.NewText($"frontLeg.Segments[1] angle: {MathHelper.ToDegrees(frontLeg.Segments[1].Angle)}", Color.LightBlue);
             DrawAngleVisualization(frontLeg.Segments[1].A - Main.screenPosition, frontLeg.Segments[1].Angle, 2f, Color.Green);
 
             base.PostDraw(spriteBatch, screenPos, drawColor);

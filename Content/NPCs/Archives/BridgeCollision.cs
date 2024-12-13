@@ -63,14 +63,14 @@ namespace OvermorrowMod.Content.NPCs
             {
                 foreach (var collider in colliders)
                 {
-                    collider.Update();  // Update each collider
+                    collider.Update();
 
-                    // Loop through each endpoint of the collider
-                    for (int i = 0; i < collider.endPoints.Length; i++)
+                    // Debugging
+                    /*for (int i = 0; i < collider.endPoints.Length; i++)
                     {
                         var endPoint = Dust.NewDustDirect(collider.endPoints[i], 1, 1, DustID.RedTorch);
                         endPoint.noGravity = true;
-                    }
+                    }*/
                 }
             }
         }

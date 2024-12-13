@@ -21,11 +21,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileNoAttach[Type] = true;
 
             TileObjectData.newTile.Width = 12;
-            TileObjectData.newTile.Height = 21;
+            TileObjectData.newTile.Height = 19;
             TileObjectData.newTile.CoordinateHeights = Enumerable.Repeat(16, TileObjectData.newTile.Height).ToArray();
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.Origin = new Point16(0, 20);
+            TileObjectData.newTile.Origin = new Point16(0, 18);
 
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;

@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
-using OvermorrowMod.Core.WorldBuilding.ArchiveSubworld;
+using OvermorrowMod.Core.WorldGeneration.ArchiveSubworld;
 using SubworldLibrary;
 using Terraria;
 using Terraria.ID;

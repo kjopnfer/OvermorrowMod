@@ -7,6 +7,7 @@ using Terraria.WorldBuilding;
 using Terraria;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.TextureMapping
 {
@@ -101,7 +102,7 @@ namespace OvermorrowMod.Common.TextureMapping
                         string name = TileLoader.GetTile(objectId).GetLocalizedValue("en");
 
                         bool status = WorldGen.PlaceObject(x2, y2, objectId, true, Main.rand.Next(0, styleRange));
-                        Core.OvermorrowMod.Instance.Logger.Debug("Generating Object" + name + " Status: " + status);
+                        OvermorrowModFile.Instance.Logger.Debug("Generating Object" + name + " Status: " + status);
 
                         NetMessage.SendObjectPlacement(-1, x2, y2, objectId, Main.rand.Next(0, styleRange), 0, -1, -1);
                     }
@@ -127,7 +128,7 @@ namespace OvermorrowMod.Common.TextureMapping
             else
             {
                 path = path.Replace(nameof(OvermorrowMod) + "/", "") + ".rawimg";
-                return TexGenData.FromStream(Core.OvermorrowMod.Instance.GetFileStream(path));
+                return TexGenData.FromStream(OvermorrowModFile.Instance.GetFileStream(path));
             }
         }
 

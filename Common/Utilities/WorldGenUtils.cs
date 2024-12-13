@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria.ObjectData;
 using Terraria;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.Utilities
 {
@@ -142,7 +143,7 @@ namespace OvermorrowMod.Common.Utilities
             }
             catch (Exception e)
             {
-                Core.OvermorrowMod.Instance.Logger.Error(e);
+                OvermorrowModFile.Instance.Logger.Error(e);
             }
         }
 
