@@ -53,6 +53,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWallFrame>(),
                 [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>(),
                 [new Color(100, 61, 41)] = ModContent.WallType<ArchiveWoodWall>(),
+                [new Color(107, 50, 45)] = ModContent.WallType<ArchiveWoodWallRed>(),
+                [new Color(67, 84, 50)] = ModContent.WallType<ArchiveWoodWallGreen>(),
+                [new Color(70, 67, 117)] = ModContent.WallType<ArchiveWoodWallBlue>(),
+                [new Color(121, 80, 22)] = ModContent.WallType<ArchiveWoodWallYellow>(),
                 [new Color(66, 57, 46)] = ModContent.WallType<CastleWall>(),
                 [new Color(101, 66, 14)] = WallID.BorealWood,
             };
