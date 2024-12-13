@@ -2,4 +2,4 @@ displayName = Overmorrow
 author = Japan
 version = 0.1
 buildIgnore = *.csproj, *.user, obj\*, bin\*, lib\*, .vs\*, *.gif
-modReferences = SubworldLibrary
+modReferences = SubworldLibrary, CollisionLib

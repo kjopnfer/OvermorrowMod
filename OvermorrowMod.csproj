@@ -10,6 +10,9 @@
 
 	<!-- References -->
 	<ItemGroup>
+		<Reference Include="CollisionLib">
+		  <HintPath>lib\CollisionLib.dll</HintPath>
+		</Reference>
 		<Reference Include="SubworldLibrary">
 		  <HintPath>lib\SubworldLibrary.dll</HintPath>
 		</Reference>
