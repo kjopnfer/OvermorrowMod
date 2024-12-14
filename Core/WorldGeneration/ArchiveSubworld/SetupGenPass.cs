@@ -22,8 +22,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
         {
             progress.Message = "Generating tiles";
-            Main.spawnTileX = 345;
-            Main.spawnTileY = 136;
+            Main.spawnTileX = 1000;
+            Main.spawnTileY = 142;
 
             // Move the backgrounds somewhere else
             Main.worldSurface = ArchiveSubworld.GetHeight();
@@ -50,7 +50,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [Color.Black] = -1,
                 //[new Color(113, 193, 107)] = ModContent.WallType<ArchiveBackground>(),
                 [new Color(66, 64, 61)] = ModContent.WallType<CastleWall>(),
-                [new Color(97, 66, 19)] = ModContent.WallType<ArchiveBookWallFrame>(),
+                [new Color(54, 36, 11)] = ModContent.WallType<ArchiveBookWallFrame>(),
                 [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>(),
                 [new Color(100, 61, 41)] = ModContent.WallType<ArchiveWoodWall>(),
                 [new Color(107, 50, 45)] = ModContent.WallType<ArchiveWoodWallRed>(),
@@ -58,7 +58,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(70, 67, 117)] = ModContent.WallType<ArchiveWoodWallBlue>(),
                 [new Color(121, 80, 22)] = ModContent.WallType<ArchiveWoodWallYellow>(),
                 [new Color(66, 57, 46)] = ModContent.WallType<CastleWall>(),
-                [new Color(101, 66, 14)] = WallID.BorealWood,
+                [new Color(101, 66, 14)] = ModContent.WallType<ArchiveWoodWall>(),
             };
 
             Dictionary<Color, (int objectId, int styleRange)> objectMapping = new()
@@ -118,8 +118,12 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());
             WorldGen.PlaceObject(337, 113, ModContent.TileType<WoodenArchSmall>());
 
-            WorldGen.PlaceObject(379, 107, ModContent.TileType<ArchiveBridge>());
+            #region Center Room
+            WorldGen.PlaceObject(993, 112, ModContent.TileType<SanctumGate>());
 
+            WorldGen.PlaceObject(855, 113, ModContent.TileType<ArchiveBridge>());
+            WorldGen.PlaceObject(1126, 113, ModContent.TileType<ArchiveBridge>());
+            #endregion
         }
     }
 }
