@@ -119,6 +119,18 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(337, 113, ModContent.TileType<WoodenArchSmall>());
 
             #region Center Room
+            WorldGen.PlaceObject(852, 112, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(872, 112, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(852, 142, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(872, 142, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(1123, 112, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1123, 142, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1143, 112, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1143, 142, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(1002, 142, ModContent.TileType<FireplacePillar>());
+
             WorldGen.PlaceObject(993, 112, ModContent.TileType<SanctumGate>());
 
             WorldGen.PlaceObject(855, 113, ModContent.TileType<ArchiveBridge>());
