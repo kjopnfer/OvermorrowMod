@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.Skies
             float width = Main.screenWidth / 2f;
             float height = Main.screenHeight / 2f;
 
-            Color textureColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.45f);
+            Color textureColor = Color.Lerp(Color.Black, Color.White, 1f);
             Vector2 origin = new Vector2(0f, biomeHeight);
 
 
@@ -35,8 +35,10 @@ namespace OvermorrowMod.Content.Skies
 
                 for (int k = -1; k <= 1; k++)
                 {
-                    var pos = new Vector2(width - x + texture.Width * k, height - y);
-                    spriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y - 400, Main.screenWidth, Main.screenHeight), Color.Lerp(Color.Black, Color.White, 0.5f));
+                    var pos = new Vector2(width - x + (texture.Width * 1.25f) * k, height - y);
+                    spriteBatch.Draw(texture, pos + new Vector2(0, 0), null, textureColor, 0f, origin, 1.25f, SpriteEffects.None, 0f);
+
+                    //spriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y, Main.screenWidth, Main.screenHeight), Color.Lerp(Color.Black, Color.White, 1f));
                 }
                 //var pos = new Vector2(width - x + texture.Width / 2, height - y);
                 //spriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y, Main.screenWidth, Main.screenHeight), Color.White);
