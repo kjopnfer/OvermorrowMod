@@ -23,7 +23,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         {
             progress.Message = "Generating tiles";
             Main.spawnTileX = 1000;
-            Main.spawnTileY = 142;
+            Main.spawnTileY = 110;
 
             // Move the backgrounds somewhere else
             Main.worldSurface = ArchiveSubworld.GetHeight();
