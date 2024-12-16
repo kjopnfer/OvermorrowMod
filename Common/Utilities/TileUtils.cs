@@ -3,11 +3,22 @@ using Terraria;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Microsoft.CodeAnalysis.Text;
+using Terraria.DataStructures;
+using Terraria.ModLoader;
+using System;
 
 namespace OvermorrowMod.Common.Utilities
 {
     public static class TileUtils
     {
+        public enum CornerType : byte
+        {
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight
+        }
+
         public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
 
         /// <summary>
@@ -69,6 +80,74 @@ namespace OvermorrowMod.Common.Utilities
             }
 
             return position; // Return the updated position with the Y of the nearest ground tile
+        }
+
+        /// <summary>
+        /// Tries to find an entity of the specified Type. Returns whether or not it found the
+        /// entity or not.
+        /// </summary>
+        /// <typeparam name="T"> </typeparam>
+        /// <param name="x"> The x coordinate of the potential entity. </param>
+        /// <param name="y"> The y coordinate of the potential entity. </param>
+        /// <param name="entity"> The potential entity. </param>
+        public static bool TryFindModTileEntity<T>(int x, int y, out T entity) where T : ModTileEntity
+        {
+            TileEntity.ByPosition.TryGetValue(new Point16(x, y), out TileEntity retrievedEntity);
+
+            if (retrievedEntity is T castEntity)
+            {
+                entity = castEntity;
+                return true;
+            }
+
+            entity = null;
+            return false;
+        }
+
+        public static Point GetCornerOfMultiTile(Tile tile, int x, int y, CornerType corner)
+        {
+            TileObjectData data = TileObjectData.GetTileData(tile);
+            Point topLeft = new(x - tile.TileFrameX % data.CoordinateFullWidth / 18, y - tile.TileFrameY % data.CoordinateFullHeight / 18);
+
+            return corner switch
+            {
+                CornerType.TopLeft => topLeft,
+                CornerType.TopRight => topLeft + new Point(data.Width - 1, 0),
+                CornerType.BottomLeft => topLeft + new Point(0, data.Height - 1),
+                CornerType.BottomRight => topLeft + new Point(data.Width - 1, data.Height - 1),
+                _ => topLeft
+            };
+        }
+
+        public static T FindTE<T>(int i, int j) where T : TileEntity
+        {
+            Tile tile = Main.tile[i, j];
+            int left = i - tile.TileFrameX / 18;
+            int top = j - tile.TileFrameY / 18;
+
+            Main.NewText("searching for TE");
+            // Get the instance of the template class for T
+            var instance = ModContent.GetInstance<T>();
+
+            // Use reflection to find the 'Find' method dynamically (if it exists)
+            var findMethod = typeof(T).GetMethod("Find", new Type[] { typeof(int), typeof(int) });
+
+            if (findMethod != null)
+            {
+                // Invoke the 'Find' method with the coordinates dynamically
+                var result = findMethod.Invoke(instance, new object[] { left, top });
+                Main.NewText("reflected find method");
+
+                if (result is T entity)
+                {
+                    return entity;
+                }
+            }
+
+            Main.NewText("couldnt find");
+
+            // If no Find method exists or no entity is found, return null
+            return null;
         }
 
     }

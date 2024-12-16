@@ -15,6 +15,7 @@ Tiles: {
 	Lamp.MapEntry: Lamp
 	SojournCandelabra.MapEntry: Sojourn Candelabra
 	Candelabra.MapEntry: Candelabra
+	ArchiveDoor.MapEntry: Archive Door
 }
 
 NPCs: {

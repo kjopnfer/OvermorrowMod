@@ -7,6 +7,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.Map;
@@ -17,6 +18,18 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 {
     public class SetupGenPass : GenPass
     {
+        public enum DoorID
+        {
+            GreenRoom,
+            RedRoom,
+            GreenRoomEntrance,
+            RedRoomEntrance,
+            YellowRoomEntrance,
+            BlueRoomEntrance,
+            YellowRoom,
+            BlueRoom,
+        }
+
         public SetupGenPass(string name, double loadWeight) : base(name, loadWeight) { }
 
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
@@ -135,7 +148,59 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             WorldGen.PlaceObject(855, 113, ModContent.TileType<ArchiveBridge>());
             WorldGen.PlaceObject(1126, 113, ModContent.TileType<ArchiveBridge>());
+
+            PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
+            PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
+            PlaceAndConfigureDoor(1369, 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
+            PlaceAndConfigureDoor(1369, 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
+
             #endregion
+
+            #region Top Left Room
+            PlaceAndConfigureDoor(492, 110, DoorID.GreenRoom, DoorID.GreenRoomEntrance);
+
+
+            #endregion
+
+            #region Bottom Left Room
+            PlaceAndConfigureDoor(494, 256, DoorID.RedRoom, DoorID.RedRoomEntrance);
+
+            #endregion
+
+            #region Top Right Room
+            PlaceAndConfigureDoor(1496, 110, DoorID.YellowRoom, DoorID.YellowRoomEntrance);
+
+            #endregion
+
+            #region Bottom Right Room
+            PlaceAndConfigureDoor(1494, 256, DoorID.BlueRoom, DoorID.BlueRoomEntrance);
+
+            #endregion
+
+        }
+
+        private void PlaceAndConfigureDoor(int x, int y, DoorID doorID, DoorID pairedDoor)
+        {
+            // Place the object (door)
+            WorldGen.PlaceObject(x, y, ModContent.TileType<ArchiveDoor>());
+
+            // Get the TileEntity associated with the placed object
+            int id = ModContent.GetInstance<ArchiveDoor_TE>().Place(x, y);
+            ArchiveDoor_TE te = TileEntity.ByID[id] as ArchiveDoor_TE;
+
+            // Configure the door and its paired door ID
+            if (te != null)
+            {
+                te.DoorID = (int)doorID;
+                te.PairedDoor = (int)pairedDoor;
+
+                // Send the necessary network data for multiplayer
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    NetMessage.SendData(MessageID.TileEntityPlacement, -1, -1, null, x, y, ModContent.TileEntityType<ArchiveDoor_TE>(), 0f, 0, 0, 0);
+                    NetMessage.SendTileSquare(-1, x, y, 2);
+                }
+            }
         }
     }
 }
