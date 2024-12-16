@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using System;
+using System.Reflection;
 
 namespace OvermorrowMod.Common.Utilities
 {
@@ -80,9 +81,46 @@ namespace OvermorrowMod.Common.Utilities
         }
 
         /// <summary>
+        /// Places a <typeparamref name="Tile"/> at the specified coordinates and associates a <typeparamref name="TEntity"/>.
+        /// The tile entity is created and placed dynamically, and the method returns the placed tile entity instance.
+        /// </summary>
+        /// <typeparam name="Tile">The type of the tile to place, which must inherit from <see cref="ModTile"/>.</typeparam>
+        /// <typeparam name="TEntity">The type of the tile entity associated with the tile, which must inherit from <see cref="TileEntity"/>.</typeparam>
+        /// <param name="x">The x-coordinate where the tile will be placed.</param>
+        /// <param name="y">The y-coordinate where the tile will be placed.</param>
+        /// <returns>
+        /// Returns an instance of <typeparamref name="TEntity"/> that was placed at the specified coordinates, or <c>null</c> if the place operation fails.
+        /// </returns>
+        /// <remarks>
+        /// This method uses reflection to invoke the <see cref="TileEntity.Place"/> method dynamically, if it exists, to place the tile entity. 
+        /// If the <see cref="Place"/> method is not found or the tile entity cannot be placed, it returns <c>null</c>.
+        /// </remarks>
+        public static TEntity PlaceTileWithEntity<Tile, TEntity>(int x, int y) where Tile : ModTile where TEntity : TileEntity, new()
+        {
+            WorldGen.PlaceObject(x, y, ModContent.TileType<Tile>());
+
+            // Create an instance of the tile entity
+            TEntity entity = new TEntity();
+
+            // Use reflection to invoke the Place method if it exists
+            MethodInfo placeMethod = typeof(TEntity).GetMethod("Place", BindingFlags.Public | BindingFlags.Instance);
+
+            if (placeMethod != null)
+            {
+                // Call the Place method dynamically
+                int id = (int)placeMethod.Invoke(entity, new object[] { x, y });
+
+                // Return the placed entity
+                return TileEntity.ByID[id] as TEntity;
+            }
+
+            // Return null if the Place method is not found
+            return null;
+        }
+
+        /// <summary>
         /// Gets the position of a specific corner of a multi-tile object based on the provided tile coordinates and corner type.
         /// </summary>
-        /// <param name="tile">The tile object that contains the multi-tile data.</param>
         /// <param name="x">The X coordinate of the tile in the world.</param>
         /// <param name="y">The Y coordinate of the tile in the world.</param>
         /// <param name="corner">The corner of the multi-tile to retrieve. Should be one of the values from the <see cref="CornerType"/> enum.</param>
@@ -108,8 +146,9 @@ namespace OvermorrowMod.Common.Utilities
         ///     </item>
         /// </list>
         /// </remarks>
-        public static Point GetCornerOfMultiTile(Tile tile, int x, int y, CornerType corner)
+        public static Point GetCornerOfMultiTile( int x, int y, CornerType corner)
         {
+            Tile tile = Framing.GetTileSafely(x, y);
             TileObjectData data = TileObjectData.GetTileData(tile);
             Point topLeft = new(x - tile.TileFrameX % data.CoordinateFullWidth / 18, y - tile.TileFrameY % data.CoordinateFullHeight / 18);
 

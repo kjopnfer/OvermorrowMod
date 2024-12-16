@@ -144,10 +144,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             WorldGen.PlaceObject(1002, 142, ModContent.TileType<FireplacePillar>());
 
-            WorldGen.PlaceObject(993, 112, ModContent.TileType<SanctumGate>());
+            TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(994, 80);
 
-            WorldGen.PlaceObject(855, 113, ModContent.TileType<ArchiveBridge>());
-            WorldGen.PlaceObject(1126, 113, ModContent.TileType<ArchiveBridge>());
+            WorldGen.PlaceObject(815, 86, ModContent.TileType<ArchiveBridge>());
+            WorldGen.PlaceObject(1168, 86, ModContent.TileType<ArchiveBridge>());
 
             PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
             PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
@@ -181,18 +181,14 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
         private void PlaceAndConfigureDoor(int x, int y, DoorID doorID, DoorID pairedDoor)
         {
-            // Place the object (door)
-            WorldGen.PlaceObject(x, y, ModContent.TileType<ArchiveDoor>());
-
-            // Get the TileEntity associated with the placed object
-            int id = ModContent.GetInstance<ArchiveDoor_TE>().Place(x, y);
-            ArchiveDoor_TE te = TileEntity.ByID[id] as ArchiveDoor_TE;
+            // Place the door and get the placed entity
+            var doorEntity = TileUtils.PlaceTileWithEntity<ArchiveDoor, ArchiveDoor_TE>(x, y);
 
             // Configure the door and its paired door ID
-            if (te != null)
+            if (doorEntity != null)
             {
-                te.DoorID = (int)doorID;
-                te.PairedDoor = (int)pairedDoor;
+                doorEntity.DoorID = (int)doorID;
+                doorEntity.PairedDoor = (int)pairedDoor;
 
                 // Send the necessary network data for multiplayer
                 if (Main.netMode == NetmodeID.Server)

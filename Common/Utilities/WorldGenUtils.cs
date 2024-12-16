@@ -42,7 +42,9 @@ namespace OvermorrowMod.Common.Utilities
                     if (width > 1 || height > 1)
                     {
                         int xs = x, ys = y;
-                        Vector2 newPos = TileUtils.FindTopLeft(xs, ys);
+                        //Vector2 newPos = TileUtils.FindTopLeft(xs, ys);
+                        Vector2 newPos = TileUtils.GetCornerOfMultiTile(xs, ys, TileUtils.CornerType.TopLeft).ToVector2();
+
                         for (int x1 = 0; x1 < width; x1++)
                         {
                             for (int y1 = 0; y1 < height; y1++)

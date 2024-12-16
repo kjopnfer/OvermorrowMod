@@ -56,7 +56,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
 
             ArchiveDoor_TE door;
-            Point bottomLeft = TileUtils.GetCornerOfMultiTile(tile, i, j, TileUtils.CornerType.BottomLeft);
+            Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
             TileUtils.TryFindModTileEntity<ArchiveDoor_TE>(bottomLeft.X, bottomLeft.Y, out door);
             if (door != null)
             {
@@ -71,7 +71,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
     {
         public int DoorID;
         public int PairedDoor;
-        public bool CanTeleport = false;
         public Vector2 DoorPosition => Position.ToWorldCoordinates(16, 16);
         public override void SaveData(TagCompound tag)
         {
