@@ -22,31 +22,6 @@ namespace OvermorrowMod.Common.Utilities
         public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
 
         /// <summary>
-        /// Returns the top-left coordinates of a tile object, adjusting for its frame offsets.
-        /// If the tile is not part of a tile object, the original coordinates are returned.
-        /// </summary>
-        /// <param name="x">The X coordinate of the tile.</param>
-        /// <param name="y">The Y coordinate of the tile.</param>
-        /// <returns>A <see cref="Vector2"/> with the top-left coordinates of the tile object, or the original coordinates if no tile object is found.</returns>
-        public static Vector2 FindTopLeft(int x, int y)
-        {
-            // Retrieve the tile at the specified coordinates
-            Tile tile = Framing.GetTileSafely(x, y);
-            if (tile == null) return new Vector2(x, y); // Return original if tile is invalid
-
-            // Get the tile object data (if any) for the tile
-            TileObjectData data = TileObjectData.GetTileData(tile.TileType, 0);
-
-            if (data == null) return new Vector2(x, y); // Return original if no tile object data
-
-            // Adjust the coordinates based on the tile's frame and object dimensions
-            x -= tile.TileFrameX / 18 % data.Width;
-            y -= tile.TileFrameY / 18 % data.Height;
-
-            return new Vector2(x, y); // Return the adjusted top-left position
-        }
-
-        /// <summary>
         /// Finds the nearest solid or sloped ground tile beneath a given starting position.
         /// The method starts from the given position and moves downwards to find the first tile that is either solid or sloped.
         /// </summary>
@@ -104,6 +79,35 @@ namespace OvermorrowMod.Common.Utilities
             return false;
         }
 
+        /// <summary>
+        /// Gets the position of a specific corner of a multi-tile object based on the provided tile coordinates and corner type.
+        /// </summary>
+        /// <param name="tile">The tile object that contains the multi-tile data.</param>
+        /// <param name="x">The X coordinate of the tile in the world.</param>
+        /// <param name="y">The Y coordinate of the tile in the world.</param>
+        /// <param name="corner">The corner of the multi-tile to retrieve. Should be one of the values from the <see cref="CornerType"/> enum.</param>
+        /// <returns>
+        /// The position of the requested corner relative to the tile's world coordinates. The corner is specified using one of the
+        /// <see cref="CornerType"/> values, and the returned point represents the world position of that corner.
+        /// </returns>
+        /// <remarks>
+        /// The method computes the starting position of the tile object by considering its frame and data, then it adjusts this position 
+        /// based on the requested corner. The four possible corner types are:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description><see cref="CornerType.TopLeft"/>: The top-left corner of the multi-tile.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description><see cref="CornerType.TopRight"/>: The top-right corner of the multi-tile.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description><see cref="CornerType.BottomLeft"/>: The bottom-left corner of the multi-tile.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description><see cref="CornerType.BottomRight"/>: The bottom-right corner of the multi-tile.</description>
+        ///     </item>
+        /// </list>
+        /// </remarks>
         public static Point GetCornerOfMultiTile(Tile tile, int x, int y, CornerType corner)
         {
             TileObjectData data = TileObjectData.GetTileData(tile);
@@ -118,37 +122,5 @@ namespace OvermorrowMod.Common.Utilities
                 _ => topLeft
             };
         }
-
-        public static T FindTE<T>(int i, int j) where T : TileEntity
-        {
-            Tile tile = Main.tile[i, j];
-            int left = i - tile.TileFrameX / 18;
-            int top = j - tile.TileFrameY / 18;
-
-            Main.NewText("searching for TE");
-            // Get the instance of the template class for T
-            var instance = ModContent.GetInstance<T>();
-
-            // Use reflection to find the 'Find' method dynamically (if it exists)
-            var findMethod = typeof(T).GetMethod("Find", new Type[] { typeof(int), typeof(int) });
-
-            if (findMethod != null)
-            {
-                // Invoke the 'Find' method with the coordinates dynamically
-                var result = findMethod.Invoke(instance, new object[] { left, top });
-                Main.NewText("reflected find method");
-
-                if (result is T entity)
-                {
-                    return entity;
-                }
-            }
-
-            Main.NewText("couldnt find");
-
-            // If no Find method exists or no entity is found, return null
-            return null;
-        }
-
     }
 }

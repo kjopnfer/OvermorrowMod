@@ -40,24 +40,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             AddMapEntry(new Color(24, 21, 18), name);
         }
 
-        /*public static ArchiveDoor_TE FindTE(int i, int j)
-        {
-            Tile tile = Main.tile[i, j];
-            int left = i - tile.TileFrameX / 18;
-            int top = j - tile.TileFrameY / 18;
-
-            ModContent.GetInstance<ArchiveDoor_TE>().find
-            int index = ModContent.GetInstance<ArchiveDoor_TE>().Find(left, top);
-            if (index == -1)
-            {
-                return null;
-            }
-
-            ArchiveDoor_TE alter = (ArchiveDoor_TE)TileEntity.ByID[index];
-            return alter;
-
-        }*/
-
         public override void MouseOver(int i, int j)
         {
             Player player = Main.player[Main.myPlayer];
