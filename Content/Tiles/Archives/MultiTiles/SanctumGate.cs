@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items;
+using System;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -52,7 +54,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             Tile tile = Framing.GetTileSafely(i, j);
 
-
             SanctumGate_TE door;
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
             TileUtils.TryFindModTileEntity<SanctumGate_TE>(bottomLeft.X, bottomLeft.Y, out door);
@@ -62,6 +63,55 @@ namespace OvermorrowMod.Content.Tiles.Archives
             }
 
             return base.RightClick(i, j);
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            /*Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "SanctumGateEye").Value;
+
+                Lighting.AddLight(new Vector2(i, j) * 16, new Vector3(0, 1f, 0));
+
+                spriteBatch.Draw(texture, new Vector2(i, j) * 16, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+            }*/
+
+            return base.PreDraw(i, j, spriteBatch);
+        }
+
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
+            {
+                // Load the texture for the "SanctumGateEye"
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "SanctumGateEye", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+
+                // Positions for the eye lights and textures
+                Vector2[] eyePositions = new Vector2[]
+                {
+                    new Vector2(i + 5.15f, j + 7.25f),
+                    new Vector2(i + 2.75f, j + 7.75f),
+                    new Vector2(i + 7.5f, j + 7.75f)
+                };
+
+                // Iterate through the positions and draw each one
+                foreach (var pos in eyePositions)
+                {
+                    DrawEye(spriteBatch, texture, pos, i, j);
+                }
+            }
+        }
+
+        private void DrawEye(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, int i, int j)
+        {
+            Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+            Vector2 drawPos = position * 16 - Main.screenPosition + offScreenRange;
+
+            spriteBatch.Draw(texture, drawPos, new Rectangle(0, 0, texture.Width, texture.Height / 2), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+
+            Lighting.AddLight(new Vector2(position.X, position.Y) * 16, new Vector3(0, 1f, 0));
         }
     }
 
@@ -74,25 +124,28 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void Update()
         {
-
+            // Update hook never gets called wtf??
+            /*Main.NewText("update");
+            Lighting.AddLight(Position.ToWorldCoordinates(16, 16), new Vector3(0, 0.5f, 0));*/
         }
+
+        public override void PostGlobalUpdate()
+        {
+            base.PostGlobalUpdate();
+        }
+
         public override void SaveData(TagCompound tag)
         {
         }
 
 
         public override void LoadData(TagCompound tag)
-        {     
+        {
         }
 
         public override bool IsTileValidForEntity(int x, int y)
         {
-            Tile tile = Main.tile[x, y];
-            if (!tile.HasTile || tile.TileType != ModContent.TileType<SanctumGate>())
-            {
-                Kill(Position.X, Position.Y);
-            }
-
+            Tile tile = Framing.GetTileSafely(x, y);
             return tile.HasTile && tile.TileType == ModContent.TileType<SanctumGate>();
         }
     }
