@@ -4,6 +4,7 @@ using ReLogic.Content;
 using SubworldLibrary;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
@@ -37,6 +38,13 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         {
             Main.dayTime = false;
             Main.time = 0.0;
+
+            // For whatever reason, subworlds do not call these by themselves.
+            foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
+            {
+                var tileEntity = pair.Value;
+                tileEntity.Update();
+            }
         }
 
         public override void OnEnter()

@@ -117,21 +117,16 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             // ...yet I have to do it manually for these fucking things anyways because they don't work??
             WorldGen.PlaceObject(307, 111, ModContent.TileType<WoodenArch>());
-            WorldGen.PlaceObject(363, 111, ModContent.TileType<WoodenArch>());
-            WorldGen.PlaceObject(404, 111, ModContent.TileType<WoodenArch>());
-
-            WorldGen.PlaceObject(329, 116, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(338, 115, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(347, 116, ModContent.TileType<ArchiveBanner>());
+            
+           
 
             WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
             WorldGen.PlaceObject(347, 131, ModContent.TileType<Bismarck>());
 
-            WorldGen.PlaceObject(337, 131, ModContent.TileType<WoodenArchSmall>());
-            WorldGen.PlaceObject(337, 127, ModContent.TileType<Moose>());
-            WorldGen.PlaceObject(337, 113, ModContent.TileType<WoodenArchSmall>());
+
 
             #region Center Room
+            #region Fireplace
             WorldGen.PlaceObject(852, 112, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(872, 112, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(852, 142, ModContent.TileType<WoodenPillar2>());
@@ -142,9 +137,18 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(1143, 112, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(1143, 142, ModContent.TileType<WoodenPillar2>());
 
-            WorldGen.PlaceObject(1002, 142, ModContent.TileType<FireplacePillar>());
+            WorldGen.PlaceObject(989, 91, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(998, 89, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(1007, 91, ModContent.TileType<ArchiveBanner>());
 
-            TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(994, 80);
+            WorldGen.PlaceObject(997, 87, ModContent.TileType<WoodenArchSmall>());
+            WorldGen.PlaceObject(998, 101, ModContent.TileType<Moose>());
+            WorldGen.PlaceObject(997, 105, ModContent.TileType<WoodenArchSmall>());
+
+            WorldGen.PlaceObject(1003, 110, ModContent.TileType<FireplacePillar>());
+
+            TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(993, 80);
+            #endregion
 
             WorldGen.PlaceObject(815, 86, ModContent.TileType<ArchiveBridge>());
             WorldGen.PlaceObject(1168, 86, ModContent.TileType<ArchiveBridge>());
@@ -153,6 +157,13 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
             PlaceAndConfigureDoor(1369, 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
             PlaceAndConfigureDoor(1369, 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
+
+            #endregion
+
+            #region Right Bridge
+            WorldGen.PlaceObject(1165, 115, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1185, 85, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1185, 115, ModContent.TileType<WoodenPillar2>());
 
             #endregion
 

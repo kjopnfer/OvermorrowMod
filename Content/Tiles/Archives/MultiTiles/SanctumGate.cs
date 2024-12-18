@@ -23,10 +23,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override bool CanExplode(int i, int j) => false;
         public override void SetStaticDefaults()
         {
+            Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
 
-            TileObjectData.newTile.Width = 12;
+            TileObjectData.newTile.Width = 14;
             TileObjectData.newTile.Height = 19;
             TileObjectData.newTile.CoordinateHeights = Enumerable.Repeat(16, TileObjectData.newTile.Height).ToArray();
 
@@ -48,6 +49,25 @@ namespace OvermorrowMod.Content.Tiles.Archives
             player.cursorItemIconID = ModContent.ItemType<TowerKey>();
 
             base.MouseOver(i, j);
+        }
+
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            Tile tile = Main.tile[i, j];
+            if (tile.TileFrameX == 108 && tile.TileFrameY == 126)
+            {
+                r = 0f; // Increase red for a more vibrant orange
+                g = 1f; // Slightly lower green for a deeper orange
+                b = 0; // Keep blue at 0 for a pure orange hue
+            }
+            /*float pulse = Main.rand.Next(28, 42) * 0.005f;
+            pulse += (270 - Main.mouseTextColor) / 700f;
+
+            r = 0f + pulse; // Increase red for a more vibrant orange
+            g = 0.55f + pulse; // Slightly lower green for a deeper orange
+            b = 0; // Keep blue at 0 for a pure orange hue*/
+
+            base.ModifyLight(i, j, ref r, ref g, ref b);
         }
 
         public override bool RightClick(int i, int j)
@@ -85,15 +105,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
-                // Load the texture for the "SanctumGateEye"
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "SanctumGateEye", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
                 // Positions for the eye lights and textures
                 Vector2[] eyePositions = new Vector2[]
                 {
-                    new Vector2(i + 5.15f, j + 7.25f),
-                    new Vector2(i + 2.75f, j + 7.75f),
-                    new Vector2(i + 7.5f, j + 7.75f)
+                    new Vector2(i + 3.75f, j + 7.65f),
+                    new Vector2(i + 6.1f, j + 7.2f),
+                    new Vector2(i + 8.5f, j + 7.65f)
                 };
 
                 // Iterate through the positions and draw each one
@@ -124,9 +143,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void Update()
         {
-            // Update hook never gets called wtf??
-            /*Main.NewText("update");
-            Lighting.AddLight(Position.ToWorldCoordinates(16, 16), new Vector3(0, 0.5f, 0));*/
+            
         }
 
         public override void PostGlobalUpdate()
