@@ -87,8 +87,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(114, 70, 123)] = (ModContent.TileType<Moose>(), 1),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
-                [new Color(198, 74, 118)] = (ModContent.TileType<WoodenArch>(), 1),
-                [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArchL1>(), 1),
+                [new Color(198, 74, 118)] = (ModContent.TileType<WoodenArchSplit>(), 1),
+                //[new Color(135, 28, 66)] = (ModContent.TileType<WoodenArchL1>(), 1),
+                [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
                 [new Color(176, 16, 73)] = (ModContent.TileType<WoodenArchL2>(), 1),
                 [new Color(189, 44, 95)] = (ModContent.TileType<WoodenArchL3>(), 1),
                 [new Color(88, 68, 75)] = (ModContent.TileType<WoodenArchR1>(), 1),
@@ -116,13 +117,25 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             });
 
             // ...yet I have to do it manually for these fucking things anyways because they don't work??
-            WorldGen.PlaceObject(307, 111, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(307, 111, ModContent.TileType<WoodenArchSplit>());
             
            
 
             WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
             WorldGen.PlaceObject(347, 131, ModContent.TileType<Bismarck>());
 
+            #region Left Bridge
+            WorldGen.PlaceObject(812, 115, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(832, 85, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(832, 115, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(798, 60, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(835, 60, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(798, 90, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(835, 90, ModContent.TileType<WoodenArch>());
+
+            #endregion
 
 
             #region Center Room
@@ -164,6 +177,12 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(1165, 115, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(1185, 85, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(1185, 115, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(1151, 60, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1188, 60, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(1151, 90, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1188, 90, ModContent.TileType<WoodenArch>());
 
             #endregion
 
