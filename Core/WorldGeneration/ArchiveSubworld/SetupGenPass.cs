@@ -87,6 +87,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(114, 70, 123)] = (ModContent.TileType<Moose>(), 1),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
+                [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
                 [new Color(198, 74, 118)] = (ModContent.TileType<WoodenArchSplit>(), 1),
                 //[new Color(135, 28, 66)] = (ModContent.TileType<WoodenArchL1>(), 1),
                 [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
@@ -124,7 +125,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
             WorldGen.PlaceObject(347, 131, ModContent.TileType<Bismarck>());
 
+            #region Center Room
             #region Left Bridge
+            WorldGen.PlaceObject(815, 86, ModContent.TileType<ArchiveBridge>());
+
             WorldGen.PlaceObject(812, 115, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(832, 85, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(832, 115, ModContent.TileType<WoodenPillar2>());
@@ -137,8 +141,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
-
-            #region Center Room
             #region Fireplace
             WorldGen.PlaceObject(852, 112, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(872, 112, ModContent.TileType<WoodenPillar2>());
@@ -163,17 +165,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(993, 80);
             #endregion
 
-            WorldGen.PlaceObject(815, 86, ModContent.TileType<ArchiveBridge>());
+            #region Right Bridge
             WorldGen.PlaceObject(1168, 86, ModContent.TileType<ArchiveBridge>());
 
-            PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
-            PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
-            PlaceAndConfigureDoor(1369, 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
-            PlaceAndConfigureDoor(1369, 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
-
-            #endregion
-
-            #region Right Bridge
             WorldGen.PlaceObject(1165, 115, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(1185, 85, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(1185, 115, ModContent.TileType<WoodenPillar2>());
@@ -186,25 +180,87 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
+            PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
+            PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
+            PlaceAndConfigureDoor(1369, 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
+            PlaceAndConfigureDoor(1369, 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
+
+            #endregion
+       
             #region Top Left Room
             PlaceAndConfigureDoor(492, 110, DoorID.GreenRoom, DoorID.GreenRoomEntrance);
 
+            #region Bridge
+            WorldGen.PlaceObject(296, 60, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(296, 90, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(333, 60, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(333, 90, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(310, 115, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(330, 85, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(330, 115, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(313, 86, ModContent.TileType<ArchiveBridge>());
+
+            #endregion
 
             #endregion
 
             #region Bottom Left Room
             PlaceAndConfigureDoor(494, 256, DoorID.RedRoom, DoorID.RedRoomEntrance);
 
+            #region Bridge
+            WorldGen.PlaceObject(298, 206, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(298, 236, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(335, 206, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(335, 236, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(312, 261, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(332, 231, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(332, 261, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(315, 232, ModContent.TileType<ArchiveBridge>());
+
+            #endregion
             #endregion
 
             #region Top Right Room
             PlaceAndConfigureDoor(1496, 110, DoorID.YellowRoom, DoorID.YellowRoomEntrance);
 
+            #region Bridge
+            WorldGen.PlaceObject(1653, 60, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1653, 90, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(1690, 60, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1690, 90, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(1687, 85, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1667, 115, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1687, 115, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(1670, 86, ModContent.TileType<ArchiveBridge>());
+            #endregion
             #endregion
 
             #region Bottom Right Room
             PlaceAndConfigureDoor(1494, 256, DoorID.BlueRoom, DoorID.BlueRoomEntrance);
 
+            #region Bridge
+            WorldGen.PlaceObject(1651, 206, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1651, 236, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(1688, 206, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1688, 236, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(1665, 231, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1665, 261, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1685, 231, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(1685, 261, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(1668, 232, ModContent.TileType<ArchiveBridge>());
+            #endregion
             #endregion
 
         }
