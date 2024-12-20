@@ -87,14 +87,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
                 [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
-                [new Color(198, 74, 118)] = (ModContent.TileType<WoodenArchSplit>(), 1),
                 //[new Color(135, 28, 66)] = (ModContent.TileType<WoodenArchL1>(), 1),
                 [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
-                [new Color(176, 16, 73)] = (ModContent.TileType<WoodenArchL2>(), 1),
-                [new Color(189, 44, 95)] = (ModContent.TileType<WoodenArchL3>(), 1),
-                [new Color(88, 68, 75)] = (ModContent.TileType<WoodenArchR1>(), 1),
-                [new Color(79, 38, 52)] = (ModContent.TileType<WoodenArchR2>(), 1),
-                [new Color(88, 13, 39)] = (ModContent.TileType<WoodenArchR3>(), 1),
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
                 [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
                 [new Color(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
@@ -124,10 +118,16 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
 
             #region Center Room
+            PlaceBookshelfArches(696, 60);
+            PlaceBookshelfArches(722, 60);
+            PlaceBookshelfArches(748, 60);
+            PlaceBookshelfArches(696, 90);
+            PlaceBookshelfArches(722, 90);
+            PlaceBookshelfArches(748, 90);
+
             PlaceBookshelfArches(863, 60);
             PlaceBookshelfArches(889, 60);
             PlaceBookshelfArches(915, 60);
-
             PlaceBookshelfArches(863, 90);
             PlaceBookshelfArches(889, 90);
             PlaceBookshelfArches(915, 90);
@@ -197,14 +197,35 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
-            PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
-            PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
-            PlaceAndConfigureDoor(1369, 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
-            PlaceAndConfigureDoor(1369, 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
+            PlaceBookshelfArches(1071, 60);
+            PlaceBookshelfArches(1097, 60);
+            PlaceBookshelfArches(1123, 60);
+            PlaceBookshelfArches(1071, 90);
+            PlaceBookshelfArches(1097, 90);
+            PlaceBookshelfArches(1123, 90);
 
+            PlaceBookshelfArches(1238, 60);
+            PlaceBookshelfArches(1264, 60);
+            PlaceBookshelfArches(1290, 60);
+            PlaceBookshelfArches(1238, 90);
+            PlaceBookshelfArches(1264, 90);
+            PlaceBookshelfArches(1290, 90);
+
+            WorldGen.PlaceObject(618, 55, ModContent.TileType<WoodenArch>());
+            PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
+
+            WorldGen.PlaceObject(618, 85, ModContent.TileType<WoodenArch>());
+            PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
+
+            WorldGen.PlaceObject(1368, 55, ModContent.TileType<WoodenArch>());
+            PlaceAndConfigureDoor(1369, 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
+
+            WorldGen.PlaceObject(1368, 85, ModContent.TileType<WoodenArch>());
+            PlaceAndConfigureDoor(1369, 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
             #endregion
-       
+
             #region Top Left Room
+            WorldGen.PlaceObject(491, 85, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(492, 110, DoorID.GreenRoom, DoorID.GreenRoomEntrance);
 
             #region Bridge
@@ -225,6 +246,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             #region Bottom Left Room
+            WorldGen.PlaceObject(493, 231, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(494, 256, DoorID.RedRoom, DoorID.RedRoomEntrance);
 
             #region Bridge
@@ -244,6 +266,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             #region Top Right Room
+            WorldGen.PlaceObject(1495, 85, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(1496, 110, DoorID.YellowRoom, DoorID.YellowRoomEntrance);
 
             #region Bridge
@@ -262,6 +285,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             #region Bottom Right Room
+            WorldGen.PlaceObject(1493, 231, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(1494, 256, DoorID.BlueRoom, DoorID.BlueRoomEntrance);
 
             #region Bridge
