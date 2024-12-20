@@ -84,7 +84,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(180, 58, 0)] = (ModContent.TileType<Fireplace>(), 1),
                 [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
                 [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 3),
-                [new Color(114, 70, 123)] = (ModContent.TileType<Moose>(), 1),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
                 [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
@@ -123,9 +122,16 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
            
 
             WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
-            WorldGen.PlaceObject(347, 131, ModContent.TileType<Bismarck>());
 
             #region Center Room
+            PlaceBookshelfArches(863, 60);
+            PlaceBookshelfArches(889, 60);
+            PlaceBookshelfArches(915, 60);
+
+            PlaceBookshelfArches(863, 90);
+            PlaceBookshelfArches(889, 90);
+            PlaceBookshelfArches(915, 90);
+
             #region Left Bridge
             WorldGen.PlaceObject(815, 86, ModContent.TileType<ArchiveBridge>());
 
@@ -142,6 +148,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             #region Fireplace
+            WorldGen.PlaceObject(989, 105, ModContent.TileType<Bismarck>());
+            WorldGen.PlaceObject(1007, 105, ModContent.TileType<Bismarck>());
+
             WorldGen.PlaceObject(852, 112, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(872, 112, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(852, 142, ModContent.TileType<WoodenPillar2>());
@@ -156,12 +165,20 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(998, 89, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(1007, 91, ModContent.TileType<ArchiveBanner>());
 
+            WorldGen.PlaceObject(986, 110, ModContent.TileType<SmallChair>());
+            WorldGen.PlaceObject(989, 110, ModContent.TileType<BanquetTable>());
+            WorldGen.PlaceObject(989, 108, ModContent.TileType<Candelabra>());
+            WorldGen.PlaceObject(992, 108, ModContent.TileType<BookPileTable>());
+
             WorldGen.PlaceObject(997, 87, ModContent.TileType<WoodenArchSmall>());
-            WorldGen.PlaceObject(998, 101, ModContent.TileType<Moose>());
+            WorldGen.PlaceObject(998, 102, ModContent.TileType<Moose>());
             WorldGen.PlaceObject(997, 105, ModContent.TileType<WoodenArchSmall>());
 
             WorldGen.PlaceObject(1003, 110, ModContent.TileType<FireplacePillar>());
 
+            WorldGen.PlaceObject(1012, 110, ModContent.TileType<CozyChair>());
+
+            WorldGen.PlaceObject(993, 55, ModContent.TileType<WoodenArch>());
             TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(993, 80);
             #endregion
 
@@ -262,6 +279,19 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(1668, 232, ModContent.TileType<ArchiveBridge>());
             #endregion
             #endregion
+
+        }
+
+        // These are split into 7 individual pieces in order to allow for objects to be placed underneath them.
+        private void PlaceBookshelfArches(int x, int y)
+        {
+            WorldGen.PlaceObject(x, y, ModContent.TileType<WoodenArchL1>());
+            WorldGen.PlaceObject(x + 1, y, ModContent.TileType<WoodenArchL2>());
+            WorldGen.PlaceObject(x + 2, y, ModContent.TileType<WoodenArchL3>());
+            WorldGen.PlaceObject(x + 3, y, ModContent.TileType<WoodenArchSplit>());
+            WorldGen.PlaceObject(x + 11, y, ModContent.TileType<WoodenArchR1>());
+            WorldGen.PlaceObject(x + 12, y, ModContent.TileType<WoodenArchR2>());
+            WorldGen.PlaceObject(x + 13, y, ModContent.TileType<WoodenArchR3>());
 
         }
 

@@ -18,12 +18,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             TileObjectData.newTile.AnchorWall = true;
 
-            TileObjectData.newTile.Width = 6;
-            TileObjectData.newTile.Height = 4;
+            TileObjectData.newTile.Width = 4;
+            TileObjectData.newTile.Height = 5;
             TileObjectData.newTile.CoordinateHeights = Enumerable.Repeat(16, TileObjectData.newTile.Height).ToArray();
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.Origin = new Point16(0, 3);
+            TileObjectData.newTile.Origin = new Point16(0, 4);
 
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
