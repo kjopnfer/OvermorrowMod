@@ -19,9 +19,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileNoAttach[Type] = true;
             Main.tileLighted[Type] = true;
 
-            // TexGen doesn't like Anchors for some reason
-            //TileObjectData.newTile.CopyFrom(TileObjectData.StyleOnTable1x1);
-
             TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.CoordinateHeights = [16, 16];
@@ -31,7 +28,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.RandomStyleRange = 3;
-
 
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;

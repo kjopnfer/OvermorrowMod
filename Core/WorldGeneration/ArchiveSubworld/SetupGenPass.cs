@@ -18,6 +18,14 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 {
     public class SetupGenPass : GenPass
     {
+        public enum RoomID
+        {
+            Green,
+            Red,
+            Yellow,
+            Blue
+        }
+
         public enum DoorID
         {
             GreenRoom,
@@ -264,8 +272,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(387, 90);
             PlaceBookshelfArch(413, 90);
 
-            PlaceLoungeArea(113, 226);
-            PlaceLoungeArea(111, 80);
+            PlaceLoungeArea(486, 80, RoomID.Green);
+            PlaceLoungeArea(111, 80, RoomID.Green);
 
             #endregion
 
@@ -292,9 +300,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
-            PlaceLoungeArea(113, 226);
+            PlaceLoungeArea(113, 226, RoomID.Red);
             PlaceCozyArea(111, 256);
-            PlaceLoungeArea(488, 226);
+            PlaceLoungeArea(488, 226, RoomID.Red);
 
             #endregion
 
@@ -319,7 +327,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(1670, 86, ModContent.TileType<ArchiveBridge>());
             #endregion
 
+            PlaceLoungeArea(1490, 80, RoomID.Yellow);
+
             PlaceCozyArea(1863, 110);
+            PlaceLoungeArea(1865, 80, RoomID.Yellow);
 
             #endregion
 
@@ -344,14 +355,26 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(1668, 232, ModContent.TileType<ArchiveBridge>());
             #endregion
 
-            PlaceCozyArea(1861, 256);
+            PlaceLoungeArea(1488, 226, RoomID.Blue);
 
+            PlaceCozyArea(1861, 256);
+            PlaceLoungeArea(1863, 226, RoomID.Blue);
             #endregion
         }
 
-        private void PlaceLoungeArea(int x, int y)
+        private void PlaceLoungeArea(int x, int y, RoomID room)
         {
-            WorldGen.PlaceObject(x, y, ModContent.TileType<CozyChair>());
+            var cozyChairTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<CozyChairRed>() },
+                { RoomID.Green, ModContent.TileType<CozyChairGreen>() },
+                { RoomID.Blue, ModContent.TileType<CozyChairBlue>() }
+            };
+
+            int cozyChairType = cozyChairTypes.TryGetValue(room, out var type) ? type : ModContent.TileType<CozyChair>();
+
+
+            WorldGen.PlaceObject(x, y, cozyChairType, true, 0, 0, -1, 1);
             WorldGen.PlaceObject(x + 5, y, ModContent.TileType<BanquetTable>());
             WorldGen.PlaceObject(x + 5, y - 2, ModContent.TileType<Candelabra>());
             WorldGen.PlaceObject(x + 8, y - 2, ModContent.TileType<BookPileTable>());
@@ -359,7 +382,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(x + 12, y, ModContent.TileType<SmallChair>());
             WorldGen.PlaceObject(x + 16, y, ModContent.TileType<SmallChair>());
 
-            WorldGen.PlaceObject(x + 23, y, ModContent.TileType<CozyChair>());
+            WorldGen.PlaceObject(x + 23, y, cozyChairType);
 
             WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
         }
