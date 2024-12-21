@@ -152,16 +152,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(989, 105, ModContent.TileType<Bismarck>());
             WorldGen.PlaceObject(1007, 105, ModContent.TileType<Bismarck>());
 
-            WorldGen.PlaceObject(852, 112, ModContent.TileType<WoodenPillar2>());
-            WorldGen.PlaceObject(872, 112, ModContent.TileType<WoodenPillar2>());
-            WorldGen.PlaceObject(852, 142, ModContent.TileType<WoodenPillar2>());
-            WorldGen.PlaceObject(872, 142, ModContent.TileType<WoodenPillar2>());
-
-            WorldGen.PlaceObject(1123, 112, ModContent.TileType<WoodenPillar2>());
-            WorldGen.PlaceObject(1123, 142, ModContent.TileType<WoodenPillar2>());
-            WorldGen.PlaceObject(1143, 112, ModContent.TileType<WoodenPillar2>());
-            WorldGen.PlaceObject(1143, 142, ModContent.TileType<WoodenPillar2>());
-
             WorldGen.PlaceObject(989, 91, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(998, 89, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(1007, 91, ModContent.TileType<ArchiveBanner>());
@@ -245,6 +235,11 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArches(220, 90);
             PlaceBookshelfArches(246, 90);
 
+            #region Fireplace
+            PlaceCozyArea(109, 110);
+            
+            #endregion
+
             #region Bridge
             WorldGen.PlaceObject(271, 60, ModContent.TileType<WoodenArch>());
 
@@ -289,6 +284,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(315, 232, ModContent.TileType<ArchiveBridge>());
 
             #endregion
+
+            PlaceCozyArea(111, 256);
+
             #endregion
 
             #region Top Right Room
@@ -308,6 +306,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             WorldGen.PlaceObject(1670, 86, ModContent.TileType<ArchiveBridge>());
             #endregion
+
+            PlaceCozyArea(1863, 110);
+
             #endregion
 
             #region Bottom Right Room
@@ -328,8 +329,56 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             WorldGen.PlaceObject(1668, 232, ModContent.TileType<ArchiveBridge>());
             #endregion
-            #endregion
 
+            PlaceCozyArea(1861, 256);
+
+            #endregion
+        }
+
+        private void PlaceCozyArea(int x, int y)
+        {
+            WorldGen.PlaceObject(x + 3, y - 5, ModContent.TileType<Bismarck>());
+            WorldGen.PlaceObject(x + 21, y - 5, ModContent.TileType<Bismarck>());
+
+            WorldGen.PlaceObject(x + 3, y - 19, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 12, y - 21, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 21, y - 19, ModContent.TileType<ArchiveBanner>());
+
+            WorldGen.PlaceObject(x, y, ModContent.TileType<SmallChair>());
+            WorldGen.PlaceObject(x + 3, y, ModContent.TileType<BanquetTable>());
+            WorldGen.PlaceObject(x + 3, y - 2, ModContent.TileType<Candelabra>());
+            WorldGen.PlaceObject(x + 6, y - 2, ModContent.TileType<BookPileTable>());
+
+            WorldGen.PlaceObject(x + 11, y - 23, ModContent.TileType<WoodenArchSmall>());
+            WorldGen.PlaceObject(x + 12, y - 8, ModContent.TileType<Moose>());
+            WorldGen.PlaceObject(x + 11, y - 5, ModContent.TileType<WoodenArchSmall>());
+
+            WorldGen.PlaceObject(x + 9, y, ModContent.TileType<FireplacePillar>());
+            WorldGen.PlaceObject(x + 17, y, ModContent.TileType<FireplacePillar>());
+
+            WorldGen.PlaceObject(x + 26, y, ModContent.TileType<CozyChair>());
+
+            /*
+             WorldGen.PlaceObject(989, 105, ModContent.TileType<Bismarck>());
+            WorldGen.PlaceObject(1007, 105, ModContent.TileType<Bismarck>());
+
+            WorldGen.PlaceObject(989, 91, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(998, 89, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(1007, 91, ModContent.TileType<ArchiveBanner>());
+
+            WorldGen.PlaceObject(986, 110, ModContent.TileType<SmallChair>());
+            WorldGen.PlaceObject(989, 110, ModContent.TileType<BanquetTable>());
+            WorldGen.PlaceObject(989, 108, ModContent.TileType<Candelabra>());
+            WorldGen.PlaceObject(992, 108, ModContent.TileType<BookPileTable>());
+
+            WorldGen.PlaceObject(997, 87, ModContent.TileType<WoodenArchSmall>());
+            WorldGen.PlaceObject(998, 102, ModContent.TileType<Moose>());
+            WorldGen.PlaceObject(997, 105, ModContent.TileType<WoodenArchSmall>());
+
+            WorldGen.PlaceObject(1003, 110, ModContent.TileType<FireplacePillar>());
+
+            WorldGen.PlaceObject(1012, 110, ModContent.TileType<CozyChair>());   
+             */
         }
 
         // These are split into 7 individual pieces in order to allow for objects to be placed underneath them.
