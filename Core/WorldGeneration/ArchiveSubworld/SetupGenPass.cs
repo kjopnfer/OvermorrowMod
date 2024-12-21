@@ -264,6 +264,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(387, 90);
             PlaceBookshelfArch(413, 90);
 
+            PlaceLoungeArea(113, 226);
+            PlaceLoungeArea(111, 80);
+
             #endregion
 
             #region Bottom Left Room
@@ -273,6 +276,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceRoomBookshelfArches(29, 201);
 
             #region Bridge
+            WorldGen.PlaceObject(273, 206, ModContent.TileType<WoodenArch>());
+
             WorldGen.PlaceObject(298, 206, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(298, 236, ModContent.TileType<WoodenArch>());
 
@@ -287,15 +292,20 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
+            PlaceLoungeArea(113, 226);
             PlaceCozyArea(111, 256);
+            PlaceLoungeArea(488, 226);
 
             #endregion
 
             #region Top Right Room
+
             WorldGen.PlaceObject(1495, 85, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(1496, 110, DoorID.YellowRoom, DoorID.YellowRoomEntrance);
 
             #region Bridge
+            WorldGen.PlaceObject(1715, 60, ModContent.TileType<WoodenArch>());
+
             WorldGen.PlaceObject(1653, 60, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(1653, 90, ModContent.TileType<WoodenArch>());
 
@@ -318,6 +328,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceAndConfigureDoor(1494, 256, DoorID.BlueRoom, DoorID.BlueRoomEntrance);
 
             #region Bridge
+            WorldGen.PlaceObject(1713, 206, ModContent.TileType<WoodenArch>());
+
             WorldGen.PlaceObject(1651, 206, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(1651, 236, ModContent.TileType<WoodenArch>());
 
@@ -335,6 +347,21 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceCozyArea(1861, 256);
 
             #endregion
+        }
+
+        private void PlaceLoungeArea(int x, int y)
+        {
+            WorldGen.PlaceObject(x, y, ModContent.TileType<CozyChair>());
+            WorldGen.PlaceObject(x + 5, y, ModContent.TileType<BanquetTable>());
+            WorldGen.PlaceObject(x + 5, y - 2, ModContent.TileType<Candelabra>());
+            WorldGen.PlaceObject(x + 8, y - 2, ModContent.TileType<BookPileTable>());
+
+            WorldGen.PlaceObject(x + 12, y, ModContent.TileType<SmallChair>());
+            WorldGen.PlaceObject(x + 16, y, ModContent.TileType<SmallChair>());
+
+            WorldGen.PlaceObject(x + 23, y, ModContent.TileType<CozyChair>());
+
+            WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
         }
 
         private void PlaceRoomBookshelfArches(int x, int y)
