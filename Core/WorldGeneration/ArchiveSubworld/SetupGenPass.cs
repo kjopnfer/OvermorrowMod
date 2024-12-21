@@ -117,19 +117,19 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
 
             #region Center Room
-            PlaceBookshelfArches(696, 60);
-            PlaceBookshelfArches(722, 60);
-            PlaceBookshelfArches(748, 60);
-            PlaceBookshelfArches(696, 90);
-            PlaceBookshelfArches(722, 90);
-            PlaceBookshelfArches(748, 90);
+            PlaceBookshelfArch(696, 60);
+            PlaceBookshelfArch(722, 60);
+            PlaceBookshelfArch(748, 60);
+            PlaceBookshelfArch(696, 90);
+            PlaceBookshelfArch(722, 90);
+            PlaceBookshelfArch(748, 90);
 
-            PlaceBookshelfArches(863, 60);
-            PlaceBookshelfArches(889, 60);
-            PlaceBookshelfArches(915, 60);
-            PlaceBookshelfArches(863, 90);
-            PlaceBookshelfArches(889, 90);
-            PlaceBookshelfArches(915, 90);
+            PlaceBookshelfArch(863, 60);
+            PlaceBookshelfArch(889, 60);
+            PlaceBookshelfArch(915, 60);
+            PlaceBookshelfArch(863, 90);
+            PlaceBookshelfArch(889, 90);
+            PlaceBookshelfArch(915, 90);
 
             #region Left Bridge
             WorldGen.PlaceObject(773, 60, ModContent.TileType<WoodenArch>());
@@ -190,19 +190,19 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
-            PlaceBookshelfArches(1071, 60);
-            PlaceBookshelfArches(1097, 60);
-            PlaceBookshelfArches(1123, 60);
-            PlaceBookshelfArches(1071, 90);
-            PlaceBookshelfArches(1097, 90);
-            PlaceBookshelfArches(1123, 90);
+            PlaceBookshelfArch(1071, 60);
+            PlaceBookshelfArch(1097, 60);
+            PlaceBookshelfArch(1123, 60);
+            PlaceBookshelfArch(1071, 90);
+            PlaceBookshelfArch(1097, 90);
+            PlaceBookshelfArch(1123, 90);
 
-            PlaceBookshelfArches(1238, 60);
-            PlaceBookshelfArches(1264, 60);
-            PlaceBookshelfArches(1290, 60);
-            PlaceBookshelfArches(1238, 90);
-            PlaceBookshelfArches(1264, 90);
-            PlaceBookshelfArches(1290, 90);
+            PlaceBookshelfArch(1238, 60);
+            PlaceBookshelfArch(1264, 60);
+            PlaceBookshelfArch(1290, 60);
+            PlaceBookshelfArch(1238, 90);
+            PlaceBookshelfArch(1264, 90);
+            PlaceBookshelfArch(1290, 90);
 
             WorldGen.PlaceObject(618, 55, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
@@ -221,19 +221,19 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(491, 85, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(492, 110, DoorID.GreenRoom, DoorID.GreenRoomEntrance);
 
-            PlaceBookshelfArches(27, 55);
-            PlaceBookshelfArches(53, 55);
-            PlaceBookshelfArches(79, 55);
-            PlaceBookshelfArches(27, 85);
-            PlaceBookshelfArches(53, 85);
-            PlaceBookshelfArches(79, 85);
+            PlaceBookshelfArch(27, 55);
+            PlaceBookshelfArch(53, 55);
+            PlaceBookshelfArch(79, 55);
+            PlaceBookshelfArch(27, 85);
+            PlaceBookshelfArch(53, 85);
+            PlaceBookshelfArch(79, 85);
 
-            PlaceBookshelfArches(194, 60);
-            PlaceBookshelfArches(220, 60);
-            PlaceBookshelfArches(246, 60);
-            PlaceBookshelfArches(194, 90);
-            PlaceBookshelfArches(220, 90);
-            PlaceBookshelfArches(246, 90);
+            PlaceBookshelfArch(194, 60);
+            PlaceBookshelfArch(220, 60);
+            PlaceBookshelfArch(246, 60);
+            PlaceBookshelfArch(194, 90);
+            PlaceBookshelfArch(220, 90);
+            PlaceBookshelfArch(246, 90);
 
             #region Fireplace
             PlaceCozyArea(109, 110);
@@ -257,18 +257,20 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
-            PlaceBookshelfArches(361, 60);
-            PlaceBookshelfArches(387, 60);
-            PlaceBookshelfArches(413, 60);
-            PlaceBookshelfArches(361, 90);
-            PlaceBookshelfArches(387, 90);
-            PlaceBookshelfArches(413, 90);
+            PlaceBookshelfArch(361, 60);
+            PlaceBookshelfArch(387, 60);
+            PlaceBookshelfArch(413, 60);
+            PlaceBookshelfArch(361, 90);
+            PlaceBookshelfArch(387, 90);
+            PlaceBookshelfArch(413, 90);
 
             #endregion
 
             #region Bottom Left Room
             WorldGen.PlaceObject(493, 231, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(494, 256, DoorID.RedRoom, DoorID.RedRoomEntrance);
+
+            PlaceRoomBookshelfArches(29, 201);
 
             #region Bridge
             WorldGen.PlaceObject(298, 206, ModContent.TileType<WoodenArch>());
@@ -335,6 +337,30 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
         }
 
+        private void PlaceRoomBookshelfArches(int x, int y)
+        {
+            PlaceBookshelfArch(x, y);
+            PlaceBookshelfArch(x + 26, y);
+            PlaceBookshelfArch(x + 52, y);
+            PlaceBookshelfArch(x, y + 30);
+            PlaceBookshelfArch(x + 26, y + 30);
+            PlaceBookshelfArch(x + 52, y + 30);
+
+            PlaceBookshelfArch(x + 167, y + 5);
+            PlaceBookshelfArch(x + 193, y + 5);
+            PlaceBookshelfArch(x + 219, y + 5);
+            PlaceBookshelfArch(x + 167, y + 35);
+            PlaceBookshelfArch(x + 193, y + 35);
+            PlaceBookshelfArch(x + 219, y + 35);
+
+            PlaceBookshelfArch(x + 334, y + 5);
+            PlaceBookshelfArch(x + 360, y + 5);
+            PlaceBookshelfArch(x + 386, y + 5);
+            PlaceBookshelfArch(x + 334, y + 35);
+            PlaceBookshelfArch(x + 360, y + 35);
+            PlaceBookshelfArch(x + 386, y + 35);
+        }
+
         private void PlaceCozyArea(int x, int y)
         {
             WorldGen.PlaceObject(x + 3, y - 5, ModContent.TileType<Bismarck>());
@@ -357,32 +383,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(x + 17, y, ModContent.TileType<FireplacePillar>());
 
             WorldGen.PlaceObject(x + 26, y, ModContent.TileType<CozyChair>());
-
-            /*
-             WorldGen.PlaceObject(989, 105, ModContent.TileType<Bismarck>());
-            WorldGen.PlaceObject(1007, 105, ModContent.TileType<Bismarck>());
-
-            WorldGen.PlaceObject(989, 91, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(998, 89, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(1007, 91, ModContent.TileType<ArchiveBanner>());
-
-            WorldGen.PlaceObject(986, 110, ModContent.TileType<SmallChair>());
-            WorldGen.PlaceObject(989, 110, ModContent.TileType<BanquetTable>());
-            WorldGen.PlaceObject(989, 108, ModContent.TileType<Candelabra>());
-            WorldGen.PlaceObject(992, 108, ModContent.TileType<BookPileTable>());
-
-            WorldGen.PlaceObject(997, 87, ModContent.TileType<WoodenArchSmall>());
-            WorldGen.PlaceObject(998, 102, ModContent.TileType<Moose>());
-            WorldGen.PlaceObject(997, 105, ModContent.TileType<WoodenArchSmall>());
-
-            WorldGen.PlaceObject(1003, 110, ModContent.TileType<FireplacePillar>());
-
-            WorldGen.PlaceObject(1012, 110, ModContent.TileType<CozyChair>());   
-             */
         }
 
         // These are split into 7 individual pieces in order to allow for objects to be placed underneath them.
-        private void PlaceBookshelfArches(int x, int y)
+        private void PlaceBookshelfArch(int x, int y)
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<WoodenArchL1>());
             WorldGen.PlaceObject(x + 1, y, ModContent.TileType<WoodenArchL2>());
