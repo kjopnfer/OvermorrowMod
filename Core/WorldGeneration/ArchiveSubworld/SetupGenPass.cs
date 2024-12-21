@@ -87,7 +87,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
                 [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
-                //[new Color(135, 28, 66)] = (ModContent.TileType<WoodenArchL1>(), 1),
                 [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
                 [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
@@ -133,6 +132,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArches(915, 90);
 
             #region Left Bridge
+            WorldGen.PlaceObject(773, 60, ModContent.TileType<WoodenArch>());
+
             WorldGen.PlaceObject(815, 86, ModContent.TileType<ArchiveBridge>());
 
             WorldGen.PlaceObject(812, 115, ModContent.TileType<WoodenPillar2>());
@@ -185,6 +186,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #region Right Bridge
             WorldGen.PlaceObject(1168, 86, ModContent.TileType<ArchiveBridge>());
 
+            WorldGen.PlaceObject(1213, 60, ModContent.TileType<WoodenArch>());
+
             WorldGen.PlaceObject(1165, 115, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(1185, 85, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(1185, 115, ModContent.TileType<WoodenPillar2>());
@@ -228,7 +231,23 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(491, 85, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(492, 110, DoorID.GreenRoom, DoorID.GreenRoomEntrance);
 
+            PlaceBookshelfArches(27, 55);
+            PlaceBookshelfArches(53, 55);
+            PlaceBookshelfArches(79, 55);
+            PlaceBookshelfArches(27, 85);
+            PlaceBookshelfArches(53, 85);
+            PlaceBookshelfArches(79, 85);
+
+            PlaceBookshelfArches(194, 60);
+            PlaceBookshelfArches(220, 60);
+            PlaceBookshelfArches(246, 60);
+            PlaceBookshelfArches(194, 90);
+            PlaceBookshelfArches(220, 90);
+            PlaceBookshelfArches(246, 90);
+
             #region Bridge
+            WorldGen.PlaceObject(271, 60, ModContent.TileType<WoodenArch>());
+
             WorldGen.PlaceObject(296, 60, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(296, 90, ModContent.TileType<WoodenArch>());
 
@@ -242,6 +261,13 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(313, 86, ModContent.TileType<ArchiveBridge>());
 
             #endregion
+
+            PlaceBookshelfArches(361, 60);
+            PlaceBookshelfArches(387, 60);
+            PlaceBookshelfArches(413, 60);
+            PlaceBookshelfArches(361, 90);
+            PlaceBookshelfArches(387, 90);
+            PlaceBookshelfArches(413, 90);
 
             #endregion
 
