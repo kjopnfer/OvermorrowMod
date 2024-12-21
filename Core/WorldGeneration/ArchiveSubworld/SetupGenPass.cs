@@ -157,7 +157,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             #region Fireplace
-            WorldGen.PlaceObject(989, 105, ModContent.TileType<Bismarck>());
+            PlaceCozyArea(986, 110, RoomID.Yellow);
+
+            /*WorldGen.PlaceObject(989, 105, ModContent.TileType<Bismarck>());
             WorldGen.PlaceObject(1007, 105, ModContent.TileType<Bismarck>());
 
             WorldGen.PlaceObject(989, 91, ModContent.TileType<ArchiveBanner>());
@@ -175,7 +177,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             WorldGen.PlaceObject(1003, 110, ModContent.TileType<FireplacePillar>());
 
-            WorldGen.PlaceObject(1012, 110, ModContent.TileType<CozyChair>());
+            WorldGen.PlaceObject(1012, 110, ModContent.TileType<CozyChair>());*/
 
             WorldGen.PlaceObject(993, 55, ModContent.TileType<WoodenArch>());
             TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(993, 80);
@@ -244,7 +246,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(246, 90);
 
             #region Fireplace
-            PlaceCozyArea(109, 110);
             
             #endregion
 
@@ -273,6 +274,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(413, 90);
 
             PlaceLoungeArea(486, 80, RoomID.Green);
+            PlaceCozyArea(109, 110, RoomID.Green);
             PlaceLoungeArea(111, 80, RoomID.Green);
 
             #endregion
@@ -301,7 +303,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             PlaceLoungeArea(113, 226, RoomID.Red);
-            PlaceCozyArea(111, 256);
+            PlaceCozyArea(111, 256, RoomID.Red);
             PlaceLoungeArea(488, 226, RoomID.Red);
 
             #endregion
@@ -328,8 +330,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             PlaceLoungeArea(1490, 80, RoomID.Yellow);
-
-            PlaceCozyArea(1863, 110);
+            PlaceCozyArea(1863, 110, RoomID.Yellow);
             PlaceLoungeArea(1865, 80, RoomID.Yellow);
 
             #endregion
@@ -356,8 +357,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             PlaceLoungeArea(1488, 226, RoomID.Blue);
-
-            PlaceCozyArea(1861, 256);
+            PlaceCozyArea(1861, 256, RoomID.Blue);
             PlaceLoungeArea(1863, 226, RoomID.Blue);
             #endregion
         }
@@ -371,16 +371,23 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 { RoomID.Blue, ModContent.TileType<CozyChairBlue>() }
             };
 
-            int cozyChairType = cozyChairTypes.TryGetValue(room, out var type) ? type : ModContent.TileType<CozyChair>();
+            var smallChairTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<SmallChairRed>() },
+                { RoomID.Green, ModContent.TileType<SmallChairGreen>() },
+                { RoomID.Blue, ModContent.TileType<SmallChairBlue>() }
+            };
 
+            int cozyChairType = cozyChairTypes.TryGetValue(room, out var type) ? type : ModContent.TileType<CozyChair>();
+            int smallChairType = smallChairTypes.TryGetValue(room, out var type2) ? type2 : ModContent.TileType<SmallChair>();
 
             WorldGen.PlaceObject(x, y, cozyChairType, true, 0, 0, -1, 1);
             WorldGen.PlaceObject(x + 5, y, ModContent.TileType<BanquetTable>());
             WorldGen.PlaceObject(x + 5, y - 2, ModContent.TileType<Candelabra>());
             WorldGen.PlaceObject(x + 8, y - 2, ModContent.TileType<BookPileTable>());
 
-            WorldGen.PlaceObject(x + 12, y, ModContent.TileType<SmallChair>());
-            WorldGen.PlaceObject(x + 16, y, ModContent.TileType<SmallChair>());
+            WorldGen.PlaceObject(x + 12, y, smallChairType, true, 0, 0, -1, -1);
+            WorldGen.PlaceObject(x + 16, y, smallChairType, true, 0, 0, -1, 1);
 
             WorldGen.PlaceObject(x + 23, y, cozyChairType);
 
@@ -411,8 +418,25 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(x + 386, y + 35);
         }
 
-        private void PlaceCozyArea(int x, int y)
+        private void PlaceCozyArea(int x, int y, RoomID room)
         {
+            var cozyChairTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<CozyChairRed>() },
+                { RoomID.Green, ModContent.TileType<CozyChairGreen>() },
+                { RoomID.Blue, ModContent.TileType<CozyChairBlue>() }
+            };
+
+            var smallChairTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<SmallChairRed>() },
+                { RoomID.Green, ModContent.TileType<SmallChairGreen>() },
+                { RoomID.Blue, ModContent.TileType<SmallChairBlue>() }
+            };
+
+            int cozyChairType = cozyChairTypes.TryGetValue(room, out var type) ? type : ModContent.TileType<CozyChair>();
+            int smallChairType = smallChairTypes.TryGetValue(room, out var type2) ? type2 : ModContent.TileType<SmallChair>();
+
             WorldGen.PlaceObject(x + 3, y - 5, ModContent.TileType<Bismarck>());
             WorldGen.PlaceObject(x + 21, y - 5, ModContent.TileType<Bismarck>());
 
@@ -420,7 +444,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(x + 12, y - 21, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(x + 21, y - 19, ModContent.TileType<ArchiveBanner>());
 
-            WorldGen.PlaceObject(x, y, ModContent.TileType<SmallChair>());
+            WorldGen.PlaceObject(x, y, smallChairType, true, 0, 0, -1, 1);
             WorldGen.PlaceObject(x + 3, y, ModContent.TileType<BanquetTable>());
             WorldGen.PlaceObject(x + 3, y - 2, ModContent.TileType<Candelabra>());
             WorldGen.PlaceObject(x + 6, y - 2, ModContent.TileType<BookPileTable>());
@@ -432,7 +456,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(x + 9, y, ModContent.TileType<FireplacePillar>());
             WorldGen.PlaceObject(x + 17, y, ModContent.TileType<FireplacePillar>());
 
-            WorldGen.PlaceObject(x + 26, y, ModContent.TileType<CozyChair>());
+            WorldGen.PlaceObject(x + 26, y, cozyChairType);
         }
 
         // These are split into 7 individual pieces in order to allow for objects to be placed underneath them.

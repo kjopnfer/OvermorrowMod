@@ -12,6 +12,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
     public class SmallChair : ModTile
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
+        protected virtual Color MapColor => new Color(208, 61, 125);
 
         public override bool CanExplode(int i, int j) => false;
         public override void SetStaticDefaults()
@@ -26,12 +27,37 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Origin = new Point16(0, 2);
 
+            TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
+
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleWrapLimit = 2;
+            TileObjectData.newTile.StyleMultiplier = 2;
+
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
 
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+            TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
+            TileObjectData.addAlternate(1);
+
             TileObjectData.addTile(Type);
 
-            AddMapEntry(new Color(134, 42, 104));
+            AddMapEntry(MapColor);
         }
+    }
+
+    public class SmallChairRed : SmallChair
+    {
+        protected override Color MapColor => new Color(166, 46, 56);
+    }
+
+    public class SmallChairGreen : SmallChair
+    {
+        protected override Color MapColor => new Color(41, 156, 153);
+    }
+
+    public class SmallChairBlue : SmallChair
+    {
+        protected override Color MapColor => new Color(84, 98, 157);
     }
 }
