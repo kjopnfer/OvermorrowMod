@@ -12,6 +12,8 @@ namespace OvermorrowMod.Common
         public const string NPCs = Assets + "Sprites/NPCs/";
         public const string Backgrounds = Assets + "Backgrounds/";
 
+        public const string Textures = Assets + "Textures/";
+
         // For TexGen mapping, not shader mapping
         public const string TextureMaps = Assets + "Maps/";
         #endregion

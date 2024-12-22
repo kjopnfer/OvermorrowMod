@@ -102,7 +102,10 @@ namespace OvermorrowMod.Common.TextureMapping
                         string name = TileLoader.GetTile(objectId).GetLocalizedValue("en");
 
                         bool status = WorldGen.PlaceObject(x2, y2, objectId, true, Main.rand.Next(0, styleRange));
-                        OvermorrowModFile.Instance.Logger.Debug("Generating Object" + name + " Status: " + status);
+                        if (!status)
+                        {
+                            OvermorrowModFile.Instance.Logger.Debug("Generating Object" + name + " Failed!");
+                        }
 
                         NetMessage.SendObjectPlacement(-1, x2, y2, objectId, Main.rand.Next(0, styleRange), 0, -1, -1);
                     }
