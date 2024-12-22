@@ -99,7 +99,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
                 [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
                 [new Color(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
-                [new Color(128, 50, 1)] = (ModContent.TileType<Napoleon>(), 1),
+                [new Color(148, 109, 65)] = (ModContent.TileType<WaxCandleholder>(), 1),
                 [new Color(159, 183, 204)] = (ModContent.TileType<Bismarck>(), 1),
             };
 
@@ -159,26 +159,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #region Fireplace
             PlaceCozyArea(986, 110, RoomID.Yellow);
 
-            /*WorldGen.PlaceObject(989, 105, ModContent.TileType<Bismarck>());
-            WorldGen.PlaceObject(1007, 105, ModContent.TileType<Bismarck>());
-
-            WorldGen.PlaceObject(989, 91, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(998, 89, ModContent.TileType<ArchiveBanner>());
-            WorldGen.PlaceObject(1007, 91, ModContent.TileType<ArchiveBanner>());
-
-            WorldGen.PlaceObject(986, 110, ModContent.TileType<SmallChair>());
-            WorldGen.PlaceObject(989, 110, ModContent.TileType<BanquetTable>());
-            WorldGen.PlaceObject(989, 108, ModContent.TileType<Candelabra>());
-            WorldGen.PlaceObject(992, 108, ModContent.TileType<BookPileTable>());
-
-            WorldGen.PlaceObject(997, 87, ModContent.TileType<WoodenArchSmall>());
-            WorldGen.PlaceObject(998, 102, ModContent.TileType<Moose>());
-            WorldGen.PlaceObject(997, 105, ModContent.TileType<WoodenArchSmall>());
-
-            WorldGen.PlaceObject(1003, 110, ModContent.TileType<FireplacePillar>());
-
-            WorldGen.PlaceObject(1012, 110, ModContent.TileType<CozyChair>());*/
-
             WorldGen.PlaceObject(993, 55, ModContent.TileType<WoodenArch>());
             TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(993, 80);
             #endregion
@@ -215,20 +195,30 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(1290, 90);
 
             WorldGen.PlaceObject(618, 55, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(611, 80, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(637, 80, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(619, 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
 
             WorldGen.PlaceObject(618, 85, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(611, 110, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(637, 110, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(619, 110, DoorID.RedRoomEntrance, DoorID.RedRoom);
 
             WorldGen.PlaceObject(1368, 55, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1361, 80, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(1387, 80, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(1369, 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
 
             WorldGen.PlaceObject(1368, 85, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1361, 110, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(1387, 110, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(1369, 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
             #endregion
 
             #region Top Left Room
             WorldGen.PlaceObject(491, 85, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(484, 110, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(510, 110, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(492, 110, DoorID.GreenRoom, DoorID.GreenRoomEntrance);
 
             PlaceBookshelfArch(27, 55);
@@ -244,10 +234,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(194, 90);
             PlaceBookshelfArch(220, 90);
             PlaceBookshelfArch(246, 90);
-
-            #region Fireplace
-            
-            #endregion
 
             #region Bridge
             WorldGen.PlaceObject(271, 60, ModContent.TileType<WoodenArch>());
@@ -281,6 +267,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #region Bottom Left Room
             WorldGen.PlaceObject(493, 231, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(486, 256, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(512, 256, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(494, 256, DoorID.RedRoom, DoorID.RedRoomEntrance);
 
             PlaceRoomBookshelfArches(29, 201);
@@ -309,8 +297,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
 
             #region Top Right Room
-
             WorldGen.PlaceObject(1495, 85, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1488, 110, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(1514, 110, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(1496, 110, DoorID.YellowRoom, DoorID.YellowRoomEntrance);
 
             #region Bridge
@@ -337,6 +326,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #region Bottom Right Room
             WorldGen.PlaceObject(1493, 231, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(1486, 256, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(1512, 256, ModContent.TileType<WaxCandleholder>());
             PlaceAndConfigureDoor(1494, 256, DoorID.BlueRoom, DoorID.BlueRoomEntrance);
 
             #region Bridge

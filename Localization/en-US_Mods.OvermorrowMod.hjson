@@ -16,6 +16,9 @@ Tiles: {
 	SojournCandelabra.MapEntry: Sojourn Candelabra
 	Candelabra.MapEntry: Candelabra
 	ArchiveDoor.MapEntry: Archive Door
+	Candles.MapEntry: Candles
+	WaxCandelabra.MapEntry: Wax Candelabra
+	WaxCandleholder.MapEntry: Wax Candleholder
 }
 
 NPCs: {
