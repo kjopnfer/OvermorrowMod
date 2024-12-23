@@ -97,7 +97,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
                 [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
                 [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
-                [new Color(159, 131, 65)] = (ModContent.TileType<Candelabra>(), 1),
+                [new Color(159, 131, 65)] = (ModContent.TileType<WaxCandelabra>(), 1),
                 [new Color(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
                 [new Color(148, 109, 65)] = (ModContent.TileType<WaxCandleholder>(), 1),
                 [new Color(159, 183, 204)] = (ModContent.TileType<Bismarck>(), 1),
@@ -374,7 +374,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             WorldGen.PlaceObject(x, y, cozyChairType, true, 0, 0, -1, 1);
             WorldGen.PlaceObject(x + 5, y, ModContent.TileType<BanquetTable>());
-            WorldGen.PlaceObject(x + 5, y - 2, ModContent.TileType<Candelabra>());
+            WorldGen.PlaceObject(x + 5, y - 2, ModContent.TileType<WaxCandelabra>());
             WorldGen.PlaceObject(x + 8, y - 2, ModContent.TileType<BookPileTable>());
 
             WorldGen.PlaceObject(x + 12, y, smallChairType, true, 0, 0, -1, -1);
@@ -437,7 +437,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             WorldGen.PlaceObject(x, y, smallChairType, true, 0, 0, -1, 1);
             WorldGen.PlaceObject(x + 3, y, ModContent.TileType<BanquetTable>());
-            WorldGen.PlaceObject(x + 3, y - 2, ModContent.TileType<Candelabra>());
+            WorldGen.PlaceObject(x + 3, y - 2, ModContent.TileType<WaxCandelabra>());
             WorldGen.PlaceObject(x + 6, y - 2, ModContent.TileType<BookPileTable>());
 
             WorldGen.PlaceObject(x + 11, y - 23, ModContent.TileType<WoodenArchSmall>());

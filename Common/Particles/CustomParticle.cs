@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using System;
 using System.Collections.Generic;
 using Terraria;
 
@@ -12,7 +13,9 @@ namespace OvermorrowMod.Common.Particles
         public OvermorrowModFile mod;
         public static CustomParticle GetCParticle(int type) => CustomParticles[type];
         public Particle particle;
+        //public virtual void OnSpawn() { }
         public virtual void OnSpawn() { }
+
         public virtual void Update() { }
         public virtual string Texture { get { return null; } private set { } }
         public virtual bool ShouldUpdatePosition() => true;

@@ -23,8 +23,6 @@ namespace OvermorrowMod.Common.Particles
         public int activeTime;
         public Vector2[] oldPos = new Vector2[10];
         public float[] customData;
-        public void Kill() => Particle.RemoveAtIndex(id);
-        protected Vector2 DirectionTo(Vector2 pos) => Vector2.Normalize(pos - position);
         private static int MaxParticleCount = 1000;
         public static int NextIndex;
         public static int ActiveParticles;
@@ -69,6 +67,8 @@ namespace OvermorrowMod.Common.Particles
             ParticleNames = null;
             CustomParticle.CustomParticles = null;
         }
+        protected Vector2 DirectionTo(Vector2 pos) => Vector2.Normalize(pos - position);
+        public void Kill() => Particle.RemoveAtIndex(id);
 
         public static void UpdateParticles()
         {
@@ -135,35 +135,105 @@ namespace OvermorrowMod.Common.Particles
             NextIndex = 0;
             ActiveParticles = 0;
         }
-        public static int CreateParticle(int type, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, float data1 = 0, float data2 = 0, float data3 = 0, float data4 = 0)
-        {
-            if (ActiveParticles >= MaxParticleCount) return MaxParticleCount - 1;
-            Particle particle = new Particle();
-            particle.type = type;
-            particle.position = position;
-            particle.velocity = velocity;
-            particle.color = color;
-            particle.alpha = alpha;
-            particle.scale = scale;
-            particle.rotation = rotation;
-            particle.customData = new float[4] { data1, data2, data3, data4 };
-            particle.id = NextIndex;
 
+        /// <summary>
+        /// Creates a particle of the specified type and properties, and returns its ID.
+        /// If the maximum particle count is reached, the ID of the last particle is returned instead.
+        /// </summary>
+        /// <param name="type">The type of the particle to create.</param>
+        /// <param name="position">The initial position of the particle.</param>
+        /// <param name="velocity">The initial velocity of the particle.</param>
+        /// <param name="color">The color of the particle.</param>
+        /// <param name="alpha">The alpha (transparency) of the particle. Default is 1 (fully opaque).</param>
+        /// <param name="scale">The scale (size) of the particle. Default is 1 (original size).</param>
+        /// <param name="rotation">The rotation of the particle. Default is 0 (no rotation).</param>
+        /// <param name="data1">Custom data value 1 for the particle. Default is 0.</param>
+        /// <param name="data2">Custom data value 2 for the particle. Default is 0.</param>
+        /// <param name="data3">Custom data value 3 for the particle. Default is 0.</param>
+        /// <param name="data4">Custom data value 4 for the particle. Default is 0.</param>
+        /// <returns>
+        /// The ID of the newly created particle. If the maximum particle count is reached, returns
+        /// the ID of the last created particle (MaxParticleCount - 1).
+        /// </returns>
+        public static int CreateParticle(int type, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, float customData0 = 0, float customData1 = 0, float customData2 = 0, float customData3 = 0)
+        {
+            Particle particle = CreateParticleDirect(type, position, velocity, color, alpha, scale, rotation, customData0, customData1, customData2, customData3);
+            return particle?.id ?? MaxParticleCount - 1;  // Return the ID if particle was created, otherwise return the max index
+        }
+
+        /// <summary>
+        /// Creates a particle of the specified type and properties, and returns the particle object.
+        /// If the maximum particle count is reached, it returns the last particle created (MaxParticleCount - 1).
+        /// </summary>
+        /// <param name="type">The type of the particle to create.</param>
+        /// <param name="position">The initial position of the particle.</param>
+        /// <param name="velocity">The initial velocity of the particle.</param>
+        /// <param name="color">The color of the particle.</param>
+        /// <param name="alpha">The alpha (transparency) of the particle. Default is 1 (fully opaque).</param>
+        /// <param name="scale">The scale (size) of the particle. Default is 1 (original size).</param>
+        /// <param name="rotation">The rotation of the particle. Default is 0 (no rotation).</param>
+        /// <param name="data1">Custom data value 1 for the particle. Default is 0.</param>
+        /// <param name="data2">Custom data value 2 for the particle. Default is 0.</param>
+        /// <param name="data3">Custom data value 3 for the particle. Default is 0.</param>
+        /// <param name="data4">Custom data value 4 for the particle. Default is 0.</param>
+        /// <returns>
+        /// The newly created particle object, or the last particle if the maximum particle count is reached.
+        /// </returns>
+        public static Particle CreateParticleDirect(int type, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, float customData0 = 0, float customData1 = 0, float customData2 = 0, float customData3 = 0)
+        {
+            if (ActiveParticles >= MaxParticleCount)
+            {
+                return particles[MaxParticleCount - 1];  // Return the last particle (max count - 1)
+            }
+
+            // Debugging check: Ensure the type exists in CustomParticles
+            if (!CustomParticle.CustomParticles.ContainsKey(type))
+            {
+                Main.NewText($"No CustomParticle found for type {type}", Color.Red);
+                return null; // Return null if the type is invalid
+            }
+
+            Particle particle = new Particle
+            {
+                type = type,
+                position = position,
+                velocity = velocity,
+                color = color,
+                alpha = alpha,
+                scale = scale,
+                rotation = rotation,
+                customData = new[] { customData0, customData1, customData2, customData3 },
+                id = NextIndex
+            };
+
+            // Initialize the custom particle for the type
             CustomParticle particle1 = (CustomParticle)Activator.CreateInstance(CustomParticle.GetCParticle(particle.type).GetType());
             particle.cParticle = particle1;
             particle.cParticle.particle = particle;
             particle.cParticle.OnSpawn();
 
+            // Add to particles array
             particles[NextIndex] = particle;
+
+            // Update NextIndex
+            UpdateNextIndex();
+
+            ActiveParticles++;
+            return particle;
+        }
+
+        // Update the NextIndex after particle addition
+        private static void UpdateNextIndex()
+        {
             if (NextIndex + 1 < particles.Length && particles[NextIndex + 1] == null)
                 NextIndex++;
             else
                 for (int i = 0; i < particles.Length; i++)
                     if (particles[i] == null)
+                    {
                         NextIndex = i;
-
-            ActiveParticles++;
-            return particle.id;
+                        break;
+                    }
         }
     }
 }
