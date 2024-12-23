@@ -48,7 +48,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         private void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
         {
             Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.DarkOrange, 1f, scale, 0f, 0, scale);
-            Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.White, 1f, scale, 0f, 0, scale * 0.5f);
+            Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.White * 0.75f, 1f, scale, 0f, 0, scale * 0.5f);
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -59,7 +59,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 float scale = 0.1f;
                 Vector2 velocity = -Vector2.UnitY * 0.4f;
 
-                // Create particles at different positions
                 CreateEmberParticle(new Vector2(i + 1, j + 0.5f) * 16, velocity, scale);
                 CreateEmberParticle(new Vector2(i + 0.55f, j + 0.75f) * 16, velocity, scale);
                 CreateEmberParticle(new Vector2(i + 1.5f, j + 0.5f) * 16, velocity, scale);

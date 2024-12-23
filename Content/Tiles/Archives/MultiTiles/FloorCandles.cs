@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Content.Particles;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -19,7 +21,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileNoAttach[Type] = true;
             Main.tileLighted[Type] = true;
 
-            TileObjectData.newTile.Width = 2;
+            TileObjectData.newTile.Width = 1;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.CoordinateHeights = [16, 16];
 
@@ -27,7 +29,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.newTile.Origin = new Point16(0, 1);
 
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.RandomStyleRange = 3;
+            TileObjectData.newTile.RandomStyleRange = 6;
 
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
@@ -40,6 +42,55 @@ namespace OvermorrowMod.Content.Tiles.Archives
             r = 0.9f;
             g = 0.675f;
             b = 0f;
+        }
+
+        private void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
+        {
+            Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.DarkOrange, 1f, scale, 0f, 0, scale);
+            Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.White * 0.75f, 1f, scale, 0f, 0, scale * 0.5f);
+        }
+
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            if (Main.gamePaused) return;
+
+            Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.TileFrameY != 0) return;
+
+            float scale = 0.075f;
+            Vector2 velocity = -Vector2.UnitY * 0.4f;
+
+            switch (tile.TileFrameX)
+            {
+                case 0:
+                    CreateEmberParticle(new Vector2(i + 0.3f, j + 1.5f) * 16, velocity, scale);
+                    CreateEmberParticle(new Vector2(i + 0.65f, j + 0.8f) * 16, velocity, scale);
+                    CreateEmberParticle(new Vector2(i + 0.8f, j + 1.7f) * 16, velocity, scale);
+                    break;
+                case 18:
+                    CreateEmberParticle(new Vector2(i + 0.3f, j + 1.6f) * 16, velocity, scale);
+                    CreateEmberParticle(new Vector2(i + 0.6f, j + 1.4f) * 16, velocity, scale);
+                    break;
+                case 36:
+                    CreateEmberParticle(new Vector2(i + 0.2f, j + 1.5f) * 16, velocity, scale);
+                    CreateEmberParticle(new Vector2(i + 0.65f, j + 1.6f) * 16, velocity, scale);
+                    break;
+                case 54:
+                    CreateEmberParticle(new Vector2(i + 0.35f, j + 1.3f) * 16, velocity, scale);
+                    break;
+                case 72:
+                    CreateEmberParticle(new Vector2(i + 0.3f, j + 1.4f) * 16, velocity, scale);
+                    CreateEmberParticle(new Vector2(i + 0.8f, j + 1.3f) * 16, velocity, scale);
+                    break;
+                case 90:
+                    CreateEmberParticle(new Vector2(i + 0.15f, j + 1.6f) * 16, velocity, scale);
+                    CreateEmberParticle(new Vector2(i + 0.45f, j + 1.4f) * 16, velocity, scale);
+                    CreateEmberParticle(new Vector2(i + 0.75f, j + 1.6f) * 16, velocity, scale);
+                    break;
+            }
+
+
+            base.NearbyEffects(i, j, closer);
         }
     }
 }

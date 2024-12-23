@@ -91,7 +91,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 [new Color(208, 61, 125)] = (ModContent.TileType<CozyChair>(), 1),
                 [new Color(180, 58, 0)] = (ModContent.TileType<Fireplace>(), 1),
                 [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
-                [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 3),
+                [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 6),
                 [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
                 [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
                 [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
