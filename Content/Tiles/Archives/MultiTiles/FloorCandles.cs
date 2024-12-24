@@ -4,8 +4,6 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Enums;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 

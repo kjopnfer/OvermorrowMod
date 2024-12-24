@@ -119,8 +119,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             // ...yet I have to do it manually for these fucking things anyways because they don't work??
             WorldGen.PlaceObject(307, 111, ModContent.TileType<WoodenArchSplit>());
-            
-           
+
+
 
             WorldGen.PlaceObject(328, 131, ModContent.TileType<Napoleon>());
 
@@ -375,7 +375,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(x, y, cozyChairType, true, 0, 0, -1, 1);
             WorldGen.PlaceObject(x + 5, y, ModContent.TileType<BanquetTable>());
             WorldGen.PlaceObject(x + 5, y - 2, ModContent.TileType<WaxCandelabra>());
-            WorldGen.PlaceObject(x + 8, y - 2, ModContent.TileType<BookPileTable>());
+            WorldGen.PlaceObject(x + 8, y - 2, ModContent.TileType<BookPileTable>(), true, Main.rand.Next(0, 4));
 
             WorldGen.PlaceObject(x + 12, y, smallChairType, true, 0, 0, -1, -1);
             WorldGen.PlaceObject(x + 16, y, smallChairType, true, 0, 0, -1, 1);
@@ -438,7 +438,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(x, y, smallChairType, true, 0, 0, -1, 1);
             WorldGen.PlaceObject(x + 3, y, ModContent.TileType<BanquetTable>());
             WorldGen.PlaceObject(x + 3, y - 2, ModContent.TileType<WaxCandelabra>());
-            WorldGen.PlaceObject(x + 6, y - 2, ModContent.TileType<BookPileTable>());
+            WorldGen.PlaceObject(x + 6, y - 2, ModContent.TileType<BookPileTable>(), true, Main.rand.Next(0, 4));
 
             WorldGen.PlaceObject(x + 11, y - 23, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(x + 12, y - 8, ModContent.TileType<Moose>());
@@ -461,6 +461,37 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             WorldGen.PlaceObject(x + 12, y, ModContent.TileType<WoodenArchR2>());
             WorldGen.PlaceObject(x + 13, y, ModContent.TileType<WoodenArchR3>());
 
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 1, y + 5, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 10, y + 5, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+
+            PlaceBookshelfObjects(x + 3, y + 5);
+            PlaceBookshelfObjects(x + 5, y + 5);
+            PlaceBookshelfObjects(x + 8, y + 5);
+        }
+
+        private void PlaceBookshelfObjects(int x, int y)
+        {
+            switch (Main.rand.Next(0, 4))
+            {
+                case 0:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<Globe>());
+                    break;
+                case 1:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<Telescope>());
+                    break;
+                case 2:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+                    WorldGen.PlaceObject(x, y - 1, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+                    if (Main.rand.NextBool())
+                        WorldGen.PlaceObject(x, y - 2, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+                    break;
+                case 3:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<Crates>(), true, Main.rand.Next(0, 3));
+                    break;
+            }
         }
 
         private void PlaceAndConfigureDoor(int x, int y, DoorID doorID, DoorID pairedDoor)

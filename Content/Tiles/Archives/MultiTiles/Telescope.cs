@@ -3,23 +3,22 @@ using OvermorrowMod.Common;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
-    public class CozyChair : ModTile
+    public class Telescope : ModTile
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
-        protected virtual Color MapColor => new Color(208, 61, 125);
-
         public override bool CanExplode(int i, int j) => false;
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
 
-            TileObjectData.newTile.Width = 3;
+            TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.CoordinateHeights = [16, 16, 16];
 
@@ -41,22 +40,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             TileObjectData.addTile(Type);
 
-            AddMapEntry(MapColor);
+            AddMapEntry(new Color(48, 52, 72));
         }
-    }
-
-    public class CozyChairRed : CozyChair
-    {
-        protected override Color MapColor => new Color(166, 46, 56);
-    }
-
-    public class CozyChairGreen : CozyChair
-    {
-        protected override Color MapColor => new Color(41, 156, 153);
-    }
-
-    public class CozyChairBlue : CozyChair
-    {
-        protected override Color MapColor => new Color(84, 98, 157);
     }
 }
