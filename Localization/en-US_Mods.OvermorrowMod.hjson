@@ -8,6 +8,16 @@ Items: {
 		DisplayName: Test Placeable
 		Tooltip: ""
 	}
+
+	ScholarsArmor: {
+		DisplayName: Scholars Armor
+		Tooltip: ""
+	}
+
+	ScholarsRobes: {
+		DisplayName: Scholars Robes
+		Tooltip: ""
+	}
 }
 
 Tiles: {
@@ -19,11 +29,16 @@ Tiles: {
 	Candles.MapEntry: Candles
 	WaxCandelabra.MapEntry: Wax Candelabra
 	WaxCandleholder.MapEntry: Wax Candleholder
+	LeftShelf.MapEntry: Left Shelf
+	RightShelf.MapEntry: Right Shelf
+	WizardStatue.MapEntry: Wizard Statue
 }
 
 NPCs: {
 	WaxBearer.DisplayName: THE ZANCIENT ONE
 	BridgeCollision.DisplayName: Bridge Collision
+	LeftShelfCollision.DisplayName: Left Shelf Collision
+	RightShelfCollision.DisplayName: Right Shelf Collision
 }
 
 Biomes: {
