@@ -20,5 +20,6 @@ namespace OvermorrowMod.Common
 
         public const string ArchiveTiles = Tiles + "Archives/";
         public const string ArchiveNPCs = NPCs + "Archives/";
+        public const string ArchiveItems = Items + "Archives/";
     }
 }
