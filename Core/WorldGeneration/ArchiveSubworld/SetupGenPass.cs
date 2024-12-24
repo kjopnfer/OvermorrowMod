@@ -290,6 +290,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             #endregion
 
+            WorldGen.PlaceObject(300, 261, ModContent.TileType<LeftShelf>());
+            WorldGen.PlaceObject(319, 261, ModContent.TileType<WizardStatue>());
+            WorldGen.PlaceObject(337, 261, ModContent.TileType<RightShelf>());
+
             PlaceLoungeArea(113, 226, RoomID.Red);
             PlaceCozyArea(111, 256, RoomID.Red);
             PlaceLoungeArea(488, 226, RoomID.Red);
