@@ -18,6 +18,11 @@ Items: {
 		DisplayName: Scholars Robes
 		Tooltip: ""
 	}
+
+	ScholarsHat: {
+		DisplayName: Scholars Hat
+		Tooltip: ""
+	}
 }
 
 Tiles: {
