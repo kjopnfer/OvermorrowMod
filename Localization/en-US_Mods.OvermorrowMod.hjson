@@ -44,6 +44,7 @@ NPCs: {
 	BridgeCollision.DisplayName: Bridge Collision
 	LeftShelfCollision.DisplayName: Left Shelf Collision
 	RightShelfCollision.DisplayName: Right Shelf Collision
+	ArchiveRat.DisplayName: Archive Rat
 }
 
 Biomes: {
