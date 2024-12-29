@@ -4,23 +4,33 @@ using Terraria.GameContent;
 using Terraria;
 using Terraria.ModLoader;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class ArchiveRat : ModNPC
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            return false;
+        }
 
         public override void SetStaticDefaults()
         {
-            base.SetStaticDefaults();
+            Main.npcFrameCount[NPC.type] = 9;
+
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
+            {
+                Velocity = 1f
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
         public override void SetDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 9;
-
-            NPC.width = 46;
+            NPC.width = 30;
             NPC.height = 44;
             NPC.lifeMax = 100;
             NPC.defense = 8;
@@ -31,6 +41,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private int frameTimer = 0;
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
+        public ref Player player => ref Main.player[NPC.target];
 
         public enum AICase
         {
@@ -47,8 +58,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch ((AICase)AIState)
             {
                 case AICase.Idle:
-                    xFrame = 0;
-                    yFrame = 2;
+                    NPC.velocity.X = 0;
 
                     if (AICounter++ == 120)
                     {
@@ -57,16 +67,41 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Walk:
-                    if (AICounter++ % 6 == 0)
+                    Vector2 distance = NPC.Move(player.Center, 0.6f, 1.8f, 8f);
+
+                    Main.NewText(distance);
+
+                    if (distance.X < 18 * 10)
                     {
-                        yFrame++;
-                        if (yFrame >= 9) yFrame = 0;
+                        Main.NewText("attack");
                     }
 
-                    if (AICounter >= 54 * 5)
+                    if (AICounter++ >= 54 * 5)
                     {
                         AIState = (int)AICase.Idle;
                         AICounter = 0;
+                    }
+                    break;
+                case AICase.Attack:
+                    break;
+                case AICase.Stealth:
+                    break;
+            }
+        }
+
+        private void SetFrame()
+        {
+            switch ((AICase)AIState)
+            {
+                case AICase.Idle:
+                    xFrame = 0;
+                    yFrame = 2;
+                    break;
+                case AICase.Walk:
+                    if (AICounter % 6 == 0)
+                    {
+                        yFrame++;
+                        if (yFrame >= 9) yFrame = 0;
                     }
                     break;
                 case AICase.Attack:
@@ -82,6 +117,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         int FRAME_HEIGHT = 48;
         public override void FindFrame(int frameHeight)
         {
+            SetFrame();
+
             NPC.spriteDirection = NPC.direction;
             NPC.frame.Width = TextureAssets.Npc[NPC.type].Value.Width / 10;
             NPC.frame.X = FRAME_WIDTH * xFrame;
