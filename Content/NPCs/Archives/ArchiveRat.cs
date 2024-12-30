@@ -9,6 +9,7 @@ using Terraria.ID;
 using Terraria.GameContent.Bestiary;
 using Terraria.UI;
 using Terraria.DataStructures;
+using OvermorrowMod.Content.Buffs;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -67,6 +68,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         private float maxSpeed = 1.8f;
+        private int stealthDelay = 300;
         public override void OnSpawn(IEntitySource source)
         {
             maxSpeed = Main.rand.NextFloat(1.8f, 3f);
@@ -74,6 +76,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
+            NPC.chaseable = !NPC.HasBuff<Stealth>();
+            if (!NPC.HasBuff<Stealth>() && stealthDelay > 0) stealthDelay--;
+
             switch ((AICase)AIState)
             {
                 case AICase.Idle:
@@ -92,21 +97,30 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     NPC.TargetClosest();
 
                     Vector2 distance = NPC.Move(player.Center, 0.6f, maxSpeed, 8f);
-                    if (distance.X < 18 * 10)
+                    bool isWithinAttackRange = distance.X < 18 * 10 && distance.Y < 5;
+
+                    if (isWithinAttackRange)
                     {
                         canAttack = true;
-
-                        AIState = (int)AICase.Idle;
-                        AICounter = 0;
+                        SetAIState(AICase.Idle);
+                    }
+                    else if (!NPC.HasBuff<Stealth>() && stealthDelay <= 0)
+                    {
+                        SetAIState(AICase.Stealth);
                     }
 
                     if (AICounter++ >= 54 * 5)
                     {
-                        AIState = (int)AICase.Idle;
-                        AICounter = 0;
+                        SetAIState(AICase.Idle);
                     }
                     break;
                 case AICase.Attack:
+                    if (NPC.HasBuff<Stealth>())
+                    {
+                        int buff = NPC.FindBuffIndex(ModContent.BuffType<Stealth>());
+                        NPC.DelBuff(buff);
+                    }
+
                     NPC.velocity.X = Main.rand.Next(29, 35) * NPC.direction;
 
                     if (AICounter++ >= 10)
@@ -117,8 +131,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Stealth:
+                    NPC.velocity.X = 0;
+                    NPC.AddBuff(ModContent.BuffType<Stealth>(), 18000);
+
+                    if (AICounter++ >= 60)
+                    {
+                        stealthDelay = 600;
+                        SetAIState(AICase.Walk);
+                    }
                     break;
             }
+        }
+        private void SetAIState(AICase state)
+        {
+            AIState = (int)state;
+            AICounter = 0;
         }
 
         private void SetFrame()
@@ -177,8 +204,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }
 
+            float alpha = NPC.HasBuff<Stealth>() ? 0.5f : 1f;
             Vector2 drawOffset = new Vector2(0, 2);
-            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * alpha, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
         }

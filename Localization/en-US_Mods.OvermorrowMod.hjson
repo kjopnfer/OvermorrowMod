@@ -53,3 +53,10 @@ Biomes: {
 		TownNPCDialogueName: the Archives
 	}
 }
+
+Buffs: {
+	Stealth: {
+		DisplayName: Stealth
+		Description: Mods.OvermorrowMod.Buffs.Stealth.Description
+	}
+}
