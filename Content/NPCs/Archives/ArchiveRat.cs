@@ -10,6 +10,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.UI;
 using Terraria.DataStructures;
 using OvermorrowMod.Content.Buffs;
+using OvermorrowMod.Core.Globals;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -42,6 +43,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.lifeMax = 100;
             NPC.defense = 8;
             NPC.damage = 23;
+            NPC.knockBackResist = 0.5f;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -68,16 +70,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         private float maxSpeed = 1.8f;
-        private int stealthDelay = 300;
+        public bool isStealthed => NPC.HasBuff<Stealth>();
         public override void OnSpawn(IEntitySource source)
         {
             maxSpeed = Main.rand.NextFloat(1.8f, 3f);
         }
 
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            modifiers.SourceDamage.Base *= 2;
+        }
+
         public override void AI()
         {
-            NPC.chaseable = !NPC.HasBuff<Stealth>();
-            if (!NPC.HasBuff<Stealth>() && stealthDelay > 0) stealthDelay--;
+            NPC.chaseable = !isStealthed;
+            NPC.knockBackResist = isStealthed ? 0f : 0.5f;
 
             switch ((AICase)AIState)
             {
@@ -104,7 +111,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         canAttack = true;
                         SetAIState(AICase.Idle);
                     }
-                    else if (!NPC.HasBuff<Stealth>() && stealthDelay <= 0)
+                    else if (!isStealthed && NPC.GetGlobalNPC<BuffNPC>().StealthDelay <= 0)
                     {
                         SetAIState(AICase.Stealth);
                     }
@@ -115,13 +122,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Attack:
-                    if (NPC.HasBuff<Stealth>())
+                    if (isStealthed)
                     {
                         int buff = NPC.FindBuffIndex(ModContent.BuffType<Stealth>());
                         NPC.DelBuff(buff);
                     }
 
-                    NPC.velocity.X = Main.rand.Next(29, 35) * NPC.direction;
+                    NPC.velocity.X = Main.rand.Next(14, 17) * NPC.direction;
 
                     if (AICounter++ >= 10)
                     {
@@ -136,7 +143,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                     if (AICounter++ >= 60)
                     {
-                        stealthDelay = 600;
+                        NPC.GetGlobalNPC<BuffNPC>().StealthDelay = 300;
                         SetAIState(AICase.Walk);
                     }
                     break;
@@ -200,13 +207,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     // Adjust drawPos if the hitbox does not match sprite dimension
                     Vector2 drawPos = NPC.oldPos[k] + texture.Size() / 2f - screenPos;
                     Color afterImageColor = NPC.GetAlpha(new Color(56, 40, 26)) * ((NPC.oldPos.Length - k) / (float)NPC.oldPos.Length);
-                    spriteBatch.Draw(texture, drawPos + new Vector2(0, 0), NPC.frame, afterImageColor, NPC.rotation, texture.Size() / 2f, NPC.scale, spriteEffects, 0f);
+                    spriteBatch.Draw(texture, drawPos + new Vector2(0, 0), NPC.frame, afterImageColor * NPC.Opacity, NPC.rotation, texture.Size() / 2f, NPC.scale, spriteEffects, 0f);
                 }
             }
 
-            float alpha = NPC.HasBuff<Stealth>() ? 0.5f : 1f;
             Vector2 drawOffset = new Vector2(0, 2);
-            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * alpha, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
         }
