@@ -1,58 +1,14 @@
-Items: {
-	TowerKey: {
-		DisplayName: Mysterious Key
-		Tooltip: Used to access The Tower
-	}
-
-	TestPlaceable: {
-		DisplayName: Test Placeable
-		Tooltip: ""
-	}
-
-	ScholarsArmor: {
-		DisplayName: Scholars Armor
-		Tooltip: ""
-	}
-
-	ScholarsRobes: {
-		DisplayName: Scholars Robes
-		Tooltip: ""
-	}
-
-	ScholarsHat: {
-		DisplayName: Scholars Hat
-		Tooltip: ""
-	}
-}
-
 Tiles: {
-	GarrisonBanner.MapEntry: Garrison Banner
-	Lamp.MapEntry: Lamp
-	SojournCandelabra.MapEntry: Sojourn Candelabra
-	Candelabra.MapEntry: Candelabra
 	ArchiveDoor.MapEntry: Archive Door
-	Candles.MapEntry: Candles
-	WaxCandelabra.MapEntry: Wax Candelabra
-	WaxCandleholder.MapEntry: Wax Candleholder
+	Lamp.MapEntry: Lamp
 	LeftShelf.MapEntry: Left Shelf
 	RightShelf.MapEntry: Right Shelf
+	WaxCandelabra.MapEntry: Wax Candelabra
+	WaxCandleholder.MapEntry: Wax Candleholder
 	WizardStatue.MapEntry: Wizard Statue
 }
 
-NPCs: {
-	WaxBearer.DisplayName: THE ZANCIENT ONE
-	BridgeCollision.DisplayName: Bridge Collision
-	LeftShelfCollision.DisplayName: Left Shelf Collision
-	RightShelfCollision.DisplayName: Right Shelf Collision
-	ArchiveRat.DisplayName: Rogue Rodent
-}
-
 Biomes: {
-	Archives: {
-		DisplayName: Archives
-		TownNPCDialogueName: the Archives
-	}
-
 	Library: {
 		DisplayName: Library
 		TownNPCDialogueName: the Library
@@ -65,3 +21,40 @@ Buffs: {
 		Description: Mods.OvermorrowMod.Buffs.Stealth.Description
 	}
 }
+
+Items: {
+	ScholarsArmor: {
+		DisplayName: Scholars Armor
+		Tooltip: ""
+	}
+
+	ScholarsHat: {
+		DisplayName: Scholars Hat
+		Tooltip: ""
+	}
+
+	ScholarsRobes: {
+		DisplayName: Scholars Robes
+		Tooltip: ""
+	}
+
+	TestPlaceable: {
+		DisplayName: Test Placeable
+		Tooltip: ""
+	}
+
+	TowerKey: {
+		DisplayName: Tower Key
+		Tooltip: ""
+	}
+}
+
+NPCs: {
+	ArchiveRat.DisplayName: Archive Rat
+	WaxBearer.DisplayName: Wax Bearer
+	BridgeCollision.DisplayName: Bridge Collision
+	LeftShelfCollision.DisplayName: Left Shelf Collision
+	RightShelfCollision.DisplayName: Right Shelf Collision
+}
+
+Bestiary.ArchiveRat: mista cheese comin for ur knees

@@ -12,6 +12,8 @@ using Terraria.DataStructures;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Biomes;
+using Terraria.GameContent.ItemDropRules;
+using Terraria.Localization;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -45,6 +47,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.defense = 8;
             NPC.damage = 23;
             NPC.knockBackResist = 0.5f;
+            NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
             SpawnModBiomes = [ModContent.GetInstance<Library>().Type];
         }
@@ -52,7 +55,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                new FlavorTextBestiaryInfoElement("This type of zombie really like Example Items. They steal them as soon as they find some."),
+                new FlavorTextBestiaryInfoElement(Language.GetTextValue("Mods.OvermorrowMod.Bestiary.ArchiveRat")),
             });
         }
 
@@ -86,7 +89,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void AI()
         {
             NPC.knockBackResist = isStealthed ? 0f : 0.5f;
-
             switch ((AICase)AIState)
             {
                 case AICase.Idle:
@@ -150,6 +152,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     break;
             }
         }
+
         private void SetAIState(AICase state)
         {
             AIState = (int)state;
@@ -227,6 +230,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             
 
             return false;
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
         }
     }
 }
