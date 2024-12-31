@@ -11,6 +11,7 @@ using Terraria.UI;
 using Terraria.DataStructures;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Biomes;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -44,12 +45,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.defense = 8;
             NPC.damage = 23;
             NPC.knockBackResist = 0.5f;
+
+            SpawnModBiomes = [ModContent.GetInstance<Library>().Type];
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.NightTime,
                 new FlavorTextBestiaryInfoElement("This type of zombie really like Example Items. They steal them as soon as they find some."),
             });
         }
@@ -83,7 +85,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
-            NPC.chaseable = !isStealthed;
             NPC.knockBackResist = isStealthed ? 0f : 0.5f;
 
             switch ((AICase)AIState)
@@ -157,6 +158,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void SetFrame()
         {
+            if (NPC.IsABestiaryIconDummy) AIState = (int)AICase.Walk;
+
             switch ((AICase)AIState)
             {
                 case AICase.Idle:
@@ -166,7 +169,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AICase.Walk:
                     xFrame = 0;
 
-                    if (AICounter % 6 == 0)
+                    if (NPC.frameCounter++ % 6 == 0)
                     {
                         yFrame++;
                         if (yFrame >= 9) yFrame = 0;
@@ -191,8 +194,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.spriteDirection = NPC.direction;
             NPC.frame.Width = TextureAssets.Npc[NPC.type].Value.Width / 10;
-            NPC.frame.X = FRAME_WIDTH * xFrame;
-            NPC.frame.Y = FRAME_HEIGHT * yFrame;
+            NPC.frame.Height = TextureAssets.Npc[NPC.type].Value.Height / 9;
+
+            NPC.frame.X = NPC.frame.Width * xFrame;
+            NPC.frame.Y = NPC.frame.Height * yFrame;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -200,6 +205,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
+            if (NPC.IsABestiaryIconDummy)
+            {
+                spriteBatch.Draw(texture, NPC.Center, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+                return true;
+            }
+      
             if (AIState == (int)AICase.Attack && NPC.velocity != Vector2.Zero)
             {
                 for (int k = 0; k < NPC.oldPos.Length; k++)
@@ -213,6 +224,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Vector2 drawOffset = new Vector2(0, 2);
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            
 
             return false;
         }

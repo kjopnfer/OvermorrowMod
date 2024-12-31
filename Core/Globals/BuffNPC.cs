@@ -17,6 +17,10 @@ namespace OvermorrowMod.Core.Globals
         /// 60 is fully stealthed and 0 is stealthed.
         /// </summary>
         public int StealthCounter { get; private set; } = 0;
+
+        /// <summary>
+        /// Amount of time left before the NPC can gain the Stealth buff again.
+        /// </summary>
         public int StealthDelay = 0;
 
         public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
@@ -60,6 +64,8 @@ namespace OvermorrowMod.Core.Globals
             }
 
             if (!npc.HasBuff<Stealth>() && StealthDelay > 0) StealthDelay--;
+            npc.chaseable = !npc.HasBuff<Stealth>();
+            npc.ShowNameOnHover = !npc.HasBuff<Stealth>();
 
             return base.PreAI(npc);
         }

@@ -44,13 +44,18 @@ NPCs: {
 	BridgeCollision.DisplayName: Bridge Collision
 	LeftShelfCollision.DisplayName: Left Shelf Collision
 	RightShelfCollision.DisplayName: Right Shelf Collision
-	ArchiveRat.DisplayName: Archive Rat
+	ArchiveRat.DisplayName: Rogue Rodent
 }
 
 Biomes: {
 	Archives: {
 		DisplayName: Archives
 		TownNPCDialogueName: the Archives
+	}
+
+	Library: {
+		DisplayName: Library
+		TownNPCDialogueName: the Library
 	}
 }
 
