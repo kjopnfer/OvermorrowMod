@@ -17,7 +17,7 @@ using Terraria.Localization;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
-    public class ArchiveRat : ModNPC
+    public class ArchiveRat : OvermorrowNPC
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -200,17 +200,20 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.frame.Y = NPC.frame.Height * yFrame;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+
+        protected override void DrawBestiary(SpriteBatch spriteBatch, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            if (NPC.IsABestiaryIconDummy)
-            {
-                spriteBatch.Draw(texture, NPC.Center, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
-                return true;
-            }
-      
+            spriteBatch.Draw(texture, NPC.Center, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+        }
+
+        public override bool DrawNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
             if (AIState == (int)AICase.Attack && NPC.velocity != Vector2.Zero)
             {
                 for (int k = 0; k < NPC.oldPos.Length; k++)
@@ -224,7 +227,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Vector2 drawOffset = new Vector2(0, 2);
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
-            
 
             return false;
         }
