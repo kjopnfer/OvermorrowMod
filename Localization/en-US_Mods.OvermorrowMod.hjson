@@ -10,8 +10,18 @@ Tiles: {
 
 Biomes: {
 	Library: {
-		DisplayName: Library
-		TownNPCDialogueName: the Library
+		DisplayName: Grand Archives
+		TownNPCDialogueName: The Grand Archives
+	}
+
+	GrandArchives: {
+		DisplayName: Grand Archives
+		TownNPCDialogueName: the Grand Archives
+	}
+
+	Inkwell: {
+		DisplayName: Inkwell
+		TownNPCDialogueName: the Inkwell
 	}
 }
 
@@ -50,11 +60,15 @@ Items: {
 }
 
 NPCs: {
-	ArchiveRat.DisplayName: Archive Rat
+	ArchiveRat.DisplayName: Rat Rogue
 	WaxBearer.DisplayName: Wax Bearer
 	BridgeCollision.DisplayName: Bridge Collision
 	LeftShelfCollision.DisplayName: Left Shelf Collision
 	RightShelfCollision.DisplayName: Right Shelf Collision
+	PlaneBook.DisplayName: Living Grimoire
 }
 
-Bestiary.ArchiveRat: mista cheese comin for ur knees
+Bestiary: {
+	ArchiveRat: mista cheese comin for ur knees
+	PlaneBook: Brought to life by magical ink, this Grimoire conjures a swarm of paper airplanes.
+}

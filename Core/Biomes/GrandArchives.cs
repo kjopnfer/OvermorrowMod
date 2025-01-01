@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Biomes
 {
-    public class Library : ModBiome
+    public class GrandArchives : ModBiome
     {
         // Declare biome priority. The default is BiomeLow so this is only necessary if it needs a higher priority.
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
