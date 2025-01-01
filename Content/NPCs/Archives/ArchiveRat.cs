@@ -49,19 +49,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.knockBackResist = 0.5f;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
-            SpawnModBiomes = [ModContent.GetInstance<Library>().Type];
+            SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                new FlavorTextBestiaryInfoElement(Language.GetTextValue("Mods.OvermorrowMod.Bestiary.ArchiveRat")),
+                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizatonPath.Bestiary + Name)),
             });
         }
 
         private bool canAttack = false;
-        private int frame = 0;
-        private int frameTimer = 0;
+
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
         public ref Player player => ref Main.player[NPC.target];
@@ -83,7 +82,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            modifiers.SourceDamage.Base *= 2;
+            if (isStealthed) modifiers.SourceDamage.Base *= 2;
         }
 
         public override void AI()
@@ -189,8 +188,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         int xFrame = 0;
         int yFrame = 0;
-        int FRAME_WIDTH = 56;
-        int FRAME_HEIGHT = 48;
         public override void FindFrame(int frameHeight)
         {
             SetFrame();
