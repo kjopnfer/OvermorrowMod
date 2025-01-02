@@ -182,6 +182,29 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     yFrame = 0;
                     break;
                 case AICase.Stealth:
+                    xFrame = 1;
+                    if (AICounter == 0)
+                    {
+                        yFrame = 2;
+                        NPC.frameCounter = 0;
+                    }
+
+                    if (AICounter <= 30)
+                    {
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame++;
+                            if (yFrame >= 5) yFrame = 5;
+                        }
+                    }
+                    else
+                    {
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame--;
+                            if (yFrame <= 2) yFrame = 2;
+                        }
+                    }
                     break;
             }
         }
@@ -201,7 +224,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
 
-        protected override void DrawBestiary(SpriteBatch spriteBatch, Color drawColor)
+        protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
@@ -233,6 +256,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
+
             npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
         }
     }
