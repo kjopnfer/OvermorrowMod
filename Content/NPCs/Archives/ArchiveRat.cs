@@ -14,6 +14,10 @@ using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Biomes;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.Localization;
+using System.Linq;
+using OvermorrowMod.Common.CustomCollision;
+using System;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -22,7 +26,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            return AIState == (int)AICase.Attack && NPC.velocity.X != 0;
+            return afterimageLinger > 0;
         }
 
         public override void SetStaticDefaults()
@@ -68,38 +72,180 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public enum AICase
         {
+            Decelerate = -1,
             Idle = 0,
             Walk = 1,
             Attack = 2,
             Stealth = 3
         }
 
-        private float maxSpeed = 1.8f;
+
         public bool isStealthed => NPC.HasBuff<Stealth>();
+
+
+        private float maxSpeed = 1.8f;
+        private int idleTime = 30;
+        private int attackRange = 18 * 10;
+        private int stealthDelay = 300;
         public override void OnSpawn(IEntitySource source)
         {
             maxSpeed = Main.rand.NextFloat(1.8f, 3f);
+            idleTime = Main.rand.Next(24, 36);
+            attackRange = Main.rand.Next(16, 19) * 10;
+            stealthDelay = Main.rand.Next(24, 32) * 10;
+            NPC.GetGlobalNPC<BuffNPC>().StealthDelay = stealthDelay;
         }
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            if (isStealthed) modifiers.SourceDamage.Base *= 2;
+            if (NPC.GetGlobalNPC<BuffNPC>().StealthCounter > 0) modifiers.SourceDamage *= 2;
         }
 
+        #region Test
+        bool IsRectangleIntersectingSlope(Vector2 start, Vector2 end, float width, Rectangle npcBottomHitbox)
+        {
+            // Calculate the direction vector of the slope
+            Vector2 direction = Vector2.Normalize(end - start);
+
+            // Calculate the perpendicular vector for width
+            Vector2 perpendicular = new Vector2(-direction.Y, direction.X) * width * 0.5f;
+
+            // Define the four corners of the rotated rectangle
+            Vector2 p1 = start - perpendicular; // Bottom-left
+            Vector2 p2 = start + perpendicular; // Top-left
+            Vector2 p3 = end + perpendicular;   // Top-right
+            Vector2 p4 = end - perpendicular;   // Bottom-right
+
+            // Define the slope as a polygon
+            Vector2[] slopePolygon = new[] { p1, p2, p3, p4 };
+
+            // Check for intersection between the NPC's bottom hitbox and the polygon
+            return PolygonIntersectsRectangle(slopePolygon, npcBottomHitbox);
+        }
+
+        // Function to check if a polygon intersects with a rectangle
+        bool PolygonIntersectsRectangle(Vector2[] polygon, Rectangle rectangle)
+        {
+            // Convert the rectangle into a polygon (clockwise points)
+            Vector2[] rectPolygon = new Vector2[]
+            {
+                new Vector2(rectangle.Left, rectangle.Top),
+                new Vector2(rectangle.Right, rectangle.Top),
+                new Vector2(rectangle.Right, rectangle.Bottom),
+                new Vector2(rectangle.Left, rectangle.Bottom)
+            };
+
+            // Perform SAT-based intersection test between the two polygons
+            return PolygonsIntersect(polygon, rectPolygon);
+        }
+
+        // SAT-based polygon intersection test
+        bool PolygonsIntersect(Vector2[] poly1, Vector2[] poly2)
+        {
+            // Helper function to project a polygon onto an axis
+            void ProjectPolygon(Vector2 axis, Vector2[] polygon, out float min, out float max)
+            {
+                min = Vector2.Dot(axis, polygon[0]);
+                max = min;
+                for (int i = 1; i < polygon.Length; i++)
+                {
+                    float projection = Vector2.Dot(axis, polygon[i]);
+                    if (projection < min) min = projection;
+                    if (projection > max) max = projection;
+                }
+            }
+
+            // Helper function to check overlap between two projections
+            bool Overlaps(float minA, float maxA, float minB, float maxB) => maxA >= minB && maxB >= minA;
+
+            // Get the axes (normals of edges) for both polygons
+            List<Vector2> axes = new List<Vector2>();
+            for (int i = 0; i < poly1.Length; i++)
+                axes.Add(Vector2.Normalize(new Vector2(-(poly1[(i + 1) % poly1.Length] - poly1[i]).Y, (poly1[(i + 1) % poly1.Length] - poly1[i]).X)));
+
+            for (int i = 0; i < poly2.Length; i++)
+                axes.Add(Vector2.Normalize(new Vector2(-(poly2[(i + 1) % poly2.Length] - poly2[i]).Y, (poly2[(i + 1) % poly2.Length] - poly2[i]).X)));
+
+            // Check projections on all axes
+            foreach (var axis in axes)
+            {
+                ProjectPolygon(axis, poly1, out float min1, out float max1);
+                ProjectPolygon(axis, poly2, out float min2, out float max2);
+                if (!Overlaps(min1, max1, min2, max2)) return false; // No overlap means no intersection
+            }
+
+            return true; // All axes overlapped, polygons intersect
+        }
+        #endregion
+
+        public override bool CheckActive() => false;
         public override void AI()
         {
+            NPC.noGravity = false;
             NPC.knockBackResist = isStealthed ? 0f : 0.5f;
             if (afterimageLinger > 0) afterimageLinger--;
 
+            #region Impact Collision
+            var activeTileCollisionNPCs = Main.npc
+            .Where(npc => npc.active && npc.ModNPC is TileCollisionNPC)
+            .Select(npc => (TileCollisionNPC)npc.ModNPC)
+            .ToList();
+
+            Vector2 bottomLeft = NPC.Hitbox.BottomLeft();
+            Vector2 bottomRight = NPC.Hitbox.BottomRight();
+
+            foreach (var tileCollisionNPC in activeTileCollisionNPCs)
+            {
+                if (tileCollisionNPC.colliders == null) continue;
+
+                foreach (var colliders in tileCollisionNPC.colliders)
+                {
+                    var start = colliders.endPoints[0];
+                    var end = colliders.endPoints[1];
+                    //float colliderWidth = (end - start).Length(); // Distance between start and end points
+                    float colliderWidth = 5; // Distance between start and end points
+
+                    // Check if the NPC's bottom hitbox intersects with the slope
+                    Rectangle npcBottomHitbox = new Rectangle((int)bottomLeft.X, (int)bottomLeft.Y, (int)(bottomRight.X - bottomLeft.X), 1); // 1-pixel tall rectangle
+                    if (IsRectangleIntersectingSlope(start, end, colliderWidth, npcBottomHitbox))
+                    {
+                        // Perform desired action for the collision
+                        Main.NewText($"Collision detected with {tileCollisionNPC}");
+                        NPC.collideY = true;
+                        NPC.velocity.Y = 0;
+                        NPC.noGravity = true;
+
+                        // Adjust the NPC upwards until the collision no longer occurs
+                        while (IsRectangleIntersectingSlope(start, end, colliderWidth, npcBottomHitbox))
+                        {
+                            NPC.position.Y -= 0.05f; // Move the NPC upwards by a small increment
+                            bottomLeft = NPC.Hitbox.BottomLeft();
+                            bottomRight = NPC.Hitbox.BottomRight();
+                            npcBottomHitbox = new Rectangle((int)bottomLeft.X, (int)bottomLeft.Y, (int)(bottomRight.X - bottomLeft.X), 1); // Update hitbox
+                        }
+                    }
+                }
+            }
+            #endregion
+
             switch ((AICase)AIState)
             {
-                case AICase.Idle:
+                case AICase.Decelerate:
                     if (NPC.velocity.X != 0)
                     {
-                        NPC.velocity.X *= 0.75f;
+                        NPC.velocity.X *= 0.9f;
                     }
 
-                    if (AICounter++ >= 30)
+                    if (AICounter++ >= 42)
+                    {
+                        AIState = (int)AICase.Walk;
+                        AICounter = 0;
+                    }
+                    break;
+                case AICase.Idle:
+                    NPC.velocity.X = 0;
+
+                    if (AICounter++ >= idleTime)
                     {
                         AIState = canAttack ? (int)AICase.Attack : (int)AICase.Walk;
                         AICounter = 0;
@@ -109,8 +255,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     NPC.TargetClosest();
 
                     Vector2 distance = NPC.Move(player.Center, 0.6f, maxSpeed, 8f);
-                    bool isWithinAttackRange = distance.X < 18 * 10 && distance.Y < 5;
-
+                    bool isWithinAttackRange = distance.X < attackRange && distance.Y <= 31;
                     if (isWithinAttackRange)
                     {
                         canAttack = true;
@@ -140,7 +285,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     if (AICounter++ >= 10)
                     {
                         canAttack = false;
-                        AIState = (int)AICase.Idle;
+                        AIState = (int)AICase.Decelerate;
                         AICounter = 0;
                     }
                     break;
@@ -150,7 +295,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                     if (AICounter++ >= 60)
                     {
-                        NPC.GetGlobalNPC<BuffNPC>().StealthDelay = 300;
+                        NPC.GetGlobalNPC<BuffNPC>().StealthDelay = stealthDelay;
                         SetAIState(AICase.Walk);
                     }
                     break;
@@ -169,9 +314,26 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             switch ((AICase)AIState)
             {
+                case AICase.Decelerate:
+                    if (NPC.velocity.X != 0)
+                    {
+                        xFrame = 0;
+
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame++;
+                            if (yFrame >= 9) yFrame = 0;
+                        }
+                    }
+                    else
+                    {
+                        xFrame = 1;
+                        yFrame = 1;
+                    }
+                    break;
                 case AICase.Idle:
                     xFrame = 1;
-                    yFrame = canAttack && AICounter >= 24 ? 0 : 1;
+                    yFrame = canAttack && AICounter >= idleTime - 6 ? 0 : 1;
                     break;
                 case AICase.Walk:
                     xFrame = 0;
@@ -255,6 +417,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             Vector2 drawOffset = new Vector2(0, 2);
+            if (Main.LocalPlayer.HasBuff(BuffID.Hunter)) drawColor = new Color(255, 50, 50);
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;

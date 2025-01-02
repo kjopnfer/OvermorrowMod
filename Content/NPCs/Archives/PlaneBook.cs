@@ -260,6 +260,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             int xOffset = NPC.direction == -1 ? 4 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -28);
 
+            if (Main.LocalPlayer.HasBuff(BuffID.Hunter)) drawColor = new Color(255, 50, 50);
+
             spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
