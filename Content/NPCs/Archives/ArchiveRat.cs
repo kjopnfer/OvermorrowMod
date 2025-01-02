@@ -60,6 +60,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         private bool canAttack = false;
+        private int afterimageLinger = 0;
 
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
@@ -88,6 +89,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void AI()
         {
             NPC.knockBackResist = isStealthed ? 0f : 0.5f;
+            if (afterimageLinger > 0) afterimageLinger--;
+
             switch ((AICase)AIState)
             {
                 case AICase.Idle:
@@ -124,6 +127,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Attack:
+                    afterimageLinger = 30;
+
                     if (isStealthed)
                     {
                         int buff = NPC.FindBuffIndex(ModContent.BuffType<Stealth>());
@@ -166,7 +171,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 case AICase.Idle:
                     xFrame = 1;
-                    yFrame = 1;
+                    yFrame = canAttack && AICounter >= 24 ? 0 : 1;
                     break;
                 case AICase.Walk:
                     xFrame = 0;
@@ -237,13 +242,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            if (AIState == (int)AICase.Attack && NPC.velocity != Vector2.Zero)
+            //if (AIState == (int)AICase.Attack && NPC.velocity != Vector2.Zero)
+            if (afterimageLinger > 0)
             {
                 for (int k = 0; k < NPC.oldPos.Length; k++)
                 {
-                    // Adjust drawPos if the hitbox does not match sprite dimension
-                    Vector2 drawPos = NPC.oldPos[k] + texture.Size() / 2f - screenPos;
-                    Color afterImageColor = NPC.GetAlpha(new Color(56, 40, 26)) * ((NPC.oldPos.Length - k) / (float)NPC.oldPos.Length);
+                    Vector2 offset = new Vector2(-14, 0);
+                    Vector2 drawPos = offset + NPC.oldPos[k] + texture.Size() / 2f - screenPos;
+                    Color afterImageColor = (drawColor * 0.5f) * ((NPC.oldPos.Length - k) / (float)NPC.oldPos.Length);
                     spriteBatch.Draw(texture, drawPos + new Vector2(0, 0), NPC.frame, afterImageColor * NPC.Opacity, NPC.rotation, texture.Size() / 2f, NPC.scale, spriteEffects, 0f);
                 }
             }
@@ -252,6 +258,30 @@ namespace OvermorrowMod.Content.NPCs.Archives
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            if (NPC.life <= 0)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Blood, 2 * hit.HitDirection, -2f);
+                    if (Main.rand.NextBool(2))
+                    {
+                        dust.noGravity = true;
+                        dust.scale = 1.2f * NPC.scale;
+                    }
+                    else
+                    {
+                        dust.scale = 0.7f * NPC.scale;
+                    }
+                }
+
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>($"{Name}Hand").Type, NPC.scale);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>($"{Name}Leg").Type, NPC.scale);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>($"{Name}HeadYellow").Type, NPC.scale);
+            }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
