@@ -67,9 +67,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Cast = 2
         }
 
+        private int distanceFromGround = 180;
+        private int aggroDelayTime = 60;
+        private int tileAttackDistance = 24;
         public override void OnSpawn(IEntitySource source)
         {
             AIState = (int)AICase.Fly;
+            distanceFromGround = Main.rand.Next(16, 19) * 8;
+            aggroDelayTime = Main.rand.Next(6, 12);
+            tileAttackDistance = Main.rand.Next(16, 32);
+
+            aggroDelay = aggroDelayTime;
         }
 
         float flySpeedX = 2;
@@ -90,7 +98,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     HandleObstacleAvoidance();
 
                     float xDistance = Math.Abs(NPC.Center.X - player.Center.X);
-                    bool xDistanceCheck = xDistance < 200;
+
+                    bool xDistanceCheck = xDistance <= tileAttackDistance * 18;
                     bool yDistanceCheck = Math.Abs(NPC.Center.Y - player.Center.Y) < 100;
 
                     if (xDistanceCheck && yDistanceCheck && Collision.CanHitLine(player.Center, 1, 1, NPC.Center, 1, 1))
@@ -99,7 +108,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         if (aggroDelay <= 0)
                         {
                             AIState = (int)AICase.Cast;
+                            AICounter = 0;
                         }
+                    }
+
+                    if (AICounter++ > 120)
+                    {
+                        AIState = (int)AICase.Fly;
+                        AICounter = 0;
                     }
                     break;
                 case AICase.Cast:
@@ -110,9 +126,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                     if (AICounter++ > 120)
                     {
+                        distanceFromGround = Main.rand.Next(16, 19) * 8;
+                        aggroDelayTime = Main.rand.Next(6, 12);
+                        tileAttackDistance = Main.rand.Next(16, 32);
+
                         AIState = (int)AICase.Fly;
                         AICounter = 0;
-                        aggroDelay = 60;
+                        aggroDelay = aggroDelayTime;
                     }
                     break;
             }
@@ -157,7 +177,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void HandleGroundProximity()
         {
-            float groundBuffer = 128f;
+            float groundBuffer = distanceFromGround;
 
             if (RayTracing.CastTileCollisionLength(NPC.Center, Vector2.UnitY, groundBuffer) < groundBuffer)
             {
@@ -260,7 +280,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             int xOffset = NPC.direction == -1 ? 4 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -28);
 
-            if (Main.LocalPlayer.HasBuff(BuffID.Hunter)) drawColor = new Color(255, 50, 50);
+            var lightAverage = (drawColor.R / 255f + drawColor.G / 255f + drawColor.B / 255f) / 3;
+            if (Main.LocalPlayer.HasBuff(BuffID.Hunter)) {
+                drawColor = Color.Lerp(new Color(255, 50, 50), drawColor, lightAverage);
+            }
 
             spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);

@@ -7,7 +7,6 @@ namespace OvermorrowMod.Common
     public abstract class OvermorrowNPC : ModNPC
     {
         protected virtual void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor) { }
-
         public virtual bool DrawNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => true;
         public sealed override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -19,5 +18,6 @@ namespace OvermorrowMod.Common
 
             return DrawNPC(spriteBatch, screenPos, drawColor);
         }
+
     }
 }

@@ -417,7 +417,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             Vector2 drawOffset = new Vector2(0, 2);
-            if (Main.LocalPlayer.HasBuff(BuffID.Hunter)) drawColor = new Color(255, 50, 50);
+            var lightAverage = (drawColor.R / 255f + drawColor.G / 255f + drawColor.B / 255f) / 3;
+            if (Main.LocalPlayer.HasBuff(BuffID.Hunter))
+            {
+                drawColor = Color.Lerp(new Color(255, 50, 50), drawColor, lightAverage);
+            }
+
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
