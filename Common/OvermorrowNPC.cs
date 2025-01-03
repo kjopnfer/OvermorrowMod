@@ -18,6 +18,5 @@ namespace OvermorrowMod.Common
 
             return DrawNPC(spriteBatch, screenPos, drawColor);
         }
-
     }
 }

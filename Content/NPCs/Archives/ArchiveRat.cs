@@ -79,9 +79,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Stealth = 3
         }
 
-
         public bool isStealthed => NPC.HasBuff<Stealth>();
-
 
         private float maxSpeed = 1.8f;
         private int idleTime = 30;

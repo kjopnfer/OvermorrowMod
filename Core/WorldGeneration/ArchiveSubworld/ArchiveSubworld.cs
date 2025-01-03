@@ -39,6 +39,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             Main.dayTime = false;
             Main.time = 0.0;
 
+            Main.windSpeedCurrent = 0.05f;
+
             // For whatever reason, subworlds do not call these by themselves.
             foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
             {

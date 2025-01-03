@@ -72,3 +72,5 @@ Bestiary: {
 	ArchiveRat: mista cheese comin for ur knees
 	PlaneBook: Brought to life by magical ink, this Grimoire conjures a swarm of paper airplanes.
 }
+
+Projectiles.PlaneProjectile.DisplayName: Plane Projectile
