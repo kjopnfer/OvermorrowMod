@@ -66,11 +66,17 @@ NPCs: {
 	LeftShelfCollision.DisplayName: Left Shelf Collision
 	RightShelfCollision.DisplayName: Right Shelf Collision
 	PlaneBook.DisplayName: Living Grimoire
+	ChairBook.DisplayName: Living Grimoire
+	AnimatedSofa.DisplayName: Animated Sofa
+	AnimatedChair.DisplayName: Animated Chair
 }
 
 Bestiary: {
 	ArchiveRat: mista cheese comin for ur knees
-	PlaneBook: Brought to life by magical ink, this Grimoire conjures a swarm of paper airplanes.
+	AnimatedChair: Brought to life by magic, this chair seeks to trample over those that once sat on it.
+	AnimatedSofa: Brought to life by magic, this sofa seeks to crush those that once sat on it.
+	PlaneBook: Animated by the magical ink contained within, this Grimoire conjures a swarm of paper airplanes.
+	ChairBook: Once written by an ancient conjurer that needed convenient places to sit, this spellbook now summons vicious mimics to aid it.
 }
 
 Projectiles.PlaneProjectile.DisplayName: Plane Projectile

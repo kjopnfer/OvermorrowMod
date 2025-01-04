@@ -1,6 +1,6 @@
 namespace OvermorrowMod.Common
 {
-    public static class LocalizatonPath
+    public static class LocalizationPath
     {
         public const string Localization = "Mods.OvermorrowMod.";
 

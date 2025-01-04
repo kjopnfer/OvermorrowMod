@@ -19,7 +19,7 @@ using System;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
-    public class PlaneBook : OvermorrowNPC
+    public abstract class LivingGrimoire : OvermorrowNPC
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
@@ -48,13 +48,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.noGravity = true;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
-            SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type, ModContent.GetInstance<Inkwell>().Type];
+            SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizatonPath.Bestiary + Name)),
+                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizationPath.Bestiary + Name)),
             });
         }
 
@@ -86,7 +86,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float flySpeedX = 2;
         float flySpeedY = 0;
         float aggroDelay = 60;
-        public override void AI()
+        public sealed override void AI()
         {
             NPC.TargetClosest();
 
@@ -130,12 +130,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     HandleVerticalMovement();
                     HandleGroundProximity();
 
-                    if (AICounter % 10 == 0 && AICounter < 40)
-                    {
-                        float angle = MathHelper.ToRadians(75);
-                        Vector2 projectileVelocity = new Vector2(100 * NPC.direction, 0).RotatedByRandom(angle) * 50;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, ModContent.ProjectileType<PlaneProjectile>(), 1, 1f, Main.myPlayer);
-                    }
+                    CastSpell();
 
                     if (AICounter++ > 120)
                     {
@@ -154,6 +149,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             base.AI();
         }
+
+        public virtual void CastSpell() { }
 
         private void HandleHorizontalMovement()
         {

@@ -7,7 +7,6 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using Terraria.ID;
 using Terraria.GameContent.Bestiary;
-using Terraria.UI;
 using Terraria.DataStructures;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
@@ -16,7 +15,6 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.Localization;
 using System.Linq;
 using OvermorrowMod.Common.CustomCollision;
-using System;
 using System.Collections.Generic;
 
 namespace OvermorrowMod.Content.NPCs.Archives
@@ -59,7 +57,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizatonPath.Bestiary + Name)),
+                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizationPath.Bestiary + Name)),
             });
         }
 
@@ -68,7 +66,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
-        public ref Player player => ref Main.player[NPC.target];
 
         public enum AICase
         {
