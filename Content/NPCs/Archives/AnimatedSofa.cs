@@ -9,6 +9,8 @@ using Terraria.GameContent.Bestiary;
 using Terraria.DataStructures;
 using OvermorrowMod.Core.Biomes;
 using Terraria.Localization;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Content.Particles;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -29,7 +31,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void SetDefaults()
         {
             NPC.width = 30;
-            NPC.height = 38;
+            NPC.height = 42;
             NPC.lifeMax = 48;
             NPC.defense = 8;
             NPC.damage = 23;
@@ -59,16 +61,27 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private int idleTime = 30;
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
+            AIState = (int)AICase.Summon;
         }
 
         public override void AI()
         {
             switch ((AICase)AIState)
             {
-                case AICase.Idle:
-                    NPC.TargetClosest();
+                case AICase.Summon:
+                    Vector3 originalColor = new Vector3(0.5f, 0.3765f, 0.3980f);
+                    float lerpFactor = MathHelper.Clamp((AICounter - 60f) / 60f, 0f, 1f);
+                    Vector3 lerpedColor = Vector3.Lerp(originalColor, Vector3.Zero, lerpFactor);
 
+                    Lighting.AddLight(NPC.Center, lerpedColor);
+
+                    if (AICounter++ >= 120)
+                    {
+                        AIState = (int)AICase.Idle;
+                        AICounter = 0;
+                    }
+                    break;
+                case AICase.Idle:
                     if (AICounter++ >= idleTime)
                     {
                         AIState = (int)AICase.Jump;
@@ -76,6 +89,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Jump:
+                    NPC.TargetClosest();
                     if (AICounter++ == 0)
                     {
                         int jumpDirection = Main.rand.Next(2, 6) * NPC.direction;
@@ -143,9 +157,53 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            Rectangle drawRectangle = NPC.frame;
+            if (AIState == (int)AICase.Summon && AICounter < 60)
+            {
+                float rectangleHeight = MathHelper.SmoothStep(-NPC.frame.Height, 0, AICounter / 60f);
+                drawRectangle = new Rectangle(0, (int)rectangleHeight, NPC.frame.Width, NPC.frame.Height);
+            }
+
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, drawRectangle, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            if (AIState == (int)AICase.Summon)
+            {
+                drawColor = Color.Pink;
+
+                float scale = 0.1f;
+                float particleSpawnRate = MathHelper.Lerp(6, 15, MathHelper.Clamp(AICounter - 60, 0, 60f) / 60f);
+                if (AICounter % particleSpawnRate == 0 && !Main.gamePaused && AICounter < 110)
+                {
+                    int randomIterations = Main.rand.Next(1, 3);
+                    for (int i = 0; i < randomIterations; i++)
+                    {
+                        Vector2 spawnPosition = NPC.Center + new Vector2(Main.rand.Next(-3, 4) * 6, 20);
+                        Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), spawnPosition, -Vector2.UnitY, Color.Pink, 1f, scale, 0f, 0, scale * 0.5f);
+                    }
+                }
+
+                DrawSpawnAura(spriteBatch);
+            }
 
             return false;
         }
-    }
+
+        private void DrawSpawnAura(SpriteBatch spriteBatch)
+        {
+            Rectangle glowRectangle = new Rectangle(0, 0, NPC.width + 30, 1);
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            float baseAlpha = 0.8f;
+            if (AICounter >= 60) baseAlpha = MathHelper.Lerp(0.8f, 0, (AICounter - 60f) / 60f);
+
+            for (int i = 0; i < 30; i++)
+            {
+                Vector2 drawOffset = new Vector2(-6, 51 - i);
+                float drawAlpha = baseAlpha - (i / 30f);
+                Color auraColor = Color.Lerp(Color.Pink, Color.DeepPink, i / 30f);
+
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, NPC.Center + drawOffset - Main.screenPosition, glowRectangle, auraColor * drawAlpha, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            }
+        }
+    }   
 }

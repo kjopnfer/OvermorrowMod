@@ -67,7 +67,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
-            NPC.TargetClosest();
 
             switch ((AICase)AIState)
             {
@@ -92,6 +91,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Jump:
+                    NPC.TargetClosest();
                     float maxSpeed = 2f;
                     NPC.Move(player.Center, 0.1f, maxSpeed, 8f);
                     break;
