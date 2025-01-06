@@ -10,7 +10,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.DataStructures;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
-using OvermorrowMod.Core.Biomes;
+using OvermorrowMod.Content.Biomes;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.Localization;
 using System.Linq;

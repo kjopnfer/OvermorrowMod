@@ -4,17 +4,11 @@ using Terraria.GameContent;
 using Terraria;
 using Terraria.ModLoader;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Utilities;
 using Terraria.ID;
 using Terraria.GameContent.Bestiary;
-using Terraria.UI;
 using Terraria.DataStructures;
-using OvermorrowMod.Content.Buffs;
-using OvermorrowMod.Core.Globals;
-using OvermorrowMod.Core.Biomes;
-using Terraria.GameContent.ItemDropRules;
+using OvermorrowMod.Content.Biomes;
 using Terraria.Localization;
-using Microsoft.VisualBasic;
 using System;
 
 namespace OvermorrowMod.Content.NPCs.Archives

@@ -7,7 +7,7 @@ using OvermorrowMod.Common;
 using Terraria.ID;
 using Terraria.GameContent.Bestiary;
 using Terraria.DataStructures;
-using OvermorrowMod.Core.Biomes;
+using OvermorrowMod.Content.Biomes;
 using Terraria.Localization;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
