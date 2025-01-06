@@ -1,10 +1,20 @@
 # Overmorrow
 
 ## Folder Structure
-- **Content**: Contains all elements that are directly interactable within the game, you can see or use it.
 - **Assets**: Contains all the game assets like textures, sprites, and maps that are used.
+
+- **Content**: Contains all elements that are directly interactable within the game, you can see or use it.
+	- Use this folder for mod-specific implementations or game content like NPCs, projectiles, items, etc.
+	- Example: Content-specific code that isn't broadly reusable.
+
 - **Common**: Includes shared code that can be used by content and core. This includes utility functions and base classes.
-- **Core**: Contains the core mod logic, including world generation, global overrides, and gameplay mechanics.
+	- Can be implemented by multiple types of entities (e.g., NPCs, projectiles, players) across the mod.
+	- It doesn't rely on specific game content or assets.
+	- Example: Interfaces, base classes, or utilities shared across many systems.
+
+- **Core**: Contains the core mod logic, such as system handling, global overrides, and gameplay mechanics.
+	- Should be tightly coupled with the infrastructure or base systems of the mod.
+	- Example: Custom game frameworks, centralized logic, or systems that manage or define instances.
 
 ## Development Notes
 - See the style guide to retain consistency.

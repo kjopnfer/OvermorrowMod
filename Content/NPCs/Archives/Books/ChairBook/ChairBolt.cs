@@ -1,19 +1,27 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
-using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Common.Utilities;
 using System;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs
 {
-    public class ChairBolt : ModProjectile
+    public class ChairBolt : ModProjectile, ITrailEntity
     {
+        public Color TrailColor(float progress) => DrawUtils.ColorLerp3(new Color(216, 44, 4), new Color(254, 121, 2), new Color(253, 221, 3), progress) * progress;
+        public float TrailSize(float progress)
+        {
+            float size = MathHelper.SmoothStep(1, 60, progress);
+            return size;
+        }
+        public Type TrailType() => typeof(LaserTrail);
+
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
@@ -43,6 +51,8 @@ namespace OvermorrowMod.Content.NPCs
 
         public override bool PreDraw(ref Color lightColor)
         {
+            return false;
+
             Texture2D texture = TextureAssets.Projectile[ProjectileID.PaperAirplaneA].Value;
             float particleScale = 0.1f;
 
@@ -64,7 +74,7 @@ namespace OvermorrowMod.Content.NPCs
 
                 Vector2 drawPos = Projectile.oldPos[k] - Main.screenPosition;
                 Color afterImageColor = (textureColor * 0.8f) * trailProgress;
-               
+
                 Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPos, new Rectangle(0, 0, trailSize, 13), afterImageColor, Projectile.oldRot[k], texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0f);
             }
 
@@ -78,5 +88,7 @@ namespace OvermorrowMod.Content.NPCs
 
             return false;
         }
+
+
     }
 }

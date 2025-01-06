@@ -8,7 +8,7 @@ using OvermorrowMod.Common.Detours;
 
 namespace OvermorrowMod.Core
 {
-	public class OvermorrowModFile : Mod
+	public partial class OvermorrowModFile : Mod
 	{
         public static OvermorrowModFile Instance { get; set; }
         public OvermorrowModFile() => Instance = this;
@@ -18,8 +18,8 @@ namespace OvermorrowMod.Core
             if (!Main.dedServ)
             {
                 Particle.Load();
-                ModDetourLoader.Load();
-
+                DetourLoader.Load();
+                LoadEffects();
 
                 foreach (Type type in Code.GetTypes())
                 {
@@ -35,7 +35,8 @@ namespace OvermorrowMod.Core
         public override void Unload()
         {
             Particle.Unload();
-            ModDetourLoader.Unload();
+            DetourLoader.Unload();
+            UnloadEffects();
         }
     }
 }

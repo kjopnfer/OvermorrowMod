@@ -79,4 +79,7 @@ Bestiary: {
 	ChairBook: Once written by an ancient conjurer that needed convenient places to sit, this spellbook now summons vicious mimics to aid it.
 }
 
-Projectiles.PlaneProjectile.DisplayName: Plane Projectile
+Projectiles: {
+	PlaneProjectile.DisplayName: Plane Projectile
+	ChairBolt.DisplayName: Chair Bolt
+}

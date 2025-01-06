@@ -1,3 +1,4 @@
+using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
 using System;
@@ -27,6 +28,11 @@ namespace OvermorrowMod.Core
             {
                 Particle.UpdateParticles();
             }
+        }
+
+        public override void PostUpdateEverything()
+        {
+            PrimitiveManager.UpdateTrails();
         }
     }
 }
