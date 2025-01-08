@@ -1,12 +1,16 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
+using OvermorrowMod.Content.Particles;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,12 +26,12 @@ namespace OvermorrowMod.Content.NPCs
                 new TrailConfig(
                     typeof(LaserTrail),
                     progress => Color.Lerp(Color.Purple, Color.Orange, progress) * MathHelper.SmoothStep(0, 1, progress),
-                    progress => MathHelper.SmoothStep(30, 31, progress)
+                    progress => MathHelper.Lerp(30, 31, progress)
                 ),
                 new TrailConfig(
                     typeof(LaserTrail),
                     progress => DrawUtils.ColorLerp3(Color.HotPink, Color.HotPink, Color.Orange, progress) * 0.5f *  MathHelper.SmoothStep(0, 1, progress),
-                    progress => MathHelper.SmoothStep(40, 51, progress)
+                    progress => MathHelper.Lerp(50, 61, progress)
                 )
             };
         }
@@ -43,11 +47,33 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.timeLeft = 300;
         }
 
+        int randomDirection;
+        public override void OnSpawn(IEntitySource source)
+        {
+            randomDirection = Main.rand.NextBool() ? 1 : -1;
+            Projectile.tileCollide = false;
+        }
+
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, new Vector3(0.5f, 0.5f, 0.5f));
 
-            Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(5));
+            if (Projectile.ai[0]++ < 60)
+            {
+                Projectile.velocity.Y -= 0.3f;
+                Projectile.velocity.X *= 0.98f;
+            }
+            else if (Projectile.ai[0] > 75)
+            {
+                Projectile.tileCollide = true;
+                Projectile.velocity.Y += 0.75f;
+            }
+            else
+            {
+                // Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(5) * randomDirection);
+
+            }
+
 
             // Optionally, rotate the projectile to match its velocity direction
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
@@ -56,45 +82,53 @@ namespace OvermorrowMod.Content.NPCs
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
+            int npcType = Main.rand.NextBool() ? ModContent.NPCType<AnimatedChair>() : ModContent.NPCType<AnimatedSofa>();
+            NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, npcType);
+
+            float baseSpeed = Main.rand.NextFloat(1f, 2f); // Base speed of the particles
+
+            for (int repeat = 0; repeat < Main.rand.Next(3, 5); repeat++)
+            {
+                int numParticles = Main.rand.Next(8, 16); // Number of particles to spawn
+                for (int i = 0; i < numParticles; i++)
+                {
+                    Color color = Color.Lerp(Color.Orange, Color.HotPink, Main.rand.NextFloat(0, 1f));
+
+                    float angle = MathHelper.TwoPi / numParticles * i;
+                    float scale = Main.rand.NextFloat(0.1f, 0.5f);
+
+                    // Adjust the velocity to create a horizontal oval shape
+                    Vector2 velocity = new Vector2((float)Math.Cos(angle) * 1.5f, (float)Math.Sin(angle)) * baseSpeed;
+
+                    // Add a small random offset to the center
+                    Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
+
+                    Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), Projectile.Bottom + offset, velocity, color, 1f, scale, 0f, 0, scale * 0.5f);
+                }
+            }
             return base.OnTileCollide(oldVelocity);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            return false;
-
             Texture2D texture = TextureAssets.Projectile[ProjectileID.PaperAirplaneA].Value;
-            float particleScale = 0.1f;
+            float particleScale = 0.05f;
 
             if (!Main.gamePaused)
             {
-                int randomIterations = Main.rand.Next(5, 9);
-                Vector2 drawOffset = new Vector2(-4, -4).RotatedBy(Projectile.rotation);
-
-                for (int i = 0; i < randomIterations; i++)
+                if (Projectile.localAI[0]++ % Main.rand.Next(2, 6) == 0)
                 {
+                    int randomIterations = Main.rand.Next(2, 5);
+                    Vector2 drawOffset = new Vector2(-4, -4).RotatedBy(Projectile.rotation);
+                    Color color = Color.Lerp(Color.Purple, Color.DarkOrange, Main.rand.NextFloat(0, 1f));
+                    for (int i = 0; i < randomIterations; i++)
+                    {
+                        //Particle.CreateParticle(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity, Color.Wheat, particleScale);
+                        Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f, 0, particleScale);
+
+                    }
                 }
             }
-
-            for (int k = 0; k < Projectile.oldPos.Length; k++)
-            {
-                float trailProgress = ((Projectile.oldPos.Length - k) / (float)Projectile.oldPos.Length);
-                Color textureColor = Color.Lerp(Color.DeepPink, Color.Yellow, k / (float)Projectile.oldPos.Length);
-                int trailSize = (int)MathHelper.SmoothStep(2, 9, trailProgress);
-
-                Vector2 drawPos = Projectile.oldPos[k] - Main.screenPosition;
-                Color afterImageColor = (textureColor * 0.8f) * trailProgress;
-
-                Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPos, new Rectangle(0, 0, trailSize, 13), afterImageColor, Projectile.oldRot[k], texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0f);
-            }
-
-            Color silhouetteColor = new Color(3, 252, 232);
-            Vector2 silhoutteOffset = new Vector2(-4, -4).RotatedBy(Projectile.rotation);
-
-            float mult = (0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f);
-            float silhouetteScale = MathHelper.Lerp(1f, 1.5f, (float)Math.Sin(Math.Abs(Projectile.ai[0]) / 10f));
-            //Main.spriteBatch.Draw(texture, Projectile.Center + silhoutteOffset - Main.screenPosition, null, silhouetteColor * 0.8f, Projectile.rotation, Vector2.Zero, silhouetteScale, SpriteEffects.None, 0);
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, textureColor * Projectile.Opacity, Projectile.rotation, Vector2.Zero, Projectile.scale, SpriteEffects.None, 0);
 
             return false;
         }

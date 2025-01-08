@@ -11,7 +11,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (AICounter % 10 == 0 && AICounter < 40)
             {
                 float angle = MathHelper.ToRadians(75);
-                Vector2 projectileVelocity = new Vector2(12 * NPC.direction, 0).RotatedByRandom(angle);
+                float randomDirection = Main.rand.NextBool() ? 1 : -1;
+                Vector2 projectileVelocity = new Vector2(Main.rand.Next(-2, 2), Main.rand.Next(8, 10)).RotatedByRandom(angle);
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, ModContent.ProjectileType<ChairBolt>(), 1, 1f, Main.myPlayer);
             }
         }

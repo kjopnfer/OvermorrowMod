@@ -59,9 +59,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         private int idleTime = 30;
+
+        int maxAttempts = 1000;
+        private int failCount = 0;
         public override void OnSpawn(IEntitySource source)
         {
             AIState = (int)AICase.Summon;
+            while (!Collision.SolidTiles((int)(NPC.position.X / 16), (int)((NPC.position.X + NPC.width) / 16), (int)((NPC.position.Y + NPC.height) / 16), (int)((NPC.position.Y + NPC.height + 1) / 16)) && failCount < maxAttempts)
+            {
+                NPC.position.Y += 1; // Move the NPC downward
+                failCount++; // Increment the fail count to avoid infinite loops
+            }
         }
 
         public override void AI()
@@ -69,6 +77,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch ((AICase)AIState)
             {
                 case AICase.Summon:
+                    while (!Collision.SolidTiles((int)(NPC.position.X / 16), (int)((NPC.position.X + NPC.width) / 16), (int)((NPC.position.Y + NPC.height) / 16), (int)((NPC.position.Y + NPC.height + 1) / 16)) && failCount < maxAttempts)
+                    {
+                        NPC.position.Y += 1; // Move the NPC downward
+                        failCount++; // Increment the fail count to avoid infinite loops
+                    }
+
                     Vector3 originalColor = new Vector3(0.5f, 0.3765f, 0.3980f);
                     float lerpFactor = MathHelper.Clamp((AICounter - 60f) / 60f, 0f, 1f);
                     Vector3 lerpedColor = Vector3.Lerp(originalColor, Vector3.Zero, lerpFactor);
@@ -177,8 +191,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     int randomIterations = Main.rand.Next(1, 3);
                     for (int i = 0; i < randomIterations; i++)
                     {
+                        Color color = Color.Lerp(Color.Orange, Color.HotPink, Main.rand.NextFloat(0, 1f));
                         Vector2 spawnPosition = NPC.Center + new Vector2(Main.rand.Next(-3, 4) * 6, 20);
-                        Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), spawnPosition, -Vector2.UnitY, Color.Pink, 1f, scale, 0f, 0, scale * 0.5f);
+                        Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), spawnPosition, -Vector2.UnitY, color, 1f, scale, 0f, 0, scale * 0.5f);
                     }
                 }
 
@@ -200,10 +215,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 Vector2 drawOffset = new Vector2(-6, 51 - i);
                 float drawAlpha = baseAlpha - (i / 30f);
-                Color auraColor = Color.Lerp(Color.Pink, Color.DeepPink, i / 30f);
+                Color auraColor = Color.Lerp(Color.Orange, Color.HotPink, i / 30f);
 
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, NPC.Center + drawOffset - Main.screenPosition, glowRectangle, auraColor * drawAlpha, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             }
         }
-    }   
+    }
 }
