@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Common.Utilities;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -14,13 +15,22 @@ namespace OvermorrowMod.Content.NPCs
 {
     public class ChairBolt : ModProjectile, ITrailEntity
     {
-        public Color TrailColor(float progress) => DrawUtils.ColorLerp3(new Color(216, 44, 4), new Color(254, 121, 2), new Color(253, 221, 3), progress) * progress;
-        public float TrailSize(float progress)
+        public IEnumerable<TrailConfig> TrailConfigurations()
         {
-            float size = MathHelper.SmoothStep(1, 60, progress);
-            return size;
+            return new List<TrailConfig>
+            {
+                new TrailConfig(
+                    typeof(LaserTrail),
+                    progress => Color.Lerp(Color.Purple, Color.Orange, progress) * MathHelper.SmoothStep(0, 1, progress),
+                    progress => MathHelper.SmoothStep(30, 31, progress)
+                ),
+                new TrailConfig(
+                    typeof(LaserTrail),
+                    progress => DrawUtils.ColorLerp3(Color.HotPink, Color.HotPink, Color.Orange, progress) * 0.5f *  MathHelper.SmoothStep(0, 1, progress),
+                    progress => MathHelper.SmoothStep(40, 51, progress)
+                )
+            };
         }
-        public Type TrailType() => typeof(LaserTrail);
 
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()

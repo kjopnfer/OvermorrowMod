@@ -1,4 +1,6 @@
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -56,34 +58,49 @@ namespace OvermorrowMod.Common.Detours
         {
             int a = orig(source, X, Y, Type, start, ai0, ai1, ai2, ai3, target);
             NPC npc = Main.npc[a];
-            if (npc.ModNPC != null && npc.ModNPC is ITrailEntity)
+
+            if (npc.ModNPC is ITrailEntity trailEntity)
             {
-                ITrailEntity entity = npc.ModNPC as ITrailEntity;
-                Trail trail = (Trail)Activator.CreateInstance(entity.TrailType());
-                trail.DrawType = DrawType.NPC;
-                trail.Entity = npc;
-                trail.EntityID = npc.whoAmI;
-                trail.TrailEntity = entity;
-                trails.Add(trail);
+                foreach (var config in trailEntity.TrailConfigurations())
+                {
+                    Trail trail = (Trail)Activator.CreateInstance(config.TrailType);
+                    trail.Config = config;
+                    trail.DrawType = DrawType.NPC;
+                    trail.Entity = npc;
+                    trail.EntityID = npc.whoAmI;
+                    trail.TrailEntity = trailEntity;
+
+                    trails.Add(trail);
+                }
             }
+
             return a;
         }
+
 
         public static int CreateProjectileTrail(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource source, float X, float Y, float SpeedX, float SpeedY, int type, int damage, float Knockback, int owner, float ai0, float ai1, float ai2)
         {
             int p = orig(source, X, Y, SpeedX, SpeedY, type, damage, Knockback, owner, ai0, ai1, ai2);
             Projectile projectile = Main.projectile[p];
-            if (projectile.ModProjectile is ITrailEntity entity)
+
+            if (projectile.ModProjectile is ITrailEntity trailEntity)
             {
-                Trail trail = (Trail)Activator.CreateInstance(entity.TrailType());
-                trail.DrawType = DrawType.Projectile;
-                trail.Entity = projectile;
-                trail.EntityID = projectile.whoAmI;
-                trail.TrailEntity = entity;
-                trails.Add(trail);
+                foreach (var config in trailEntity.TrailConfigurations())
+                {
+                    Trail trail = (Trail)Activator.CreateInstance(config.TrailType);
+                    trail.Config = config;
+                    trail.DrawType = DrawType.Projectile;
+                    trail.Entity = projectile;
+                    trail.EntityID = projectile.whoAmI;
+                    trail.TrailEntity = trailEntity;
+
+                    trails.Add(trail);
+                }
             }
+
             return p;
         }
+
 
         public static void NPCLoot(Terraria.On_NPC.orig_NPCLoot orig, NPC self)
         {
@@ -113,6 +130,8 @@ namespace OvermorrowMod.Common.Detours
 
         public static void DrawProjectileTrails(Terraria.On_Main.orig_DrawProjectiles orig, Main self)
         {
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
             foreach (Trail trail in trails)
             {
                 if (trail.DrawType == DrawType.Projectile && !trail.Pixelated)
@@ -122,6 +141,9 @@ namespace OvermorrowMod.Common.Detours
                     trail.Vertices.Clear();
                 }
             }
+
+            Main.spriteBatch.End();
+
             orig(self);
         }
     }
