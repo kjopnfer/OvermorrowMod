@@ -87,5 +87,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         protected override int GlowRectangleWidth => NPC.width + 30;
         protected override Vector2 ParticleSpawnOffset => new Vector2(Main.rand.Next(-3, 4) * 6, 20);
+        protected override int AuraHeightOffset => 51;
     }
 }

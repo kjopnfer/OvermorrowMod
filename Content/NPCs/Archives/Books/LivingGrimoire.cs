@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
-        public ref Player player => ref Main.player[NPC.target];
+        public ref Player Player => ref Main.player[NPC.target];
         public enum AICase
         {
             Fall = 0,
@@ -62,10 +62,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Cast = 2
         }
 
-        private int distanceFromGround = 180;
-        private int aggroDelayTime = 60;
-        private int tileAttackDistance = 24;
-        private Vector2 targetPosition;
+        protected int distanceFromGround = 180;
+        protected int aggroDelayTime = 60;
+        protected int tileAttackDistance = 24;
+        protected Vector2 targetPosition;
         public override void OnSpawn(IEntitySource source)
         {
             AIState = (int)AICase.Fly;
@@ -96,12 +96,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     HandleGroundProximity();
                     HandleObstacleAvoidance();
 
-                    float xDistance = Math.Abs(NPC.Center.X - player.Center.X);
-
-                    bool xDistanceCheck = xDistance <= tileAttackDistance * 18;
-                    bool yDistanceCheck = Math.Abs(NPC.Center.Y - player.Center.Y) < 100;
-
-                    if (xDistanceCheck && yDistanceCheck && Collision.CanHitLine(player.Center, 1, 1, NPC.Center, 1, 1))
+                    
+                    if (AttackCondition())
                     {
                         aggroDelay--;
                         if (aggroDelay <= 0)
@@ -144,6 +140,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             base.AI();
         }
 
+        public abstract bool AttackCondition();
         public virtual void CastSpell() { }
 
         private void HandleHorizontalMovement()
@@ -167,7 +164,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float verticalBuffer = 16 * 5;
             float targetSpeed = 2f;
 
-            if (NPC.Center.Y <= player.Center.Y - verticalBuffer)
+            if (NPC.Center.Y <= Player.Center.Y - verticalBuffer)
             {
                 NPC.velocity.Y = Math.Min(NPC.velocity.Y + 0.1f, targetSpeed);
 

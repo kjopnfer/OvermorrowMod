@@ -114,6 +114,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         /// Defines the randomized position ranges that the particles spawn from.
         /// </summary>
         protected abstract Vector2 ParticleSpawnOffset { get; }
+        protected abstract int AuraHeightOffset { get; }
 
         public sealed override bool DrawNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -169,7 +170,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             for (int i = 0; i < 30; i++)
             {
-                Vector2 drawOffset = new Vector2(0, 39 - i); // Default offset
+                Vector2 drawOffset = new Vector2(0, AuraHeightOffset - i); // Default offset
                 float drawAlpha = baseAlpha - (i / 30f);
                 Color auraColor = Color.Lerp(Color.Orange, Color.HotPink, i / 30f);
 
