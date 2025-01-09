@@ -54,6 +54,7 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.tileCollide = false;
         }
 
+        public ref float ParentID => ref Projectile.ai[1];
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, new Vector3(0.5f, 0.5f, 0.5f));
@@ -61,7 +62,7 @@ namespace OvermorrowMod.Content.NPCs
             if (Projectile.ai[0]++ < 60)
             {
                 Projectile.velocity.Y -= 0.3f;
-                Projectile.velocity.X *= 0.98f;
+                Projectile.velocity.X *= 0.99f;
             }
             else if (Projectile.ai[0] > 75)
             {
@@ -83,7 +84,8 @@ namespace OvermorrowMod.Content.NPCs
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             int npcType = Main.rand.NextBool() ? ModContent.NPCType<AnimatedChair>() : ModContent.NPCType<AnimatedSofa>();
-            NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, npcType);
+            ChairSummon npc = NPC.NewNPCDirect(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, npcType).ModNPC as ChairSummon;
+            npc.ParentID = ParentID;
 
             float baseSpeed = Main.rand.NextFloat(1f, 2f); // Base speed of the particles
 
@@ -125,7 +127,6 @@ namespace OvermorrowMod.Content.NPCs
                     {
                         //Particle.CreateParticle(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity, Color.Wheat, particleScale);
                         Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f, 0, particleScale);
-
                     }
                 }
             }
