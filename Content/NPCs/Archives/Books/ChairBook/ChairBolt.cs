@@ -59,26 +59,22 @@ namespace OvermorrowMod.Content.NPCs
         {
             Lighting.AddLight(Projectile.Center, new Vector3(0.5f, 0.5f, 0.5f));
 
+            NPC parentNPC = Main.npc[(int)ParentID];
+            if (!parentNPC.active) Projectile.Kill();
+
             if (Projectile.ai[0]++ < 60)
             {
-                Projectile.velocity.Y -= 0.3f;
+                Projectile.velocity.Y -= 0.25f;
                 Projectile.velocity.X *= 0.99f;
             }
             else if (Projectile.ai[0] > 75)
             {
-                Projectile.tileCollide = true;
+                // Tries to avoid hitting the ceiling
+                if (Projectile.Center.Y > parentNPC.Center.Y) Projectile.tileCollide = true;
                 Projectile.velocity.Y += 0.75f;
             }
-            else
-            {
-                // Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(5) * randomDirection);
 
-            }
-
-
-            // Optionally, rotate the projectile to match its velocity direction
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

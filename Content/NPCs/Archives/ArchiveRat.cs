@@ -249,7 +249,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AICase.Walk:
                     NPC.TargetClosest();
 
-                    Vector2 distance = NPC.Move(player.Center, 0.6f, maxSpeed, 8f);
+                    Vector2 distance = NPC.Move(player.Center, 0.2f, maxSpeed, 8f);
                     bool isWithinAttackRange = distance.X < attackRange && distance.Y <= 31;
                     if (isWithinAttackRange)
                     {
