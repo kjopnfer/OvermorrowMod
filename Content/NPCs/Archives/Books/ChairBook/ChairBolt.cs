@@ -82,6 +82,7 @@ namespace OvermorrowMod.Content.NPCs
             int npcType = Main.rand.NextBool() ? ModContent.NPCType<AnimatedChair>() : ModContent.NPCType<AnimatedSofa>();
             ChairSummon npc = NPC.NewNPCDirect(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, npcType).ModNPC as ChairSummon;
             npc.ParentID = ParentID;
+            npc.NPC.direction = Main.rand.NextBool() ? -1 : 1;
 
             float baseSpeed = Main.rand.NextFloat(1f, 2f); // Base speed of the particles
 

@@ -54,12 +54,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
-        public ref Player Player => ref Main.player[NPC.target];
         public enum AICase
         {
-            Fall = 0,
-            Fly = 1,
-            Cast = 2
+            Hidden = -2,
+            Fall = -1,
+            Fly = 0,
+            Cast = 1
         }
 
         protected int distanceFromGround = 180;
@@ -68,7 +68,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         protected Vector2 targetPosition;
         public override void OnSpawn(IEntitySource source)
         {
-            AIState = (int)AICase.Fly;
+            AIState = (int)AICase.Fall;
             distanceFromGround = Main.rand.Next(16, 19) * 8;
             aggroDelayTime = Main.rand.Next(10, 20) * 10;
             tileAttackDistance = Main.rand.Next(16, 32) * 16;
@@ -89,6 +89,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch ((AICase)AIState)
             {
                 case AICase.Fall:
+                    NPC.noGravity = false;
+
+                    if (AICounter++ >= 36)
+                    {
+                        NPC.noGravity = true;
+                        AIState = (int)AICase.Fly;
+                        AICounter = 0;
+                    }
                     break;
                 case AICase.Fly:
                     HandleHorizontalMovement();
@@ -96,7 +104,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     HandleGroundProximity();
                     HandleObstacleAvoidance();
 
-                    
+
                     if (AttackCondition())
                     {
                         aggroDelay--;
@@ -208,7 +216,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch ((AICase)AIState)
             {
                 case AICase.Fall:
-                    yFrame = 1;
+                    if (NPC.frameCounter++ % 4 == 0)
+                    {
+                        yFrame++;
+                        if (yFrameWing >= 8) yFrameWing = 8;
+                    }
                     break;
                 case AICase.Fly:
                     yFrame = 8;
@@ -288,7 +300,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             Color wingColor = Color.Lerp(drawColor, Color.White, 0.7f);
-            spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), wingColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            if ((AICase)AIState != AICase.Fall)
+                spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), wingColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;

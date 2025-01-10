@@ -27,15 +27,20 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void AI()
         {
-            Rectangle hitbox = new Rectangle((int)Projectile.Center.X + (14 * Projectile.direction), (int)Projectile.Center.Y, Projectile.width, Projectile.height);
             foreach (Player target in Main.player)
             {
                 if (!target.active) continue;
-                if (target.Hitbox.Intersects(hitbox))
+
+                for (int k = 0; k < Projectile.oldPos.Length; k++)
                 {
-                    //target.Hurt(PlayerDeathReason.LegacyDefault(), Projectile.damage, 0, false, false);
-                    //target.velocity = new Vector2(26 * NPC.direction, -4);
-                    if (!target.noKnockback) target.velocity = Projectile.velocity * 1.3f;
+                    Rectangle hitbox = new Rectangle((int)Projectile.oldPos[k].X, (int)Projectile.oldPos[k].Y, Projectile.width, Projectile.height);
+
+                    if (target.Hitbox.Intersects(hitbox))
+                    {
+                        //target.Hurt(PlayerDeathReason.LegacyDefault(), Projectile.damage, 0, false, false);
+                        //target.velocity = new Vector2(26 * NPC.direction, -4);
+                        if (!target.noKnockback) target.velocity += Projectile.velocity * 0.025f * (1 - (k / (float)Projectile.oldPos.Length));
+                    }
                 }
             }
 
@@ -48,6 +53,7 @@ namespace OvermorrowMod.Content.NPCs
             Texture2D texture = TextureAssets.Projectile[ProjectileID.PaperAirplaneA].Value;
             Color textureColor = Color.Gray;
 
+            
             for (int k = 0; k < Projectile.oldPos.Length; k++)
             {
                 Vector2 offset = new Vector2(-12, Projectile.direction == -1 ? -24 : 12);

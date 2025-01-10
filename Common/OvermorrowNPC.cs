@@ -7,7 +7,7 @@ namespace OvermorrowMod.Common
 {
     public abstract class OvermorrowNPC : ModNPC
     {
-        public ref Player player => ref Main.player[NPC.target];
+        public ref Player Player => ref Main.player[NPC.target];
 
         protected virtual void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor) { }
         public virtual bool DrawNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => true;

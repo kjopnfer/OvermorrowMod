@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             NPC.TargetClosest();
             float maxSpeed = 2f;
-            NPC.Move(player.Center, 0.1f, maxSpeed, 8f);
+            NPC.Move(Player.Center, 0.1f, maxSpeed, 8f);
         }
 
         public override void SetFrame()

@@ -69,6 +69,7 @@ NPCs: {
 	ChairBook.DisplayName: Living Grimoire
 	AnimatedSofa.DisplayName: Animated Sofa
 	AnimatedChair.DisplayName: Animated Chair
+	PlantBook.DisplayName: Plant Book
 }
 
 Bestiary: {
@@ -82,4 +83,5 @@ Bestiary: {
 Projectiles: {
 	PlaneProjectile.DisplayName: Plane Projectile
 	ChairBolt.DisplayName: Chair Bolt
+	PlantAura.DisplayName: Plant Aura
 }
