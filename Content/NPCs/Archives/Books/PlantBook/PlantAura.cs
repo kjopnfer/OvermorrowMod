@@ -6,6 +6,8 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using OvermorrowMod.Common;
 using System;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -23,6 +25,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private enum TileType
         {
             FullBlock,
+            FullBlockExposedLeft,
+            FullBlockExposedRight,
+            FullBlockExposedTop,
+            FullBlockExposedBottom,
+            FullBlockExposedLeftRight,
+            FullBlockExposedUpDown,
             HalfBlock,
             SlopeUpLeft,
             SlopeUpRight,
@@ -70,7 +78,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         Tile tile = Main.tile[x, y];
                         if (tile.HasTile && Main.tileSolid[tile.TileType] && IsOuterTile(x, y))
                         {
-                            TileType type = CategorizeTile(tile);
+                            TileType type = CategorizeTile(tile, x, y);
                             Color displayColor = GetTileColor(type);
                             surfaceTiles.Add((new Point(x, y), type, displayColor));
                         }
@@ -119,7 +127,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
 
-        private TileType CategorizeTile(Tile tile)
+        private TileType CategorizeTile(Tile tile, int x, int y)
         {
             if (tile.IsHalfBlock)
                 return TileType.HalfBlock;
@@ -136,6 +144,72 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (tile.Slope == SlopeType.SlopeDownRight)
                 return TileType.SlopeDownRight;
 
+            Tile leftTile = Main.tile[x - 1, y];
+            Tile rightTile = Main.tile[x + 1, y];
+            Tile topTile = Main.tile[x, y - 1];
+            Tile bottomTile = Main.tile[x, y + 1];
+            if (!leftTile.HasTile && !rightTile.HasTile && topTile.HasTile && bottomTile.HasTile)
+                return TileType.FullBlockExposedLeftRight;
+
+            if (leftTile.HasTile && rightTile.HasTile && !topTile.HasTile && !bottomTile.HasTile)
+                return TileType.FullBlockExposedUpDown;
+
+            if (!leftTile.HasTile && rightTile.HasTile && topTile.HasTile && bottomTile.HasTile)
+                return TileType.FullBlockExposedLeft;
+
+            if (leftTile.HasTile && !rightTile.HasTile && topTile.HasTile && bottomTile.HasTile)
+                return TileType.FullBlockExposedRight;
+
+            if (leftTile.HasTile && rightTile.HasTile && !topTile.HasTile && bottomTile.HasTile)
+                return TileType.FullBlockExposedTop;
+
+            if (leftTile.HasTile && rightTile.HasTile && topTile.HasTile && !bottomTile.HasTile)
+                return TileType.FullBlockExposedBottom;
+
+            #region Trees and Shit
+            // Check for FullBlockExposedLeftRight (exposed on both left and right)
+            if (!Main.tileSolid[leftTile.TileType] && !Main.tileSolid[rightTile.TileType] &&
+                Main.tileSolid[topTile.TileType] && Main.tileSolid[bottomTile.TileType])
+            {
+                return TileType.FullBlockExposedLeftRight;
+            }
+
+            // Check for FullBlockExposedUpDown (exposed on top and bottom)
+            if (Main.tileSolid[leftTile.TileType] && Main.tileSolid[rightTile.TileType] &&
+                !Main.tileSolid[topTile.TileType] && !Main.tileSolid[bottomTile.TileType])
+            {
+                return TileType.FullBlockExposedUpDown;
+            }
+
+            // Check for FullBlockExposedLeft (exposed on left side)
+            if (!Main.tileSolid[leftTile.TileType] && Main.tileSolid[rightTile.TileType] &&
+                Main.tileSolid[topTile.TileType] && Main.tileSolid[bottomTile.TileType])
+            {
+                return TileType.FullBlockExposedLeft;
+            }
+
+            // Check for FullBlockExposedRight (exposed on right side)
+            if (Main.tileSolid[leftTile.TileType] && !Main.tileSolid[rightTile.TileType] &&
+                Main.tileSolid[topTile.TileType] && Main.tileSolid[bottomTile.TileType])
+            {
+                return TileType.FullBlockExposedRight;
+            }
+
+            // Check for FullBlockExposedTop (exposed on top side)
+            if (Main.tileSolid[leftTile.TileType] && Main.tileSolid[rightTile.TileType] &&
+                !Main.tileSolid[topTile.TileType] && Main.tileSolid[bottomTile.TileType])
+            {
+                return TileType.FullBlockExposedTop;
+            }
+
+            // Check for FullBlockExposedBottom (exposed on bottom side)
+            if (Main.tileSolid[leftTile.TileType] && Main.tileSolid[rightTile.TileType] &&
+                Main.tileSolid[topTile.TileType] && !Main.tileSolid[bottomTile.TileType])
+            {
+                return TileType.FullBlockExposedBottom;
+            }
+            #endregion
+
             return TileType.FullBlock;
         }
 
@@ -149,6 +223,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 TileType.SlopeUpRight => Color.Red,
                 TileType.SlopeDownLeft => Color.Purple,
                 TileType.SlopeDownRight => Color.Orange,
+                TileType.FullBlockExposedTop => Color.Cyan,
+                TileType.FullBlockExposedBottom => Color.Magenta,
+                TileType.FullBlockExposedLeft => Color.Pink,
+                TileType.FullBlockExposedRight => Color.Teal,
+                //TileType.HalfBlockExposedTop => Color.LightGreen,
+                //TileType.HalfBlockExposedBottom => Color.LightPink,
                 _ => Color.White
             };
         }
@@ -156,17 +236,187 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool PreDraw(ref Color lightColor)
         {
             // Draw categorized tiles with designated colors
-            foreach (var (tilePosition, _, displayColor) in surfaceTiles)
+            foreach (var (tilePosition, type, displayColor) in surfaceTiles)
             {
                 Vector2 tileWorldPosition = new Vector2(tilePosition.X * 16, tilePosition.Y * 16);
-                Main.spriteBatch.Draw(
+                switch (type)
+                {
+                    case TileType.FullBlockExposedTop:
+                    case TileType.FullBlockExposedBottom:
+                    case TileType.FullBlockExposedLeft:
+                    case TileType.FullBlockExposedRight:
+                        // For full blocks with exposed edges, draw slivers on the exposed edges
+                        DrawFullBlockEdges(tileWorldPosition, type, displayColor);
+                        break;
+
+                    case TileType.HalfBlock:
+                    //case TileType.HalfBlockExposedBottom:
+                        // For half blocks, draw only the exposed half
+                        DrawHalfBlockEdges(tileWorldPosition, type, displayColor);
+                        break;
+
+                    case TileType.SlopeUpLeft:
+                    case TileType.SlopeUpRight:
+                    case TileType.SlopeDownLeft:
+                    case TileType.SlopeDownRight:
+                        // For slopes, draw slivers across the slope area
+                        DrawSlopeEdges(tileWorldPosition, type, displayColor);
+                        break;
+                }
+
+                /*Main.spriteBatch.Draw(
                     Terraria.GameContent.TextureAssets.MagicPixel.Value,
                     tileWorldPosition - Main.screenPosition,
                     new Rectangle(0, 0, 16, 16),
-                    displayColor * 0.5f);
+                    displayColor * 0.5f);*/
             }
 
             return base.PreDraw(ref lightColor);
+        }
+
+        private void DrawFullBlockEdges(Vector2 tileWorldPosition, TileType type, Color color)
+        {
+            // Draw slivers for full blocks based on the exposed edge
+            Vector2 topLeft = tileWorldPosition + new Vector2(0, 0); // Top edge sliver
+            Vector2 bottomLeft = tileWorldPosition + new Vector2(0, 0); // Bottom edge sliver
+            Vector2 leftEdge = tileWorldPosition + new Vector2(0, 0); // Left edge sliver
+            Vector2 rightEdge = tileWorldPosition + new Vector2(14, 0); // Right edge sliver
+
+            // Example of drawing slivers based on edge exposure
+            if (type == TileType.FullBlockExposedTop)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    topLeft - Main.screenPosition,
+                    new Rectangle(0, 0, 16, 2), // Top edge sliver
+                    color * 0.5f
+                );
+            }
+            if (type == TileType.FullBlockExposedBottom)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    bottomLeft - Main.screenPosition,
+                    new Rectangle(0, 0, 16, 2), // Bottom edge sliver
+                    color * 0.5f
+                );
+            }
+            if (type == TileType.FullBlockExposedLeft)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    leftEdge - Main.screenPosition,
+                    new Rectangle(0, 0, 2, 16), // Left edge sliver
+                    color * 0.5f
+                );
+            }
+            if (type == TileType.FullBlockExposedRight)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    rightEdge - Main.screenPosition,
+                    new Rectangle(0, 0, 2, 16), // Right edge sliver
+                    color * 0.5f
+                );
+            }
+            if (type == TileType.FullBlockExposedLeftRight)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    leftEdge - Main.screenPosition,
+                    new Rectangle(0, 0, 2, 16), // Left edge sliver
+                    color * 0.5f
+                );
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    rightEdge - Main.screenPosition,
+                    new Rectangle(0, 0, 2, 16), // Right edge sliver
+                    color * 0.5f
+                );
+            }
+        }
+
+        private void DrawSlopeEdges(Vector2 tileWorldPosition, TileType type, Color color)
+        {
+            // For slopes, draw slivers only along the exposed part of the slope
+            Vector2 slopePosition = tileWorldPosition + new Vector2(8, 14); // Adjust to slope edge
+
+            if (type == TileType.SlopeDownRight)
+            {
+                float rotation = -MathHelper.PiOver4;
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    slopePosition - Main.screenPosition, // Position of the texture
+                    new Rectangle(0, 0, 24, 2), // The source rectangle of the texture (width: 16, height: 8)
+                    Color.Red * 0.5f, // Color with transparency
+                    rotation, // Rotation angle in radians
+                    new Vector2(8, 4), // Origin point for the rotation (center of the rectangle)
+                    1f, // Scale factor (no scaling, so 1f)
+                    SpriteEffects.None, // No flipping
+                    0f // Layer depth
+                );
+            }
+            else if (type == TileType.SlopeDownLeft)
+            {
+                slopePosition = tileWorldPosition + new Vector2(0, 0);
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    slopePosition - Main.screenPosition,
+                    new Rectangle(0, 0, 24, 2), // Slope exposure
+                    Color.Pink * 0.5f,
+                    MathHelper.PiOver4,
+                    Vector2.Zero, 1f, SpriteEffects.None, 0
+                );
+            }
+            else if (type == TileType.SlopeUpLeft)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    slopePosition - Main.screenPosition,
+                    new Rectangle(0, 0, 16, 8), // Slope exposure
+                    Color.Red * 0.5f,
+                    MathHelper.PiOver4,
+                    Vector2.Zero, 1f, SpriteEffects.None, 0
+                );
+            }
+            else if (type == TileType.SlopeUpRight)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    slopePosition - Main.screenPosition,
+                    new Rectangle(0, 0, 16, 8), // Slope exposure
+                    Color.Red * 0.5f,
+                    MathHelper.PiOver4,
+                    Vector2.Zero, 1f, SpriteEffects.None, 0
+                );
+            }
+            // You can similarly add for other slope types (SlopeUpRight, SlopeDownLeft) here
+        }
+
+        private void DrawHalfBlockEdges(Vector2 tileWorldPosition, TileType type, Color color)
+        {
+            // Draw slivers for half blocks only on the exposed half (top or bottom)
+            Vector2 topHalf = tileWorldPosition + new Vector2(0, 8); // Top edge sliver
+            Vector2 bottomHalf = tileWorldPosition + new Vector2(0, 8); // Bottom edge sliver
+
+            if (type == TileType.HalfBlock)
+            {
+                Main.spriteBatch.Draw(
+                    Terraria.GameContent.TextureAssets.MagicPixel.Value,
+                    topHalf - Main.screenPosition,
+                    new Rectangle(0, 0, 16, 2), // Top half exposed
+                    color * 0.5f
+                );
+            }
+            //if (type == TileType.HalfBlockExposedBottom)
+            //{
+            //    Main.spriteBatch.Draw(
+            //        Terraria.GameContent.TextureAssets.MagicPixel.Value,
+            //        bottomHalf - Main.screenPosition,
+            //        new Rectangle(0, 0, 16, 2), // Bottom half exposed
+            //        color * 0.5f
+            //    );
+            //}
         }
     }
 }
