@@ -42,5 +42,13 @@ namespace OvermorrowMod.Common.Utilities
         {
             return x * x * x * x;
         }
+
+        public static float EaseOutBack(float x)
+        {
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1;
+
+            return 1 + c3 * (float)Math.Pow(x - 1, 3) + c1 * (float)Math.Pow(x - 1, 2);
+        }
     }
 }

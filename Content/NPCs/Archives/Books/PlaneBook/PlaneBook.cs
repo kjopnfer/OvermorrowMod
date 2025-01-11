@@ -23,6 +23,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 float angle = MathHelper.ToRadians(75);
                 Vector2 projectileVelocity = new Vector2(100 * NPC.direction, 0).RotatedByRandom(angle) * 50;
+                NPC.netUpdate = true;
+
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, ModContent.ProjectileType<PlaneProjectile>(), 1, 1f, Main.myPlayer);
             }
         }

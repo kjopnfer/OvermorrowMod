@@ -13,6 +13,7 @@ namespace OvermorrowMod.Content.Particles
 {
     public class PlantGas : CustomParticle
     {
+        // TODO: This probably needs a lot of multiplayer syncing logic
         public override string Texture => AssetDirectory.Empty;
 
         public float maxTime = Main.rand.Next(4, 5) * 10;

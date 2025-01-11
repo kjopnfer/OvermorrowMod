@@ -84,4 +84,5 @@ Projectiles: {
 	PlaneProjectile.DisplayName: Plane Projectile
 	ChairBolt.DisplayName: Chair Bolt
 	PlantAura.DisplayName: Plant Aura
+	FlowerSummon.DisplayName: Flower Summon
 }

@@ -7,8 +7,6 @@ using Terraria.ID;
 using OvermorrowMod.Common;
 using System;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.CodeAnalysis.Text;
-using Terraria.GameContent;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 
@@ -16,6 +14,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class PlantAura : ModProjectile
     {
+        // TODO: This probably needs a lot of multiplayer syncing logic
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
@@ -66,7 +65,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public ref float AICounter => ref Projectile.ai[0];
         public override void AI()
         {
-            Main.NewText(Main.maxDust);
             if (AICounter++ < 60)
             {
                 int radius = (int)MathHelper.Lerp(1, 10, AICounter / 60f);

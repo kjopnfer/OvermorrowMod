@@ -9,6 +9,7 @@ using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -47,11 +48,22 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.timeLeft = 300;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(randomDirection);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            randomDirection = reader.ReadInt32();
+        }
+
         int randomDirection;
         public override void OnSpawn(IEntitySource source)
         {
             randomDirection = Main.rand.NextBool() ? 1 : -1;
             Projectile.tileCollide = false;
+            Projectile.netUpdate = true;
         }
 
         public ref float ParentID => ref Projectile.ai[1];
@@ -80,9 +92,12 @@ namespace OvermorrowMod.Content.NPCs
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             int npcType = Main.rand.NextBool() ? ModContent.NPCType<AnimatedChair>() : ModContent.NPCType<AnimatedSofa>();
+            int randomDirection = Main.rand.NextBool() ? -1 : 1;
+            Projectile.netUpdate = true;
+
             ChairSummon npc = NPC.NewNPCDirect(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, npcType).ModNPC as ChairSummon;
             npc.ParentID = ParentID;
-            npc.NPC.direction = Main.rand.NextBool() ? -1 : 1;
+            npc.NPC.direction = randomDirection;
 
             float baseSpeed = Main.rand.NextFloat(1f, 2f); // Base speed of the particles
 

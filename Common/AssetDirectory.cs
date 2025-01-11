@@ -13,6 +13,7 @@ namespace OvermorrowMod.Common
         public const string Items = Assets + "Sprites/Items/";
         public const string NPCs = Assets + "Sprites/NPCs/";
         public const string Tiles = Assets + "Sprites/Tiles/";
+        public const string Projectiles = Assets + "Sprites/Projectiles/";
         public const string Trails = Textures + "Trails/";
 
 
@@ -23,5 +24,6 @@ namespace OvermorrowMod.Common
         public const string ArchiveTiles = Tiles + "Archives/";
         public const string ArchiveNPCs = NPCs + "Archives/";
         public const string ArchiveItems = Items + "Archives/";
+        public const string ArchiveProjectiles = Projectiles + "Archives/";
     }
 }
