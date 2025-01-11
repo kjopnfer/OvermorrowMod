@@ -16,11 +16,11 @@ namespace OvermorrowMod.Content.NPCs
                 var fifthEndpoint = fourthEndpoint + new Vector2(48, 0).RotatedBy(MathHelper.ToRadians(30));
                 var sixthEndpoint = fifthEndpoint + new Vector2(64, 0);
                 colliders = new CollisionSurface[] {
-                    new CollisionSurface(NPC.TopLeft, NPC.TopRight, new int[] { 1, 1, 0, 0 }, true),
-                    new CollisionSurface(NPC.TopRight, thirdEndpoint, new int[] { 1, 1, 0, 0 }, true),
-                    new CollisionSurface(thirdEndpoint, fourthEndpoint, new int[] { 1, 1, 0, 0 }, true),
-                    new CollisionSurface(fourthEndpoint, fifthEndpoint, new int[] { 1, 1, 0, 0 }, true),
-                    new CollisionSurface(fifthEndpoint, sixthEndpoint, new int[] { 1, 1, 0, 0 }, true),
+                    new CollisionSurface(NPC.TopLeft, NPC.TopRight, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
+                    new CollisionSurface(NPC.TopRight, thirdEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
+                    new CollisionSurface(thirdEndpoint, fourthEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
+                    new CollisionSurface(fourthEndpoint, fifthEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
+                    new CollisionSurface(fifthEndpoint, sixthEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
                 };
             }
             return true;

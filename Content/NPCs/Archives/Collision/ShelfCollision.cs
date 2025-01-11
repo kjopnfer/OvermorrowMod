@@ -19,8 +19,8 @@ namespace OvermorrowMod.Content.NPCs
                 var fourthEndpoint = secondEndpoint + new Vector2(0, 18 * 5 - 8);
       
                 colliders = new CollisionSurface[] {
-                    new CollisionSurface(firstEndpoint, secondEndpoint, new int[] { 2, 0, 0, 0 }, true),
-                    new CollisionSurface(thirdEndpoint, fourthEndpoint, new int[] { 2, 0, 0, 0 }, true),
+                    new CollisionSurface(firstEndpoint, secondEndpoint, new int[] { CollisionID.Platform, 0, 0, 0 }, true),
+                    new CollisionSurface(thirdEndpoint, fourthEndpoint, new int[] { CollisionID.Platform, 0, 0, 0 }, true),
                 };
             }
             return true;
