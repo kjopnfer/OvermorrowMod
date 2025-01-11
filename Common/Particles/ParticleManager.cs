@@ -23,7 +23,7 @@ namespace OvermorrowMod.Common.Particles
         public int activeTime;
         public Vector2[] oldPos = new Vector2[10];
         public float[] customData;
-        private static int MaxParticleCount = 1000;
+        private static int MaxParticleCount = 5000;
         public static int NextIndex;
         public static int ActiveParticles;
         public static Particle[] particles;

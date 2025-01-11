@@ -8,6 +8,9 @@ using OvermorrowMod.Common;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.CodeAnalysis.Text;
+using Terraria.GameContent;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Content.Particles;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -16,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 300;
             Projectile.width = 2;
             Projectile.height = 2;
             Projectile.tileCollide = false;
@@ -57,17 +60,26 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             // Categorize tiles around the projectile
-            FindTiles();
+            FindTiles(radius: 5);
         }
 
-        private void FindTiles()
+        public ref float AICounter => ref Projectile.ai[0];
+        public override void AI()
+        {
+            Main.NewText(Main.maxDust);
+            if (AICounter++ < 60)
+            {
+                int radius = (int)MathHelper.Lerp(1, 10, AICounter / 60f);
+                surfaceTiles.Clear();
+                FindTiles(radius);
+            }
+        }
+
+        private void FindTiles(int radius)
         {
             Point centerTile = Projectile.Center.ToTileCoordinates();
             Vector2 elevatedCenter = Projectile.Center - new Vector2(0, 5 * 18); // Start 3 tiles above
 
-            int radius = 5; // Radius to check around the projectile (in tiles)
-
-            Dust.NewDust((Projectile.Center - new Vector2(0, 3 * 18)), 1, 1, DustID.DemonTorch);
             for (int x = centerTile.X - radius; x <= centerTile.X + radius; x++)
             {
                 for (int y = centerTile.Y - radius; y <= centerTile.Y + radius; y++)
@@ -235,11 +247,23 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool PreDraw(ref Color lightColor)
         {
+            if (Main.gamePaused) return false;
+
             // Draw categorized tiles with designated colors
             foreach (var (tilePosition, type, displayColor) in surfaceTiles)
             {
                 Vector2 tileWorldPosition = new Vector2(tilePosition.X * 16, tilePosition.Y * 16);
-                switch (type)
+                /*Main.spriteBatch.Draw(
+                    ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_01").Value,
+                    tileWorldPosition - Main.screenPosition,
+                    new Rectangle(0, 0, 16, 16),
+                    displayColor * 0.5f);*/
+
+                if (Main.rand.NextBool(4))
+                {
+                    Particle.CreateParticle(Particle.ParticleType<PlantGas>(), tileWorldPosition, -Vector2.UnitY, Color.LimeGreen, alpha: 1f, scale: 0.1f);
+                }
+                /*switch (type)
                 {
                     case TileType.FullBlockExposedTop:
                     case TileType.FullBlockExposedBottom:
@@ -262,7 +286,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         // For slopes, draw slivers across the slope area
                         DrawSlopeEdges(tileWorldPosition, type, displayColor);
                         break;
-                }
+                }*/
 
                 /*Main.spriteBatch.Draw(
                     Terraria.GameContent.TextureAssets.MagicPixel.Value,

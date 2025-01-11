@@ -17,7 +17,7 @@ namespace OvermorrowMod.Common.Particles
         public virtual void OnSpawn() { }
 
         public virtual void Update() { }
-        public virtual string Texture { get { return null; } private set { } }
+        public virtual string Texture { get; protected set; } = AssetDirectory.Empty;
         public virtual bool ShouldUpdatePosition() => true;
         public virtual void Draw(SpriteBatch spriteBatch)
         {

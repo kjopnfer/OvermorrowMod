@@ -2,17 +2,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using Terraria;
-using Terraria.ModLoader;
 using OvermorrowMod.Common;
-using Terraria.ID;
 using Terraria.GameContent.Bestiary;
 using Terraria.DataStructures;
-using OvermorrowMod.Content.Biomes;
 using Terraria.Localization;
-using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
-using static log4net.Appender.RollingFileAppender;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
