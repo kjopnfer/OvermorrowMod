@@ -1,14 +1,10 @@
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
-using Terraria.ID;
 using OvermorrowMod.Common;
 using System;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common.Particles;
-using OvermorrowMod.Content.Particles;
 using Terraria.GameContent;
 using OvermorrowMod.Common.Utilities;
 
@@ -19,29 +15,32 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override string Texture => AssetDirectory.ArchiveProjectiles + Name;
         public override void SetDefaults()
         {
-            Projectile.timeLeft = 300;
             Projectile.width = 2;
             Projectile.height = 2;
             Projectile.hostile = true;
             Projectile.tileCollide = false;
+            Projectile.aiStyle = -1;
+            Projectile.timeLeft = 240;
+            Projectile.penetrate = -1;
         }
 
         int spriteVariant = 1;
-        int projectileWidth = 42;
-        int projectileHeight = 80;
+        int hitboxWidth = 42;
+        int hitboxHeight = 80;
         public override void OnSpawn(IEntitySource source)
         {
             spriteVariant = Main.rand.Next(0, 3);
         }
 
-        public ref float AICounter => ref Projectile.ai[0];
+        public ref float SpawnRotation => ref Projectile.ai[0];
+        public ref float AICounter => ref Projectile.ai[1];
         public override void AI()
         {
+            Projectile.rotation = SpawnRotation;
             Projectile.velocity = Vector2.Zero;
 
             if (AICounter < 30) AICounter++;
-
-            base.AI();
+            Projectile.Opacity = Math.Clamp(MathHelper.Lerp(0, 1f, Projectile.timeLeft / 60f), 0, 1f);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -49,11 +48,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (projHitbox.Intersects(targetHitbox)) return true;
 
             float _ = float.NaN;
-            Vector2 endPosition = Projectile.Bottom + new Vector2(0, -projectileHeight).RotatedBy(Projectile.rotation);
-            //Dust.NewDust(Projectile.Bottom, 1, 1, DustID.RedTorch);
-            //Dust.NewDust(endPosition, 1, 1, DustID.Torch);
+            Vector2 endPosition = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);
 
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, endPosition, projectileWidth * Projectile.scale, ref _);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, endPosition, hitboxWidth * Projectile.scale, ref _);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -65,7 +62,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float drawHeight = MathHelper.Lerp(0, 1f, EasingUtils.EaseOutBack(AICounter / 30f));
             float drawWidth = MathHelper.Lerp(0.5f, 1f, AICounter / 30f);
             Vector2 scale = new Vector2(drawWidth, drawHeight);
-            Main.spriteBatch.Draw(texture, Projectile.Bottom - Main.screenPosition, drawRectangle, lightColor, Projectile.rotation, new Vector2(drawRectangle.Width / 2f, texture.Height), scale, SpriteEffects.None, 0f);
+
+            Vector2 drawOffset = new Vector2(0, 16).RotatedBy(Projectile.rotation);
+            Main.spriteBatch.Draw(texture, Projectile.Bottom + drawOffset - Main.screenPosition, drawRectangle, lightColor * Projectile.Opacity, Projectile.rotation, new Vector2(drawRectangle.Width / 2f, texture.Height), scale, SpriteEffects.None, 0f);
 
             return false;
         }
