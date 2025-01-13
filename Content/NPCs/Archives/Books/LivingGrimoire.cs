@@ -45,6 +45,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
+        protected virtual int CastTime => 120;
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
@@ -75,6 +76,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             aggroDelay = aggroDelayTime;
             targetPosition = NPC.Center + new Vector2(14 * 16 * NPC.direction, 0).RotatedByRandom(MathHelper.PiOver2);
+
+            NPC.netUpdate = true;
         }
 
         float flySpeedX = 2;
@@ -82,8 +85,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float aggroDelay = 60;
         public sealed override void AI()
         {
-            NPC.TargetClosest();
-
             //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);
 
             switch ((AICase)AIState)
@@ -99,11 +100,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Fly:
+                    NPC.TargetClosest();
+
                     HandleHorizontalMovement();
                     HandleVerticalMovement();
                     HandleGroundProximity();
                     HandleObstacleAvoidance();
-
 
                     if (AttackCondition())
                     {
@@ -130,7 +132,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                     CastSpell();
 
-                    if (AICounter++ > 120)
+                    if (AICounter++ > CastTime)
                     {
                         distanceFromGround = Main.rand.Next(16, 19) * 8;
                         aggroDelayTime = Main.rand.Next(10, 20) * 10;
@@ -138,6 +140,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                         AIState = (int)AICase.Fly;
                         AICounter = 0;
+                        NPC.localAI[0] = 0;
                         aggroDelay = aggroDelayTime;
                     }
                     break;
@@ -232,7 +235,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Cast:
-                    yFrame = AICounter <= 6 || AICounter >= 114 ? 9 : 10;
+                    yFrame = AICounter <= 6 || AICounter >= CastTime - 6 ? 9 : 10;
 
                     if (NPC.frameCounter++ % 3 == 0)
                     {
@@ -257,6 +260,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.frame.X = NPC.frame.Width * xFrame;
             NPC.frame.Y = NPC.frame.Height * yFrame;
         }
+
+        protected virtual void DrawCastEffect(SpriteBatch spriteBatch) { }
 
         protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
         {
@@ -290,6 +295,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, drawModifiers);
            }*/
 
+            if ((AICase)AIState == AICase.Cast)
+                DrawCastEffect(spriteBatch);
+
             int xOffset = NPC.direction == -1 ? 4 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -28);
 
@@ -305,179 +313,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
-        }
-
-        private void AI_114_Dragonflies()
-        {
-            if (NPC.localAI[0] == 0f && Main.netMode != 1)
-            {
-                NPC.localAI[0] = 1f;
-                Vector2 center = NPC.Center;
-                NPC.ai[2] = center.X;
-                NPC.ai[3] = center.Y;
-                NPC.velocity = (Main.rand.NextVector2Circular(5f, 3f) + Main.rand.NextVector2CircularEdge(5f, 3f)) * 0.4f;
-                NPC.ai[1] = 0f;
-                NPC.ai[0] = 1f;
-                NPC.netUpdate = true;
-            }
-            switch ((int)NPC.ai[0])
-            {
-                case 0:
-                    NPC.velocity *= 0.94f;
-                    if (Main.netMode != 1 && (NPC.ai[1] += 1f) >= (float)(60 + Main.rand.Next(60)))
-                    {
-                        Vector2 vector = new Vector2(NPC.ai[2], NPC.ai[3]);
-                        if (NPC.Distance(vector) > 96f)
-                        {
-                            NPC.velocity = NPC.DirectionTo(vector) * 3f;
-                        }
-                        else if (NPC.Distance(vector) > 16f)
-                        {
-                            NPC.velocity = NPC.DirectionTo(vector) * 1f + Main.rand.NextVector2Circular(1f, 0.5f);
-                        }
-                        else
-                        {
-                            NPC.velocity = (Main.rand.NextVector2Circular(5f, 3f) + Main.rand.NextVector2CircularEdge(5f, 3f)) * 0.4f;
-                        }
-                        NPC.ai[1] = 0f;
-                        NPC.ai[0] = 1f;
-                        NPC.netUpdate = true;
-                    }
-                    break;
-                case 1:
-                    {
-                        int num = 4;
-                        Vector2 other = new Vector2(NPC.ai[2], NPC.ai[3]);
-                        if (NPC.Distance(other) > 112f)
-                        {
-                            num = 200;
-                        }
-                        if ((NPC.ai[1] += 1f) >= (float)num)
-                        {
-                            NPC.ai[1] = 0f;
-                            NPC.ai[0] = 0f;
-                            NPC.netUpdate = true;
-                        }
-                        int num2 = (int)NPC.Center.X / 16;
-                        int num3 = (int)NPC.Center.Y / 16;
-                        int num4 = 3;
-                        for (int i = num3; i < num3 + num4; i++)
-                        {
-                            if (Main.tile[num2, i] != null && ((Main.tile[num2, i].HasUnactuatedTile && Main.tileSolid[Main.tile[num2, i].TileType]) || Main.tile[num2, i].LiquidAmount > 0))
-                            {
-                                if (NPC.velocity.Y > 0f)
-                                {
-                                    NPC.velocity.Y *= 0.9f;
-                                }
-                                NPC.velocity.Y -= 0.2f;
-                            }
-                        }
-                        if (!(NPC.velocity.Y < 0f))
-                        {
-                            break;
-                        }
-                        int num5 = 30;
-                        bool flag = false;
-                        for (int j = num3; j < num3 + num5; j++)
-                        {
-                            if (Main.tile[num2, j] != null && Main.tile[num2, j].HasUnactuatedTile && Main.tileSolid[Main.tile[num2, j].TileType])
-                            {
-                                flag = true;
-                                break;
-                            }
-                        }
-                        if (!flag && NPC.velocity.Y < 0f)
-                        {
-                            NPC.velocity.Y *= 0.9f;
-                        }
-                        break;
-                    }
-            }
-            if (NPC.velocity.X != 0f)
-            {
-                NPC.direction = ((NPC.velocity.X > 0f) ? 1 : (-1));
-            }
-            if (NPC.wet)
-            {
-                NPC.velocity.Y = -3f;
-            }
-            if (NPC.localAI[1] > 0f)
-            {
-                NPC.localAI[1] -= 1f;
-                return;
-            }
-            NPC.localAI[1] = 15f;
-            float num6 = 0f;
-            Vector2 zero = Vector2.Zero;
-            for (int k = 0; k < 200; k++)
-            {
-                NPC nPC = Main.npc[k];
-                if (nPC.active && nPC.damage > 0 && !nPC.friendly && nPC.Hitbox.Distance(NPC.Center) <= 100f)
-                {
-                    num6 += 1f;
-                    zero += NPC.DirectionFrom(nPC.Center);
-                }
-            }
-            for (int l = 0; l < 255; l++)
-            {
-                Player player = Main.player[l];
-                if (player.active && player.Hitbox.Distance(NPC.Center) <= 150f)
-                {
-                    num6 += 1f;
-                    zero += NPC.DirectionFrom(player.Center);
-                }
-            }
-            if (num6 > 0f)
-            {
-                float num7 = 2f;
-                zero /= num6;
-                zero *= num7;
-                NPC.velocity += zero;
-                if (NPC.velocity.Length() > 16f)
-                {
-                    NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero) * 16f;
-                }
-                Vector2 vector2 = NPC.Center + zero * 10f;
-                NPC.ai[1] = -10f;
-                NPC.ai[0] = 1f;
-                NPC.ai[2] = vector2.X;
-                NPC.ai[3] = vector2.Y;
-                NPC.netUpdate = true;
-            }
-            else
-            {
-                if (Main.netMode == 1 || !((new Vector2(NPC.ai[2], NPC.ai[3]) - NPC.Center).Length() < 16f))
-                {
-                    return;
-                }
-                int maxValue = 30;
-                if (Main.tile[(int)NPC.ai[2] / 16, (int)NPC.ai[3] / 16].TileType != 519)
-                {
-                    maxValue = 4;
-                }
-                if (Main.rand.Next(maxValue) != 0)
-                {
-                    return;
-                }
-                int cattailX = (int)NPC.ai[2];
-                int cattailY = (int)NPC.ai[2];
-                if (NPC.FindCattailTop((int)NPC.ai[2] / 16, (int)NPC.ai[3] / 16, out cattailX, out cattailY))
-                {
-                    NPC.ai[2] = cattailX * 16;
-                    NPC.ai[3] = cattailY * 16;
-                    NPC.netUpdate = true;
-                    return;
-                }
-                int num8 = (int)(NPC.Center.X / 16f);
-                int m;
-                for (m = (int)(NPC.Center.Y / 16f); !WorldGen.SolidTile(num8, m) && (double)m < Main.worldSurface; m++)
-                {
-                }
-                m -= Main.rand.Next(3, 6);
-                NPC.ai[2] = num8 * 16;
-                NPC.ai[3] = m * 16;
-                NPC.netUpdate = true;
-            }
         }
     }
 }
