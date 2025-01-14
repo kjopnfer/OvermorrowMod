@@ -13,8 +13,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
     public class ArchiveSubworld : Subworld
     {
 
-        public override int Width => ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value.Width;
-        public override int Height => ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value.Height + 50;
+        public override int Width => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value.Width;
+        public override int Height => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value.Height + 50;
 
         public static int GetWidth() => new ArchiveSubworld().Width;
         public static int GetHeight() => new ArchiveSubworld().Height;

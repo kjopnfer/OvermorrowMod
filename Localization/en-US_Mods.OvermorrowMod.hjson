@@ -70,6 +70,8 @@ NPCs: {
 	AnimatedSofa.DisplayName: Animated Sofa
 	AnimatedChair.DisplayName: Animated Armchair
 	PlantBook.DisplayName: Living Grimoire
+	BarrierBook.DisplayName: Barrier Book
+	Test.DisplayName: Test
 }
 
 Bestiary: {

@@ -50,10 +50,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             Main.worldSurface = ArchiveSubworld.GetHeight();
             Main.rockLayer = ArchiveSubworld.GetHeight();
 
-            Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D slopes = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D objects = ModContent.Request<Texture2D>(AssetDirectory.TextureMaps + "ArchiveObjects", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D slopes = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D objects = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveObjects", AssetRequestMode.ImmediateLoad).Value;
 
             Dictionary<Color, int> tileMapping = new()
             {
