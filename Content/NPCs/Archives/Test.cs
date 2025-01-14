@@ -31,10 +31,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             Effect barrier = OvermorrowModFile.Instance.BarrierShader.Value;
 
+            float alpha = 0.25f;
+
             barrier.Parameters["Time"].SetValue(Main.GameUpdateCount / 60f); // Time in seconds
             barrier.Parameters["NoiseSeed"].SetValue((float)(Math.Sin(Main.GameUpdateCount / 60f) * 0.5f + 0.5f)); // Random noise seed
-            barrier.Parameters["Ratio"].SetValue(0.6f); // Ratio for noise blend
-            barrier.Parameters["TintColor"].SetValue(new Vector4(0.3f, 0.6f, 1.0f, 1.0f)); // Tint color (RGBA)
+            barrier.Parameters["Ratio"].SetValue(0.8f); // Ratio for noise blend
+            barrier.Parameters["TintColor"].SetValue(new Vector4(0.3f, 0.6f, 1.0f, 1f)); // Tint color (RGBA)
+            barrier.Parameters["Alpha"].SetValue(alpha);
 
             Main.graphics.GraphicsDevice.Textures[1] = OvermorrowModFile.Instance.BarrierNoiseTexture.Value;
 
@@ -43,13 +46,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             barrier.CurrentTechnique.Passes[0].Apply();
 
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Assets + "Sprites/NPCs/RAT").Value;
+            Rectangle drawRectangle = new Rectangle(0, 0, (int)(texture.Width), 70);
             spriteBatch.Draw(
-                TextureAssets.Npc[NPC.type].Value,  // NPC texture
+                texture,  // NPC texture
                 NPC.Center - screenPos,             // Screen position
                 null,                          // Source rectangle
-                drawColor,                          // Color tint
+                drawColor * alpha,                          // Color tint
                 NPC.rotation,                       // Rotation
-                NPC.frame.Size() / 2,               // Origin point
+                texture.Size() / 2,               // Origin point
                 NPC.scale,                          // Scale
                 SpriteEffects.None,                 // Sprite effects
                 0f                                  // Layer depth

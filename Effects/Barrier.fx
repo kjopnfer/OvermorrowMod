@@ -21,6 +21,10 @@ float Time : register(C2);
 /// <defaultValue>float4(0.3, 0.6, 1.0, 1.0)</defaultValue>
 float4 TintColor : register(C3);
 
+/// <summary>Alpha value for blending</summary>
+/// <defaultValue>1.0</defaultValue>
+float Alpha : register(C4);
+
 float4 main(float2 uv : TEXCOORD) : COLOR 
 {
     // Sample the input texture
@@ -42,7 +46,11 @@ float4 main(float2 uv : TEXCOORD) : COLOR
     color.rgb = lerp(noiseSample.rgb, color.rgb, Ratio);
 
     // Blend the pulsating tint color with the current color
-    color.rgb = lerp(color.rgb, TintColor.rgb, glow * 0.4f);
+    color.rgb = lerp(color.rgb, TintColor.rgb, glow * 0.4f * Alpha);
+
+    // Apply alpha blending
+    color.rgb *= Alpha; // Scale RGB by the alpha value
+    color.a *= Alpha;   // Adjust alpha for blending
 
     return color;
 }
