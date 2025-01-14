@@ -14,6 +14,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
     public abstract class ChairSummon : OvermorrowNPC
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (AICase)AIState != AICase.Summon;
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
@@ -50,6 +51,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         protected int idleTime = 30;
         public sealed override void AI()
         {
+            NPC.knockBackResist = (AICase)AIState == AICase.Summon ? 0f : 1f;
+
             switch ((AICase)AIState)
             {
                 case AICase.Summon:

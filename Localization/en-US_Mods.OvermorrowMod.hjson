@@ -68,15 +68,15 @@ NPCs: {
 	PlaneBook.DisplayName: Living Grimoire
 	ChairBook.DisplayName: Living Grimoire
 	AnimatedSofa.DisplayName: Animated Sofa
-	AnimatedChair.DisplayName: Animated Chair
-	PlantBook.DisplayName: Plant Book
+	AnimatedChair.DisplayName: Animated Armchair
+	PlantBook.DisplayName: Living Grimoire
 }
 
 Bestiary: {
 	ArchiveRat: A sneaky rodent with a knack for disappearing, it reemerges in a blur of speed to catch its target off guard.
 	AnimatedChair: A humble chair turned hostile, it scrambles after foes with legs meant for more than just support.
-	AnimatedSofa: Once a cozy place to rest, this enchanted sofa now lunges at intruders, proving comfort can be deceiving.
-	PlaneBook: This enchanted tome weaves protective barriers for its comrades, shielding them from harm with its cryptic magic.
+	AnimatedSofa: Once a cozy place to rest, this enchanted armchair now lunges at intruders, proving comfort can be deceiving.
+	BarrierBook: This enchanted tome weaves protective barriers for its comrades, shielding them from harm with its cryptic magic.
 	PlantBook: An ancient tome brought to life, this flying book summons vicious plants from its enchanted pages to protect its secrets from intruders.
 	ChairBook: A mischievous flying book that animates chairs to serve as its loyal guardians, turning furniture into formidable foes.
 }

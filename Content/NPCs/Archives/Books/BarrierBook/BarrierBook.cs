@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
-    public class PlaneBook : LivingGrimoire
+    public class BarrierBook : LivingGrimoire
     {
         public override bool AttackCondition()
         {
