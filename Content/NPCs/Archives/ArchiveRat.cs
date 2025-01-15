@@ -76,7 +76,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Stealth = 3
         }
 
-        public bool isStealthed => NPC.HasBuff<Stealth>();
 
         private float maxSpeed = 1.8f;
         private int idleTime = 30;
@@ -88,11 +87,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             idleTime = Main.rand.Next(24, 36);
             attackRange = Main.rand.Next(16, 19) * 10;
             stealthDelay = Main.rand.Next(24, 32) * 10;
+
             NPC.GetGlobalNPC<BuffNPC>().StealthDelay = stealthDelay;
         }
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
+            // This is because the NPC immediately remove stealth on attack so checking the buff isn't viable
             if (NPC.GetGlobalNPC<BuffNPC>().StealthCounter > 0) modifiers.SourceDamage *= 2;
         }
 
@@ -177,7 +178,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void AI()
         {
             NPC.noGravity = false;
-            NPC.knockBackResist = isStealthed ? 0f : 0.5f;
+            NPC.knockBackResist = NPC.IsStealthed() ? 0f : 0.5f;
             if (afterimageLinger > 0) afterimageLinger--;
 
             #region Impact Collision
@@ -256,7 +257,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         canAttack = true;
                         SetAIState(AICase.Idle);
                     }
-                    else if (!isStealthed && NPC.GetGlobalNPC<BuffNPC>().StealthDelay <= 0)
+                    else if (!NPC.IsStealthOnCooldown())
                     {
                         SetAIState(AICase.Stealth);
                     }
@@ -269,12 +270,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AICase.Attack:
                     afterimageLinger = 30;
 
-                    if (isStealthed)
-                    {
-                        int buff = NPC.FindBuffIndex(ModContent.BuffType<Stealth>());
-                        NPC.DelBuff(buff);
-                    }
-
+                    NPC.RemoveStealth();
                     NPC.velocity.X = Main.rand.Next(14, 17) * NPC.direction;
 
                     if (AICounter++ >= 10)
@@ -286,11 +282,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     break;
                 case AICase.Stealth:
                     NPC.velocity.X = 0;
-                    NPC.AddBuff(ModContent.BuffType<Stealth>(), 18000);
+                    NPC.SetStealth(stealthTime: 18000, stealthDelay);
 
                     if (AICounter++ >= 60)
                     {
-                        NPC.GetGlobalNPC<BuffNPC>().StealthDelay = stealthDelay;
                         SetAIState(AICase.Walk);
                     }
                     break;

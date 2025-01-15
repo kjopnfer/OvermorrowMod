@@ -1,6 +1,9 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Buffs;
+using OvermorrowMod.Core.Globals;
 using System;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Utilities
 {
@@ -62,6 +65,79 @@ namespace OvermorrowMod.Common.Utilities
             Tile tile = Framing.GetTileSafely((int)hitboxDetection.X + directionOffset, (int)hitboxDetection.Y + 1);
 
             return !tile.HasTile;
+        }
+
+        #region Stealth
+        /// <summary>
+        /// Sets the stealth time and delay for an NPC.
+        /// </summary>
+        /// <param name="npc">The NPC to set stealth on.</param>
+        /// <param name="stealthTime">The duration of the stealth in ticks.</param>
+        /// <param name="stealthDelay">The delay before stealth can be applied again in ticks.</param>
+        public static void SetStealth(this NPC npc, int stealthTime, int stealthDelay)
+        {
+            var buffNPC = npc.GetGlobalNPC<BuffNPC>();
+
+            // Check if the stealth delay is still active
+            if (buffNPC.StealthDelay > 0)
+            {
+                return; // Don't apply stealth if the delay is still active
+            }
+
+            buffNPC.StealthDelay = stealthDelay;
+            npc.AddBuff(ModContent.BuffType<Stealth>(), stealthTime);
+        }
+
+        /// <summary>
+        /// Removes the Stealth buff from the NPC, if it has it.
+        /// </summary>
+        /// <param name="npc">The NPC to remove the buff from.</param>
+        public static void RemoveStealth(this NPC npc)
+        {
+            if (npc.IsStealthed())
+            {
+                int buffIndex = npc.FindBuffIndex(ModContent.BuffType<Stealth>());
+                if (buffIndex >= 0)
+                {
+                    npc.DelBuff(buffIndex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the NPC is currently stealthed.
+        /// </summary>
+        /// <param name="npc">The NPC to check.</param>
+        /// <returns>True if the NPC is stealthed, otherwise false.</returns>
+        public static bool IsStealthed(this NPC npc)
+        {
+            return npc.HasBuff<Stealth>();
+        }
+
+        /// <summary>
+        /// Checks if the NPC is on stealth cooldown.
+        /// </summary>
+        /// <param name="npc">The NPC to check.</param>
+        /// <returns>True if the stealth delay is active, otherwise false.</returns>
+        public static bool IsStealthOnCooldown(this NPC npc)
+        {
+            return npc.GetGlobalNPC<BuffNPC>().StealthDelay > 0;
+        }
+        #endregion
+
+        /// <summary>
+        /// Adds a barrier to the NPC, providing temporary protection from damage.
+        /// The barrier absorbs incoming damage up to its total Barrier Points (BP).
+        /// Any damage exceeding the BP directly reduces the NPC's health.
+        /// Barriers decay after a specified duration if not replenished.
+        /// </summary>
+        /// <param name="npc">The NPC to which the barrier is being applied.</param>
+        /// <param name="amount">The total Barrier Points (BP) to assign. This determines how much damage the barrier can absorb.</param>
+        /// <param name="duration">The duration of the barrier in ticks (1/60th of a second). After this duration, the barrier will decay.</param>
+        public static void AddBarrier(this NPC npc, int amount, int duration)
+        {
+            BarrierNPC barrierNPC = npc.GetGlobalNPC<BarrierNPC>();
+            barrierNPC.SetBarrier(amount, duration);
         }
     }
 }
