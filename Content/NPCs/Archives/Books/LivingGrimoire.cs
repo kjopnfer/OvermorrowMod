@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using OvermorrowMod.Content.Biomes;
 using Terraria.Localization;
 using System;
+using OvermorrowMod.Common.Utilities;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -78,6 +79,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             targetPosition = NPC.Center + new Vector2(14 * 16 * NPC.direction, 0).RotatedByRandom(MathHelper.PiOver2);
 
             NPC.netUpdate = true;
+            NPC.AddBarrier(100, 6000);
         }
 
         float flySpeedX = 2;
