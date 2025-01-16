@@ -3,7 +3,7 @@
 ## Content Organization
 - Utility functions and shared code (like base classes) should go in **Common**.
 - Core functionality and mod initialization code goes in **Core**.
-	- If the file does not handle something that the player can directly interact with it should be place dhere.
+	- If the file does not handle something that the player can directly interact with it should be placed here.
 - Projectiles associated with an NPC should be grouped within the same directory they are used in.
 
 ## Textures

@@ -1,15 +1,17 @@
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Core.RenderTargets;
 using System.Collections.Generic;
 
 namespace OvermorrowMod.Core
 {
     public static class DetourLoader
     {
+        // TODO: What the fuck turn these into ILoadables
         public static void Load()
         {
             Terraria.On_Main.DrawInterface += ParticleDetour.DrawParticles;
-
+           
             #region Trails
             PrimitiveManager.trails = new List<Trail>();
 

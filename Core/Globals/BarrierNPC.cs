@@ -1,9 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mono.Cecil;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Buffs;
 using System;
 using System.IO;
+using System.Threading;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -59,6 +62,37 @@ namespace OvermorrowMod.Core.Globals
 
         public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
         {
+            if (HasBarrier && !npc.IsStealthed())
+            {
+                float alpha = Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
+
+                Texture2D healthBar = TextureAssets.Hb1.Value;
+                Texture2D healthContainer = TextureAssets.Hb2.Value;
+
+                Rectangle drawRectangle = new Rectangle(0, 0, (int)(healthBar.Width * (BarrierPoints / (float)MaxBarrierPoints)), healthBar.Height);
+                //Main.spriteBatch.Draw(healthBar, new Vector2((int)position.X, (int)position.Y) - Main.screenPosition, null, Color.White * alpha * 1.5f, 0, new Vector2(healthBar.Width / 2, 0), 0, 0);
+                Main.spriteBatch.Draw(healthContainer, new Vector2((int)position.X, (int)position.Y - 8) - Main.screenPosition, null, Color.White * alpha, 0f, new Vector2(healthBar.Width, 0) / 2, new Vector2(1f, 0.8f) * scale, SpriteEffects.None, 0);
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+
+                Effect barrier = OvermorrowModFile.Instance.BarrierShader.Value;
+                barrier.Parameters["Time"].SetValue(Main.GameUpdateCount / 60f);
+                barrier.Parameters["NoiseSeed"].SetValue((float)(Math.Sin(Main.GameUpdateCount / 60f) * 0.5f + 0.5f));
+                barrier.Parameters["Ratio"].SetValue(0.8f);
+                barrier.Parameters["TintColor"].SetValue(new Vector4(0.3f, 0.6f, 1.0f, 1f));
+                barrier.Parameters["Alpha"].SetValue(alpha);
+
+                Main.graphics.GraphicsDevice.Textures[1] = OvermorrowModFile.Instance.BarrierNoiseTexture.Value;
+
+                barrier.CurrentTechnique.Passes[0].Apply();
+
+                Main.spriteBatch.Draw(healthBar, new Vector2((int)position.X, (int)position.Y - 6) - Main.screenPosition, drawRectangle, Color.Cyan * alpha, 0f, new Vector2(healthBar.Width, 0) / 2, new Vector2(1f, 0.5f) * scale, SpriteEffects.None, 0);
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(default, default, Main.DefaultSamplerState, default, default, default, Main.GameViewMatrix.TransformationMatrix);
+
+            }
 
             return base.DrawHealthBar(npc, hbPosition, ref scale, ref position);
         }
@@ -87,66 +121,82 @@ namespace OvermorrowMod.Core.Globals
             base.ReceiveExtraAI(npc, bitReader, binaryReader);
         }
 
-        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
+
+        public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
         {
-            HandleBarrier(ref modifiers);
+            modifiers.ModifyHitInfo += (ref NPC.HitInfo n) => HandleBarrier(npc, ref n);
         }
 
-        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
-            HandleBarrier(ref modifiers);
-        }
-
-        private void HandleBarrier(ref NPC.HitModifiers modifiers)
+        private void HandleBarrier(NPC npc, ref NPC.HitInfo info)
         {
             if (HasBarrier)
             {
-                float incomingDamage = modifiers.FinalDamage.Base; // Get the base damage
-
-                if (incomingDamage <= BarrierPoints)
+                int incomingDamage = info.Damage;
+                if (incomingDamage <= BarrierPoints) // Fully absorbed
                 {
-                    BarrierPoints -= (int)incomingDamage; // Fully absorbed
-                    modifiers.FinalDamage.Base = 0; // No damage passes through
+                    BarrierPoints -= incomingDamage;
+                    CombatText.NewText(npc.Hitbox, Color.GhostWhite, incomingDamage);
+                    info.Damage = 1; // Damage cannot be zero.
                 }
                 else
                 {
-                    float excessDamage = incomingDamage - BarrierPoints;
-                    BarrierPoints = 0; // Deplete the barrier
-                    modifiers.FinalDamage.Base = excessDamage; // Remaining damage applies
+                    int excessDamage = incomingDamage - BarrierPoints;
+                    CombatText.NewText(npc.Hitbox, Color.WhiteSmoke, BarrierPoints);
+
+                    BarrierPoints = 0;
+                    info.Damage = excessDamage; // Remaining damage applies
                 }
+
             }
         }
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (HasBarrier)
+            /*if (HasBarrier)
             {
-                Effect barrier = OvermorrowModFile.Instance.BarrierShader.Value;
+                RenderTarget2D renderTarget = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
 
-                float alpha = 1f;
+                // Set the render target
+                Main.graphics.GraphicsDevice.SetRenderTarget(renderTarget);
+                Main.graphics.GraphicsDevice.Clear(Color.Transparent); // Clear the target to make sure it's empty before drawing
 
-                barrier.Parameters["Time"].SetValue(Main.GameUpdateCount / 60f); // Time in seconds
-                barrier.Parameters["NoiseSeed"].SetValue((float)(Math.Sin(Main.GameUpdateCount / 60f) * 0.5f + 0.5f)); // Random noise seed
-                barrier.Parameters["Ratio"].SetValue(0.8f); // Ratio for noise blend
-                barrier.Parameters["TintColor"].SetValue(new Vector4(0.3f, 0.6f, 1.0f, 1f)); // Tint color (RGBA)
-                barrier.Parameters["Alpha"].SetValue(alpha);
+                // Start drawing to the render target
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
-                Main.graphics.GraphicsDevice.Textures[1] = OvermorrowModFile.Instance.BarrierNoiseTexture.Value;
+                // Draw the NPC (this will include its textures such as wings, body, etc.)
+                PreDraw(npc, spriteBatch, screenPos, drawColor);
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                // End drawing to the render target
+                spriteBatch.End();
 
-                barrier.CurrentTechnique.Passes[0].Apply();
+                // Reset the render target to draw to the screen again
+                Main.graphics.GraphicsDevice.SetRenderTarget(null);
 
-                //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Assets + "Sprites/NPCs/RAT").Value;
-                Texture2D texture = TextureAssets.Npc[npc.type].Value;
-                Rectangle drawRectangle = new Rectangle(0, 0, (int)(texture.Width), 70);
-                spriteBatch.Draw(texture, npc.Center - screenPos, npc.frame, drawColor * alpha, npc.rotation, texture.Size() / 2, npc.scale, SpriteEffects.None,  0f);
+                // Apply your custom shader (if any)
+                if (HasBarrier) // Assuming you want to apply this shader conditionally
+                {
+                    Effect barrier = OvermorrowModFile.Instance.BarrierShader.Value;
+                    barrier.Parameters["Time"].SetValue(Main.GameUpdateCount / 60f); // Time in seconds
+                    barrier.Parameters["NoiseSeed"].SetValue((float)(Math.Sin(Main.GameUpdateCount / 60f) * 0.5f + 0.5f)); // Random noise seed
+                    barrier.Parameters["Ratio"].SetValue(0.8f); // Ratio for noise blend
+                    barrier.Parameters["TintColor"].SetValue(new Vector4(0.3f, 0.6f, 1.0f, 1f)); // Tint color (RGBA)
+                    barrier.Parameters["Alpha"].SetValue(1f);
 
-                // Reset the sprite batch to avoid affecting other rendering
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-            }
+                    Main.graphics.GraphicsDevice.Textures[1] = OvermorrowModFile.Instance.BarrierNoiseTexture.Value;
+
+                    barrier.CurrentTechnique.Passes[0].Apply();
+                }
+
+                // Draw the captured render target to the screen
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+
+                // Draw the captured render target (as a texture)
+                spriteBatch.Draw(renderTarget, npc.Center - screenPos, npc.frame, drawColor * npc.Opacity, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0f);
+
+                // End the drawing and reset the sprite batch
+                spriteBatch.End();
+            }*/
 
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }

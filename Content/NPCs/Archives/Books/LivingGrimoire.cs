@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             targetPosition = NPC.Center + new Vector2(14 * 16 * NPC.direction, 0).RotatedByRandom(MathHelper.PiOver2);
 
             NPC.netUpdate = true;
-            NPC.AddBarrier(100, 6000);
+            NPC.AddBarrier(200, 6000);
         }
 
         float flySpeedX = 2;
@@ -133,6 +133,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     HandleGroundProximity();
 
                     CastSpell();
+                    NPC.AddBarrier(200, 6000);
 
                     if (AICounter++ > CastTime)
                     {
