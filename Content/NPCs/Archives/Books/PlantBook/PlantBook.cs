@@ -33,8 +33,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             //if (!Main.gamePaused) NPC.localAI[0] += 0.05f;
             NPC.localAI[0] += 0.05f;
 
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveProjectiles + "JungleRuneCircle").Value;
-            Texture2D texture2 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveProjectiles + "JungleCircle_Outer").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "JungleRuneCircle").Value;
+            Texture2D texture2 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "JungleCircle_Outer").Value;
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, null, Color.White * alpha, rotation, texture.Size() / 2, size, SpriteEffects.None, 0);
             spriteBatch.Draw(texture2, NPC.Center + drawOffset - Main.screenPosition, null, Color.White * alpha, -rotation * 0.8f, texture2.Size() / 2, size, SpriteEffects.FlipVertically, 0);
 
