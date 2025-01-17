@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Core.Globals;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace OvermorrowMod.Core.RenderTargets
             Terraria.On_Main.CheckMonoliths += SetBarrierTargets;
             Terraria.On_Main.DrawNPCs += DrawTarget;
         }
-    
+
         public void Unload()
         {
             barrierRenderTarget = null;
@@ -94,20 +95,26 @@ namespace OvermorrowMod.Core.RenderTargets
 
         private void DrawTargets(List<NPC> validNPCs)
         {
-            foreach (NPC NPC in validNPCs)
+            foreach (NPC npc in validNPCs)
             {
-                if (NPC.ModNPC != null)
-                {
-                    if (NPC.ModNPC != null && NPC.ModNPC is ModNPC ModNPC)
-                    {
-                        if (ModNPC.PreDraw(Main.spriteBatch, Main.screenPosition, NPC.GetAlpha(Color.White)))
-                            Main.instance.DrawNPC(NPC.whoAmI, false);
+                bool shouldDraw = true;
 
-                        ModNPC.PostDraw(Main.spriteBatch, Main.screenPosition, NPC.GetAlpha(Color.White));
-                    }
+                if (npc.ModNPC is OvermorrowNPC overmorrowNPC)
+                {
+                    // This is different because OvermorrowNPC has draw hooks that shouldn't be captured.
+                    shouldDraw = overmorrowNPC.DrawOvermorrowNPC(Main.spriteBatch, Main.screenPosition, npc.GetAlpha(Color.White));
+                    overmorrowNPC.PostDraw(Main.spriteBatch, Main.screenPosition, npc.GetAlpha(Color.White));
                 }
-                else
-                    Main.instance.DrawNPC(NPC.whoAmI, false);
+                else if (npc.ModNPC is ModNPC modNPC)
+                {
+                    shouldDraw = modNPC.PreDraw(Main.spriteBatch, Main.screenPosition, npc.GetAlpha(Color.White));
+                    modNPC.PostDraw(Main.spriteBatch, Main.screenPosition, npc.GetAlpha(Color.White));
+                }
+
+                if (shouldDraw)
+                {
+                    Main.instance.DrawNPC(npc.whoAmI, false);
+                }
             }
         }
     }
