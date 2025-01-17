@@ -74,16 +74,25 @@ namespace OvermorrowMod.Common.Primitives.Trails
                 }
                 else
                 {
-                    AddVertex(pos1 + off1, col1, new Vector2(prog1 + offset, 1));
+                    /*AddVertex(pos1 + off1, col1, new Vector2(prog1 + offset, 1));
                     AddVertex(pos1 - off1, col1, new Vector2(prog1 + offset, 0));
                     AddVertex(pos2 + off2, col1, new Vector2(prog1 + offset, 1));
 
                     AddVertex(pos2 + off2, col1, new Vector2(prog2 + offset, 1));
                     AddVertex(pos2 - off2, col1, new Vector2(prog2 + offset, 0));
-                    AddVertex(pos1 - off1, col1, new Vector2(prog2 + offset, 0));
+                    AddVertex(pos1 - off1, col1, new Vector2(prog2 + offset, 0));*/
+                    float segmentSize = 1.0f / (float)(Positions.Count - 1);
+                    float startOffset = segmentSize * i;
+
+                    AddVertex(pos1 + off1, col1, new Vector2(startOffset, 0f));
+                    AddVertex(pos1 - off1, col1, new Vector2(startOffset, 1f));
+                    AddVertex(pos2 + off2, col1, new Vector2(startOffset + segmentSize, 0f));
+
+                    AddVertex(pos2 + off2, col1, new Vector2(startOffset + segmentSize, 0));
+                    AddVertex(pos2 - off2, col1, new Vector2(startOffset + segmentSize, 1));
+                    AddVertex(pos1 - off1, col1, new Vector2(startOffset, 1));
                 }
             }
-
         }
 
         public override void Update()
