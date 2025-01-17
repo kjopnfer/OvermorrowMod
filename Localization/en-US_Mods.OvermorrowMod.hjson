@@ -88,4 +88,5 @@ Projectiles: {
 	ChairBolt.DisplayName: Chair Bolt
 	PlantAura.DisplayName: Plant Aura
 	FlowerSummon.DisplayName: Flower Summon
+	BarrierEffect.DisplayName: Barrier Effect
 }

@@ -114,7 +114,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         protected abstract Vector2 ParticleSpawnOffset { get; }
         protected abstract int AuraHeightOffset { get; }
 
-        public sealed override bool DrawNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public sealed override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

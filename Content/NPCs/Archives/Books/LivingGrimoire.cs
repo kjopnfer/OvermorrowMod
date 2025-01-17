@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             targetPosition = NPC.Center + new Vector2(14 * 16 * NPC.direction, 0).RotatedByRandom(MathHelper.PiOver2);
 
             NPC.netUpdate = true;
-            NPC.AddBarrier(200, 6000);
+            NPC.AddBarrier(100, 10);
         }
 
         float flySpeedX = 2;
@@ -133,7 +133,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     HandleGroundProximity();
 
                     CastSpell();
-                    NPC.AddBarrier(200, 6000);
 
                     if (AICounter++ > CastTime)
                     {
@@ -279,7 +278,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             spriteBatch.Draw(texture, NPC.Center + new Vector2(-8, 0), NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
         }
 
-        public override bool DrawNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override void DrawBehindOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if ((AICase)AIState == AICase.Cast)
+                DrawCastEffect(spriteBatch);
+        }
+
+        public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Texture2D wingTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BookWings").Value;
@@ -297,9 +302,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                NPCID.Sets.NPCBestiaryDrawOffset.Remove(Type);
                NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, drawModifiers);
            }*/
-
-            if ((AICase)AIState == AICase.Cast)
-                DrawCastEffect(spriteBatch);
 
             int xOffset = NPC.direction == -1 ? 4 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -28);

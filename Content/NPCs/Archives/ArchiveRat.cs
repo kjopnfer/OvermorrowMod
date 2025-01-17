@@ -389,7 +389,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             spriteBatch.Draw(texture, NPC.Center, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
         }
 
-        public override bool DrawNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

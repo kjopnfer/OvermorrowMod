@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Utilities;
 using System;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -19,13 +21,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void CastSpell()
         {
-            if (AICounter % 10 == 0 && AICounter < 40)
+            if (AICounter == 10)
             {
-                float angle = MathHelper.ToRadians(75);
-                Vector2 projectileVelocity = new Vector2(100 * NPC.direction, 0).RotatedByRandom(angle) * 50;
-                NPC.netUpdate = true;
+                float radius = 500f;
+                var nearbyHostileEnemies = Main.npc
+                    .Where(enemy => enemy.active && !enemy.friendly && Vector2.Distance(NPC.Center, enemy.Center) <= radius && enemy.whoAmI != NPC.whoAmI)
+                    .ToList();
 
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, ModContent.ProjectileType<PlaneProjectile>(), 1, 1f, Main.myPlayer);
+                foreach (NPC enemy in nearbyHostileEnemies)
+                {
+                    enemy.AddBarrier(50, 100);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), enemy.Center, Vector2.Zero, ModContent.ProjectileType<BarrierEffect>(), 1, 1f, Main.myPlayer, ai0: enemy.whoAmI);
+                }
             }
         }
     }
