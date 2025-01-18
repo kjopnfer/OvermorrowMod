@@ -9,13 +9,15 @@ namespace OvermorrowMod.Core
     {
         public Asset<Effect> TrailShader;
         public Asset<Effect> BarrierShader;
+        public Asset<Effect> Ring;
 
         public Asset<Texture2D> BarrierNoiseTexture;
 
         private void LoadEffects()
         {
-            TrailShader = Assets.Request<Effect>("Effects/TrailShader");
             BarrierShader = Assets.Request<Effect>("Effects/Barrier");
+            TrailShader = Assets.Request<Effect>("Effects/TrailShader");
+            Ring = Assets.Request<Effect>("Effects/Ring");
 
             BarrierNoiseTexture = Assets.Request<Texture2D>("Assets/Textures/TextureMaps/color_range", AssetRequestMode.ImmediateLoad);
         }

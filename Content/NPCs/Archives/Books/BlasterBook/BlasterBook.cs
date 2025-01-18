@@ -13,35 +13,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
     {
         protected override void DrawCastEffect(SpriteBatch spriteBatch)
         {
-            spriteBatch.Reload(BlendState.AlphaBlend);
-
-            Vector2 drawOffset = new Vector2(2, -12);
-            float rotation = NPC.localAI[0];
-
-            float alpha = 1f;
-            float size = 1f;
-            if (AICounter < 20f)
-            {
-                alpha = MathHelper.Lerp(0, 1f, AICounter / 20f);
-            }
-            else if (AICounter > CastTime - 30)
-            {
-                alpha = MathHelper.Lerp(1f, 0f, (AICounter - (CastTime - 30)) / 30f);
-            }
-
-            //if (!Main.gamePaused) NPC.localAI[0] += 0.05f;
-            NPC.localAI[0] += 0.05f;
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BarrierRuneCircle").Value;
-            Texture2D texture2 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BarrierRuneCircle_Outer").Value;
-            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, null, Color.White * alpha, rotation, texture.Size() / 2, size, SpriteEffects.None, 0);
-            spriteBatch.Draw(texture2, NPC.Center + drawOffset - Main.screenPosition, null, Color.White * alpha, -rotation * 0.8f, texture2.Size() / 2, size, SpriteEffects.FlipVertically, 0);
-
-
-            Texture2D texture3 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "light_02").Value;
-            spriteBatch.Draw(texture3, NPC.Center + drawOffset - Main.screenPosition, null, Color.Gray * alpha * 0.5f, rotation * 0.6f, texture3.Size() / 2, size * 0.3f, SpriteEffects.FlipVertically, 0);
-
-            spriteBatch.Reload(BlendState.AlphaBlend);
+          
         }
 
 
@@ -57,14 +29,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void CastSpell()
         {
-            if (AICounter % 10 == 0 && AICounter < 40)
+            if (AICounter == 20)
             {
                 Vector2 directionToPlayer = (Player.Center - NPC.Center).SafeNormalize(Vector2.Zero); // Direction vector to the player
 
                 float angleSpread = MathHelper.ToRadians(25); // Spread angle for randomness
                 Vector2 projectileVelocity = directionToPlayer.RotatedByRandom(angleSpread) * 8; // Randomized rotation towards the player
-
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, ModContent.ProjectileType<FireBolt>(), NPC.damage, 1f, Main.myPlayer);
+                Vector2 spawnPosition = NPC.Center + new Vector2(32, 0).RotatedBy(directionToPlayer.ToRotation());
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, projectileVelocity, ModContent.ProjectileType<BlastRune>(), NPC.damage, 1f, Main.myPlayer, NPC.whoAmI);
             }
         }
     }
