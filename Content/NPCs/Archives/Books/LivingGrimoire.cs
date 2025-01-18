@@ -11,6 +11,8 @@ using OvermorrowMod.Content.Biomes;
 using Terraria.Localization;
 using System;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Common.Particles;
+using Terraria.Map;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -87,7 +89,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public sealed override void AI()
         {
             //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);
-
+            Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
             switch ((AICase)AIState)
             {
                 case AICase.Fall:

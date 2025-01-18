@@ -40,9 +40,6 @@ namespace OvermorrowMod.Content.NPCs
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-
             Projectile.friendly = false;
             //Projectile.hostile = true;
             Projectile.timeLeft = 300;
@@ -145,7 +142,5 @@ namespace OvermorrowMod.Content.NPCs
 
             return false;
         }
-
-
     }
 }
