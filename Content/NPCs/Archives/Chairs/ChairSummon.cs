@@ -38,6 +38,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         int maxAttempts = 1000;
         private int failCount = 0;
+        protected float maxSpeed = 2f;
         public override void OnSpawn(IEntitySource source)
         {
             AIState = (int)AICase.Summon;
@@ -46,6 +47,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 NPC.position.Y += 1; // Move the NPC downward
                 failCount++; // Increment the fail count to avoid infinite loops
             }
+
+            maxSpeed = Main.rand.NextFloat(2f, 3.5f);
         }
 
         protected int idleTime = 30;

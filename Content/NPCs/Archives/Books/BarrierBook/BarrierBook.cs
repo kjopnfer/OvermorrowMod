@@ -50,7 +50,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float xDistance = Math.Abs(NPC.Center.X - Player.Center.X);
 
             bool xDistanceCheck = xDistance <= tileAttackDistance * 18;
-            bool yDistanceCheck = Math.Abs(NPC.Center.Y - Player.Center.Y) < 100;
+            bool yDistanceCheck = Math.Abs(NPC.Center.Y - Player.Center.Y) < 148;
 
             return xDistanceCheck && yDistanceCheck && Collision.CanHitLine(Player.Center, 1, 1, NPC.Center, 1, 1);
         }

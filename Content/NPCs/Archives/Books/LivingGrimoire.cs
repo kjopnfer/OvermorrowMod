@@ -89,7 +89,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public sealed override void AI()
         {
             //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);
-            //Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.2f);
+            Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
             switch ((AICase)AIState)
             {
                 case AICase.Fall:

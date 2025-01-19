@@ -444,7 +444,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-
             npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
         }
     }

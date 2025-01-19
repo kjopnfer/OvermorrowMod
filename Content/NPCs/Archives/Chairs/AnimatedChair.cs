@@ -38,7 +38,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void MovementAI()
         {
             NPC.TargetClosest();
-            float maxSpeed = 2f;
             NPC.Move(Player.Center, 0.1f, maxSpeed, 8f);
         }
 
