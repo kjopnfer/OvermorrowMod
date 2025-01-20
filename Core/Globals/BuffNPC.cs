@@ -72,7 +72,8 @@ namespace OvermorrowMod.Core.Globals
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            npc.Opacity = MathHelper.Lerp(1f, 0.25f, StealthCounter / 60f);
+            if (StealthCounter > 0)
+                npc.Opacity = MathHelper.Lerp(1f, 0.25f, StealthCounter / 60f);
 
             return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
         }
