@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Core;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
@@ -35,14 +36,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Death = -2,
             Panic = -1,
             Hidden = 0,
-            Attack = 1,
-            Wiggle = 2
+            Extend = 1,
+            Idle = 2,
+            Retract = 3
         }
 
         private float Rotation;
 
         public ref float AIState => ref NPC.ai[0];
+        public ref float AICounter => ref NPC.ai[1];
 
+        List<NPC> tentacle = new List<NPC>();
         public override void OnSpawn(IEntitySource source)
         {
             int spawnCount = 3; // Number of NPCs to spawn
@@ -60,12 +64,54 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 Vector2 spawnPosition = NPC.Center + spawnOffset;
 
                 // Spawn the NPC at the calculated position
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, ModContent.NPCType<InkWorm>(), 0, ai0: NPC.whoAmI);
+                tentacle.Add(NPC.NewNPCDirect(NPC.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, ModContent.NPCType<InkWorm>(), 0, ai0: NPC.whoAmI));
             }
         }
 
         public override void AI()
         {
+            switch ((AICase)AIState)
+            {
+                case AICase.Hidden:
+                    if (AICounter++ == 120)
+                    {
+                        AICounter = 0;
+                        AIState = (int)AICase.Extend;
+                    }
+                    break;
+                case AICase.Extend:
+                    if (AICounter++ == 15)
+                    {
+                        AICounter = 0;
+                        AIState = (int)AICase.Idle;
+                    }
+                    break;
+                case AICase.Idle:
+                    if (AICounter++ == 120)
+                    {
+                        AICounter = 0;
+                        AIState = (int)AICase.Retract;
+                    }
+                    break;
+                case AICase.Retract:
+                    if (AICounter++ == 120)
+                    {
+                        AICounter = 0;
+                        AIState = (int)AICase.Hidden;
+                    }
+                    break;
+            }
+        }
+
+        private void ChangeTentacleStates(AICase state)
+        {
+            foreach (NPC npc in tentacle)
+            {
+                if (npc.ModNPC is InkWorm inkWorm)
+                {
+                    inkWorm.AIState = (int)state;
+                }
+            }
         }
 
         protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
@@ -106,26 +152,59 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.hide = true;
             Main.instance.DrawCacheNPCProjectiles.Add(index);
         }
+
+        public enum AICase
+        {
+            Death = -2,
+            Panic = -1,
+            Hidden = 0,
+            Extend = 1,
+            Idle = 2,
+            Retract = 3
+        }
+
         public ref float ParentID => ref NPC.ai[0];
         public ref float AIState => ref NPC.ai[1];
+        public ref float AICounter => ref NPC.ai[2];
+        NPC parent => Main.npc[(int)ParentID];
+
 
         float randomAnimationOffset = 0;
+        float initialDistance = 0;
         public override void OnSpawn(IEntitySource source)
         {
             randomAnimationOffset = Main.rand.Next(0, 9) * 10;
-            base.OnSpawn(source);
+            initialDistance = (NPC.Center - parent.Center).Length();
+            AIState = (int)AICase.Idle;
         }
 
         public override void AI()
         {
-            NPC parent = Main.npc[(int)ParentID];
             if (!parent.active) NPC.active = false;
+            InkWormBody parentState = parent.ModNPC as InkWormBody;
 
-            // Calculate direction and distance from the parent
             Vector2 direction = NPC.Center - parent.Center;
-            float distance = direction.Length();
+            float distance = initialDistance /*+ MathHelper.Lerp(0, 120, AICounter++ / 20f)*/;
+            NPC.Opacity = 1f;
 
-            // Normalize direction vector
+            switch ((AICase)parentState.AIState)
+            {
+                case AICase.Hidden:
+                    NPC.Opacity = 0f;
+                    break;
+                case AICase.Extend:
+                    distance = initialDistance - MathHelper.Lerp(initialDistance, 0, parentState.AICounter / 15f);
+                    break;
+                case AICase.Idle:
+                    // Calculate direction and distance from the parent
+                    distance = initialDistance;
+                    break;
+                case AICase.Retract:
+                    distance = initialDistance - MathHelper.Lerp(0, initialDistance, parentState.AICounter / 120f);
+                    NPC.Opacity = MathHelper.Lerp(1f, 0f, (parentState.AICounter - 100) / 20f);
+                    break;
+            }
+
             direction.Normalize();
 
             // Timer for sine wave animation
@@ -137,72 +216,91 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Perpendicular vector for the sine wave motion
             Vector2 perpendicular = new Vector2(-direction.Y, direction.X) * waveOffset;
 
-            // Final position of the head relative to the parent
+            NPC.rotation = direction.ToRotation();
             NPC.Center = parent.Center + direction * distance + perpendicular;
         }
 
+        Texture2D body = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormBody", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+        Texture2D head = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormHead").Value;
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            NPC parent = Main.npc[(int)ParentID];
-
-            // Load textures
-            Texture2D body = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormBody").Value;
-            Texture2D body2 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormBody2").Value;
-            Texture2D head = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormHead").Value;
-
             // Calculate direction and distance between the NPC and its parent
             Vector2 direction = NPC.Center - parent.Center;
             float distance = direction.Length();
 
             // Calculate the number of iterations based on the height of the body texture
             int bodyHeight = body.Height - 6; // Slight overlap adjustment
-            int iterations = (int)(distance / bodyHeight);
+            int iterations = Math.Min((int)(distance / bodyHeight), 1000); // Limit iterations to avoid overflow
 
             // Normalize the direction vector
             direction.Normalize();
 
-            // Initialize the starting position at the parent's center
-            Vector2 currentPosition = parent.Center;
-
             // Timer for sine wave animation (ensures movement over time)
             float time = (float)(Main.GameUpdateCount + randomAnimationOffset) / 20f;
+
+            // Initialize the starting position at the parent's center
+            Vector2 currentPosition = parent.Center;
 
             // List to store segment positions for calculating rotation
             Vector2[] segmentPositions = new Vector2[iterations + 1];
             segmentPositions[0] = currentPosition;
 
+            // Precompute values that don't change inside the loop
+            Vector2 perpendicularBase = new Vector2(-direction.Y, direction.X); // Base perpendicular vector
+
             // Calculate positions for all segments
             for (int i = 1; i <= iterations; i++)
             {
                 // Calculate sine wave offset
-                float waveOffset = (float)Math.Sin(time + i) * 3f; // Amplitude of 10f, phase offset of 0.5f per segment
+                float waveOffset = (float)Math.Sin(time + i) * 3f; // Amplitude of 3f, phase offset for animation
 
-                // Perpendicular vector for sine wave motion
-                Vector2 perpendicular = new Vector2(-direction.Y, direction.X) * waveOffset;
+                // Perpendicular vector for sine wave motion (no need to calculate inside loop)
+                Vector2 perpendicular = Vector2.Zero;
+                if ((AICase)AIState == AICase.Idle)
+                    perpendicular = perpendicularBase * waveOffset;
 
                 // Update position with sine wave offset
                 currentPosition += direction * bodyHeight + perpendicular;
 
-                // Store the segment position
-                segmentPositions[i] = currentPosition;
+                // Ensure we're not overflowing the segment position array
+                if (i < segmentPositions.Length)
+                {
+                    segmentPositions[i] = currentPosition;
+                }
             }
 
-            // Draw the body segments
+            // Precompute the rotation values outside the loop
+            Vector2 previousPosition, nextPosition, segmentDirection;
+            float rotation;
             for (int i = 0; i < iterations; i++)
             {
-                // Determine rotation
-                Vector2 nextPosition = i < iterations - 1 ? segmentPositions[i + 1] : NPC.Center;
-                Vector2 segmentDirection = nextPosition - segmentPositions[i];
-                float rotation = (float)Math.Atan2(segmentDirection.Y, segmentDirection.X) + MathHelper.PiOver2;
+                previousPosition = segmentPositions[i];
+                nextPosition = (i < iterations - 1) ? segmentPositions[i + 1] : NPC.Center;
+                segmentDirection = nextPosition - previousPosition;
+                rotation = (float)Math.Atan2(segmentDirection.Y, segmentDirection.X) + MathHelper.PiOver2;
 
-                // Draw the body segment
-                spriteBatch.Draw(body, segmentPositions[i] - Main.screenPosition, null, drawColor, rotation, new Vector2(body.Width / 2f, body.Height / 2f), NPC.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(body, previousPosition - Main.screenPosition, null, drawColor * NPC.Opacity, rotation, body.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
             }
 
             // Draw the head at the NPC's position
-            spriteBatch.Draw(head, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation, new Vector2(head.Width / 2f, head.Height / 2f), NPC.scale, SpriteEffects.None, 0);
+            Texture2D hand = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormHand").Value;
+            float handRotation = NPC.rotation + MathHelper.ToRadians(-30);
+            Vector2 handOffset = new Vector2(0, -18).RotatedBy(handRotation);
+            spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
+
+            handRotation = NPC.rotation + MathHelper.ToRadians(30);
+            handOffset = new Vector2(0, 18).RotatedBy(handRotation);
+            spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, SpriteEffects.FlipVertically, 0);
+
+
+            handRotation = NPC.rotation + MathHelper.ToRadians(-90);
+            handOffset = new Vector2(0, 18).RotatedBy(handRotation);
+            spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, SpriteEffects.FlipVertically, 0);
+
+            spriteBatch.Draw(head, NPC.Center - Main.screenPosition, null, drawColor * NPC.Opacity, NPC.rotation, head.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
 
             return base.DrawOvermorrowNPC(spriteBatch, screenPos, drawColor);
         }
+
     }
 }
