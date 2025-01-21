@@ -19,6 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
     {
         public override string Texture => AssetDirectory.Empty;
         public override bool CheckActive() => false;
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetDefaults()
         {
             NPC.width = NPC.height = 32;
@@ -141,6 +142,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.lifeMax = 640;
             NPC.aiStyle = -1;
             NPC.defense = 16;
+            NPC.damage = 12;
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.friendly = false;
@@ -187,7 +189,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float distance = initialDistance /*+ MathHelper.Lerp(0, 120, AICounter++ / 20f)*/;
             NPC.Opacity = 1f;
 
-            switch ((AICase)parentState.AIState)
+            AIState = parentState.AIState;
+
+            switch ((AICase)AIState)
             {
                 case AICase.Hidden:
                     NPC.Opacity = 0f;
@@ -255,9 +259,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 float waveOffset = (float)Math.Sin(time + i) * 3f; // Amplitude of 3f, phase offset for animation
 
                 // Perpendicular vector for sine wave motion (no need to calculate inside loop)
-                Vector2 perpendicular = Vector2.Zero;
-                if ((AICase)AIState == AICase.Idle)
-                    perpendicular = perpendicularBase * waveOffset;
+                Vector2 perpendicular = perpendicularBase * waveOffset;
 
                 // Update position with sine wave offset
                 currentPosition += direction * bodyHeight + perpendicular;
@@ -284,16 +286,22 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             // Draw the head at the NPC's position
             Texture2D hand = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormHand").Value;
-            float handRotation = NPC.rotation + MathHelper.ToRadians(-30);
+
+            // Timer for smooth oscillation
+            float wiggleAmount = MathHelper.ToRadians(25);  // Maximum wiggle angle in radians
+
+            // First hand
+            float handRotation = NPC.rotation + MathHelper.ToRadians(-30) + (float)Math.Sin(time) * wiggleAmount;
             Vector2 handOffset = new Vector2(0, -18).RotatedBy(handRotation);
             spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
 
-            handRotation = NPC.rotation + MathHelper.ToRadians(30);
+            // Second hand
+            handRotation = NPC.rotation + MathHelper.ToRadians(30) + (float)Math.Sin(time + MathHelper.Pi) * wiggleAmount; // Offset the sine wave for variation
             handOffset = new Vector2(0, 18).RotatedBy(handRotation);
             spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, SpriteEffects.FlipVertically, 0);
 
-
-            handRotation = NPC.rotation + MathHelper.ToRadians(-90);
+            // Third hand
+            handRotation = NPC.rotation + MathHelper.ToRadians(-90) + (float)Math.Sin(time + MathHelper.PiOver2) * wiggleAmount; // Different phase offset for variety
             handOffset = new Vector2(0, 18).RotatedBy(handRotation);
             spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, SpriteEffects.FlipVertically, 0);
 
