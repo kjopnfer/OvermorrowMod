@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent.Bestiary;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common
@@ -8,7 +10,12 @@ namespace OvermorrowMod.Common
     public abstract class OvermorrowNPC : ModNPC
     {
         public ref Player Player => ref Main.player[NPC.target];
-
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
+                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizationPath.Bestiary + Name)),
+            });
+        }
         protected virtual void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor) { }
 
         /// <summary>

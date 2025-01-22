@@ -49,13 +49,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         protected virtual int CastTime => 120;
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizationPath.Bestiary + Name)),
-            });
-        }
-
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
         public enum AICase

@@ -15,13 +15,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (AICase)AIState != AICase.Summon;
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
-                new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizationPath.Bestiary + Name)),
-            });
-        }
-
+ 
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
         /// <summary>

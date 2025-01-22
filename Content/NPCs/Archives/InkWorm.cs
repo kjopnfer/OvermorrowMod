@@ -59,7 +59,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
 
-        List<NPC> inkTentacles = new List<NPC>();
+        protected List<NPC> inkTentacles = new List<NPC>();
         public override void OnSpawn(IEntitySource source)
         {
             int spawnCount = 3; // Number of NPCs to spawn
@@ -95,9 +95,58 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch ((AICase)AIState)
             {
                 case AICase.Hidden:
-                    if (AICounter++ == 120)
+                    Player nearestPlayer = null;
+                    float nearestDistance = float.MaxValue;
+
+                    // Find the nearest active player
+                    foreach (Player player in Main.player)
                     {
-                        AICounter = 0;
+                        if (player.active && !player.dead)
+                        {
+                            float distanceToPlayer = Vector2.Distance(NPC.Center, player.Center);
+                            if (distanceToPlayer < nearestDistance)
+                            {
+                                nearestDistance = distanceToPlayer;
+                                nearestPlayer = player;
+                            }
+                        }
+                    }
+
+                    // Ensure there's a nearby player before proceeding
+                    if (nearestPlayer != null)
+                    {
+                        Vector2 directionToPlayer = (nearestPlayer.Center - NPC.Center).SafeNormalize(Vector2.Zero);
+
+                        // Offset calculation based on active tentacles
+                        float startAngle = MathHelper.ToRadians(-70);
+                        float endAngle = MathHelper.ToRadians(70);
+                        float arcStep = (startAngle - endAngle) / (activeTentacles - 1);
+
+                        int tentacleIndex = 0; // Keep track of which tentacle we're processing
+
+                        foreach (NPC tentacle in inkTentacles)
+                        {
+                            if (!tentacle.active) continue;
+
+                            InkWorm worm = tentacle.ModNPC as InkWorm;
+                            if ((AICase)worm.AIState == AICase.Panic || (AICase)worm.AIState == AICase.Death) continue;
+
+                            // Calculate the angle offset for this tentacle
+                            float angleOffset = startAngle - (arcStep * tentacleIndex);
+
+                            // Rotate the direction vector by the angle offset
+                            Vector2 tentacleDirection = directionToPlayer.RotatedBy(angleOffset);
+                            worm.direction = tentacleDirection;
+
+                            tentacleIndex++;
+                        }
+                    }
+
+                    float detectionRadius = 96f;
+                    bool playerNearby = nearestPlayer != null && nearestDistance <= detectionRadius;
+
+                    if (playerNearby)
+                    {
                         AIState = (int)AICase.Extend;
                     }
                     break;
@@ -109,7 +158,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Idle:
-                    if (AICounter++ == 120)
+                    if (AICounter++ == 180)
                     {
                         AICounter = 0;
                         AIState = (int)AICase.Retract;
@@ -146,7 +195,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
     {
         public override string Texture => AssetDirectory.Empty;
         public override bool CheckActive() => false;
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (AICase)AIState != AICase.Panic && (AICase)AIState != AICase.Death;
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (AICase)AIState != AICase.Hidden && (AICase)AIState != AICase.Panic && (AICase)AIState != AICase.Death;
 
         public override void SetDefaults()
         {
@@ -159,6 +208,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.noGravity = true;
             NPC.friendly = false;
             NPC.noTileCollide = true;
+
+            SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
         public override void DrawBehind(int index)
@@ -186,12 +237,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float randomAnimationOffset = 0;
         float initialDistance = 0;
         private float persistentTime = 0;
+        public Vector2 direction = Vector2.Zero;
 
         public override void OnSpawn(IEntitySource source)
         {
             randomAnimationOffset = Main.rand.Next(0, 9) * 10;
             initialDistance = (NPC.Center - Parent.Center).Length();
             persistentTime = randomAnimationOffset / 20f;
+            direction = NPC.Center - Parent.Center;
 
             AIState = (int)AICase.Idle;
         }
@@ -206,7 +259,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             InkWormBody parentState = Parent.ModNPC as InkWormBody;
 
-            Vector2 direction = NPC.Center - Parent.Center;
             float distance = initialDistance;
 
             NPC.Opacity = 1f;
@@ -289,6 +341,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             return (AICase)AIState == AICase.Panic;
         }
 
+        protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
+        {
+            base.DrawNPCBestiary(spriteBatch, drawColor);
+        }
+
         Texture2D hand = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormHand", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
         Texture2D body = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormBody", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
         Texture2D head = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormHead", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -300,7 +357,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             // Calculate the number of iterations based on the height of the body texture
             int bodyHeight = body.Height - 6; // Slight overlap adjustment
-            int iterations = Math.Min((int)(distance / bodyHeight), 1000); // Limit iterations to avoid overflow
+            int maxIterations = 1000; // Define a reasonable maximum for iterations
+            int iterations = Math.Min((int)(distance / bodyHeight), maxIterations); // Limit iterations to avoid overflow
+            if (iterations < 0 || iterations > maxIterations)
+            {
+                iterations = maxIterations;
+            }
 
             // Normalize the direction vector
             direction.Normalize();
