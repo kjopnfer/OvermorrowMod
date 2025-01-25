@@ -1,20 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
-using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.UI;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -23,6 +17,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override string Texture => AssetDirectory.Empty;
         public override bool CheckActive() => false;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
+        public override bool? CanBeHitByItem(Player player, Item item) => false;
+        public override bool? CanBeHitByProjectile(Projectile projectile) => false;
         public override void SetStaticDefaults()
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -42,7 +38,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.noGravity = true;
             NPC.friendly = false;
             NPC.noTileCollide = true;
-            NPC.dontTakeDamage = true;
+            //NPC.dontTakeDamage = true;
         }
 
         public enum AICase
@@ -95,6 +91,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             switch ((AICase)AIState)
             {
+                case AICase.Death:
+                    if (AICounter++ >= 120)
+                    {
+                        NPC.life = 0;
+                        NPC.HitEffect(0, 0);
+                        NPC.checkDead();
+                    }
+                    break;
+                case AICase.Panic:
+                    if (AICounter++ >= 150)
+                    {
+                        AICounter = 0;
+                        AIState = (float)AICase.Death;
+                    }
+                    break;
                 case AICase.Hidden:
                     Player nearestPlayer = null;
                     float nearestDistance = float.MaxValue;
@@ -187,8 +198,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool CheckDead()
         {
+            if ((AICase)AIState == AICase.Death) return true;
 
-            return true;
+            if ((AICase)AIState != AICase.Panic)
+            {
+                AIState = (float)AICase.Panic;
+
+                NPC.life = NPC.lifeMax;
+                NPC.dontTakeDamage = true;
+                NPC.netUpdate = true;
+
+                return false;
+            }
+
+            return (AICase)AIState == AICase.Panic;
+            //return false;
         }
     }
 
@@ -197,11 +221,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override string Texture => AssetDirectory.Empty;
         public override bool CheckActive() => false;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (AICase)AIState != AICase.Hidden && (AICase)AIState != AICase.Panic && (AICase)AIState != AICase.Death;
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void SetDefaults()
         {
             NPC.width = NPC.height = 20;
-            NPC.lifeMax = 120;
+            NPC.lifeMax = 140;
             NPC.aiStyle = -1;
             NPC.defense = 16;
             NPC.damage = 12;
@@ -269,8 +294,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if ((AICase)AIState != AICase.Death)
                 persistentTime = (float)(Main.GameUpdateCount + randomAnimationOffset) / 20f;
 
-            if ((AICase)AIState != AICase.Panic && (AICase)AIState != AICase.Death)
-                AIState = parentState.AIState;
+            AIState = parentState.AIState;
 
             float amplitude = 1;
             switch ((AICase)AIState)
@@ -326,7 +350,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool CheckDead()
         {
-            if ((AICase)AIState == AICase.Death) return true;
+            // NPC should only be dying when the parent is dead.
+            NPC.life = NPC.lifeMax;
+
+            return false;
+            /*if ((AICase)AIState == AICase.Death) return true;
 
             if ((AICase)AIState != AICase.Panic)
             {
@@ -339,7 +367,19 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 return false;
             }
 
-            return (AICase)AIState == AICase.Panic;
+            return (AICase)AIState == AICase.Panic;*/
+        }
+
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.HideCombatText();
+            modifiers.ModifyHitInfo += (ref NPC.HitInfo n) => DamageParent(NPC, ref n);
+        }
+
+        private void DamageParent(NPC npc, ref NPC.HitInfo info)
+        {
+            Parent.StrikeNPC(info);
+            CombatText.NewText(Parent.Hitbox, Color.Orange, info.Damage);
         }
 
         protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
