@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -264,6 +265,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float initialDistance = 0;
         private float persistentTime = 0;
         public Vector2 direction = Vector2.Zero;
+        private List<Rectangle> handHitboxes = new List<Rectangle>();
 
         public override void OnSpawn(IEntitySource source)
         {
@@ -284,7 +286,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             InkWormBody parentState = Parent.ModNPC as InkWormBody;
-
             float distance = initialDistance;
 
             NPC.Opacity = 1f;
@@ -346,6 +347,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.rotation = direction.ToRotation();
             NPC.Center = Parent.Center + direction * distance + perpendicular;
+
+            CheckHandCollisions();
         }
 
         public override bool CheckDead()
@@ -354,20 +357,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.life = NPC.lifeMax;
 
             return false;
-            /*if ((AICase)AIState == AICase.Death) return true;
-
-            if ((AICase)AIState != AICase.Panic)
-            {
-                AIState = (float)AICase.Panic;
-
-                NPC.life = NPC.lifeMax;
-                NPC.dontTakeDamage = true;
-                NPC.netUpdate = true;
-
-                return false;
-            }
-
-            return (AICase)AIState == AICase.Panic;*/
         }
 
         public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
@@ -384,17 +373,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
         {
-            /*if (NPCID.Sets.NPCBestiaryDrawOffset.TryGetValue(Type, out NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers))
-          {
-              drawModifiers.Position = new Vector2(8, 8);
-              drawModifiers.PortraitPositionXOverride = 8;
-              drawModifiers.PortraitPositionYOverride = -6;
-
-              // Replace the existing NPCBestiaryDrawModifiers with our new one with an adjusted rotation
-              NPCID.Sets.NPCBestiaryDrawOffset.Remove(Type);
-              NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, drawModifiers);
-          }*/
-
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Bestiary + Name).Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
@@ -480,6 +458,56 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Vector2 handOffset = new Vector2(0, offsetY).RotatedBy(handRotation);
 
             spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, spriteEffects, 0);
+            UpdateHandHitbox(NPC.Center + handOffset, hand.Size(), handRotation);
+        }
+
+        private void UpdateHandHitbox(Vector2 handPosition, Vector2 handSize, float handRotation)
+        {
+            // Define the hand's hitbox as a rectangle
+            Rectangle hitbox = Utils.CenteredRectangle(handPosition, handSize);
+
+            // Add to the list for collision checks later in the frame
+            handHitboxes.Add(hitbox);
+        }
+
+        private void CheckHandCollisions()
+        {
+            if ((AICase)AIState != AICase.Idle)
+            {
+                handHitboxes.Clear();
+                return;
+            }
+
+            foreach (Player player in Main.player)
+            {
+                if (IsPlayerValidForCollision(player))
+                {
+                    HandlePlayerCollisions(player);
+                }
+            }
+
+            handHitboxes.Clear();
+        }
+
+        private bool IsPlayerValidForCollision(Player player)
+        {
+            return player.active && !player.dead;
+        }
+
+        private void HandlePlayerCollisions(Player player)
+        {
+            foreach (Rectangle hitbox in handHitboxes)
+            {
+                if (player.Hitbox.Intersects(hitbox))
+                {
+                    ApplyDamageToPlayer(player);
+                }
+            }
+        }
+
+        private void ApplyDamageToPlayer(Player player)
+        {
+            player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, NPC.direction);
         }
     }
 }
