@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.Localization;
@@ -343,7 +344,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
         {
-            base.DrawNPCBestiary(spriteBatch, drawColor);
+            /*if (NPCID.Sets.NPCBestiaryDrawOffset.TryGetValue(Type, out NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers))
+          {
+              drawModifiers.Position = new Vector2(8, 8);
+              drawModifiers.PortraitPositionXOverride = 8;
+              drawModifiers.PortraitPositionYOverride = -6;
+
+              // Replace the existing NPCBestiaryDrawModifiers with our new one with an adjusted rotation
+              NPCID.Sets.NPCBestiaryDrawOffset.Remove(Type);
+              NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, drawModifiers);
+          }*/
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Bestiary + Name).Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            spriteBatch.Draw(texture, NPC.Center, null, drawColor * NPC.Opacity, 0f, texture.Size() / 2, 1f, spriteEffects, 0);
         }
 
         Texture2D hand = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "InkWormHand", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
