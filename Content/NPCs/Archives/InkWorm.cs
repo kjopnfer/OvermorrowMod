@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override bool? CanBeHitByItem(Player player, Item item) => false;
         public override bool? CanBeHitByProjectile(Projectile projectile) => false;
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => (AICase)AIState != AICase.Hidden;
         public override void SetStaticDefaults()
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -84,16 +87,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
             int activeTentacles = inkTentacles.Count(tentacle => tentacle.active);
             if (activeTentacles == 0)
             {
-                Main.NewText("all dead");
                 NPC.life = 0;
                 NPC.HitEffect(0, 0);
                 NPC.checkDead();
             }
 
+            NPC.chaseable = false;
+
             switch ((AICase)AIState)
             {
                 case AICase.Death:
-                    if (AICounter++ >= 120)
+                    if (AICounter++ >= 240)
                     {
                         NPC.life = 0;
                         NPC.HitEffect(0, 0);
@@ -296,15 +300,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 persistentTime = (float)(Main.GameUpdateCount + randomAnimationOffset) / 20f;
 
             AIState = parentState.AIState;
-
-            float amplitude = 1;
+            AICounter = parentState.AICounter;
+            float amplitude = 20;
             switch ((AICase)AIState)
             {
                 case AICase.Death:
                     // Doesn't like zero for some reason
-                    amplitude = 0.01f;
+                    amplitude = MathHelper.Lerp(20, 0.01f, Utils.Clamp(AICounter, 0, 120) / 120f);
+                    distance = initialDistance - MathHelper.Lerp(0, initialDistance, Utils.Clamp(AICounter - 90, 0, 120) / 120f);
 
-                    if (AICounter++ >= 120)
+                    NPC.scale = MathHelper.Lerp(1, 0, Utils.Clamp(AICounter - 90, 0, 120) / 120f);
+                    if (AICounter >= 240)
                     {
                         NPC.life = 0;
                         NPC.HitEffect(0, 0);
@@ -312,19 +318,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Panic:
-                    amplitude = MathHelper.Lerp(3, 5, AICounter / 150f);
+                    // the npc was supposed to freak out and writhe around but i can't get it to work
+                    // whatever
 
-                    if (AICounter++ >= 150)
+                    //amplitude = MathHelper.Lerp(20, 50, AICounter / 150f);
+                    /*if (AICounter++ >= 150)
                     {
                         AICounter = 0;
                         AIState = (float)AICase.Death;
-                    }
+                    }*/
                     break;
                 case AICase.Hidden:
                     NPC.Opacity = 0f;
                     break;
                 case AICase.Extend:
-                    distance = initialDistance - MathHelper.Lerp(initialDistance, 0, parentState.AICounter / 15f);
+                    distance = initialDistance - MathHelper.Lerp(initialDistance, 0, AICounter / 15f);
                     break;
                 case AICase.Idle:
                     // Calculate direction and distance from the parent
@@ -332,8 +340,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     NPC.dontTakeDamage = false;
                     break;
                 case AICase.Retract:
-                    distance = initialDistance - MathHelper.Lerp(0, initialDistance, parentState.AICounter / 120f);
-                    NPC.Opacity = MathHelper.Lerp(1f, 0f, (parentState.AICounter - 100) / 20f);
+                    distance = initialDistance - MathHelper.Lerp(0, initialDistance, AICounter / 120f);
+                    NPC.Opacity = MathHelper.Lerp(1f, 0f, (AICounter - 100) / 20f);
                     break;
             }
 
@@ -389,7 +397,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float distance = direction.Length();
 
             // Calculate the number of iterations based on the height of the body texture
-            int bodyHeight = body.Height - 6; // Slight overlap adjustment
+            int bodyHeight = (int)((body.Height - 6) * NPC.scale); // Slight overlap adjustment
             int maxIterations = 1000; // Define a reasonable maximum for iterations
             int iterations = Math.Min((int)(distance / bodyHeight), maxIterations); // Limit iterations to avoid overflow
             if (iterations < 0 || iterations > maxIterations)
@@ -429,6 +437,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }
 
+            Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            Effect effect = OvermorrowModFile.Instance.ColorFill.Value;
+            float progress = 0;
+            if ((AICase)AIState == AICase.Death) progress = Utils.Clamp(AICounter, 0, 150f) / 150f;
+
+            effect.Parameters["ColorFillColor"].SetValue(Color.Black.ToVector3() * 0.5f);
+            effect.Parameters["ColorFillProgress"].SetValue(progress);
+            effect.CurrentTechnique.Passes["ColorFill"].Apply();
+
+
             // Precompute the rotation values outside the loop
             Vector2 previousPosition, nextPosition, segmentDirection;
             float rotation;
@@ -448,6 +467,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             spriteBatch.Draw(head, NPC.Center - Main.screenPosition, null, drawColor * NPC.Opacity, NPC.rotation, head.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
 
+            Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+
             return base.DrawOvermorrowNPC(spriteBatch, screenPos, drawColor);
         }
 
@@ -455,7 +476,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             float wiggleAmount = MathHelper.ToRadians(25);
             float handRotation = baseRotation + (float)Math.Sin(time) * wiggleAmount;
-            Vector2 handOffset = new Vector2(0, offsetY).RotatedBy(handRotation);
+            Vector2 handOffset = new Vector2(0, offsetY * NPC.scale).RotatedBy(handRotation);
 
             spriteBatch.Draw(hand, NPC.Center + handOffset - Main.screenPosition, null, drawColor * NPC.Opacity, handRotation, hand.Size() / 2f, NPC.scale, spriteEffects, 0);
             UpdateHandHitbox(NPC.Center + handOffset, hand.Size(), handRotation);
