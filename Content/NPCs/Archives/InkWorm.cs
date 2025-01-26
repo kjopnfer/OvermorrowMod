@@ -155,7 +155,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         }
                     }
 
-                    float detectionRadius = 96f;
+                    float detectionRadius = 120f;
                     bool playerNearby = nearestPlayer != null && nearestDistance <= detectionRadius;
 
                     if (playerNearby)
