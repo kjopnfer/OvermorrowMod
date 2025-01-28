@@ -97,6 +97,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch ((AICase)AIState)
             {
                 case AICase.Death:
+                    if (AICounter == 200)
+                    {
+                        // Need it so the bestiary actually counts the deaths
+                        foreach (NPC tentacle in inkTentacles)
+                        {
+                            tentacle.life = 0;
+                            tentacle.HitEffect(0, 0);
+                            tentacle.checkDead();
+                        }
+                    }
+
                     if (AICounter++ >= 240)
                     {
                         NPC.life = 0;
@@ -159,7 +170,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         }
                     }
 
-                    float detectionRadius = 120f;
+                    float detectionRadius = 150f;
                     bool playerNearby = nearestPlayer != null && nearestDistance <= detectionRadius;
 
                     if (playerNearby)
@@ -362,9 +373,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool CheckDead()
         {
             // NPC should only be dying when the parent is dead.
-            NPC.life = NPC.lifeMax;
+            if ((AICase)AIState != AICase.Death)
+            {
+                NPC.life = NPC.lifeMax;
+                return false;
+            }
 
-            return false;
+            return true;
         }
 
         public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
@@ -439,14 +454,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-            Effect effect = OvermorrowModFile.Instance.ColorFill.Value;
-            float progress = 0;
-            if ((AICase)AIState == AICase.Death) progress = Utils.Clamp(AICounter, 0, 150f) / 150f;
 
-            effect.Parameters["ColorFillColor"].SetValue(Color.Black.ToVector3() * 0.5f);
-            effect.Parameters["ColorFillProgress"].SetValue(progress);
-            effect.CurrentTechnique.Passes["ColorFill"].Apply();
+            if ((AICase)AIState == AICase.Death)
+            {
+                Effect effect = OvermorrowModFile.Instance.ColorFill.Value;
+                float progress = 0;
+                progress = Utils.Clamp(AICounter, 0, 150f) / 150f;
 
+                effect.Parameters["ColorFillColor"].SetValue(Color.Black.ToVector3());
+                effect.Parameters["ColorFillProgress"].SetValue(progress);
+                effect.CurrentTechnique.Passes["ColorFill"].Apply();
+            }
 
             // Precompute the rotation values outside the loop
             Vector2 previousPosition, nextPosition, segmentDirection;
