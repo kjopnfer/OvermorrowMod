@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.InverseKinematics;
 using OvermorrowMod.Common.Utilities;
 using System;
 using System.IO.Pipelines;
@@ -28,10 +29,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
 
-        RobotArm lanternArm;
-        RobotArm backArm;
-        RobotArm frontLeg;
-        RobotArm backLeg;
+        InverseKinematicLimb lanternArm;
+        InverseKinematicLimb backArm;
+        InverseKinematicLimb frontLeg;
+        InverseKinematicLimb backLeg;
 
         int segLen = 64;
         int numSegs = 2;
@@ -49,12 +50,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D[] legTextures = new Texture2D[] { legTexture1, legTexture2 };
 
             float[] segmentLengths = new float[] { 60f, 120f }; // Different lengths for each segment
-            lanternArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
-            backArm = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
+            lanternArm = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
+            backArm = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, 2, segmentLengths, 0, armTextures);
 
             #region Front Leg
             float[] legSegmentLengths = new float[] { 75f, 88f }; // Different lengths for each segment
-            frontLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
+            frontLeg = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
 
             // Set constraints for the knee joint
             frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -76,7 +77,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             #region Back Leg
 
-            backLeg = new RobotArm(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
+            backLeg = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
 
             // Set constraints for the knee joint
             backLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -426,177 +427,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 toTarget = toTarget.SafeNormalize(Vector2.Zero) * maxReach;
             }
             return bodyPosition + toTarget;
-        }
-    }
-    public class Segment
-    {
-        public Vector2 A { get; set; } // Changed to allow setting externally
-        public Vector2 B { get; private set; } // Only allow setting B inside the class
-        public float Length { get; private set; }
-        public float Angle { get; set; }
-        public float MinAngle { get; set; } = -MathHelper.Pi; // Default: -180 degrees
-        public float MaxAngle { get; set; } = MathHelper.Pi;  // Default: 180 degrees
-        public Segment Parent { get; set; }
-        public Texture2D Texture { get; set; }  // Texture property for each segment
-        public Vector2 Origin { get; set; }
-
-        public Segment(float x, float y, float length, float angle, Texture2D texture, Vector2? origin = null, Vector2? textureOffset = null)
-        {
-            A = new Vector2(x, y);
-            Length = length;
-            Angle = angle;
-            Texture = texture;
-
-            Origin = origin ?? new Vector2(Texture.Width / 2, 0f);  // Default to the center of the texture
-
-            Recalculate();
-        }
-
-        public void Follow(Vector2 target)
-        {
-            Vector2 direction = target - A;
-            //Angle = direction.ToRotation();
-
-            float targetAngle = direction.ToRotation();
-            targetAngle = (targetAngle + MathHelper.TwoPi) % MathHelper.TwoPi;
-            Angle = MathHelper.Clamp(targetAngle, MinAngle, MaxAngle);
-
-            direction = direction.SafeNormalize(Vector2.Zero) * Length;
-            A = target - direction;
-        }
-
-        public void Recalculate()
-        {
-            Vector2 offset = new Vector2((float)Math.Cos(Angle), (float)Math.Sin(Angle)) * Length;
-            B = A + offset;
-        }
-
-        public void Update()
-        {
-            Recalculate();
-        }
-
-        public void Draw(SpriteBatch spriteBatch, Color color)
-        {
-            if (Texture == null)
-                Texture = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
-
-            Texture2D pixel = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
-            //Vector2 scale = new Vector2(Length, 4f); // Adjust thickness as needed
-            float rotation = Angle;
-            Rectangle rect = new Rectangle(0, 0, 1, 1);
-
-            // the sprite is probably placed in the wrong direction, the origin of the sprite should be in the middle of the 
-            // left side rectangle and not to the right of it completely
-
-
-            spriteBatch.Draw(
-                texture: Texture,
-                position: A - Main.screenPosition,
-                sourceRectangle: null,
-                color,
-                rotation - MathHelper.PiOver2,
-                origin: Origin,
-                scale: 1f,
-                SpriteEffects.None,
-                0f
-            );
-
-            Vector2 textureSize = new Vector2(Texture.Width, Texture.Height);
-            Rectangle boxRect = new Rectangle((int)(A.X - Main.screenPosition.X), (int)(A.Y - Main.screenPosition.Y), (int)textureSize.X, (int)textureSize.Y);
-
-            // Draw a simple rectangle around the texture (debugging purpose)
-            spriteBatch.Draw(
-                texture: pixel,
-                position: new Vector2(boxRect.X, boxRect.Y),
-                sourceRectangle: new Rectangle(boxRect.X, boxRect.Y, boxRect.Width, (int)Length),
-                color: Color.Red * 0.25f,  // You can change the color of the box
-                rotation: rotation - MathHelper.PiOver2,
-                origin: Vector2.Zero,
-                scale: 1f, // Set the size of the box
-                SpriteEffects.None,
-                0f
-            );
-        }
-    }
-
-    public class RobotArm
-    {
-        public Vector2 BasePosition { get; set; }
-        public Segment[] Segments;
-
-        // Constructor now accepts an array of lengths for each segment
-        public RobotArm(float x, float y, int numSegments, float[] segmentLengths, float initialAngle, Texture2D[] segmentTextures, Vector2[] origins = null)
-        {
-            if (segmentLengths.Length != numSegments || (origins != null && origins.Length != numSegments))
-            {
-                Main.NewText("The number of segment lengths, origins, and offsets must match the number of segments.");
-            }
-
-            BasePosition = new Vector2(x, y);
-            Segments = new Segment[numSegments];
-
-            // Default origins and offsets if not provided
-            origins = origins ?? new Vector2[numSegments]; // Default to Vector2.Zero
-
-            // Create the first segment at the base
-            Segments[0] = new Segment(x, y, segmentLengths[0], initialAngle, segmentTextures[0], origins[0]);
-
-            // Create the remaining segments with their respective lengths
-            for (int i = 1; i < numSegments; i++)
-            {
-                Segments[i] = new Segment(0, 0, segmentLengths[i], 0, segmentTextures[i], origins[i]);
-                Segments[i - 1].Parent = Segments[i];
-            }
-        }
-
-        /// <summary>
-        /// Moves it towards this position.
-        /// </summary>
-        /// <param name="target"></param>
-        public void Update(Vector2 target)
-        {
-            // Follow target starting from the last segment
-            for (int i = Segments.Length - 1; i >= 0; i--)
-            {
-                if (i == Segments.Length - 1)
-                {
-                    Segments[i].Follow(target);
-                }
-                else
-                {
-                    Segments[i].Follow(Segments[i + 1].A);
-                }
-                Segments[i].Update();
-            }
-
-            // Recalculate positions starting from the base
-            Segments[0].A = BasePosition;
-            Segments[0].Recalculate();
-            for (int i = 1; i < Segments.Length; i++)
-            {
-                Segments[i].A = Segments[i - 1].B;
-                Segments[i].Recalculate();
-            }
-        }
-
-        public void Draw(SpriteBatch spriteBatch, Color drawColor)
-        {
-            // Draw each segment, customize the color as needed
-            foreach (Segment segment in Segments)
-            {
-                segment.Draw(spriteBatch, drawColor);
-            }
-        }
-
-        /// <summary>
-        /// Gets the position of the last segment's endpoint, which represents the moving limb's tip.
-        /// </summary>
-        /// <returns>The <see cref="Vector2"/> position of the last segment's endpoint.</returns>
-        public Vector2 GetEndPosition()
-        {
-            // Return the 'B' position of the last segment, which is the endpoint of the last limb
-            return Segments[Segments.Length - 1].B;
         }
     }
 }
