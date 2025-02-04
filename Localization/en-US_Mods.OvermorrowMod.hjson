@@ -75,6 +75,7 @@ NPCs: {
 	BlasterBook.DisplayName: Living Grimoire
 	InkWorm.DisplayName: Ink Worm
 	InkWormBody.DisplayName: Ink Worm Body
+	WaxWalker.DisplayName: Wax Walker
 }
 
 Bestiary: {
