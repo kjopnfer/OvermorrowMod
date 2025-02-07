@@ -38,15 +38,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
         int nextBackLegOffset = 75;
         public override void OnSpawn(IEntitySource source)
         {
+            Texture2D footTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxWalkerFoot", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Texture2D legTexture1 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxWalkerLeg1", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Texture2D legTexture2 = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxWalkerLeg2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Vector2[] origins = new Vector2[] { new Vector2(legTexture1.Width / 2, 10), new Vector2(legTexture2.Width / 2, 10) };
+            Vector2[] origins = new Vector2[] { new Vector2(legTexture1.Width / 2, 4), new Vector2(legTexture2.Width / 2, 0), new Vector2(footTexture.Width / 2, -2) };
+            Texture2D[] legTextures = new Texture2D[] { legTexture1, legTexture2, footTexture };
 
-            Texture2D[] legTextures = new Texture2D[] { legTexture1, legTexture2 };
- 
             #region Front Leg
-            float[] legSegmentLengths = new float[] { 28f, 24f }; // Different lengths for each segment
-            frontLeg = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
+            float[] legSegmentLengths = new float[] { 28f, 28f, 10f }; // Different lengths for each segment
+            frontLeg = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, legTextures.Length, legSegmentLengths, 0, legTextures, origins);
 
             // Set constraints for the knee joint
             frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
@@ -58,35 +58,42 @@ namespace OvermorrowMod.Content.NPCs.Archives
             frontLeg.Segments[1].MinAngle = 0; // -90 degrees
             frontLeg.Segments[1].MaxAngle = MathHelper.PiOver2;  // 90 degrees
 
+            // Set constraints for the foot
+            frontLeg.Segments[2].MinAngle = 0; // -90 degrees
+            frontLeg.Segments[2].MaxAngle = MathHelper.PiOver2;  // 90 degrees
+
             // Set initial target to straight downwards
             frontLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            nextFrontLegOffset = 50;
-            startFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 300));
-            nextFrontLegPosition = TileUtils.FindNearestGround(startFrontLegPosition + new Vector2(-nextFrontLegOffset, 0));
-
+            nextFrontLegOffset = 40;
+            startFrontLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 300) + new Vector2(0, 10));
+            nextFrontLegPosition = TileUtils.FindNearestGround(startFrontLegPosition + new Vector2(-nextFrontLegOffset, 0)) + new Vector2(0, 10);
             #endregion
 
             #region Back Leg
-
-            backLeg = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, 2, legSegmentLengths, 0, legTextures, origins);
+            backLeg = new InverseKinematicLimb(NPC.Center.X, NPC.Center.Y, legTextures.Length, legSegmentLengths, 0, legTextures, origins);
 
             // Set constraints for the knee joint
             backLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
             backLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
 
             // Set constraints for the lower leg
-            backLeg.Segments[1].MinAngle = -MathHelper.PiOver2; // -90 degrees
-            backLeg.Segments[1].MaxAngle = MathHelper.Pi;  // 90 degrees
+            backLeg.Segments[1].MinAngle = 0; // -90 degrees
+            backLeg.Segments[1].MaxAngle = MathHelper.PiOver2;  // 90 degrees
+
+            // Set constraints for the foot
+            backLeg.Segments[2].MinAngle = 0; // -90 degrees
+            backLeg.Segments[2].MaxAngle = MathHelper.PiOver2;  // 90 degrees
 
 
             // Set initial target to straight downwards
             backLeg.Update(NPC.Center + new Vector2(0, 300));
 
-            nextBackLegOffset = 100;
+            nextBackLegOffset = 40;
 
-            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 300));
-            nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-nextBackLegOffset, 0));
+            currentBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 300)) + new Vector2(0, 10);
+            startBackLegPosition = TileUtils.FindNearestGround(NPC.Center + new Vector2(0, 300)) + new Vector2(0, 10);
+            nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-nextBackLegOffset, 0)) + new Vector2(0, 10);
             #endregion
         }
 
@@ -97,6 +104,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         Vector2 currentFrontLegPosition;
         Vector2 nextFrontLegPosition;
 
+        Vector2 startBackLegPosition;
         Vector2 currentBackLegPosition;
         Vector2 nextBackLegPosition;
 
@@ -115,6 +123,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         bool isOnGround = false;
 
         public ref float AIState => ref NPC.ai[0];
+        public ref float AICounter => ref NPC.ai[1];
         public enum AICase
         {
             Idle = 0,
@@ -139,11 +148,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 case AICase.Idle:
                     Neutral();
-                    if (NPC.ai[1]++ == 60)
+                    if (AICounter++ >= 60)
                     {
                         Main.NewText("switch to moving");
                         AIState = (int)AICase.Walk;
-                        NPC.ai[1] = 0;
+                        AICounter = 0;
                     }
                     break;
                 case AICase.Walk:
@@ -155,14 +164,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         // TEMP REMOVE THIS LATER
                         NPC.Center = currentCenterPosition;
 
-                        NPC.ai[1] = 0;
-                        AIState = (int)AICase.Idle;
+                        AICounter = 0;
+                        AIState = (int)AICase.Walk;
 
+                        stepCount++;
                     }
 
                     break;
             }
-            //WalkCycle(1);
+
+            frontLeg.Segments[2].MinAngle = MathHelper.PiOver2;
+            frontLeg.Segments[2].MaxAngle = MathHelper.PiOver2;
+
+            backLeg.Segments[2].MinAngle = MathHelper.PiOver2;
+            backLeg.Segments[2].MaxAngle = MathHelper.PiOver2;
+            Main.NewText(MathHelper.ToDegrees(backLeg.Segments[2].Angle));
 
             #region Debug
             var start = Dust.NewDustDirect(startFrontLegPosition, 1, 1, DustID.RedTorch);
@@ -171,96 +187,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             var next = Dust.NewDustDirect(nextFrontLegPosition, 1, 1, DustID.RedTorch);
             next.noGravity = true;
 
-            /*var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.BlueTorch);
+            var current2 = Dust.NewDustDirect(currentBackLegPosition, 1, 1, DustID.GreenTorch);
             current2.noGravity = true;
 
             var next2 = Dust.NewDustDirect(nextBackLegPosition, 1, 1, DustID.BlueTorch);
-            next2.noGravity = true;*/
+            next2.noGravity = true;
             #endregion
-            return;
-
-            NPC.velocity.Y = 4;
-
-            // Determine if NPC is on the ground
-            float STAND_HEIGHT = 210;
-            // Make sure the NPC is always a certain distance above the ground
-            if (tileDistance <= STAND_HEIGHT)
-            {
-                if (tileDistance != STAND_HEIGHT)
-                {
-                    NPC.velocity.Y -= 5f;
-                }
-                else NPC.velocity.Y = 0;
-
-                //NPC..Y = 0;
-                NPC.ai[1]++; // Advance cycle timer
-            }
-
-            // Synchronize body velocity with leg motion
-            Vector2 legDisplacement = moveCycle % 2 == 0
-                ? nextBackLegPosition - currentBackLegPosition
-                : nextFrontLegPosition - startFrontLegPosition;
-
-            NPC.velocity.X = legDisplacement.X / CYCLE_TIME;
-
-            frontLeg.Segments[0].MinAngle = MathHelper.PiOver2; // 90 degrees
-            frontLeg.Segments[0].MaxAngle = MathHelper.Pi;  // 180 degrees
-
-            Vector2 averageLegPosition = (startFrontLegPosition + currentBackLegPosition) / 2f;
-            NPC.Center = Vector2.Lerp(NPC.Center, averageLegPosition + new Vector2(0, -STAND_HEIGHT), 0.2f);
-
-            /*// STEP HAS TO GO SMALL, LARGE, LARGE, LARGE, LARGE... IN ORDER FOR IT TO NOT SHUFFLE LIKE A FUCKING IDIOT
-            if (NPC.ai[1] >= CYCLE_TIME)
-            {
-                moveCycle++;
-                stepCount++;
-                if (moveCycle % 2 == 0)
-                {
-                    //currentBackLegPosition = nextBackLegPosition;
-                    //nextBackLegPosition = ClampLegReach(TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(-125, 0)), NPC.Center);
-                    int stepDistance = stepCount != 0 ? -305 : -205;
-                    nextBackLegPosition = TileUtils.FindNearestGround(currentBackLegPosition + new Vector2(stepDistance, 0));
-                    Main.NewText("move back leg " + stepDistance + " stepCount: " + stepCount);
-
-                    if (firstStep) firstStep = false;
-                }
-                else
-                {
-                    //currentFrontLegPosition = nextFrontLegPosition;
-                    //nextFrontLegPosition = ClampLegReach(TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(-125, 0)), NPC.Center);
-                    int stepDistance = stepCount != 1 ? -305 : -205;
-                    nextFrontLegPosition = TileUtils.FindNearestGround(currentFrontLegPosition + new Vector2(stepDistance, 0));
-
-                    Main.NewText("move front leg " + stepDistance + " stepCount: " + stepCount);
-                }
-
-                NPC.ai[1] = 0; // Reset cycle timer
-            }
-            else
-            {
-                float progress = Math.Clamp(NPC.ai[1] / CYCLE_TIME, 0, 1f);
-                float yOffset = -ARC_HEIGHT * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> -1 -> 0
-                //if (tileDistance <= 120) NPC.velocity.X = NPC.ai[1] < 15 ? -5f : 0;
-
-                if (moveCycle % 2 == 0)
-                {
-                    currentBackLegPosition = Vector2.Lerp(currentBackLegPosition, nextBackLegPosition, progress) + Vector2.UnitY * yOffset;
-                    currentBackLegPosition.Y = Math.Min(currentBackLegPosition.Y + yOffset, TileUtils.FindNearestGround(currentBackLegPosition).Y);
-                }
-                else
-                {
-                    //float yOffset = MathHelper.Lerp(0, -60, yOffsetCounter);
-                    currentFrontLegPosition = Vector2.Lerp(currentFrontLegPosition, nextFrontLegPosition, progress) + Vector2.UnitY * yOffset;
-                    currentFrontLegPosition.Y = Math.Min(currentFrontLegPosition.Y + yOffset, TileUtils.FindNearestGround(currentFrontLegPosition).Y);
-                }
-            }*/
-
-            //int LEG_OFFSET = 10 * NPC.direction;
-            frontLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 48);
-            frontLeg.Update(startFrontLegPosition);
-
-            backLeg.BasePosition = NPC.Center + new Vector2(LEG_OFFSET, 50);
-            backLeg.Update(currentBackLegPosition);
         }
 
         private void Neutral()
@@ -272,16 +204,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             frontLeg.Update(NPC.Center + new Vector2(0, 300));
-            //frontLeg.Update(Main.MouseWorld);
-
             backLeg.Update(currentBackLegPosition);
         }
 
         private bool WalkCycle(int steps)
         {
-            float CYCLE_TIME = 120;
+            float CYCLE_TIME = 60;
             float ARC_HEIGHT = -10;
-
 
             //float CYCLE_TIME = 60;
             //if (NPC.ai[1] >= CYCLE_TIME) return true;
@@ -290,6 +219,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // if i want to move the back leg forwards, have it move 50 pixels away from where the front leg is
             if (isOnGround) NPC.ai[1]++;
 
+            float progress = Math.Clamp((NPC.ai[1]) / (CYCLE_TIME), 0f, 1f); // Progress after 10 ticks
+            NPC.Center = Vector2.Lerp(currentCenterPosition, nextCenterPosition, progress) + new Vector2(0, MathHelper.Lerp(0, 2, (float)Math.Sin(progress * Math.PI * 2)));
 
             bool isFrontLeg = stepCount % 2 == 0;
             if (isFrontLeg)
@@ -297,13 +228,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 float delay = 10;
 
                 // Step 2: After 10 ticks, move both vertically and horizontally
-                float progress = Math.Clamp((NPC.ai[1]) / (CYCLE_TIME), 0f, 1f); // Progress after 10 ticks
                                                                                  //float yOffset = -ARC_HEIGHT * (float)Math.Sin(MathHelper.Pi * (NPC.ai[1] / CYCLE_TIME)); // Full arc motion
-
                 //float yOffset = -ARC_HEIGHT * (float)Math.Sin(MathHelper.Pi * progress);  // Sin function to create an up-down arc
-                float yOffset = ARC_HEIGHT * (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> 1 -> 0
+                float yOffset = ARC_HEIGHT * (float)Math.Sin((AICounter / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> 1 -> 0
 
-                Main.NewText(yOffset);
                 // Move horizontally from the current position towards the next position
                 currentFrontLegPosition = Vector2.Lerp(startFrontLegPosition, nextFrontLegPosition, progress);
                 //currentFrontLegPosition = new Vector2(0, yOffset);
@@ -316,15 +244,32 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 frontLeg.Update(target);
                 //frontLeg.Update(Main.MouseWorld);
 
-                // Update NPC's center (for walking)
-                NPC.Center = Vector2.Lerp(currentCenterPosition, nextCenterPosition, progress);
-
-
+                currentBackLegPosition = Vector2.Lerp(startBackLegPosition, startBackLegPosition + new Vector2(-2, 0), AICounter / 60f);
                 backLeg.Update(currentBackLegPosition);
             }
             else
             {
-                backLeg.Update(nextBackLegPosition);
+                float delay = 10;
+
+                // Step 2: After 10 ticks, move both vertically and horizontally
+                float yOffset = ARC_HEIGHT * (float)Math.Sin((AICounter / CYCLE_TIME) * MathHelper.Pi); // Sin(Pi) ranges from 0 -> 1 -> 0
+
+                // Move horizontally from the current position towards the next position
+                currentBackLegPosition = Vector2.Lerp(startBackLegPosition, nextBackLegPosition, progress);
+                //currentFrontLegPosition = new Vector2(0, yOffset);
+
+                var target = currentBackLegPosition + new Vector2(0, 200).RotatedBy(MathHelper.Lerp(0, MathHelper.PiOver2, (float)Math.Sin((NPC.ai[1] / CYCLE_TIME) * MathHelper.Pi)));
+                var start = Dust.NewDustDirect(target, 1, 1, DustID.PurpleTorch);
+                start.noGravity = true;
+
+                // Update the front leg's position with both horizontal and vertical movement
+                backLeg.Update(target);
+                //frontLeg.Update(Main.MouseWorld);
+
+                // Update NPC's center (for walking)
+
+                currentFrontLegPosition = Vector2.Lerp(startFrontLegPosition, startFrontLegPosition + new Vector2(-2, 0), AICounter / 60f);
+                frontLeg.Update(currentFrontLegPosition);
             }
 
             return NPC.ai[1] >= CYCLE_TIME;
@@ -333,7 +278,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private void HandleGravity()
         {
             isOnGround = false;
-            float STAND_HEIGHT = 24;
+            float STAND_HEIGHT = 32;
 
             NPC.velocity.Y = 4;
             if (tileDistance <= STAND_HEIGHT)
