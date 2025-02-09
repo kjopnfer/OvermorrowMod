@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core.Globals;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.Localization;
@@ -16,6 +17,15 @@ namespace OvermorrowMod.Common
                 new FlavorTextBestiaryInfoElement(Language.GetTextValue(LocalizationPath.Bestiary + Name)),
             });
         }
+
+        public sealed override void SetDefaults()
+        {
+            NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
+            SafeSetDefaults();
+        }
+
+        public virtual void SafeSetDefaults() { }
+
         protected virtual void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor) { }
 
         /// <summary>

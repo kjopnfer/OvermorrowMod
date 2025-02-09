@@ -27,7 +27,7 @@ namespace OvermorrowMod.Core.Globals
         /// <summary>
         /// Max BP.
         /// </summary>
-        public int MaxBarrierPoints { get; private set; } = 0;
+        public int MaxBarrierPoints { get; set; } = 100;
 
         /// <summary>
         /// Time until barrier decays.
@@ -35,6 +35,10 @@ namespace OvermorrowMod.Core.Globals
         public int BarrierDecayTimer { get; private set; } = 0;
         public bool HasBarrier => BarrierPoints > 0;
 
+        /// <summary>
+        /// Determines whether the NPC can gain barrier.
+        /// </summary>
+        public virtual bool CanGainBarrier => true;
 
         /// <summary>
         /// Sets the barrier state for the NPC.
@@ -43,8 +47,11 @@ namespace OvermorrowMod.Core.Globals
         /// <param name="duration">The duration of the barrier in ticks (1/60th of a second). After this duration, the barrier will decay.</param>
         public void SetBarrier(int amount, int duration)
         {
-            MaxBarrierPoints = amount;
-            BarrierPoints = amount;
+            if (!CanGainBarrier) return;
+
+            BarrierPoints += amount;
+            BarrierPoints = (int)MathHelper.Clamp(BarrierPoints, 0, MaxBarrierPoints);
+
             BarrierDecayTimer = duration;
         }
 
