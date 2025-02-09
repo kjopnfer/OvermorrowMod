@@ -38,7 +38,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             NPCID.Sets.TrailCacheLength[NPC.type] = 7;
             NPCID.Sets.TrailingMode[NPC.type] = 1;

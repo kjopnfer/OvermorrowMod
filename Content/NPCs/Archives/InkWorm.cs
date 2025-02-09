@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Globals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             NPC.width = NPC.height = 32;
             NPC.lifeMax = 640;
@@ -42,7 +43,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.noGravity = true;
             NPC.friendly = false;
             NPC.noTileCollide = true;
-            //NPC.dontTakeDamage = true;
+            NPC.GetGlobalNPC<BarrierNPC>().CanGainBarrier = false;
         }
 
         public enum AICase
@@ -239,7 +240,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (AICase)AIState != AICase.Hidden && (AICase)AIState != AICase.Panic && (AICase)AIState != AICase.Death;
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             NPC.width = NPC.height = 20;
             NPC.lifeMax = 140;
@@ -250,6 +251,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.noGravity = true;
             NPC.friendly = false;
             NPC.noTileCollide = true;
+            NPC.GetGlobalNPC<BarrierNPC>().CanGainBarrier = false;
 
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }

@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             NPC.width = 30;
             NPC.height = 42;

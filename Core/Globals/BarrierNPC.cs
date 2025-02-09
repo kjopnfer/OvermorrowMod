@@ -38,7 +38,7 @@ namespace OvermorrowMod.Core.Globals
         /// <summary>
         /// Determines whether the NPC can gain barrier.
         /// </summary>
-        public virtual bool CanGainBarrier => true;
+        public bool CanGainBarrier { get; set; } = true;
 
         /// <summary>
         /// Sets the barrier state for the NPC.
