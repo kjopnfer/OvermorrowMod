@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
 using System.Collections.Generic;
@@ -37,6 +39,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             YellowRoom,
             BlueRoom,
         }
+
+        Room CenterRoom = new Room();
 
         public SetupGenPass(string name, double loadWeight) : base(name, loadWeight) { }
 
@@ -355,6 +359,14 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceCozyArea(1861, 256, RoomID.Blue);
             PlaceLoungeArea(1863, 226, RoomID.Blue);
             #endregion
+
+            SetupSpawners();
+        }
+
+        private void SetupSpawners()
+        {
+            CenterRoom.AddSpawnPoint(new Vector2(920, 115), ModContent.NPCType<ArchiveRat>());
+            CenterRoom.AddSpawnPoint(new Vector2(920, 110), ModContent.NPCType<InkWormBody>());
         }
 
         private void PlaceLoungeArea(int x, int y, RoomID room)

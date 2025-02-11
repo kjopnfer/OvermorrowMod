@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.RoomManager;
 using ReLogic.Content;
 using SubworldLibrary;
 using System.Collections.Generic;
@@ -46,6 +47,12 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             {
                 var tileEntity = pair.Value;
                 tileEntity.Update();
+
+                if (tileEntity is NPCSpawnPoint spawnPoint)
+                {
+                    if (spawnPoint.ChildNPC == null && !spawnPoint.HasBeenCleared)
+                        spawnPoint.SpawnNPC();
+                }
             }
         }
 
@@ -53,6 +60,16 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         {
             // Create a popup message or title card or something
 
+            foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
+            {
+                var tileEntity = pair.Value;
+                tileEntity.Update();
+
+                if (tileEntity is NPCSpawnPoint spawnPoint)
+                {
+                    spawnPoint.SpawnNPC();
+                }
+            }
 
             base.OnEnter();
         }
