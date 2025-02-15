@@ -40,8 +40,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             BlueRoom,
         }
 
-        Room CenterRoom = new Room();
-
         public SetupGenPass(string name, double loadWeight) : base(name, loadWeight) { }
 
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
@@ -365,8 +363,12 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
         private void SetupSpawners()
         {
-            CenterRoom.AddSpawnPoint(new Vector2(920, 115), ModContent.NPCType<ArchiveRat>());
-            CenterRoom.AddSpawnPoint(new Vector2(920, 110), ModContent.NPCType<InkWormBody>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(890, 106), ModContent.NPCType<BlasterBook>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(920, 115), ModContent.NPCType<ArchiveRat>());
+
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(754, 76), ModContent.NPCType<InkWormBody>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(749, 115), ModContent.NPCType<ArchiveRat>());
+
         }
 
         private void PlaceLoungeArea(int x, int y, RoomID room)

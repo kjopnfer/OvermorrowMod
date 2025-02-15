@@ -28,6 +28,17 @@ namespace OvermorrowMod.Common.RoomManager
         /// </summary>
         public bool HasBeenCleared { get; private set; } = false;
 
+        /// <summary>
+        /// Active counter of the Spawner after the NPC has been cleared.
+        /// </summary>
+        public int SpawnerCooldown { get; private set; } = 0;
+
+        /// <summary>
+        /// Number of ticks it takes before the NPC gets respawned.
+        /// 60 ticks is equivalent to one second.
+        /// </summary>
+        public int CooldownTime { get; private set; } = 60 * 120;
+
         public override void SaveData(TagCompound tag)
         {
             base.SaveData(tag);
@@ -55,7 +66,35 @@ namespace OvermorrowMod.Common.RoomManager
                 {
                     ChildNPC = null;
                     HasBeenCleared = true;
+
+                    SpawnerCooldown = CooldownTime;
                 }
+            }
+
+            // Check if there are any players within a radius of 50 blocks (800 pixels)
+            bool playerNearby = false;
+            foreach (var player in Main.player)
+            {
+                if (player.active)
+                {
+                    float distance = Vector2.Distance(Position.ToWorldCoordinates(), player.Center);
+                    if (distance <= 800f) // 50 blocks = 800 pixels
+                    {
+                        playerNearby = true;
+                        break;
+                    }
+                }
+            }
+
+            if (playerNearby)
+            {
+                // Do something if a player is nearby (e.g., activate or spawn NPC)
+                Main.NewText("Player is nearby!");
+            }
+            else
+            {
+                // The NPC is not allowed to respawn unless the Player is offscreen
+                if (SpawnerCooldown > 0) SpawnerCooldown--;
             }
 
             base.Update();

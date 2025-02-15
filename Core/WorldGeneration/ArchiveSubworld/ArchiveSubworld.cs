@@ -35,6 +35,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             }
         }
 
+        public static Room CenterRoom = new Room();
         public override void Update()
         {
             Main.dayTime = false;
@@ -50,7 +51,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
                 if (tileEntity is NPCSpawnPoint spawnPoint)
                 {
-                    if (spawnPoint.ChildNPC == null && !spawnPoint.HasBeenCleared)
+                    if (spawnPoint.ChildNPC == null && spawnPoint.SpawnerCooldown <= 0)
                         spawnPoint.SpawnNPC();
                 }
             }
