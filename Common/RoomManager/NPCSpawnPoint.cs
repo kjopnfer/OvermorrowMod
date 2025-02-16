@@ -59,7 +59,7 @@ namespace OvermorrowMod.Common.RoomManager
 
         public void SpawnNPC()
         {
-            ChildNPC = NPC.NewNPCDirect(null, Position.ToWorldCoordinates(), NPCType);
+            ChildNPC = NPC.NewNPCDirect(null, Position.ToWorldCoordinates(10, 28), NPCType);
 
             OvermorrowNPC modNPC = ChildNPC.ModNPC as OvermorrowNPC;
             modNPC.SpawnerID = ID;

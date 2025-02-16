@@ -61,16 +61,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 return false;
             }
 
-            /*if (frame.Intersects(new Rectangle(36 * 2, 36, 36, 36)))
-            {
-                if (rng.Next(2) == 0)
-                    Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 3, 36 * 1, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                else
-                    Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 1, 36 * 1, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-
-                return false;
-            }*/
-
+            // Reserve the holes in the bookshelves for the NPC spawners
             if (frame.Intersects(new Rectangle(36 * 2, 36, 36, 36)) ||
                 frame.Intersects(new Rectangle(36 * 7, 36, 36, 36)) || 
                 frame.Intersects(new Rectangle(36 * 11, 0, 36, 36)))
@@ -114,30 +105,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 1, 36 * 1, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
                         break;
                 }
-
-                return false;
-            }
-
-            if (frame.Intersects(new Rectangle(36 * 11, 0, 36, 36)))
-            {
-                /*switch (rng.Next(5))
-                {
-                    case 0:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 10, 0, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                    case 1:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 10, 36, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                    case 2:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 10, 36 * 2, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                    case 3:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 11, 36, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                    case 4:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 11, 36 * 2, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                }*/
 
                 return false;
             }

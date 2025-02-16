@@ -66,7 +66,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         protected Vector2 targetPosition;
         public override void OnSpawn(IEntitySource source)
         {
-            AIState = (int)AICase.Fall;
+            AIState = (int)AICase.Hidden;
             distanceFromGround = Main.rand.Next(16, 19) * 8;
             aggroDelayTime = Main.rand.Next(10, 20) * 10;
             tileAttackDistance = Main.rand.Next(16, 32) * 16;
@@ -86,6 +86,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
             switch ((AICase)AIState)
             {
+                case AICase.Hidden:
+                    foreach (var player in Main.player)
+                    {
+                        if (player.active)
+                        {
+                            float distance = Vector2.Distance(NPC.Center, player.Center);
+                            if (distance <= 16 * 14)
+                            {
+                                AIState = (int)AICase.Fall;
+                                AICounter = 0;
+                                break;
+                            }
+                        }
+                    }
+                    break;
                 case AICase.Fall:
                     NPC.noGravity = false;
 
@@ -215,6 +230,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             switch ((AICase)AIState)
             {
+                case AICase.Hidden:
+                    yFrame = 0;
+                    break;
                 case AICase.Fall:
                     if (NPC.frameCounter++ % 4 == 0)
                     {
@@ -308,7 +326,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             Color wingColor = Color.Lerp(drawColor, Color.White, 0.7f);
-            if ((AICase)AIState != AICase.Fall)
+            if ((AICase)AIState != AICase.Fall && (AICase)AIState != AICase.Hidden)
                 spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), wingColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
