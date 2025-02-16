@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Core.Globals;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -11,6 +13,11 @@ namespace OvermorrowMod.Common
     public abstract class OvermorrowNPC : ModNPC
     {
         public ref Player Player => ref Main.player[NPC.target];
+
+        /// <summary>
+        /// Saves the ID of the Spawner if the NPC was created by one.
+        /// </summary>
+        public int? SpawnerID { get; set; } = null;
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] {
@@ -49,6 +56,14 @@ namespace OvermorrowMod.Common
             DrawBehindOvermorrowNPC(spriteBatch, screenPos, drawColor);
 
             return DrawOvermorrowNPC(spriteBatch, screenPos, drawColor);
+        }
+
+        public sealed override void OnKill()
+        {
+            if (SpawnerID.HasValue && TileEntity.ByID.TryGetValue(SpawnerID.Value, out TileEntity entity) && entity is NPCSpawnPoint spawner)
+            {
+                spawner.HasBeenKilled = true;
+            }
         }
     }
 }

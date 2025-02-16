@@ -25,8 +25,16 @@ namespace OvermorrowMod.Common.RoomManager
 
         /// <summary>
         /// This is set to true if the associated NPC has been killed.
+        /// Being cleared is a one time flag, and should only be set the first time their NPC has died.
+        /// It is separate from checking for if the NPC has been killed to respawn it.
         /// </summary>
         public bool HasBeenCleared { get; private set; } = false;
+
+        /// <summary>
+        /// This is set to true if the associated NPC has been killed.
+        /// This should be set by the NPC's kill hook if they have been killed naturally (i.e., not despawned)
+        /// </summary>
+        public bool HasBeenKilled { get; set; } = false;
 
         /// <summary>
         /// Active counter of the Spawner after the NPC has been cleared.
@@ -52,22 +60,33 @@ namespace OvermorrowMod.Common.RoomManager
         public void SpawnNPC()
         {
             ChildNPC = NPC.NewNPCDirect(null, Position.ToWorldCoordinates(), NPCType);
+
+            OvermorrowNPC modNPC = ChildNPC.ModNPC as OvermorrowNPC;
+            modNPC.SpawnerID = ID;
         }
 
         public override void Update()
         {
             if (ChildNPC != null)
             {
-                if (ChildNPC.active)
-                {
-                    Main.NewText("active");
-                }
-                else
+                if (HasBeenKilled)
                 {
                     ChildNPC = null;
                     HasBeenCleared = true;
 
                     SpawnerCooldown = CooldownTime;
+                }
+                else
+                {
+                    if (ChildNPC.active)
+                    {
+                        Main.NewText("active");
+                    }
+                    else
+                    {
+                        Main.NewText("not active");
+                        ChildNPC = null;
+                    }
                 }
             }
 
