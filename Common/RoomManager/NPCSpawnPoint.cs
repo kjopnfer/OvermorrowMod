@@ -89,7 +89,6 @@ namespace OvermorrowMod.Common.RoomManager
             if (playerNearby)
             {
                 // Do something if a player is nearby (e.g., activate or spawn NPC)
-                Main.NewText("Player is nearby!");
             }
             else
             {
