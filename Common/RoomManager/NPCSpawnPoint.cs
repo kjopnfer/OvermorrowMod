@@ -80,7 +80,6 @@ namespace OvermorrowMod.Common.RoomManager
                 {
                     if (ChildNPC.active)
                     {
-                        Main.NewText("active");
                     }
                     else
                     {

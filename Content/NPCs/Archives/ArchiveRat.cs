@@ -27,6 +27,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             return afterimageLinger > 0;
         }
 
+        public override bool CanHitNPC(NPC target)
+        {
+            return afterimageLinger > 0;
+        }
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 9;
@@ -63,6 +68,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public enum AICase
         {
             Decelerate = -1,
+            Pause = -2,
             Idle = 0,
             Walk = 1,
             Attack = 2,
@@ -234,6 +240,60 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AICase.Idle:
                     NPC.velocity.X = 0;
 
+                    // Each second, look for a valid target.
+                    if (AICounter++ >= 60)
+                    {
+                        Entity target = FindNearestTarget(NPC.Center, 16 * 4, true);
+
+                        if (target != null)
+                        {
+                            Target = target;
+                            AIState = (int)AICase.Idle;
+                        }
+                        else
+                        {
+                            Main.NewText("no target " + NPC.direction);
+
+
+                            // Continue idling but change the NPC's direction
+                            if (Main.rand.NextBool())
+                            {
+                                AIState = (int)AICase.Idle;
+                                NPC.direction = Main.rand.NextBool() ? 1 : -1;
+                            }
+                            else
+                            {
+                                AIState = (int)AICase.Walk;
+                                if (SpawnPoint != null)
+                                {
+                                    Main.NewText("Get a random position to walk to");
+
+                                    Vector2 spawnPosition = SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
+                                    Vector2 newPosition;
+
+                                    do
+                                    {
+                                        float offsetX = Main.rand.NextFloat(-10f, 10f) * 16; // Random X within 10 tiles
+                                        float offsetY = Main.rand.NextFloat(-10f, 10f) * 16; // Random Y within 10 tiles
+                                        newPosition = spawnPosition + new Vector2(offsetX, offsetY);
+
+                                        // Find the nearest ground position for the generated newPosition
+                                        newPosition = TileUtils.FindNearestGround(newPosition);
+
+                                    } while (Vector2.Distance(NPC.Center, newPosition) < 4 * 16); // Ensure at least 4 tiles away
+
+                                    TargetPosition = newPosition; // Assign the valid position on the ground
+                                    Dust.NewDust(TargetPosition.Value, 1, 1, DustID.BlueTorch);
+                                }
+                            }
+                        }
+
+                        AICounter = 0;
+                    }
+                    break;
+                case AICase.Pause:
+                    NPC.velocity.X = 0;
+
                     if (AICounter++ >= idleTime)
                     {
                         AIState = canAttack ? (int)AICase.Attack : (int)AICase.Walk;
@@ -241,24 +301,44 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Walk:
-                    NPC.TargetClosest();
+                    // If there's no valid target, move toward the target position or return to idle
+                    if (Target == null)
+                    {
+                        if (TargetPosition.HasValue)
+                        {
+                            NPC.direction = NPC.GetDirection(TargetPosition.Value);
+                            Vector2 distance = NPC.Move(TargetPosition.Value, 0.2f, maxSpeed, 8f);
 
-                    Vector2 distance = NPC.Move(Player.Center, 0.2f, maxSpeed, 8f);
-                    bool isWithinAttackRange = distance.X < attackRange && distance.Y <= 31;
+                            if (distance.X <= 4)
+                                SetAIState(AICase.Idle);
+                        }
+                        else
+                        {
+                            SetAIState(AICase.Idle);
+                        }
+                        return;
+                    }
+
+                    // Move towards the target
+                    NPC.direction = NPC.GetDirection(Target);
+                    Vector2 targetDistance = NPC.Move(Target.Center, 0.2f, maxSpeed, 8f);
+
+                    bool isWithinAttackRange = targetDistance.X < attackRange && targetDistance.Y <= 31;
+
                     if (isWithinAttackRange)
                     {
                         canAttack = true;
-                        SetAIState(AICase.Idle);
+                        SetAIState(AICase.Pause);
                     }
                     else if (!NPC.IsStealthOnCooldown())
                     {
                         SetAIState(AICase.Stealth);
                     }
 
+                    // After a set duration, transition to Pause state
                     if (AICounter++ >= 54 * 5)
-                    {
-                        SetAIState(AICase.Idle);
-                    }
+                        SetAIState(AICase.Pause);
+
                     break;
                 case AICase.Attack:
                     afterimageLinger = 30;
@@ -315,6 +395,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
                 case AICase.Idle:
+                    xFrame = 1;
+                    yFrame = 1;
+                    break;
+                case AICase.Pause:
                     xFrame = 1;
                     yFrame = canAttack && AICounter >= idleTime - 6 ? 0 : 1;
                     break;
