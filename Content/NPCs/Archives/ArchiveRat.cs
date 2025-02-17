@@ -231,6 +231,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         NPC.velocity.X *= 0.9f;
                     }
 
+                    if (NPC.collideX)
+                        Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
+
                     if (AICounter++ >= 42)
                     {
                         AIState = (int)AICase.Walk;
@@ -243,17 +246,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     // Each second, look for a valid target.
                     if (AICounter++ >= 60)
                     {
-                        Entity target = FindNearestTarget(NPC.Center, 16 * 4, true);
+                        Entity target = FindNearestTarget(NPC.Center, 16 * 8, true);
 
                         if (target != null)
                         {
                             Target = target;
-                            AIState = (int)AICase.Idle;
+                            AIState = (int)AICase.Walk;
                         }
                         else
                         {
                             Main.NewText("no target " + NPC.direction);
-
 
                             // Continue idling but change the NPC's direction
                             if (Main.rand.NextBool())
@@ -345,6 +347,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                     NPC.RemoveStealth();
                     NPC.velocity.X = Main.rand.Next(14, 17) * NPC.direction;
+
+                    if (NPC.collideX)
+                        Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
 
                     if (AICounter++ >= 10)
                     {
