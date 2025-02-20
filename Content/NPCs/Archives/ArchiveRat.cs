@@ -16,6 +16,7 @@ using Terraria.Localization;
 using System.Linq;
 using OvermorrowMod.Common.CustomCollision;
 using System.Collections.Generic;
+using OvermorrowMod.Content.Misc;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -255,7 +256,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         }
                         else
                         {
-                            Main.NewText("no target " + NPC.direction);
 
                             // Continue idling but change the NPC's direction
                             if (Main.rand.NextBool())
@@ -268,6 +268,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                                 AIState = (int)AICase.Walk;
                                 if (SpawnPoint != null)
                                 {
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: NPC.whoAmI);
+
                                     Main.NewText("Get a random position to walk to");
 
                                     Vector2 spawnPosition = SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position

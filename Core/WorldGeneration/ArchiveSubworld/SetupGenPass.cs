@@ -367,7 +367,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(920, 114), ModContent.NPCType<ArchiveRat>());
 
             ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(754, 76), ModContent.NPCType<InkWormBody>());
-            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(749, 114), ModContent.NPCType<ArchiveRat>());
+            //ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(749, 114), ModContent.NPCType<ArchiveRat>());
 
         }
 

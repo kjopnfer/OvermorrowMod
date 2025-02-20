@@ -97,4 +97,5 @@ Projectiles: {
 	BarrierEffect.DisplayName: Barrier Effect
 	BlastRune.DisplayName: Blast Rune
 	FireBolt.DisplayName: Fire Bolt
+	AggroIndicator.DisplayName: Aggro Indicator
 }
