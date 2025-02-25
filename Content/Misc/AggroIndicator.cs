@@ -33,9 +33,10 @@ namespace OvermorrowMod.Content.Misc
 
             AICounter++;
             float progress = MathHelper.Clamp(EasingUtils.EaseOutBounce(AICounter / 20f), 0, 1f);
-            Projectile.Center = npc.Hitbox.Top() + Vector2.Lerp(Vector2.UnitY * -10, Vector2.UnitY * -40f, progress);
+            Projectile.Center = npc.Hitbox.Top() + Vector2.Lerp(Vector2.Zero, Vector2.UnitY * -25f, progress);
         }
 
+        int textureFrame = 0;
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Misc + Name).Value;
@@ -43,10 +44,16 @@ namespace OvermorrowMod.Content.Misc
             float size = 1f;
             float alpha = 1f;
 
+            if (AICounter % 20 == 0)
+            {
+                textureFrame = textureFrame == 1 ? 0 : 1;
+            }
+
             //Projectile.rotation = MathHelper.Lerp(0, -MathHelper.PiOver4, EasingUtils.EaseOutBounce(Math.Clamp(MathHelper.Lerp(0, 1f, Projectile.timeLeft / 60f), 0, 1f)));
             if (AICounter >= 60) alpha = Math.Clamp(MathHelper.Lerp(1f, 0f, (AICounter - 60) / 60f), 0, 1f);
 
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, textureColor * alpha, Projectile.rotation, texture.Size() / 2f, size, SpriteEffects.None, 0);
+            Rectangle drawRectangle = new Rectangle(0, (texture.Height / 2) * textureFrame, texture.Width, texture.Height / 2);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, drawRectangle, textureColor * alpha, Projectile.rotation, texture.Size() / 2f, size, SpriteEffects.None, 0);
 
             return false;
         }
