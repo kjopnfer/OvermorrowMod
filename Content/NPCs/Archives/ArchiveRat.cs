@@ -18,6 +18,7 @@ using OvermorrowMod.Common.CustomCollision;
 using System.Collections.Generic;
 using OvermorrowMod.Content.Misc;
 using System.Diagnostics;
+using OvermorrowMod.Core.NPCs;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -176,12 +177,20 @@ namespace OvermorrowMod.Content.NPCs.Archives
         #endregion
 
         public override bool CheckActive() => false;
+        public override NPCTargetingConfig TargetingConfig()
+        {
+            return new NPCTargetingConfig(
+                maxAggroTime: 300f,
+                aggroLossRate: 1f,
+                aggroCooldownTime: 180f,
+                maxMissedAttacks: 3,
+                maxTargetRange: 16 * 45,
+                prioritizeAggro: true
+            );
+        }
+
         public override void AI()
         {
-            //Main.NewText(Main.drawToScreen + " " + Main.LogicCheckScreenHeight);
-            //NPC.dontTakeDamage = !IsOnScreen();
-            //Main.NewText("is onscreen " + IsOnScreen());
-
             NPC.noGravity = false;
             NPC.knockBackResist = NPC.IsStealthed() ? 0f : 0.5f;
             if (afterimageLinger > 0) afterimageLinger--;
@@ -229,6 +238,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
             #endregion
 
+            if (!TargetingModule.HasTarget())
+            {
+                NPC.RemoveStealth();
+            }
+
             switch ((AICase)AIState)
             {
                 case AICase.Decelerate:
@@ -252,13 +266,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     // Each second, look for a valid target.
                     if (AICounter++ >= 60)
                     {
-                        Entity target = FindNearestTarget(NPC.Center, 16 * 8, true);
+                        //Entity target = FindNearestTarget(NPC.Center, 16 * 8, true);
 
-                        if (target != null)
+                        if (TargetingModule.HasTarget())
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: NPC.whoAmI);
-
-                            Target = target;
+                            Target = TargetingModule.Target;
                             AIState = (int)AICase.Walk;
                         }
                         else
@@ -310,7 +322,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     break;
                 case AICase.Walk:
                     // If there's no valid target, move toward the target position or return to idle
-                    if (Target == null)
+                    if (TargetingModule.Target == null)
                     {
                         if (TargetPosition.HasValue)
                         {
@@ -324,12 +336,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         {
                             SetAIState(AICase.Idle);
                         }
+
                         return;
                     }
 
-                    // Move towards the target
-                    NPC.direction = NPC.GetDirection(Target);
-                    Vector2 targetDistance = NPC.Move(Target.Center, 0.2f, maxSpeed, 8f);
+                    // These should only execute if there is an actual target and not an idle target
+                    NPC.direction = NPC.GetDirection(TargetingModule.Target);
+                    Vector2 targetDistance = NPC.Move(TargetingModule.Target.Center, 0.2f, maxSpeed, 8f);
 
                     bool isWithinAttackRange = targetDistance.X < attackRange && targetDistance.Y <= 31;
 

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,6 +14,8 @@ namespace OvermorrowMod.Common
 {
     public abstract partial class OvermorrowNPC : ModNPC
     {
+        protected NPCTargetingModule TargetingModule;
+
         public ref Player Player => ref Main.player[NPC.target];
 
         /// <summary>
@@ -47,9 +50,12 @@ namespace OvermorrowMod.Common
             });
         }
 
+        public virtual NPCTargetingConfig TargetingConfig() => new NPCTargetingConfig();
         public sealed override void SetDefaults()
         {
             NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
+            TargetingModule = new NPCTargetingModule(NPC, TargetingConfig());
+
             SafeSetDefaults();
         }
 
@@ -80,11 +86,13 @@ namespace OvermorrowMod.Common
             return DrawOvermorrowNPC(spriteBatch, screenPos, drawColor);
         }
 
-        //public virtual void SafeAI() { }
+
         public sealed override bool PreAI()
         {
             // Prevent offscreen projectiles from killing the NPC.
             NPC.dontTakeDamage = !IsOnScreen();
+
+            TargetingModule.Update();
 
             return base.PreAI();
         }

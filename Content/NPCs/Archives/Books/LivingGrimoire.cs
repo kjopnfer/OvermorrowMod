@@ -87,20 +87,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch ((AICase)AIState)
             {
                 case AICase.Hidden:
-                    foreach (var player in Main.player)
+                    if (TargetingModule.HasTarget())
                     {
-                        if (player.active)
-                        {
-                            float distance = Vector2.Distance(NPC.Center, player.Center);
-                            if (distance <= 16 * 14)
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: NPC.whoAmI);
-
-                                AIState = (int)AICase.Fall;
-                                AICounter = 0;
-                                break;
-                            }
-                        }
+                        AIState = (int)AICase.Fall;
+                        AICounter = 0;
                     }
                     break;
                 case AICase.Fall:
