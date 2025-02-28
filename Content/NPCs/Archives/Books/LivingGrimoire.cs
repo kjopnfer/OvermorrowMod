@@ -13,6 +13,7 @@ using System;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Common.Particles;
 using Terraria.Map;
+using OvermorrowMod.Content.Misc;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -94,6 +95,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                             float distance = Vector2.Distance(NPC.Center, player.Center);
                             if (distance <= 16 * 14)
                             {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: NPC.whoAmI);
+
                                 AIState = (int)AICase.Fall;
                                 AICounter = 0;
                                 break;

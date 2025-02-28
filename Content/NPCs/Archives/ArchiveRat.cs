@@ -17,6 +17,7 @@ using System.Linq;
 using OvermorrowMod.Common.CustomCollision;
 using System.Collections.Generic;
 using OvermorrowMod.Content.Misc;
+using System.Diagnostics;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -251,6 +252,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                         if (target != null)
                         {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: NPC.whoAmI);
+
                             Target = target;
                             AIState = (int)AICase.Walk;
                         }
@@ -268,8 +271,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                                 AIState = (int)AICase.Walk;
                                 if (SpawnPoint != null)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: NPC.whoAmI);
-
                                     Main.NewText("Get a random position to walk to");
 
                                     Vector2 spawnPosition = SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
@@ -287,7 +288,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                                     } while (Vector2.Distance(NPC.Center, newPosition) < 4 * 16); // Ensure at least 4 tiles away
 
                                     TargetPosition = newPosition; // Assign the valid position on the ground
-                                    Dust.NewDust(TargetPosition.Value, 1, 1, DustID.BlueTorch);
                                 }
                             }
                         }
@@ -475,6 +475,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 

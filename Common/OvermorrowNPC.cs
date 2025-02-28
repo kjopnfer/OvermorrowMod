@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common
 {
-    public abstract class OvermorrowNPC : ModNPC
+    public abstract partial class OvermorrowNPC : ModNPC
     {
         public ref Player Player => ref Main.player[NPC.target];
 
