@@ -17,7 +17,6 @@ namespace OvermorrowMod.Common
             // Adapted vanilla code for NPC despawning
             int activeRangeX = (int)((double)NPC.sWidth * 2.1);
             int activeRangeY = (int)((double)NPC.sHeight * 2.1);
-            bool isOffscreen = true;
             /*Rectangle rectangle = new Rectangle((int)(NPC.position.X + (float)(NPC.width / 2) - (float)activeRangeX),
                                                 (int)(NPC.position.Y + (float)(NPC.height / 2) - (float)activeRangeY),
                                                 activeRangeX * 2, activeRangeY * 2);*/

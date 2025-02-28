@@ -178,6 +178,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool CheckActive() => false;
         public override void AI()
         {
+            //Main.NewText(Main.drawToScreen + " " + Main.LogicCheckScreenHeight);
+            //NPC.dontTakeDamage = !IsOnScreen();
+            //Main.NewText("is onscreen " + IsOnScreen());
+
             NPC.noGravity = false;
             NPC.knockBackResist = NPC.IsStealthed() ? 0f : 0.5f;
             if (afterimageLinger > 0) afterimageLinger--;

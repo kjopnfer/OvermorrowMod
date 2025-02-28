@@ -81,10 +81,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float flySpeedX = 2;
         float flySpeedY = 0;
         float aggroDelay = 60;
-        public sealed override void AI()
+        public override void AI()
         {
             //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);
-            Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
             switch ((AICase)AIState)
             {
                 case AICase.Hidden:
@@ -302,6 +301,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
+
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Texture2D wingTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BookWings").Value;
 

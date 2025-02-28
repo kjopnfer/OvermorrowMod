@@ -93,6 +93,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 NPC.checkDead();
             }
 
+            // Allow the NPC to take damage if their tentacles are damaged.
+            NPC.dontTakeDamage = false;
             NPC.chaseable = false;
 
             switch ((AICase)AIState)

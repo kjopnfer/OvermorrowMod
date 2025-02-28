@@ -80,6 +80,15 @@ namespace OvermorrowMod.Common
             return DrawOvermorrowNPC(spriteBatch, screenPos, drawColor);
         }
 
+        //public virtual void SafeAI() { }
+        public sealed override bool PreAI()
+        {
+            // Prevent offscreen projectiles from killing the NPC.
+            NPC.dontTakeDamage = !IsOnScreen();
+
+            return base.PreAI();
+        }
+
         public sealed override void OnKill()
         {
             if (SpawnerID.HasValue && TileEntity.ByID.TryGetValue(SpawnerID.Value, out TileEntity entity) && entity is NPCSpawnPoint spawner)

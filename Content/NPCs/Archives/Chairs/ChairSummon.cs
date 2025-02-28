@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         protected int idleTime = 30;
-        public sealed override void AI()
+        public override void AI()
         {
             NPC.knockBackResist = (AICase)AIState == AICase.Summon ? 0f : 1f;
 
