@@ -76,6 +76,7 @@ NPCs: {
 	InkWorm.DisplayName: Ink Worm
 	InkWormBody.DisplayName: Ink Worm Body
 	WaxWalker.DisplayName: Wax Walker
+	ATestStateNPC.DisplayName: A Test State N P C
 }
 
 Bestiary: {

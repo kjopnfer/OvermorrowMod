@@ -60,8 +60,6 @@ namespace OvermorrowMod.Core.NPCs
                 return;
             }
 
-            Main.NewText(npc.FullName + " " + aggroTimer);
-
             float distanceToTarget = Vector2.Distance(npc.Center, Target.Center);
             bool hasLineOfSight = HasLineOfSight(Target); // Ensure this method properly checks LoS
 

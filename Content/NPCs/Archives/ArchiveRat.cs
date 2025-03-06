@@ -78,6 +78,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Stealth = 3
         }
 
+        private AIStateMachine aiStateMachine;
 
         private float maxSpeed = 1.8f;
         private int idleTime = 30;

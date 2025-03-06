@@ -62,5 +62,4 @@ namespace OvermorrowMod.Core.NPCs
             PrioritizeAggro = prioritizeAggro;
         }
     }
-
 }
