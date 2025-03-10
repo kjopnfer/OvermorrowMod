@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.RoomManager;
+using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace OvermorrowMod.Common
 {
     public abstract partial class OvermorrowNPC : ModNPC
     {
-        protected NPCTargetingModule TargetingModule;
+        public NPCTargetingModule TargetingModule { get; private set; }
 
         public ref Player Player => ref Main.player[NPC.target];
 
@@ -34,6 +35,10 @@ namespace OvermorrowMod.Common
         /// Saves the ID of the Spawner if the NPC was created by one.
         /// </summary>
         public int? SpawnerID { get; set; } = null;
+
+        public ref float AICounter => ref NPC.ai[0];
+
+        public AIStateMachine AIStateMachine = null;
 
         /// <summary>
         /// Gets the associated NPCSpawnPoint if the NPC was created by a spawner.
@@ -55,6 +60,7 @@ namespace OvermorrowMod.Common
         {
             NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
             TargetingModule = new NPCTargetingModule(NPC, TargetingConfig());
+            AIStateMachine = new AIStateMachine(new List<BaseIdleState> { }, new List<BaseMovementState> { }, new List<BaseAttackState> { });
 
             SafeSetDefaults();
         }

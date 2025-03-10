@@ -28,10 +28,9 @@ namespace OvermorrowMod.Content.NPCs
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
         }
 
-        private AIStateMachine AIStateMachine = new AIStateMachine(new IdleState());
         public override void AI()
         {
-            AIStateMachine.Update(NPC);
+            AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
         }
 
         int xFrame = 0;
