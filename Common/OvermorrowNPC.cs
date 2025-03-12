@@ -20,11 +20,6 @@ namespace OvermorrowMod.Common
         public ref Player Player => ref Main.player[NPC.target];
 
         /// <summary>
-        /// The Target that the NPC has selected based on a variety of factors such as distance, aggro, or direction.
-        /// </summary>
-        public Entity Target = null;
-
-        /// <summary>
         /// Defines a position in the world that the NPC can target.
         /// Thie position may be set to <see cref="Target"/>'s position,
         /// but it may also be used for idling behavior if no <see cref="Target"/> is defined.
@@ -60,7 +55,13 @@ namespace OvermorrowMod.Common
         {
             NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
             TargetingModule = new NPCTargetingModule(NPC, TargetingConfig());
-            AIStateMachine = new AIStateMachine(new List<BaseIdleState> { }, new List<BaseMovementState> { }, new List<BaseAttackState> { });
+            AIStateMachine = new AIStateMachine(new List<BaseIdleState> { 
+                new Wander()
+            }, new List<BaseMovementState> { 
+            
+            }, new List<BaseAttackState> {
+                new GroundDashAttack()
+            });
 
             SafeSetDefaults();
         }

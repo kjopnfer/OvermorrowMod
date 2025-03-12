@@ -271,7 +271,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                         if (TargetingModule.HasTarget())
                         {
-                            Target = TargetingModule.Target;
                             AIState = (int)AICase.Walk;
                         }
                         else

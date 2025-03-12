@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace OvermorrowMod.Core.NPCs
             SetInitialState();
         }
 
-        
+
         /// <summary>
         /// Sets the initial default state (Idle) and enters it.
         /// </summary>
@@ -70,7 +71,7 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         public void ChangeState(AIStateType newState, OvermorrowNPC npc)
         {
-            if (availableStates.TryGetValue(newState, out var nextState) && currentState != nextState)
+            if (availableStates.TryGetValue(newState, out var nextState) && currentState != nextState && (currentState?.CanExit ?? true))
             {
                 currentState?.Exit(npc);  // Exit the current state if any
 
@@ -95,9 +96,22 @@ namespace OvermorrowMod.Core.NPCs
         // Select the next state based on conditions
         public void EvaluateState(OvermorrowNPC npc)
         {
+            // Prevent evaluating state change if locked in current state
+            if (!(currentState?.CanExit ?? true))
+                return;
+
             if (npc.TargetingModule.HasTarget())
             {
                 // Somehow decide between either moving towards the target or attacking.
+                // If the distance is too far away, move:
+                if (Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center) < npc.TargetingConfig().MaxTargetRange)
+                {
+
+                }
+                else // Otherwise:
+                {
+
+                }
 
                 ChangeState(AIStateType.Attacking, npc); // Switch to AttackState if NPC has a target
             }
