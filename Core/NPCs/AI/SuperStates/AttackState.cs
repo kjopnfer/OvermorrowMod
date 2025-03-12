@@ -17,10 +17,11 @@ namespace OvermorrowMod.Core.NPCs
         private float _stateTimer = 0.0f;
         private bool _isAttacking = false;
 
-        private List<(BaseAttackState attackState, int weight)> attackStates = new List<(BaseAttackState, int)>();
+        private List<(BaseAttackState state, int weight)> attackStates;
         private BaseAttackState currentAttackSubstate;
         public AttackState(List<BaseAttackState> availableSubstates)
         {
+            attackStates = new List<(BaseAttackState, int)>();
             foreach (var substate in availableSubstates)
             {
                 attackStates.Add((substate, substate.Weight));  // Assume BaseIdleState has a `Weight` property
@@ -33,16 +34,25 @@ namespace OvermorrowMod.Core.NPCs
             _attackCount = 0;
             _stateTimer = 0.0f;
             Main.NewText($"Starting attack sequence with {_maxAttacks} attacks.");
+            currentAttackSubstate.Enter(npc);
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
+            currentAttackSubstate?.Exit(npc);
             Main.NewText("Exiting Attack State.");
         }
 
         public override void Update(OvermorrowNPC npc)
         {
-            _stateTimer += 0.1f;
+            if (!npc.TargetingModule.HasTarget())
+            {
+                // No target? Let AIStateMachine move us out of attack state
+                return;
+            }
+
+            currentAttackSubstate?.Update(npc);
+            /*_stateTimer += 0.1f;
 
             if (_stateTimer >= _attackDuration)
             {
@@ -58,7 +68,7 @@ namespace OvermorrowMod.Core.NPCs
                     _attackTimer = 0.0f;
                     PerformAttack(npc);
                 }
-            }
+            }*/
         }
 
         private void PerformAttack(OvermorrowNPC npc)
@@ -81,7 +91,7 @@ namespace OvermorrowMod.Core.NPCs
             }
         }
 
-        private State GetRandomAttack()
+        /*private State GetRandomAttack()
         {
             int totalWeight = 0;
             foreach (var attack in attackStates) totalWeight += attack.weight;
@@ -95,6 +105,6 @@ namespace OvermorrowMod.Core.NPCs
             }
 
             return attackStates[0].attackState;
-        }
+        }*/
     }
 }
