@@ -11,7 +11,6 @@ namespace OvermorrowMod.Core.NPCs
     {
         private List<(BaseIdleState state, int weight)> idleStates;
         private BaseIdleState currentIdleSubstate;
-        private readonly WeightedRandom<BaseIdleState> idleSelector;
 
         public IdleState(List<BaseIdleState> availableSubstates)
         {
@@ -22,7 +21,7 @@ namespace OvermorrowMod.Core.NPCs
 
         public override void Enter(OvermorrowNPC npc)
         {
-            Main.NewText("NPC enters Idle state.");
+            Main.NewText("NPC enters Idle state");
             currentIdleSubstate = PickSubstate(npc);
             currentIdleSubstate.Enter(npc);
         }
@@ -35,15 +34,6 @@ namespace OvermorrowMod.Core.NPCs
 
         public override void Update(OvermorrowNPC npc)
         {
-            /*if (npc.TargetingModule.HasTarget())
-            {
-                // Do attacks.
-                //npc.AIStateMachine.ChangeState()
-            }
-            else
-            {
-                // Do normal idle stuff.
-            }*/
             if (currentIdleSubstate == null || currentIdleSubstate.IsFinished)
             {
                 currentIdleSubstate = PickSubstate(npc);

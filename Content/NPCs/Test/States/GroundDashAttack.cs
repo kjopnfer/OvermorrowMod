@@ -9,6 +9,11 @@ namespace OvermorrowMod.Content.NPCs
     {
         public override int Weight => 3;
 
+        /// <summary>
+        /// Prevent exiting until attack is done.
+        /// </summary>
+        public override bool CanExit => IsFinished;
+
         public override bool CanExecute(OvermorrowNPC npc)
         {
             // Check if target is close enough to melee attack
@@ -24,6 +29,8 @@ namespace OvermorrowMod.Content.NPCs
         {
             Main.NewText("Melee attack begin");
             npc.AICounter = 0;
+            npc.NPC.velocity.X = 0;
+
             IsFinished = false;
         }
 
@@ -41,10 +48,5 @@ namespace OvermorrowMod.Content.NPCs
                 IsFinished = true;
             }
         }
-
-        /// <summary>
-        /// Prevent exiting until attack is done.
-        /// </summary>
-        public override bool CanExit => IsFinished;
     }
 }

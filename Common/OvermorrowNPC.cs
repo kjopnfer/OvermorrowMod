@@ -58,7 +58,7 @@ namespace OvermorrowMod.Common
             AIStateMachine = new AIStateMachine(new List<BaseIdleState> { 
                 new Wander()
             }, new List<BaseMovementState> { 
-            
+                new MeleeWalk()
             }, new List<BaseAttackState> {
                 new GroundDashAttack()
             });

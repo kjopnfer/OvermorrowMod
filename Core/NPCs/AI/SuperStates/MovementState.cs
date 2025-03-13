@@ -7,37 +7,45 @@ namespace OvermorrowMod.Core.NPCs
 {
     public class MovementState : State
     {
-        private List<(BaseMovementState attackState, int weight)> movementStates = new List<(BaseMovementState, int)>();
+        private List<(BaseMovementState state, int weight)> movementStates = new List<(BaseMovementState, int)>();
         private BaseMovementState currentMovementSubstate;
 
         public MovementState(List<BaseMovementState> availableSubstates)
         {
             foreach (var substate in availableSubstates)
-            {
                 movementStates.Add((substate, substate.Weight));  // Assume BaseIdleState has a `Weight` property
-            }
         }
 
         public override void Enter(OvermorrowNPC npc)
         {
-            Main.NewText("NPC enters Idle state.");
+            Main.NewText("NPC enters Movement state");
+            currentMovementSubstate = PickSubstate(npc);
+            currentMovementSubstate?.Enter(npc);
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
-            Main.NewText("NPC exits Idle state.");
+            currentMovementSubstate?.Exit(npc);
+            Main.NewText("NPC exits Move state.");
         }
 
         public override void Update(OvermorrowNPC npc)
         {
-            if (npc.TargetingModule.HasTarget())
+            if (currentMovementSubstate == null || currentMovementSubstate.IsFinished)
             {
-                // Do attacks.
+                currentMovementSubstate = PickSubstate(npc);
+                currentMovementSubstate.Enter(npc);
             }
-            else
-            {
-                // Do normal idle stuff.
-            }
+
+            currentMovementSubstate?.Update(npc);
+        }
+
+        private BaseMovementState PickSubstate(OvermorrowNPC npc)
+        {
+            return movementStates
+                .Where(s => s.state.CanExecute(npc))
+                .OrderByDescending(s => s.weight) // or random weighted choice
+                .FirstOrDefault().state;
         }
     }
 }

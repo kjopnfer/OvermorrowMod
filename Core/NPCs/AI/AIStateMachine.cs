@@ -102,18 +102,17 @@ namespace OvermorrowMod.Core.NPCs
 
             if (npc.TargetingModule.HasTarget())
             {
+                //Main.NewText(Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center) + " | " + npc.TargetingConfig().MaxTargetRange);
                 // Somehow decide between either moving towards the target or attacking.
                 // If the distance is too far away, move:
-                if (Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center) < npc.TargetingConfig().MaxTargetRange)
+                if (Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center) > 10 * 16)
                 {
-
+                    ChangeState(AIStateType.Moving, npc);
                 }
                 else // Otherwise:
                 {
-
+                    ChangeState(AIStateType.Attacking, npc); // Switch to AttackState if NPC has a target
                 }
-
-                ChangeState(AIStateType.Attacking, npc); // Switch to AttackState if NPC has a target
             }
             else
             {

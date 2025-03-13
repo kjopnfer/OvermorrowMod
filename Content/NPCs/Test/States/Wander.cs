@@ -11,6 +11,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter(OvermorrowNPC npc)
         {
+            npc.NPC.velocity.X = 0;
             Main.NewText("enter");
         }
 
