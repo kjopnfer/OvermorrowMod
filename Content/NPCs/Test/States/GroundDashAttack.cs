@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.NPCs;
+using System.Diagnostics.Metrics;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -19,7 +21,7 @@ namespace OvermorrowMod.Content.NPCs
             // Check if target is close enough to melee attack
             if (npc.TargetingModule.Target is Entity target)
             {
-                return Vector2.Distance(npc.NPC.Center, target.Center) <= 100f;
+                return Vector2.Distance(npc.NPC.Center, target.Center) <= 10 * 16;
             }
 
             return false;
@@ -27,25 +29,45 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter(OvermorrowNPC npc)
         {
-            Main.NewText("Melee attack begin");
+            NPC baseNPC = npc.NPC;
+
+            Main.NewText("Dash attack begin");
             npc.AICounter = 0;
             npc.NPC.velocity.X = 0;
+
+            baseNPC.velocity.X = Main.rand.Next(14, 17) * baseNPC.direction;
 
             IsFinished = false;
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
-            Main.NewText("Melee attack ends.");
+            Main.NewText("Dash attack ends.");
         }
 
         public override void Update(OvermorrowNPC npc)
         {
             npc.AICounter++;
 
-            if (npc.AICounter >= 60) // Done attacking after 60 ticks
+            NPC baseNPC = npc.NPC;
+
+            if (baseNPC.collideX)
+                Collision.StepUp(ref baseNPC.position, ref baseNPC.velocity, baseNPC.width, baseNPC.height, ref baseNPC.stepSpeed, ref baseNPC.gfxOffY);
+
+            if (npc.AICounter >= 10) // Done attacking after 60 ticks
             {
-                IsFinished = true;
+                if (baseNPC.velocity.X != 0)
+                {
+                    baseNPC.velocity.X *= 0.9f;
+                }
+
+                if (baseNPC.collideX)
+                    Collision.StepUp(ref baseNPC.position, ref baseNPC.velocity, baseNPC.width, baseNPC.height, ref baseNPC.stepSpeed, ref baseNPC.gfxOffY);
+
+                if (npc.AICounter++ >= 42)
+                {
+                    IsFinished = true;
+                }
             }
         }
     }

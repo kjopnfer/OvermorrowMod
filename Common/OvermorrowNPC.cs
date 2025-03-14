@@ -55,7 +55,8 @@ namespace OvermorrowMod.Common
         {
             NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
             TargetingModule = new NPCTargetingModule(NPC, TargetingConfig());
-            AIStateMachine = new AIStateMachine(new List<BaseIdleState> { 
+            AIStateMachine = new AIStateMachine(NPC.ModNPC as OvermorrowNPC,
+            new List<BaseIdleState> { 
                 new Wander()
             }, new List<BaseMovementState> { 
                 new MeleeWalk()

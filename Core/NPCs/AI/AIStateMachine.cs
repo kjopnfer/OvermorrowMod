@@ -46,23 +46,23 @@ namespace OvermorrowMod.Core.NPCs
         /// <summary>
         /// Initializes the state machine and injects substates into each superstate.
         /// </summary>
-        public AIStateMachine(List<BaseIdleState> idleSubstates, List<BaseMovementState> movementSubstates, List<BaseAttackState> attackSubstates)
+        public AIStateMachine(OvermorrowNPC npc, List<BaseIdleState> idleSubstates, List<BaseMovementState> movementSubstates, List<BaseAttackState> attackSubstates)
         {
             availableStates[AIStateType.Idle] = new IdleState(idleSubstates);
             availableStates[AIStateType.Moving] = new MovementState(movementSubstates);
             availableStates[AIStateType.Attacking] = new AttackState(attackSubstates);
 
-            SetInitialState();
+            SetInitialState(npc);
         }
 
 
         /// <summary>
         /// Sets the initial default state (Idle) and enters it.
         /// </summary>
-        private void SetInitialState()
+        private void SetInitialState(OvermorrowNPC npc)
         {
             currentState = availableStates[AIStateType.Idle];
-            currentState.Enter(null); // Null if NPC not yet passed
+            currentState.Enter(npc); // Null if NPC not yet passed
             stateHistory.Enqueue(currentState);
         }
 
@@ -73,6 +73,12 @@ namespace OvermorrowMod.Core.NPCs
         {
             if (availableStates.TryGetValue(newState, out var nextState) && currentState != nextState && (currentState?.CanExit ?? true))
             {
+                if (newState == AIStateType.Attacking && stateHistory.LastOrDefault() == nextState)
+                {
+                    Main.NewText("prevent duplicate attack");
+                    return;
+                }
+
                 currentState?.Exit(npc);  // Exit the current state if any
 
                 if (stateHistory.Count >= historySize)
@@ -112,6 +118,12 @@ namespace OvermorrowMod.Core.NPCs
                 else // Otherwise:
                 {
                     ChangeState(AIStateType.Attacking, npc); // Switch to AttackState if NPC has a target
+
+                    // If no valid attack found, fallback to moving
+                    if (currentState is AttackState attackState && !attackState.HasValidAttack)
+                    {
+                        ChangeState(AIStateType.Moving, npc);
+                    }
                 }
             }
             else

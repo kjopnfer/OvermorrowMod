@@ -11,19 +11,21 @@ namespace OvermorrowMod.Core.NPCs
         private List<(BaseAttackState state, int weight)> attackStates;
         private BaseAttackState currentAttackSubstate;
 
+        public bool HasValidAttack { get; private set; } = false;
+
         public AttackState(List<BaseAttackState> availableSubstates)
         {
-            // Build weighted list of available attack substates
-            attackStates = new List<(BaseAttackState, int)>();
-            foreach (var sub in availableSubstates)
-                attackStates.Add((sub, sub.Weight));
+            attackStates = availableSubstates.Select(sub => (sub, sub.Weight)).ToList();
         }
 
         public override void Enter(OvermorrowNPC npc)
         {
             Main.NewText("NPC enters Attack state.");
             currentAttackSubstate = PickSubstate(npc);
-            currentAttackSubstate?.Enter(npc);
+
+            HasValidAttack = currentAttackSubstate != null;
+            if (HasValidAttack)
+                currentAttackSubstate?.Enter(npc);
         }
 
         public override void Exit(OvermorrowNPC npc)
@@ -40,15 +42,14 @@ namespace OvermorrowMod.Core.NPCs
                 return;
             }
 
-            // Update current attack substate if active
-            currentAttackSubstate?.Update(npc);
-
-            // If the substate has finished, pick a new one
-            if (currentAttackSubstate == null || currentAttackSubstate.IsFinished)
+            if (currentAttackSubstate?.IsFinished ?? true)
             {
-                currentAttackSubstate?.Exit(npc); // Ensure proper exit
-                currentAttackSubstate = PickSubstate(npc);
-                currentAttackSubstate?.Enter(npc);
+                currentAttackSubstate?.Exit(npc);
+                currentAttackSubstate = null;
+            }
+            else
+            {
+                currentAttackSubstate?.Update(npc);
             }
         }
 
@@ -57,12 +58,10 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         private BaseAttackState PickSubstate(OvermorrowNPC npc)
         {
-            var validAttacks = attackStates.Where(s => s.state.CanExecute(npc)).ToList();
-            if (validAttacks.Count == 0)
-                return null; // No valid attacks, optionally fallback to something
-
-            // Option 1: Pick based on highest weight (deterministic)
-            return validAttacks.OrderByDescending(s => s.weight).FirstOrDefault().state;
+            return attackStates
+             .Where(s => s.state.CanExecute(npc))
+             .OrderByDescending(s => s.weight) // Or random weighted if preferred
+             .FirstOrDefault().state;
 
             // Option 2: Weighted random pick (uncomment to use)
             // return PickWeightedRandom(validAttacks);
