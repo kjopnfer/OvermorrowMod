@@ -2,9 +2,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.NPCs;
+using System.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
+using static log4net.Appender.RollingFileAppender;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -33,10 +35,139 @@ namespace OvermorrowMod.Content.NPCs
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
         }
 
+        private void SetFrame()
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                xFrame = 0;
+
+                if (NPC.frameCounter++ % 6 == 0)
+                {
+                    yFrame++;
+                    if (yFrame >= 9) yFrame = 0;
+                }
+            }
+
+            State currentState = AIStateMachine.GetCurrentState();
+            if (currentState is MovementState moveState)
+            {
+                xFrame = 0;
+
+                if (NPC.frameCounter++ % 6 == 0)
+                {
+                    yFrame++;
+                    if (yFrame >= 9) yFrame = 0;
+                }
+            }
+            else if (currentState is AttackState attackState)
+            {
+                if (attackState.currentAttackSubstate is GroundDashAttack)
+                {
+                    if (AICounter < 10)
+                    {
+                        xFrame = 1;
+                        yFrame = 0;
+                    }
+                    else
+                    {
+                        if (NPC.velocity.X != 0)
+                        {
+                            xFrame = 0;
+
+                            if (NPC.frameCounter++ % 6 == 0)
+                            {
+                                yFrame++;
+                                if (yFrame >= 9) yFrame = 0;
+                            }
+                        }
+                        else
+                        {
+                            xFrame = 1;
+                            yFrame = 1;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                xFrame = 1;
+                yFrame = 1;
+            }
+
+            /*switch ((AICase)AIState)
+            {
+                case AICase.Decelerate:
+                    if (NPC.velocity.X != 0)
+                    {
+                        xFrame = 0;
+
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame++;
+                            if (yFrame >= 9) yFrame = 0;
+                        }
+                    }
+                    else
+                    {
+                        xFrame = 1;
+                        yFrame = 1;
+                    }
+                    break;
+                case AICase.Idle:
+                    xFrame = 1;
+                    yFrame = 1;
+                    break;
+                case AICase.Pause:
+                    xFrame = 1;
+                    yFrame = canAttack && AICounter >= idleTime - 6 ? 0 : 1;
+                    break;
+                case AICase.Walk:
+                    xFrame = 0;
+
+                    if (NPC.frameCounter++ % 6 == 0)
+                    {
+                        yFrame++;
+                        if (yFrame >= 9) yFrame = 0;
+                    }
+                    break;
+                case AICase.Attack:
+                    xFrame = 1;
+                    yFrame = 0;
+                    break;
+                case AICase.Stealth:
+                    xFrame = 1;
+                    if (AICounter == 0)
+                    {
+                        yFrame = 2;
+                        NPC.frameCounter = 0;
+                    }
+
+                    if (AICounter <= 30)
+                    {
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame++;
+                            if (yFrame >= 5) yFrame = 5;
+                        }
+                    }
+                    else
+                    {
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame--;
+                            if (yFrame <= 2) yFrame = 2;
+                        }
+                    }
+                    break;
+            }*/
+        }
+
         int xFrame = 0;
         int yFrame = 0;
         public override void FindFrame(int frameHeight)
         {
+            SetFrame();
+
             NPC.spriteDirection = NPC.direction;
             NPC.frame.Width = TextureAssets.Npc[NPC.type].Value.Width / 10;
             NPC.frame.Height = TextureAssets.Npc[NPC.type].Value.Height / 9;

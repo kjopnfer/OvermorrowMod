@@ -43,6 +43,7 @@ namespace OvermorrowMod.Content.NPCs
         public override void Exit(OvermorrowNPC npc)
         {
             Main.NewText("Dash attack ends.");
+            npc.NPC.velocity.X = 0;
         }
 
         public override void Update(OvermorrowNPC npc)

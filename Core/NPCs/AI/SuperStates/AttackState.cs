@@ -9,7 +9,7 @@ namespace OvermorrowMod.Core.NPCs
     public class AttackState : State
     {
         private List<(BaseAttackState state, int weight)> attackStates;
-        private BaseAttackState currentAttackSubstate;
+        public BaseAttackState currentAttackSubstate { get; private set; }
 
         public bool HasValidAttack { get; private set; } = false;
 
@@ -42,8 +42,10 @@ namespace OvermorrowMod.Core.NPCs
                 return;
             }
 
+            HasValidAttack = currentAttackSubstate != null;
             if (currentAttackSubstate?.IsFinished ?? true)
             {
+                Main.NewText("is finished");
                 currentAttackSubstate?.Exit(npc);
                 currentAttackSubstate = null;
             }

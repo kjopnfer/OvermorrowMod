@@ -8,7 +8,7 @@ namespace OvermorrowMod.Core.NPCs
     public class MovementState : State
     {
         private List<(BaseMovementState state, int weight)> movementStates = new List<(BaseMovementState, int)>();
-        private BaseMovementState currentMovementSubstate;
+        public BaseMovementState currentMovementSubstate { get; private set; }
 
         public MovementState(List<BaseMovementState> availableSubstates)
         {
