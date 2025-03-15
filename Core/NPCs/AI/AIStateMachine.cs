@@ -108,21 +108,36 @@ namespace OvermorrowMod.Core.NPCs
 
             if (npc.TargetingModule.HasTarget())
             {
-                //Main.NewText(Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center) + " | " + npc.TargetingConfig().MaxTargetRange);
-                // Somehow decide between either moving towards the target or attacking.
-                // If the distance is too far away, move:
-                if (Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center) > 10 * 16)
-                {
-                    ChangeState(AIStateType.Moving, npc);
-                }
-                else // Otherwise:
-                {
-                    ChangeState(AIStateType.Attacking, npc); // Switch to AttackState if NPC has a target
+                float distanceToTarget = Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center);
 
-                    // If no valid attack found, fallback to moving
-                    if (currentState is AttackState attackState && !attackState.HasValidAttack)
+                // If already in an attack state, do not switch to moving unless no valid attack remains
+                if (currentState is AttackState attackState)
+                {
+                    if (!attackState.HasValidAttack) // No valid attack, allow movement
                     {
                         ChangeState(AIStateType.Moving, npc);
+                    }
+                    else
+                    {
+                        return; // Stay in the attack state
+                    }
+                }
+                else
+                {
+                    // If too far away, move toward the target
+                    if (distanceToTarget > 10 * 16)
+                    {
+                        ChangeState(AIStateType.Moving, npc);
+                    }
+                    else
+                    {
+                        ChangeState(AIStateType.Attacking, npc);
+
+                        // If no valid attack found after switching, fallback to moving
+                        if (currentState is AttackState newAttackState && !newAttackState.HasValidAttack)
+                        {
+                            ChangeState(AIStateType.Moving, npc);
+                        }
                     }
                 }
             }

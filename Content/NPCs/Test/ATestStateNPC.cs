@@ -63,27 +63,36 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (attackState.currentAttackSubstate is GroundDashAttack)
                 {
-                    if (AICounter < 10)
+                    if (AICounter < 30)
                     {
                         xFrame = 1;
-                        yFrame = 0;
+                        yFrame = AICounter >= 30 - 6 ? 0 : 1;
                     }
                     else
                     {
-                        if (NPC.velocity.X != 0)
+                        if (AICounter < 40)
                         {
-                            xFrame = 0;
-
-                            if (NPC.frameCounter++ % 6 == 0)
-                            {
-                                yFrame++;
-                                if (yFrame >= 9) yFrame = 0;
-                            }
+                            xFrame = 1;
+                            yFrame = 0;
                         }
                         else
                         {
-                            xFrame = 1;
-                            yFrame = 1;
+
+                            if (NPC.velocity.X != 0)
+                            {
+                                xFrame = 0;
+
+                                if (NPC.frameCounter++ % 6 == 0)
+                                {
+                                    yFrame++;
+                                    if (yFrame >= 9) yFrame = 0;
+                                }
+                            }
+                            else
+                            {
+                                xFrame = 1;
+                                yFrame = 1;
+                            }
                         }
                     }
                 }

@@ -1,9 +1,11 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.NPCs;
+using System;
 using System.Diagnostics.Metrics;
 using Terraria;
 using Terraria.ModLoader;
+using static log4net.Appender.RollingFileAppender;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -35,7 +37,6 @@ namespace OvermorrowMod.Content.NPCs
             npc.AICounter = 0;
             npc.NPC.velocity.X = 0;
 
-            baseNPC.velocity.X = Main.rand.Next(14, 17) * baseNPC.direction;
 
             IsFinished = false;
         }
@@ -49,15 +50,18 @@ namespace OvermorrowMod.Content.NPCs
         public override void Update(OvermorrowNPC npc)
         {
             npc.AICounter++;
-
             NPC baseNPC = npc.NPC;
 
-            if (baseNPC.collideX)
-                Collision.StepUp(ref baseNPC.position, ref baseNPC.velocity, baseNPC.width, baseNPC.height, ref baseNPC.stepSpeed, ref baseNPC.gfxOffY);
-
-            if (npc.AICounter >= 10) // Done attacking after 60 ticks
+            if (npc.AICounter == 30)
             {
-                if (baseNPC.velocity.X != 0)
+                baseNPC.velocity.X = Main.rand.Next(14, 17) * baseNPC.direction;
+            }
+            else if (npc.AICounter >= 30)
+            {
+                if (baseNPC.collideX)
+                    Collision.StepUp(ref baseNPC.position, ref baseNPC.velocity, baseNPC.width, baseNPC.height, ref baseNPC.stepSpeed, ref baseNPC.gfxOffY);
+
+                if (baseNPC.velocity.X != 0 && npc.AICounter >= 40)
                 {
                     baseNPC.velocity.X *= 0.9f;
                 }
@@ -65,7 +69,8 @@ namespace OvermorrowMod.Content.NPCs
                 if (baseNPC.collideX)
                     Collision.StepUp(ref baseNPC.position, ref baseNPC.velocity, baseNPC.width, baseNPC.height, ref baseNPC.stepSpeed, ref baseNPC.gfxOffY);
 
-                if (npc.AICounter++ >= 42)
+                if (npc.AICounter++ >= 102)
+                //if(Math.Abs(baseNPC.velocity.X) <= 2)
                 {
                     IsFinished = true;
                 }
