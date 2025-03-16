@@ -59,9 +59,10 @@ namespace OvermorrowMod.Common
             new List<BaseIdleState> { 
                 new Wander()
             }, new List<BaseMovementState> { 
-                new MeleeWalk()
+                new MeleeWalk(),
             }, new List<BaseAttackState> {
-                new GroundDashAttack()
+                new GroundDashAttack(),
+                new GainStealth()
             });
 
             SafeSetDefaults();

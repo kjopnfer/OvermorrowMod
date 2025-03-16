@@ -1,11 +1,8 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.NPCs;
-using System;
-using System.Diagnostics.Metrics;
 using Terraria;
-using Terraria.ModLoader;
-using static log4net.Appender.RollingFileAppender;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -45,6 +42,7 @@ namespace OvermorrowMod.Content.NPCs
         {
             Main.NewText("Dash attack ends.");
             npc.NPC.velocity.X = 0;
+            npc.NPC.RemoveStealth();
         }
 
         public override void Update(OvermorrowNPC npc)

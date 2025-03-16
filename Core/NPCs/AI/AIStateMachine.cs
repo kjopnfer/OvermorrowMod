@@ -23,9 +23,19 @@ namespace OvermorrowMod.Core.NPCs
         private readonly int historySize = 5;
 
         /// <summary>
+        /// Maximum number of substates to remember
+        /// </summary>
+        private readonly int substateHistorySize = 5;
+
+        /// <summary>
         /// Queue to store past states, up to 'historySize' number of states.
         /// </summary>
         private readonly Queue<State> stateHistory = new Queue<State>();
+
+        /// <summary>
+        /// Queue to store past substates, up to 'substateHistorySize' number of substates.
+        /// </summary>
+        private readonly Queue<State> substateHistory = new Queue<State>();
 
         /// <summary>
         /// Accessor for previous states, returned from most recent to oldest.
@@ -37,7 +47,16 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         public State GetCurrentState() => currentState;
 
-        //private List<State> availableStates = new List<State> { new IdleState(), new AttackState(), new MovementState() };
+        /// <summary>
+        /// Accessor for previous substates, returned from most recent to oldest.
+        /// </summary>
+        public IEnumerable<State> GetPreviousSubstates() => substateHistory.Reverse();
+
+        /// <summary>
+        /// Get current active substate (most recent one registered).
+        /// </summary>
+        public State GetCurrentSubstate() => substateHistory.LastOrDefault();
+
         /// <summary>
         /// Dictionary of available superstates (Idle, Moving, Attacking).
         /// </summary>
@@ -65,6 +84,20 @@ namespace OvermorrowMod.Core.NPCs
             currentState.Enter(npc); // Null if NPC not yet passed
             stateHistory.Enqueue(currentState);
         }
+
+        /// <summary>
+        /// Register a new substate in history.
+        /// </summary>
+        public void RegisterSubstate(State substate)
+        {
+            if (substate == null) return;
+
+            if (substateHistory.Count >= substateHistorySize)
+                substateHistory.Dequeue(); // Remove oldest
+
+            substateHistory.Enqueue(substate); // Add new
+        }
+
 
         /// <summary>
         /// Change to a new state if it's different from the current one.

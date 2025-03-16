@@ -25,7 +25,10 @@ namespace OvermorrowMod.Core.NPCs
 
             HasValidAttack = currentAttackSubstate != null;
             if (HasValidAttack)
+            {
+                npc.AIStateMachine.RegisterSubstate(currentAttackSubstate);
                 currentAttackSubstate?.Enter(npc);
+            }
         }
 
         public override void Exit(OvermorrowNPC npc)

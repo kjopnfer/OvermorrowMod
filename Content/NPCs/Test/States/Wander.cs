@@ -1,4 +1,5 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.NPCs;
 using Terraria;
 
@@ -12,6 +13,8 @@ namespace OvermorrowMod.Content.NPCs
         public override void Enter(OvermorrowNPC npc)
         {
             npc.NPC.velocity.X = 0;
+            npc.NPC.RemoveStealth();
+
             Main.NewText("enter");
         }
 
