@@ -65,9 +65,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private bool canAttack = false;
         private int afterimageLinger = 0;
 
-        public ref float AIState => ref NPC.ai[0];
-        public ref float AICounter => ref NPC.ai[1];
-
         public enum AICase
         {
             Decelerate = -1,
@@ -244,7 +241,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 NPC.RemoveStealth();
             }
 
-            switch ((AICase)AIState)
+            AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
+            State currentState = AIStateMachine.GetCurrentSubstate();
+            Main.NewText(currentState);
+            if (currentState is GroundDashAttack)
+            {
+                afterimageLinger = 30;
+            }
+
+            /*switch ((AICase)AIState)
             {
                 case AICase.Decelerate:
                     if (NPC.velocity.X != 0)
@@ -387,19 +392,99 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
             }
-        }
-
-        private void SetAIState(AICase state)
-        {
-            AIState = (int)state;
-            AICounter = 0;
+            */
         }
 
         private void SetFrame()
         {
-            if (NPC.IsABestiaryIconDummy) AIState = (int)AICase.Walk;
+            if (NPC.IsABestiaryIconDummy)
+            {
+                xFrame = 0;
 
-            switch ((AICase)AIState)
+                if (NPC.frameCounter++ % 6 == 0)
+                {
+                    yFrame++;
+                    if (yFrame >= 9) yFrame = 0;
+                }
+
+                return;
+            }
+
+            State currentState = AIStateMachine.GetCurrentState();
+            if (currentState is MovementState moveState)
+            {
+                xFrame = 0;
+
+                if (NPC.frameCounter++ % 6 == 0)
+                {
+                    yFrame++;
+                    if (yFrame >= 9) yFrame = 0;
+                }
+            }
+            else if (currentState is AttackState attackState)
+            {
+                if (attackState.currentAttackSubstate is GroundDashAttack)
+                {
+                    if (AICounter < 30)
+                    {
+                        xFrame = 1;
+                        yFrame = AICounter >= 30 - 6 ? 0 : 1;
+                    }
+                    else
+                    {
+                        if (AICounter < 40)
+                        {
+                            xFrame = 1;
+                            yFrame = 0;
+                        }
+                        else
+                        {
+
+                            if (NPC.velocity.X != 0)
+                            {
+                                xFrame = 0;
+
+                                if (NPC.frameCounter++ % 6 == 0)
+                                {
+                                    yFrame++;
+                                    if (yFrame >= 9) yFrame = 0;
+                                }
+                            }
+                            else
+                            {
+                                xFrame = 1;
+                                yFrame = 1;
+                            }
+                        }
+                    }
+                }
+
+                if (attackState.currentAttackSubstate is GainStealth)
+                {
+                    xFrame = 1;
+                    if (AICounter == 0)
+                    {
+                        yFrame = 2;
+                        NPC.frameCounter = 0;
+                    }
+
+                    if (AICounter <= 30)
+                    {
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame++;
+                            if (yFrame >= 5) yFrame = 5;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                xFrame = 1;
+                yFrame = 1;
+            }
+
+            /*switch ((AICase)AIState)
             {
                 case AICase.Decelerate:
                     if (NPC.velocity.X != 0)
@@ -464,7 +549,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         }
                     }
                     break;
-            }
+            }*/
         }
 
         int xFrame = 0;
@@ -508,13 +593,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }
 
-            Vector2 drawOffset = new Vector2(0, 2);
             var lightAverage = (drawColor.R / 255f + drawColor.G / 255f + drawColor.B / 255f) / 3;
             if (Main.LocalPlayer.HasBuff(BuffID.Hunter))
             {
                 drawColor = Color.Lerp(new Color(255, 50, 50), drawColor, lightAverage);
             }
 
+            Vector2 drawOffset = new Vector2(0, 2);
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;

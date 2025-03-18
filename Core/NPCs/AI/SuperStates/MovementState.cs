@@ -20,6 +20,8 @@ namespace OvermorrowMod.Core.NPCs
         {
             Main.NewText("NPC enters Movement state");
             currentMovementSubstate = PickSubstate(npc);
+
+            npc.AIStateMachine.RegisterSubstate(currentMovementSubstate);
             currentMovementSubstate?.Enter(npc);
         }
 

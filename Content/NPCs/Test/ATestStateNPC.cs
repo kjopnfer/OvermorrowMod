@@ -96,6 +96,25 @@ namespace OvermorrowMod.Content.NPCs
                         }
                     }
                 }
+
+                if (attackState.currentAttackSubstate is GainStealth)
+                {
+                    xFrame = 1;
+                    if (AICounter == 0)
+                    {
+                        yFrame = 2;
+                        NPC.frameCounter = 0;
+                    }
+
+                    if (AICounter <= 30)
+                    {
+                        if (NPC.frameCounter++ % 6 == 0)
+                        {
+                            yFrame++;
+                            if (yFrame >= 5) yFrame = 5;
+                        }
+                    }
+                }
             }
             else
             {
