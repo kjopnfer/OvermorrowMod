@@ -32,6 +32,8 @@ namespace OvermorrowMod.Common
         public int? SpawnerID { get; set; } = null;
 
         public ref float AICounter => ref NPC.ai[0];
+        public ref float IdleCounter => ref NPC.ai[1];
+
 
         public AIStateMachine AIStateMachine = null;
 
@@ -55,15 +57,7 @@ namespace OvermorrowMod.Common
         {
             NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
             TargetingModule = new NPCTargetingModule(NPC, TargetingConfig());
-            AIStateMachine = new AIStateMachine(NPC.ModNPC as OvermorrowNPC,
-            new List<BaseIdleState> { 
-                new Wander()
-            }, new List<BaseMovementState> { 
-                new MeleeWalk(),
-            }, new List<BaseAttackState> {
-                new GroundDashAttack(),
-                new GainStealth()
-            });
+            AIStateMachine = new AIStateMachine(NPC.ModNPC as OvermorrowNPC, InitializeIdleStates(), InitializeMovementStates(), InitializeAttackStates());
 
             SafeSetDefaults();
         }

@@ -11,6 +11,12 @@ namespace OvermorrowMod.Core.NPCs
     {
         private NPC npc;
         public Entity Target { get; private set; }
+
+        /// <summary>
+        /// Used for targeting areas that may or may not be the target.
+        /// </summary>
+        public Vector2? MiscTargetPosition = null;
+
         private float aggroTimer;
         private float aggroCooldown;
         private int missedAttacks;

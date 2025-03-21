@@ -176,6 +176,11 @@ namespace OvermorrowMod.Core.NPCs
             }
             else
             {
+                if (npc.SpawnerID.HasValue)
+                {
+                    //Main.NewText("yo 2" + npc.Name);
+
+                }
                 ChangeState(AIStateType.Idle, npc);
             }
         }

@@ -63,6 +63,8 @@ namespace OvermorrowMod.Common.RoomManager
 
             OvermorrowNPC modNPC = ChildNPC.ModNPC as OvermorrowNPC;
             modNPC.SpawnerID = ID;
+
+            Main.NewText("spawn " + modNPC.Name + " with id: " + ID);
         }
 
         public override void Update()

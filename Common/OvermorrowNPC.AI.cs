@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
 using Terraria;
@@ -8,8 +9,17 @@ namespace OvermorrowMod.Common
 {
     public abstract partial class OvermorrowNPC : ModNPC
     {
-        /*public abstract List<BaseIdleState> InitializeIdleStates();
-        public abstract List<BaseAttackState> InitializeAttackStates();
-        public abstract List<BaseMovementState> InitializeMovementStates();*/
+        // TODO: Make these abstract instead.
+        public virtual List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
+                new Wander()
+        };
+        
+        public virtual List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
+                new GroundDashAttack()
+        };
+
+        public virtual List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
+                new MeleeWalk()
+        };
     }
 }

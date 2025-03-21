@@ -10,7 +10,7 @@ namespace OvermorrowMod.Core.NPCs
     public class IdleState : State
     {
         private List<(BaseIdleState state, int weight)> idleStates;
-        private BaseIdleState currentIdleSubstate;
+        public BaseIdleState currentIdleSubstate { get; private set; }
 
         public IdleState(List<BaseIdleState> availableSubstates)
         {
@@ -21,23 +21,39 @@ namespace OvermorrowMod.Core.NPCs
 
         public override void Enter(OvermorrowNPC npc)
         {
-            Main.NewText("NPC enters Idle state");
-            currentIdleSubstate = PickSubstate(npc);
-            currentIdleSubstate.Enter(npc);
+            //currentIdleSubstate = PickSubstate(npc);
+            //currentIdleSubstate.Enter(npc);
+            Main.NewText(npc.Name + " enters Idle state.");
+            currentIdleSubstate = null;
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
             currentIdleSubstate?.Exit(npc);
-            Main.NewText("NPC exits Idle state.");
         }
 
         public override void Update(OvermorrowNPC npc)
         {
+            if (npc.IdleCounter > 0)
+            {
+                currentIdleSubstate = null;
+                npc.IdleCounter--;
+                return; // Don't switch substates yet
+            }
+
             if (currentIdleSubstate == null || currentIdleSubstate.IsFinished)
             {
+                if (currentIdleSubstate != null)
+                    Main.NewText($"Previous substate finished: {currentIdleSubstate.GetType().Name}");
+
+                // Pick a new idle substate
                 currentIdleSubstate = PickSubstate(npc);
-                currentIdleSubstate.Enter(npc);
+
+                if (currentIdleSubstate != null)
+                {
+                    Main.NewText("Switching to new Idle substate: " + currentIdleSubstate.GetType().Name);
+                    currentIdleSubstate.Enter(npc);
+                }
             }
 
             currentIdleSubstate?.Update(npc);

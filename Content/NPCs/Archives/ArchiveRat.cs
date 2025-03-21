@@ -187,12 +187,26 @@ namespace OvermorrowMod.Content.NPCs.Archives
             );
         }
 
+        public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
+            new Wander()
+        };
+
+        public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
+            new GroundDashAttack(),
+            new GainStealth()
+        };
+
+        public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
+            new MeleeWalk(),
+        };
+
         public override void AI()
         {
             NPC.noGravity = false;
             NPC.knockBackResist = NPC.IsStealthed() ? 0f : 0.5f;
             if (afterimageLinger > 0) afterimageLinger--;
 
+            // TODO: Generalize this into a collision module
             #region Impact Collision
             var activeTileCollisionNPCs = Main.npc
             .Where(npc => npc.active && npc.ModNPC is TileCollisionNPC)
@@ -265,7 +279,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 return;
             }
 
+
             State currentState = AIStateMachine.GetCurrentState();
+
+            //Main.NewText(currentState + ": " + AICounter + " : X " + xFrame + " : Y " + yFrame);
             if (currentState is MovementState moveState)
             {
                 xFrame = 0;
@@ -331,6 +348,24 @@ namespace OvermorrowMod.Content.NPCs.Archives
                             if (yFrame >= 5) yFrame = 5;
                         }
                     }
+                }
+            }
+            else if (currentState is IdleState idleState)
+            {
+                if (idleState.currentIdleSubstate is Wander)
+                {
+                    xFrame = 0;
+
+                    if (NPC.frameCounter++ % 6 == 0)
+                    {
+                        yFrame++;
+                        if (yFrame >= 9) yFrame = 0;
+                    }
+                }
+                else
+                {
+                    xFrame = 1;
+                    yFrame = 1;
                 }
             }
             else
