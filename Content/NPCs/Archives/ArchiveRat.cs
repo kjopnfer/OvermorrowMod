@@ -282,8 +282,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
 
             State currentState = AIStateMachine.GetCurrentState();
-            xFrame = 1;
-            yFrame = 1;
+
 
             switch (currentState)
             {
@@ -340,6 +339,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     {
                         yFrame = (yFrame + 1) % 9;
                     }
+                    break;
+                default:
+                    xFrame = 1;
+                    yFrame = 1;
                     break;
             }
         }
