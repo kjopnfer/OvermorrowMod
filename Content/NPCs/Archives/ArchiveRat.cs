@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using OvermorrowMod.Content.Misc;
 using System.Diagnostics;
 using OvermorrowMod.Core.NPCs;
+using System;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -281,97 +282,65 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
 
             State currentState = AIStateMachine.GetCurrentState();
+            xFrame = 1;
+            yFrame = 1;
 
-            //Main.NewText(currentState + ": " + AICounter + " : X " + xFrame + " : Y " + yFrame);
-            if (currentState is MovementState moveState)
+            switch (currentState)
             {
-                xFrame = 0;
-
-                if (NPC.frameCounter++ % 6 == 0)
-                {
-                    yFrame++;
-                    if (yFrame >= 9) yFrame = 0;
-                }
-            }
-            else if (currentState is AttackState attackState)
-            {
-                if (attackState.currentAttackSubstate is GroundDashAttack)
-                {
-                    if (AICounter < 30)
-                    {
-                        xFrame = 1;
-                        yFrame = AICounter >= 30 - 6 ? 0 : 1;
-                    }
-                    else
-                    {
-                        if (AICounter < 40)
-                        {
-                            xFrame = 1;
-                            yFrame = 0;
-                        }
-                        else
-                        {
-
-                            if (NPC.velocity.X != 0)
-                            {
-                                xFrame = 0;
-
-                                if (NPC.frameCounter++ % 6 == 0)
-                                {
-                                    yFrame++;
-                                    if (yFrame >= 9) yFrame = 0;
-                                }
-                            }
-                            else
-                            {
-                                xFrame = 1;
-                                yFrame = 1;
-                            }
-                        }
-                    }
-                }
-
-                if (attackState.currentAttackSubstate is GainStealth)
-                {
-                    xFrame = 1;
-                    if (AICounter == 0)
-                    {
-                        yFrame = 2;
-                        NPC.frameCounter = 0;
-                    }
-
-                    if (AICounter <= 30)
-                    {
-                        if (NPC.frameCounter++ % 6 == 0)
-                        {
-                            yFrame++;
-                            if (yFrame >= 5) yFrame = 5;
-                        }
-                    }
-                }
-            }
-            else if (currentState is IdleState idleState)
-            {
-                if (idleState.currentIdleSubstate is Wander)
-                {
+                case MovementState:
                     xFrame = 0;
-
                     if (NPC.frameCounter++ % 6 == 0)
                     {
-                        yFrame++;
-                        if (yFrame >= 9) yFrame = 0;
+                        yFrame = (yFrame + 1) % 9;
                     }
-                }
-                else
-                {
-                    xFrame = 1;
-                    yFrame = 1;
-                }
-            }
-            else
-            {
-                xFrame = 1;
-                yFrame = 1;
+                    break;
+
+                case AttackState attackState:
+                    switch (attackState.currentAttackSubstate)
+                    {
+                        case GroundDashAttack:
+                            if (AICounter < 30)
+                            {
+                                xFrame = 1;
+                                yFrame = AICounter >= 24 ? 0 : 1;
+                            }
+                            else if (AICounter < 40)
+                            {
+                                xFrame = 1;
+                                yFrame = 0;
+                            }
+                            else if (NPC.velocity.X != 0)
+                            {
+                                xFrame = 0;
+                                if (NPC.frameCounter++ % 6 == 0)
+                                {
+                                    yFrame = (yFrame + 1) % 9;
+                                }
+                            }
+                            break;
+
+                        case GainStealth:
+                            xFrame = 1;
+                            if (AICounter == 0)
+                            {
+                                yFrame = 2;
+                                NPC.frameCounter = 0;
+                            }
+                            if (AICounter <= 30 && NPC.frameCounter++ % 6 == 0)
+                            {
+                                yFrame = Math.Min(yFrame + 1, 5);
+                            }
+                            break;
+                    }
+                    break;
+
+                case IdleState idleState when idleState.currentIdleSubstate is Wander:
+                    xFrame = 0;
+                    if (NPC.frameCounter++ % 6 == 0)
+                    {
+                        yFrame = (yFrame + 1) % 9;
+                    }
+                    break;
             }
         }
 
