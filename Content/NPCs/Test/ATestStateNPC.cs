@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.NPCs;
+using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.GameContent;
@@ -30,8 +31,23 @@ namespace OvermorrowMod.Content.NPCs
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
         }
 
+        public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
+            new Hidden()
+        };
+
+        public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
+            new GrimoireSpellCast()
+        };
+
+        public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
+            new BasicFly(),
+        };
+
         public override void AI()
         {
+            // TEMP:
+            NPC.noGravity = true;
+
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
         }
 

@@ -48,7 +48,7 @@ namespace OvermorrowMod.Core.NPCs
             HasValidAttack = currentAttackSubstate != null;
             if (currentAttackSubstate?.IsFinished ?? true)
             {
-                Main.NewText("is finished");
+                Main.NewText("attack state update: is finished");
                 currentAttackSubstate?.Exit(npc);
                 currentAttackSubstate = null;
             }

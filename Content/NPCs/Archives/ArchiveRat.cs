@@ -6,18 +6,13 @@ using Terraria.ModLoader;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using Terraria.ID;
-using Terraria.GameContent.Bestiary;
 using Terraria.DataStructures;
-using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Content.Biomes;
 using Terraria.GameContent.ItemDropRules;
-using Terraria.Localization;
 using System.Linq;
 using OvermorrowMod.Common.CustomCollision;
 using System.Collections.Generic;
-using OvermorrowMod.Content.Misc;
-using System.Diagnostics;
 using OvermorrowMod.Core.NPCs;
 using System;
 
@@ -280,10 +275,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 return;
             }
 
-
             State currentState = AIStateMachine.GetCurrentState();
-
-
             switch (currentState)
             {
                 case MovementState:

@@ -1,9 +1,6 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.NPCs;
-using System.Diagnostics.Metrics;
 using Terraria;
 
 namespace OvermorrowMod.Content.NPCs

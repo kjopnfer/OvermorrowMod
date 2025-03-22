@@ -14,6 +14,8 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Common.Particles;
 using Terraria.Map;
 using OvermorrowMod.Content.Misc;
+using OvermorrowMod.Core.NPCs;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -77,6 +79,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.netUpdate = true;
         }
+
+        public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
+            new Hidden()
+        };
+
+        public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
+            new GrimoireSpellCast()
+        };
+
+        public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
+            new BasicFly(),
+        };
 
         float flySpeedX = 2;
         float flySpeedY = 0;
