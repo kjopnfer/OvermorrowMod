@@ -7,16 +7,16 @@ using Terraria.Utilities;
 
 namespace OvermorrowMod.Core.NPCs
 {
-    public class IdleState : State
+    public class IdleState : SuperState<BaseIdleState>
     {
-        private List<(BaseIdleState state, int weight)> idleStates;
+        private List<(BaseIdleState state, int weight)> states;
         public BaseIdleState currentIdleSubstate { get; private set; }
 
-        public IdleState(List<BaseIdleState> availableSubstates)
+        public IdleState(List<BaseIdleState> availableSubstates) : base(availableSubstates)
         {
-            idleStates = new List<(BaseIdleState, int)>();
+            states = new List<(BaseIdleState, int)>();
             foreach (var sub in availableSubstates)
-                idleStates.Add((sub, sub.Weight));
+                states.Add((sub, sub.Weight));
         }
 
         public override void Enter(OvermorrowNPC npc)
@@ -52,6 +52,7 @@ namespace OvermorrowMod.Core.NPCs
                 if (currentIdleSubstate != null)
                 {
                     Main.NewText("Switching to new Idle substate: " + currentIdleSubstate.GetType().Name);
+                    npc.AIStateMachine.RegisterSubstate(currentIdleSubstate);
                     currentIdleSubstate.Enter(npc);
                 }
             }
@@ -61,7 +62,7 @@ namespace OvermorrowMod.Core.NPCs
 
         private BaseIdleState PickSubstate(OvermorrowNPC npc)
         {
-            return idleStates
+            return states
                 .Where(s => s.state.CanExecute(npc))
                 .OrderByDescending(s => s.weight) // or random weighted choice
                 .FirstOrDefault().state;

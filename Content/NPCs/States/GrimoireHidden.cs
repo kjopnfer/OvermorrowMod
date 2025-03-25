@@ -2,14 +2,12 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.NPCs;
+using System.Diagnostics.Metrics;
 using Terraria;
 
 namespace OvermorrowMod.Content.NPCs
 {
-    /// <summary>
-    /// NPC remains inactive until a target is found.
-    /// </summary>
-    public class Hidden : BaseIdleState
+    public class GrimoireHidden : BaseIdleState
     {
         public override int Weight => 1;
         public override bool CanExit => IsFinished;
@@ -20,6 +18,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit(OvermorrowNPC npc)
         {
+            npc.NPC.noGravity = true;
             npc.AICounter = 0;
         }
 
@@ -27,7 +26,12 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (npc.TargetingModule.HasTarget())
             {
-                IsFinished = true;
+                npc.NPC.noGravity = false;
+
+                if (npc.AICounter++ >= 36)
+                {
+                    IsFinished = true;
+                }
             }
         }
     }

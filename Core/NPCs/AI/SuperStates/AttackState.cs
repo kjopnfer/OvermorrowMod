@@ -6,16 +6,15 @@ using OvermorrowMod.Common;
 
 namespace OvermorrowMod.Core.NPCs
 {
-    public class AttackState : State
+    public class AttackState : SuperState<BaseAttackState>
     {
-        private List<(BaseAttackState state, int weight)> attackStates;
+        private List<(BaseAttackState state, int weight)> states;
         public BaseAttackState currentAttackSubstate { get; private set; }
-
         public bool HasValidAttack { get; private set; } = false;
 
-        public AttackState(List<BaseAttackState> availableSubstates)
+        public AttackState(List<BaseAttackState> availableSubstates) : base(availableSubstates)
         {
-            attackStates = availableSubstates.Select(sub => (sub, sub.Weight)).ToList();
+            states = availableSubstates.Select(sub => (sub, sub.Weight)).ToList();
         }
 
         public override void Enter(OvermorrowNPC npc)
@@ -63,7 +62,7 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         private BaseAttackState PickSubstate(OvermorrowNPC npc)
         {
-            return attackStates
+            return states
              .Where(s => s.state.CanExecute(npc))
              .OrderByDescending(s => s.weight) // Or random weighted if preferred
              .FirstOrDefault().state;

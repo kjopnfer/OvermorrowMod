@@ -81,7 +81,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-            new Hidden()
+            new GrimoireHidden()
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {

@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.NPCs
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-            new Hidden()
+            new GrimoireHidden()
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
@@ -49,6 +49,14 @@ namespace OvermorrowMod.Content.NPCs
             NPC.noGravity = true;
 
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
+
+            if (AIStateMachine.GetPreviousSubstates().FirstOrDefault() is GrimoireHidden)
+            {
+                // Do something
+                Main.NewText("remove the hidden state");
+                //AIStateMachine.RemoveSubstate<GrimoireIdle>(AIStateType.Idle);
+
+            }
         }
 
         private void SetFrame()

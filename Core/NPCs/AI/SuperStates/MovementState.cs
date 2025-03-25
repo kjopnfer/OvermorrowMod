@@ -5,15 +5,15 @@ using Terraria;
 
 namespace OvermorrowMod.Core.NPCs
 {
-    public class MovementState : State
+    public class MovementState : SuperState<BaseMovementState>
     {
-        private List<(BaseMovementState state, int weight)> movementStates = new List<(BaseMovementState, int)>();
+        private List<(BaseMovementState state, int weight)> states = new List<(BaseMovementState, int)>();
         public BaseMovementState currentMovementSubstate { get; private set; }
 
-        public MovementState(List<BaseMovementState> availableSubstates)
+        public MovementState(List<BaseMovementState> availableSubstates) : base(availableSubstates)
         {
             foreach (var substate in availableSubstates)
-                movementStates.Add((substate, substate.Weight));  // Assume BaseIdleState has a `Weight` property
+                states.Add((substate, substate.Weight));  // Assume BaseIdleState has a `Weight` property
         }
 
         public override void Enter(OvermorrowNPC npc)
@@ -44,7 +44,7 @@ namespace OvermorrowMod.Core.NPCs
 
         private BaseMovementState PickSubstate(OvermorrowNPC npc)
         {
-            return movementStates
+            return states
                 .Where(s => s.state.CanExecute(npc))
                 .OrderByDescending(s => s.weight) // or random weighted choice
                 .FirstOrDefault().state;

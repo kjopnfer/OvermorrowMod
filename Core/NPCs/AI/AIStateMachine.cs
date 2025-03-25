@@ -74,6 +74,17 @@ namespace OvermorrowMod.Core.NPCs
             SetInitialState(npc);
         }
 
+        public void RemoveSubstate<T>(AIStateType superstateType) where T : BaseState
+        {
+            if (availableStates.TryGetValue(superstateType, out var state))
+            {
+                if (state is SuperState<BaseState> superstate)
+                {
+                    var removeMethod = state.GetType().GetMethod("RemoveSubstate")?.MakeGenericMethod(typeof(T));
+                    removeMethod?.Invoke(state, null);
+                }
+            }
+        }
 
         /// <summary>
         /// Sets the initial default state (Idle) and enters it.

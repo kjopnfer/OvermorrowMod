@@ -8,7 +8,7 @@ using Terraria;
 
 namespace OvermorrowMod.Content.NPCs
 {
-    public class GrimoireSpellCast : BaseAttackState
+    public class GrimoireIdle : BaseIdleState
     {
         public override int Weight => 1;
         public override bool CanExit => IsFinished;
@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.NPCs
         {
             npc.AICounter = 0;
             IsFinished = false;
-            Main.NewText("cast spell " + IsFinished);
+            Main.NewText("do idling " + IsFinished);
         }
 
         public override void Exit(OvermorrowNPC npc)
