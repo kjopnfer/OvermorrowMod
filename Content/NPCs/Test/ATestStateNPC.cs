@@ -53,8 +53,9 @@ namespace OvermorrowMod.Content.NPCs
             if (AIStateMachine.GetPreviousSubstates().FirstOrDefault() is GrimoireHidden)
             {
                 // Do something
-                Main.NewText("remove the hidden state");
-                //AIStateMachine.RemoveSubstate<GrimoireIdle>(AIStateType.Idle);
+                Main.NewText("remove the hidden state and add new idle", Color.Cyan);
+                AIStateMachine.RemoveSubstate<GrimoireHidden>(AIStateType.Idle);
+                AIStateMachine.AddSubstate(AIStateType.Idle, new GrimoireIdle());
 
             }
         }

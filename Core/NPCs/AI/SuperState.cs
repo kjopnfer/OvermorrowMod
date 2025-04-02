@@ -1,6 +1,7 @@
 using OvermorrowMod.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OvermorrowMod.Core.NPCs
 {
@@ -19,6 +20,17 @@ namespace OvermorrowMod.Core.NPCs
         public void RemoveSubstate<U>() where U : T
         {
             substates.RemoveAll(s => s.GetType() == typeof(U));
+        }
+
+        /// <summary>
+        /// Adds a new substate to this superstate if it matches the type.
+        /// </summary>
+        public void AddSubstate(T substate)
+        {
+            if (substate == null || substates.Any(s => s.GetType() == substate.GetType()))
+                return; // Avoid adding duplicates
+
+            substates.Add(substate);
         }
     }
 }

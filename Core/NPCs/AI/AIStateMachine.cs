@@ -86,6 +86,19 @@ namespace OvermorrowMod.Core.NPCs
             }
         }
 
+        public void AddSubstate<T>(AIStateType superstateType, T substate) where T : BaseState
+        {
+            if (availableStates.TryGetValue(superstateType, out var state))
+            {
+                if (state is SuperState<BaseState> superstate)
+                {
+                    var addMethod = state.GetType().GetMethod("AddSubstate");
+                    addMethod?.Invoke(state, new object[] { substate });
+                }
+            }
+        }
+
+
         /// <summary>
         /// Sets the initial default state (Idle) and enters it.
         /// </summary>
