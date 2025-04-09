@@ -8,6 +8,7 @@ namespace OvermorrowMod.Core.NPCs
     public abstract class SuperState<T> : State where T : BaseState
     {
         protected List<T> substates;
+        public T currentSubstate { get; protected set; }
 
         public SuperState(List<T> substates)
         {
@@ -31,6 +32,19 @@ namespace OvermorrowMod.Core.NPCs
                 return; // Avoid adding duplicates
 
             substates.Add(substate);
+        }
+
+        public void ForceSetSubstate(State substate, OvermorrowNPC npc)
+        {
+            if (!substates.Contains(substate))
+                return;
+
+            if (currentSubstate != substate)
+            {
+                currentSubstate?.Exit(npc);
+                currentSubstate = (T)substate;
+                currentSubstate.Enter(npc);
+            }
         }
     }
 }

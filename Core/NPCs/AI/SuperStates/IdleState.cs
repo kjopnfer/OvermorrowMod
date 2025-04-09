@@ -10,7 +10,6 @@ namespace OvermorrowMod.Core.NPCs
     public class IdleState : SuperState<BaseIdleState>
     {
         private List<(BaseIdleState state, int weight)> states;
-        public BaseIdleState currentIdleSubstate { get; private set; }
 
         public IdleState(List<BaseIdleState> availableSubstates) : base(availableSubstates)
         {
@@ -21,43 +20,43 @@ namespace OvermorrowMod.Core.NPCs
 
         public override void Enter(OvermorrowNPC npc)
         {
-            //currentIdleSubstate = PickSubstate(npc);
-            //currentIdleSubstate.Enter(npc);
+            //currentSubstate = PickSubstate(npc);
+            //currentSubstate.Enter(npc);
             Main.NewText(npc.Name + " enters Idle state.");
-            currentIdleSubstate = null;
+            currentSubstate = null;
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
-            currentIdleSubstate?.Exit(npc);
+            currentSubstate?.Exit(npc);
         }
 
         public override void Update(OvermorrowNPC npc)
         {
             if (npc.IdleCounter > 0)
             {
-                currentIdleSubstate = null;
+                currentSubstate = null;
                 npc.IdleCounter--;
                 return; // Don't switch substates yet
             }
 
-            if (currentIdleSubstate == null || currentIdleSubstate.IsFinished)
+            if (currentSubstate == null || currentSubstate.IsFinished)
             {
-                if (currentIdleSubstate != null)
-                    Main.NewText($"Previous substate finished: {currentIdleSubstate.GetType().Name}");
+                if (currentSubstate != null)
+                    Main.NewText($"Previous substate finished: {currentSubstate.GetType().Name}");
 
                 // Pick a new idle substate
-                currentIdleSubstate = PickSubstate(npc);
+                currentSubstate = PickSubstate(npc);
 
-                if (currentIdleSubstate != null)
+                if (currentSubstate != null)
                 {
-                    Main.NewText("Switching to new Idle substate: " + currentIdleSubstate.GetType().Name);
-                    npc.AIStateMachine.RegisterSubstate(currentIdleSubstate);
-                    currentIdleSubstate.Enter(npc);
+                    Main.NewText("Switching to new Idle substate: " + currentSubstate.GetType().Name);
+                    npc.AIStateMachine.RegisterSubstate(currentSubstate);
+                    currentSubstate.Enter(npc);
                 }
             }
 
-            currentIdleSubstate?.Update(npc);
+            currentSubstate?.Update(npc);
         }
 
         private BaseIdleState PickSubstate(OvermorrowNPC npc)

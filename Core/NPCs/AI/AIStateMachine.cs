@@ -99,6 +99,8 @@ namespace OvermorrowMod.Core.NPCs
         }
 
 
+
+
         /// <summary>
         /// Sets the initial default state (Idle) and enters it.
         /// </summary>
@@ -121,7 +123,6 @@ namespace OvermorrowMod.Core.NPCs
 
             substateHistory.Enqueue(substate); // Add new
         }
-
 
         /// <summary>
         /// Change to a new state if it's different from the current one.

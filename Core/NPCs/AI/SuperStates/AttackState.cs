@@ -9,7 +9,6 @@ namespace OvermorrowMod.Core.NPCs
     public class AttackState : SuperState<BaseAttackState>
     {
         private List<(BaseAttackState state, int weight)> states;
-        public BaseAttackState currentAttackSubstate { get; private set; }
         public bool HasValidAttack { get; private set; } = false;
 
         public AttackState(List<BaseAttackState> availableSubstates) : base(availableSubstates)
@@ -20,19 +19,19 @@ namespace OvermorrowMod.Core.NPCs
         public override void Enter(OvermorrowNPC npc)
         {
             Main.NewText("NPC enters Attack state.");
-            currentAttackSubstate = PickSubstate(npc);
+            currentSubstate = PickSubstate(npc);
 
-            HasValidAttack = currentAttackSubstate != null;
+            HasValidAttack = currentSubstate != null;
             if (HasValidAttack)
             {
-                npc.AIStateMachine.RegisterSubstate(currentAttackSubstate);
-                currentAttackSubstate?.Enter(npc);
+                npc.AIStateMachine.RegisterSubstate(currentSubstate);
+                currentSubstate?.Enter(npc);
             }
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
-            currentAttackSubstate?.Exit(npc);
+            currentSubstate?.Exit(npc);
             Main.NewText("NPC exits Attack state.");
         }
 
@@ -44,16 +43,16 @@ namespace OvermorrowMod.Core.NPCs
                 return;
             }
 
-            HasValidAttack = currentAttackSubstate != null;
-            if (currentAttackSubstate?.IsFinished ?? true)
+            HasValidAttack = currentSubstate != null;
+            if (currentSubstate?.IsFinished ?? true)
             {
                 Main.NewText("attack state update: is finished");
-                currentAttackSubstate?.Exit(npc);
-                currentAttackSubstate = null;
+                currentSubstate?.Exit(npc);
+                currentSubstate = null;
             }
             else
             {
-                currentAttackSubstate?.Update(npc);
+                currentSubstate?.Update(npc);
             }
         }
 

@@ -8,7 +8,6 @@ namespace OvermorrowMod.Core.NPCs
     public class MovementState : SuperState<BaseMovementState>
     {
         private List<(BaseMovementState state, int weight)> states = new List<(BaseMovementState, int)>();
-        public BaseMovementState currentMovementSubstate { get; private set; }
 
         public MovementState(List<BaseMovementState> availableSubstates) : base(availableSubstates)
         {
@@ -19,27 +18,27 @@ namespace OvermorrowMod.Core.NPCs
         public override void Enter(OvermorrowNPC npc)
         {
             Main.NewText("NPC enters Movement state");
-            currentMovementSubstate = PickSubstate(npc);
+            currentSubstate = PickSubstate(npc);
 
-            npc.AIStateMachine.RegisterSubstate(currentMovementSubstate);
-            currentMovementSubstate?.Enter(npc);
+            npc.AIStateMachine.RegisterSubstate(currentSubstate);
+            currentSubstate?.Enter(npc);
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
-            currentMovementSubstate?.Exit(npc);
+            currentSubstate?.Exit(npc);
             Main.NewText("NPC exits Move state.");
         }
 
         public override void Update(OvermorrowNPC npc)
         {
-            if (currentMovementSubstate == null || currentMovementSubstate.IsFinished)
+            if (currentSubstate == null || currentSubstate.IsFinished)
             {
-                currentMovementSubstate = PickSubstate(npc);
-                currentMovementSubstate.Enter(npc);
+                currentSubstate = PickSubstate(npc);
+                currentSubstate.Enter(npc);
             }
 
-            currentMovementSubstate?.Update(npc);
+            currentSubstate?.Update(npc);
         }
 
         private BaseMovementState PickSubstate(OvermorrowNPC npc)
