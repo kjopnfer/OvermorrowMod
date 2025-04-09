@@ -89,7 +89,6 @@ namespace OvermorrowMod.Common
             return DrawOvermorrowNPC(spriteBatch, screenPos, drawColor);
         }
 
-
         public sealed override bool PreAI()
         {
             // Prevent offscreen projectiles from killing the NPC.

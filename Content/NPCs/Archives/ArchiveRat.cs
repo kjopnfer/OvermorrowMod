@@ -287,7 +287,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     break;
 
                 case AttackState attackState:
-                    switch (attackState.currentAttackSubstate)
+                    switch (attackState.currentSubstate)
                     {
                         case GroundDashAttack:
                             if (AICounter < 30)
@@ -325,7 +325,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
 
-                case IdleState idleState when idleState.currentIdleSubstate is Wander:
+                case IdleState idleState when idleState.currentSubstate is Wander:
                     xFrame = 0;
                     if (NPC.frameCounter++ % 6 == 0)
                     {

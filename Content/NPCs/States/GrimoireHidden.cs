@@ -20,6 +20,8 @@ namespace OvermorrowMod.Content.NPCs
         {
             npc.NPC.noGravity = true;
             npc.AICounter = 0;
+
+            Main.NewText("exited hidden state");
         }
 
         public override void Update(OvermorrowNPC npc)

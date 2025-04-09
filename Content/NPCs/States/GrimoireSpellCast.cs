@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System;
 using System.Linq;
@@ -12,16 +13,40 @@ namespace OvermorrowMod.Content.NPCs
     {
         public override int Weight => 1;
         public override bool CanExit => IsFinished;
+
+        private int tileAttackDistance = 24;
+        private int attackDelay = 0;
         public override bool CanExecute(OvermorrowNPC npc)
         {
-            //Main.NewText(npc.AIStateMachine.get)
+            if (npc is not LivingGrimoire)
+            {
+                // return false;
+                Main.NewText("I AM NOT");
+            }
+
             if (npc.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
             {
                 Main.NewText("test", Color.Red);
                 return false;
             }
 
-            return base.CanExecute(npc);
+            if (!npc.TargetingModule.HasTarget())
+                return false;
+
+            if (attackDelay-- > 0)
+                return false;
+
+            NPC baseNPC = npc.NPC;
+            Entity target = npc.TargetingModule.Target;
+
+            float xDistance = Math.Abs(baseNPC.Center.X - target.Center.X);
+            float yDistance = Math.Abs(baseNPC.Center.Y - target.Center.Y);
+
+            bool isWithinXRange = xDistance <= tileAttackDistance * 18;
+            bool isWithinYRange = yDistance < 100;
+            bool hasLineOfSight = Collision.CanHitLine(target.Center, 1, 1, baseNPC.Center, 1, 1);
+
+            return isWithinXRange && isWithinYRange && hasLineOfSight;
         }
 
         public override void Enter(OvermorrowNPC npc)
@@ -34,6 +59,7 @@ namespace OvermorrowMod.Content.NPCs
         public override void Exit(OvermorrowNPC npc)
         {
             npc.AICounter = 0;
+            attackDelay = 60;
             Main.NewText("exit spell");
         }
 

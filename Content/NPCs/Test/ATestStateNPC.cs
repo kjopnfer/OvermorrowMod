@@ -56,7 +56,6 @@ namespace OvermorrowMod.Content.NPCs
                 Main.NewText("remove the hidden state and add new idle", Color.Cyan);
                 AIStateMachine.RemoveSubstate<GrimoireHidden>(AIStateType.Idle);
                 AIStateMachine.AddSubstate(AIStateType.Idle, new GrimoireIdle());
-
             }
         }
 
@@ -86,7 +85,7 @@ namespace OvermorrowMod.Content.NPCs
             }
             else if (currentState is AttackState attackState)
             {
-                if (attackState.currentAttackSubstate is GroundDashAttack)
+                if (attackState.currentSubstate is GroundDashAttack)
                 {
                     if (AICounter < 30)
                     {
@@ -122,7 +121,7 @@ namespace OvermorrowMod.Content.NPCs
                     }
                 }
 
-                if (attackState.currentAttackSubstate is GainStealth)
+                if (attackState.currentSubstate is GainStealth)
                 {
                     xFrame = 1;
                     if (AICounter == 0)
