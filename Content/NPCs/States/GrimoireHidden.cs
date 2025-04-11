@@ -10,10 +10,12 @@ namespace OvermorrowMod.Content.NPCs
     public class GrimoireHidden : BaseIdleState
     {
         public override int Weight => 1;
-        public override bool CanExit => IsFinished;
+        public override bool CanExit => false;
 
         public override void Enter(OvermorrowNPC npc)
         {
+            Main.NewText("entered hidden state");
+            npc.AICounter = 0;
         }
 
         public override void Exit(OvermorrowNPC npc)
@@ -32,7 +34,7 @@ namespace OvermorrowMod.Content.NPCs
 
                 if (npc.AICounter++ >= 36)
                 {
-                    IsFinished = true;
+                    //IsFinished = true;
                 }
             }
         }

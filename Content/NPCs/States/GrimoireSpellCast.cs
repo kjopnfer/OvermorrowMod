@@ -15,18 +15,17 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => IsFinished;
 
         private int tileAttackDistance = 24;
-        private int attackDelay = 0;
+        private int attackDelay = 60;
         public override bool CanExecute(OvermorrowNPC npc)
         {
             if (npc is not LivingGrimoire)
             {
                 // return false;
-                Main.NewText("I AM NOT");
             }
 
             if (npc.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
             {
-                Main.NewText("test", Color.Red);
+                Main.NewText("have not flown yet, preventin early attack", Color.Red);
                 return false;
             }
 
@@ -53,14 +52,14 @@ namespace OvermorrowMod.Content.NPCs
         {
             npc.AICounter = 0;
             IsFinished = false;
-            Main.NewText("cast spell " + IsFinished);
+            Main.NewText("entering cast spell");
         }
 
         public override void Exit(OvermorrowNPC npc)
         {
             npc.AICounter = 0;
             attackDelay = 60;
-            Main.NewText("exit spell");
+            Main.NewText("exiting spell", Color.Red);
         }
 
         private int castTime = 120;

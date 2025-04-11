@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -16,6 +17,7 @@ namespace OvermorrowMod.Core.NPCs
     public class AIStateMachine
     {
         private State currentState;
+        private bool hasInitializedInitialState = false;
 
         /// <summary>
         /// Maximum number of states to remember
@@ -82,6 +84,7 @@ namespace OvermorrowMod.Core.NPCs
                 {
                     var removeMethod = state.GetType().GetMethod("RemoveSubstate")?.MakeGenericMethod(typeof(T));
                     removeMethod?.Invoke(state, null);
+                    Main.NewText("removed substate");
                 }
             }
         }
@@ -94,12 +97,62 @@ namespace OvermorrowMod.Core.NPCs
                 {
                     var addMethod = state.GetType().GetMethod("AddSubstate");
                     addMethod?.Invoke(state, new object[] { substate });
+                    Main.NewText("added new substate");
+
                 }
             }
         }
 
+        /*public void ForceSetSubstate(State substate, OvermorrowNPC npc)
+        {
+            foreach (var state in availableStates.Values)
+            {
+                if (state is SuperState<BaseState> superstate && superstate.ContainsSubstate(substate))
+                {
+                    superstate.SetSubstate(substate, npc);
+                    RegisterSubstate(substate); // Optional: track it in substate history
+                    return;
+                }
+            }
+
+            Main.NewText("ForceSetSubstate failed: no superstate found for substate " + substate.GetType().Name, Color.Red);
+        }
+        */
+
+        // This fucking shit doesnt work
+        public void SetSubstate<T>(AIStateType superstateType, OvermorrowNPC npc) where T : State
+        {
+            if (!availableStates.TryGetValue(superstateType, out State rawState))
+            {
+                throw new Exception($"Superstate {superstateType} not found.");
+            }
+
+            // Use dynamic to bypass the generic constraint issue
+            dynamic dynamicSuperstate = rawState;
+
+            // Find the substate of type T in the dynamic list of substates
+            State substate = ((IEnumerable<State>)dynamicSuperstate.Substates)
+                .FirstOrDefault(s => s is T);
+
+            if (substate == null)
+            {
+                throw new Exception($"Substate of type {typeof(T).Name} not found in superstate {superstateType}.");
+            }
+
+            //ChangeState(superstateType, npc);
+
+            // Call the dynamic SetSubstate method
+            dynamicSuperstate.SetSubstate(substate, npc);
+        }
 
 
+        /// <summary>
+        /// Checks if a given substate is present in the superstate's list.
+        /// </summary>
+        private bool HasSubstate(SuperState<BaseState> superstate, State substate)
+        {
+            return superstate.Substates.Any(s => s.GetType() == substate.GetType());
+        }
 
         /// <summary>
         /// Sets the initial default state (Idle) and enters it.
@@ -109,6 +162,8 @@ namespace OvermorrowMod.Core.NPCs
             currentState = availableStates[AIStateType.Idle];
             currentState.Enter(npc); // Null if NPC not yet passed
             stateHistory.Enqueue(currentState);
+
+            hasInitializedInitialState = false;
         }
 
         /// <summary>
@@ -153,18 +208,22 @@ namespace OvermorrowMod.Core.NPCs
 
         public void Update(OvermorrowNPC npc)
         {
-            EvaluateState(npc);
             currentState?.Update(npc);
+            EvaluateState(npc);
         }
 
         // Select the next state based on conditions
         public void EvaluateState(OvermorrowNPC npc)
         {
             // Prevent evaluating state change if locked in current state
+            Main.NewText(currentState?.ToString());
             if (!(currentState?.CanExit ?? true))
+            {
+                Main.NewText("prevented");
                 return;
+            }
 
-            if (npc.TargetingModule.HasTarget())
+            /*if (npc.TargetingModule.HasTarget())
             {
                 float distanceToTarget = Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center);
 
@@ -199,14 +258,14 @@ namespace OvermorrowMod.Core.NPCs
                     }
                 }
             }
-            else
+            else*/
             {
                 if (npc.SpawnerID.HasValue)
                 {
                     //Main.NewText("yo 2" + npc.Name);
 
                 }
-                ChangeState(AIStateType.Idle, npc);
+                //ChangeState(AIStateType.Idle, npc);
             }
         }
     }

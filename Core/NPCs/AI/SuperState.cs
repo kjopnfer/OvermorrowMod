@@ -8,11 +8,19 @@ namespace OvermorrowMod.Core.NPCs
     public abstract class SuperState<T> : State where T : BaseState
     {
         protected List<T> substates;
+        public IReadOnlyList<T> Substates => substates;
+
         public T currentSubstate { get; protected set; }
+        public override bool CanExit => base.CanExit && (currentSubstate?.CanExit ?? true);
 
         public SuperState(List<T> substates)
         {
             this.substates = substates;
+        }
+
+        public bool ContainsSubstate(State substate)
+        {
+            return substates.Contains((T)substate);
         }
 
         /// <summary>
@@ -34,9 +42,9 @@ namespace OvermorrowMod.Core.NPCs
             substates.Add(substate);
         }
 
-        public void ForceSetSubstate(State substate, OvermorrowNPC npc)
+        public void SetSubstate(State substate, OvermorrowNPC npc)
         {
-            if (!substates.Contains(substate))
+            if (ContainsSubstate(substate))
                 return;
 
             if (currentSubstate != substate)
