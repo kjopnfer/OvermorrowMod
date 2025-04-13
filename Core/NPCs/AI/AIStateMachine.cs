@@ -76,16 +76,33 @@ namespace OvermorrowMod.Core.NPCs
             SetInitialState(npc);
         }
 
-        public void RemoveSubstate<T>(AIStateType superstateType) where T : BaseState
+        public void RemoveSubstate<T>(AIStateType superstateType, T substate) where T : BaseState
         {
             if (availableStates.TryGetValue(superstateType, out var state))
             {
-                if (state is SuperState<BaseState> superstate)
+                var type = state.GetType();
+                //var method = state.GetType().GetMethod("RemoveSubstate", new[] { typeof(BaseState) });
+                var method = state.GetType().GetMethod("RemoveSubstate", Type.EmptyTypes);
+
+                if (method != null)
+                {
+                    var generic = method?.MakeGenericMethod(typeof(T));
+                    generic?.Invoke(state, null);
+
+                    //method.Invoke(state, new object[] { substate });
+                    Main.NewText("removed substate by type");
+                }
+                else
+                {
+                    Main.NewText("method not found");
+                }
+
+                /*if (state is SuperState<BaseState> superstate)
                 {
                     var removeMethod = state.GetType().GetMethod("RemoveSubstate")?.MakeGenericMethod(typeof(T));
                     removeMethod?.Invoke(state, null);
                     Main.NewText("removed substate");
-                }
+                }*/
             }
         }
 
@@ -93,12 +110,26 @@ namespace OvermorrowMod.Core.NPCs
         {
             if (availableStates.TryGetValue(superstateType, out var state))
             {
+                var type = state.GetType();
+                var method = type.GetMethod("AddSubstate");
+
+                if (method != null)
+                {
+                    method.Invoke(state, new object[] { substate });
+                    Main.NewText("added substate via reflection");
+                }
+                else
+                {
+                    Main.NewText("method not found");
+                }
+
                 if (state is SuperState<BaseState> superstate)
                 {
-                    var addMethod = state.GetType().GetMethod("AddSubstate");
-                    addMethod?.Invoke(state, new object[] { substate });
-                    Main.NewText("added new substate");
+                    //var addMethod = state.GetType().GetMethod("AddSubstate");
+                    superstate.AddSubstate(substate);
+                    //addMethod?.Invoke(state, new object[] { substate });
 
+                    Main.NewText("added new substate");
                 }
             }
         }
@@ -142,6 +173,7 @@ namespace OvermorrowMod.Core.NPCs
             //ChangeState(superstateType, npc);
 
             // Call the dynamic SetSubstate method
+            Main.NewText("set substate to " + substate.ToString());
             dynamicSuperstate.SetSubstate(substate, npc);
         }
 

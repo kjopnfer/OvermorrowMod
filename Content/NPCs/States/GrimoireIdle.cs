@@ -46,13 +46,17 @@ namespace OvermorrowMod.Content.NPCs
             npc.AICounter++;
             npc.NPC.velocity.X /= 2f;
 
-            HandleVerticalMovement(npc);
-            HandleGroundProximity(npc);
-
-            //Main.NewText("spell : " + npc.AICounter);
-            if (npc.AICounter >= castTime)
+            if (npc.TargetingModule.HasTarget())
             {
-                //IsFinished = true;
+
+                HandleVerticalMovement(npc);
+                HandleGroundProximity(npc);
+
+                //Main.NewText("spell : " + npc.AICounter);
+                if (npc.AICounter >= castTime)
+                {
+                    //IsFinished = true;
+                }
             }
         }
 

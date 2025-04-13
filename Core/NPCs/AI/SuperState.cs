@@ -2,6 +2,7 @@ using OvermorrowMod.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Terraria;
 
 namespace OvermorrowMod.Core.NPCs
 {
@@ -20,6 +21,9 @@ namespace OvermorrowMod.Core.NPCs
 
         public bool ContainsSubstate(State substate)
         {
+            string listContents = string.Join(", ", substates.Select(s => s.GetType().Name));
+            Main.NewText("Checking for substates: [" + listContents + "]");
+
             return substates.Contains((T)substate);
         }
 
@@ -29,6 +33,11 @@ namespace OvermorrowMod.Core.NPCs
         public void RemoveSubstate<U>() where U : T
         {
             substates.RemoveAll(s => s.GetType() == typeof(U));
+        }
+
+        public void RemoveSubstate(BaseState substate)
+        {
+            substates.Remove((T)substate);
         }
 
         /// <summary>
@@ -44,8 +53,11 @@ namespace OvermorrowMod.Core.NPCs
 
         public void SetSubstate(State substate, OvermorrowNPC npc)
         {
-            if (ContainsSubstate(substate))
+            if (!ContainsSubstate(substate))
+            {
+                Main.NewText("substate not found, returning");
                 return;
+            }
 
             if (currentSubstate != substate)
             {

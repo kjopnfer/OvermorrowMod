@@ -43,7 +43,10 @@ namespace OvermorrowMod.Core.NPCs
             if (currentSubstate == null || currentSubstate.IsFinished)
             {
                 if (currentSubstate != null)
-                    Main.NewText($"Previous substate finished: {currentSubstate.GetType().Name}");
+                {
+                    currentSubstate.Exit(npc);
+                    //Main.NewText($"Previous substate finished: {currentSubstate.GetType().Name}");
+                }
 
                 // Pick a new idle substate
                 currentSubstate = PickSubstate(npc);
