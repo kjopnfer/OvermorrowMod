@@ -24,13 +24,22 @@ namespace OvermorrowMod.Content.NPCs
             npc.NPC.noGravity = true;
             npc.AICounter = 0;
 
+            npc.AIStateMachine.RemoveSubstate<GrimoireHidden>(AIStateType.Idle, new GrimoireHidden());
+            Main.NewText("wtf remove hidden and add idle");
+            var newIdle = new GrimoireIdle();
+            npc.AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
+            //npc.AIStateMachine.SetSubstate<GrimoireIdle>(AIStateType.Idle, npc);
+
             Main.NewText("exited hidden state");
         }
 
         public override void Update(OvermorrowNPC npc)
         {
+            //Main.NewText("hidden");
+
             if (npc.TargetingModule.HasTarget())
             {
+
                 npc.NPC.noGravity = false;
                 //Main.NewText("yt " + npc.AICounter);
                 if (npc.AICounter++ >= 36)

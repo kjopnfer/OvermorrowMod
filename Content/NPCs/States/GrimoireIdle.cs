@@ -15,9 +15,11 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExecute(OvermorrowNPC npc)
         {
             //Main.NewText(npc.AIStateMachine.get)
+            return true;
+
             if (npc.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
             {
-                Main.NewText("grimoire idle cannot run", Color.Red);
+                //Main.NewText("grimoire idle cannot run", Color.Red);
                 return false;
             }
 
@@ -45,6 +47,8 @@ namespace OvermorrowMod.Content.NPCs
         {
             npc.AICounter++;
             npc.NPC.velocity.X /= 2f;
+
+            Main.NewText("idle");
 
             if (npc.TargetingModule.HasTarget())
             {

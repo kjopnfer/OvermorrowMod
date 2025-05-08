@@ -60,12 +60,12 @@ namespace OvermorrowMod.Content.NPCs
             {
                 // Do something
                 //Main.NewText("remove the hidden state and add new idle", Color.Cyan);
-                AIStateMachine.RemoveSubstate<GrimoireHidden>(AIStateType.Idle, new GrimoireHidden());
-                Main.NewText("wtf");
-                var newIdle = new GrimoireIdle();
-                AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
-                AIStateMachine.SetSubstate<GrimoireIdle>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
-                //AIStateMachine.ForceSetSubstate(newIdle, NPC.ModNPC as OvermorrowNPC);
+
+                //AIStateMachine.RemoveSubstate<GrimoireHidden>(AIStateType.Idle, new GrimoireHidden());
+                //Main.NewText("wtf");
+                //var newIdle = new GrimoireIdle();
+                //AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
+                //AIStateMachine.SetSubstate<GrimoireIdle>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
             }
         }
 
