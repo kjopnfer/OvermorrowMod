@@ -212,6 +212,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float link2Length = 48f;  // Lower arm length
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (backLeg == null) return false;
+
             Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
 
             Color darkerColor = Color.Lerp(drawColor, Color.Black, 0.55f); // 0.2f is the factor to darken the color
@@ -222,6 +224,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (frontLeg == null) return;
+
             Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
             frontLeg.Draw(spriteBatch, drawColor);
 

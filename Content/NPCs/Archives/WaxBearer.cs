@@ -372,6 +372,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Calculate a darker shade of the drawColor for backArm and backLeg
             Color darkerColor = Color.Lerp(drawColor, Color.Black, 0.55f); // 0.2f is the factor to darken the color
 
+            if (backArm == null) return false;
             backArm.Draw(spriteBatch, Color.White);
             backLeg.Draw(spriteBatch, darkerColor);
 
@@ -385,6 +386,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D magicPixel = TextureAssets.MagicPixel.Value; // Load your MagicPixel
+
+            if (lanternArm == null) return;
 
             lanternArm.Draw(spriteBatch, Color.White);
             frontLeg.Draw(spriteBatch, drawColor);
