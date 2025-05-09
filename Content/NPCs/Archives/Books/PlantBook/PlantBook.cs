@@ -11,7 +11,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class PlantBook : LivingGrimoire
     {
-        protected override int CastTime => 360;
+        public override int CastTime => 360;
         protected override void DrawCastEffect(SpriteBatch spriteBatch)
         {
             spriteBatch.Reload(BlendState.AlphaBlend);
@@ -21,6 +21,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             float alpha = 1f;
             float size = 1f;
+
             if (AICounter < 20f)
             {
                 alpha = MathHelper.Lerp(0, 1f, AICounter / 20f);

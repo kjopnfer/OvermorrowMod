@@ -78,8 +78,9 @@ namespace OvermorrowMod.Content.NPCs
 
             CastSpell(npc);
 
+            LivingGrimoire bookNPC = npc as LivingGrimoire;
             //Main.NewText("spell : " + npc.AICounter);
-            if (npc.AICounter >= castTime)
+            if (npc.AICounter >= bookNPC.CastTime)
             {
                 IsFinished = true;
             }

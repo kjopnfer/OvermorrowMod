@@ -52,9 +52,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
-        protected virtual int CastTime => 120;
-        public ref float AIState => ref NPC.ai[0];
-        public ref float AICounter => ref NPC.ai[1];
+        public virtual int CastTime => 120;
+        //public ref float AIState => ref NPC.ai[0];
+        //public ref float AICounter => ref NPC.ai[1];
         public enum AICase
         {
             Hidden = -2,
@@ -233,11 +233,72 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
         }
 
+        bool drawWings = true;
+        bool drawRuneCircle = false;
         private void SetFrame()
         {
-            if (NPC.IsABestiaryIconDummy) AIState = (int)AICase.Fly;
+            if (NPC.IsABestiaryIconDummy)
+            {
+                yFrame = 8;
 
-            switch ((AICase)AIState)
+                if (NPC.frameCounter++ % 3 == 0)
+                {
+                    yFrameWing++;
+                    if (yFrameWing >= 3) yFrameWing = 0;
+                }
+            }
+
+            drawWings = true;
+            drawRuneCircle = false;
+
+            State currentState = AIStateMachine.GetCurrentState();
+            switch (currentState)
+            {
+                case IdleState idleState:
+                    drawWings = false;
+
+                    switch (idleState.currentSubstate)
+                    {
+                        case GrimoireHidden:
+                            if (TargetingModule.HasTarget())
+                            {
+                                if (NPC.frameCounter++ % 4 == 0)
+                                {
+                                    yFrame++;
+                                    if (yFrameWing >= 8) yFrameWing = 8;
+                                }
+                            }
+                            else
+                            {
+                                yFrame = 0;
+                            }
+                            break;
+                        case GrimoireIdle:
+                            break;
+                    }
+                    break;
+                case MovementState movementState when movementState.currentSubstate is BasicFly:
+                    yFrame = 8;
+
+                    if (NPC.frameCounter++ % 3 == 0)
+                    {
+                        yFrameWing++;
+                        if (yFrameWing >= 3) yFrameWing = 0;
+                    }
+                    break;
+                case AttackState attackState when attackState.currentSubstate is GrimoireSpellCast:
+                    drawRuneCircle = true;
+                    yFrame = AICounter <= 6 || AICounter >= CastTime - 6 ? 9 : 10;
+
+                    if (NPC.frameCounter++ % 3 == 0)
+                    {
+                        yFrameWing++;
+                        if (yFrameWing >= 3) yFrameWing = 0;
+                    }
+                    break;
+            }
+
+            /*switch ((AICase)AIState)
             {
                 case AICase.Hidden:
                     yFrame = 0;
@@ -267,7 +328,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         if (yFrameWing >= 3) yFrameWing = 0;
                     }
                     break;
-            }
+            }*/
         }
 
         int xFrame = 0;
@@ -302,14 +363,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void DrawBehindOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if ((AICase)AIState == AICase.Cast)
-                DrawCastEffect(spriteBatch);
-
-            State currentState = AIStateMachine.GetCurrentState();
-            if (currentState is AttackState attackState)
+            if (drawRuneCircle)
             {
-                if (attackState.currentSubstate is GrimoireSpellCast)
-                    DrawCastEffect(spriteBatch);
+                DrawCastEffect(spriteBatch);
             }
         }
 
@@ -344,8 +400,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             Color wingColor = Color.Lerp(drawColor, Color.White, 0.7f);
-            if ((AICase)AIState != AICase.Fall && (AICase)AIState != AICase.Hidden)
+
+            State currentState = AIStateMachine.GetCurrentState();
+            if (drawWings)
+            {
                 spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), wingColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            }
+
+            //if ((AICase)AIState != AICase.Fall && (AICase)AIState != AICase.Hidden)
+            //    spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), wingColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
