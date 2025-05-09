@@ -4,8 +4,10 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -74,11 +76,75 @@ namespace OvermorrowMod.Content.NPCs
             HandleVerticalMovement(npc);
             HandleGroundProximity(npc);
 
+            CastSpell(npc);
+
             //Main.NewText("spell : " + npc.AICounter);
             if (npc.AICounter >= castTime)
             {
                 IsFinished = true;
             }
+        }
+
+        int chairProjectilesNeeded = 0;
+        private void CastSpell(OvermorrowNPC npc)
+        {
+            NPC baseNPC = npc.NPC;
+            switch (baseNPC.ModNPC)
+            {
+                case PlantBook:
+                    if (npc.AICounter == 30)
+                    {
+
+                        float angle = MathHelper.ToRadians(75);
+                        Vector2 projectileVelocity = new Vector2(100 * baseNPC.direction, 0).RotatedByRandom(angle) * 50;
+                        Projectile.NewProjectile(baseNPC.GetSource_FromAI(), npc.TargetingModule.Target.Center, Vector2.Zero, ModContent.ProjectileType<PlantAura>(), 1, 1f, Main.myPlayer);
+                    }
+                    break;
+                case ChairBook:
+                    if (chairProjectilesNeeded == 0) return;
+
+                    if (npc.AICounter % 10 == 0 && npc.AICounter < 40)
+                    {
+                        float angle = MathHelper.ToRadians(75);
+                        float randomDirection = Main.rand.NextBool() ? 1 : -1;
+
+                        // Make sure the x-offset is never zero
+                        Vector2 projectileVelocity = new Vector2(Main.rand.Next(-3, 2) + 1, Main.rand.Next(8, 10)).RotatedByRandom(angle);
+                        Projectile.NewProjectile(baseNPC.GetSource_FromAI(), baseNPC.Center, projectileVelocity, ModContent.ProjectileType<ChairBolt>(), 1, 1f, Main.myPlayer, 0f, baseNPC.whoAmI);
+
+                        chairProjectilesNeeded--;
+                    }
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private bool AttackCondition(OvermorrowNPC npc)
+        {
+            NPC baseNPC = npc.NPC;
+            switch (baseNPC.ModNPC)
+            {
+                case ChairBook:
+                    var chairSummons = Main.npc
+                    .Where(npc => npc.active
+                        && npc.ModNPC is ChairSummon chairSummon
+                        && chairSummon.ParentID == baseNPC.whoAmI)
+                    .Select(npc => npc.ModNPC as ChairSummon)
+                    .ToList();
+
+                    if (chairSummons.Count == 3) return false;
+
+                    chairProjectilesNeeded = 3 - chairSummons.Count;
+                    break;
+            }
+
+            float xDistance = Math.Abs(baseNPC.Center.X - npc.TargetingModule.Target.Center.X);
+
+            bool xDistanceCheck = xDistance <= tileAttackDistance * 18;
+            bool yDistanceCheck = Math.Abs(baseNPC.Center.Y - npc.TargetingModule.Target.Center.Y) < 100;
+
+            return xDistanceCheck && yDistanceCheck && Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, baseNPC.Center, 1, 1);
         }
 
         private void HandleGroundProximity(OvermorrowNPC npc)

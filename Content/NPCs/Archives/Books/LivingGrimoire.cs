@@ -69,7 +69,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         protected Vector2 targetPosition;
         public override void OnSpawn(IEntitySource source)
         {
-            AIState = (int)AICase.Hidden;
+            /*AIState = (int)AICase.Hidden;
             distanceFromGround = Main.rand.Next(16, 19) * 8;
             aggroDelayTime = Main.rand.Next(10, 20) * 10;
             tileAttackDistance = Main.rand.Next(16, 32) * 16;
@@ -77,7 +77,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             aggroDelay = aggroDelayTime;
             targetPosition = NPC.Center + new Vector2(14 * 16 * NPC.direction, 0).RotatedByRandom(MathHelper.PiOver2);
 
-            NPC.netUpdate = true;
+            NPC.netUpdate = true;*/
+            AIStateMachine.SetSubstate<GrimoireHidden>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
@@ -97,8 +98,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float aggroDelay = 60;
         public override void AI()
         {
+            AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
+
             //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);
-            switch ((AICase)AIState)
+            /*switch ((AICase)AIState)
             {
                 case AICase.Hidden:
                     if (TargetingModule.HasTarget())
@@ -162,7 +165,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         aggroDelay = aggroDelayTime;
                     }
                     break;
-            }
+            }*/
 
             NPC.rotation = NPC.velocity.Y * 0.08f;
 
@@ -301,6 +304,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             if ((AICase)AIState == AICase.Cast)
                 DrawCastEffect(spriteBatch);
+
+            State currentState = AIStateMachine.GetCurrentState();
+            if (currentState is AttackState attackState)
+            {
+                if (attackState.currentSubstate is GrimoireSpellCast)
+                    DrawCastEffect(spriteBatch);
+            }
         }
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

@@ -36,7 +36,8 @@ namespace OvermorrowMod.Content.NPCs
         public override void Exit(OvermorrowNPC npc)
         {
             npc.AICounter = 0;
-            Main.NewText("exit spell");
+            Main.NewText("exit idle");
+
         }
 
         private int castTime = 120;
@@ -48,19 +49,14 @@ namespace OvermorrowMod.Content.NPCs
             npc.AICounter++;
             npc.NPC.velocity.X /= 2f;
 
-            Main.NewText("idle");
-
-            if (npc.TargetingModule.HasTarget())
+            // TODO: Change this so tha the NPC picks a random spot and then hovers around it
+            //if (npc.TargetingModule.HasTarget())
             {
 
                 HandleVerticalMovement(npc);
                 HandleGroundProximity(npc);
 
-                //Main.NewText("spell : " + npc.AICounter);
-                if (npc.AICounter >= castTime)
-                {
-                    //IsFinished = true;
-                }
+                IsFinished = true;
             }
         }
 
@@ -68,10 +64,17 @@ namespace OvermorrowMod.Content.NPCs
         {
             NPC baseNPC = npc.NPC;
             float groundBuffer = distanceFromGround;
+            float heightLimit = 16 * 12;
+
 
             if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer) < groundBuffer)
             {
-                baseNPC.velocity.Y -= 0.1f;
+                baseNPC.velocity.Y -= 0.2f;
+                flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
+            }
+            else if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer) > heightLimit)
+            {
+                baseNPC.velocity.Y += 0.1f;
                 flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
             }
         }
@@ -79,12 +82,11 @@ namespace OvermorrowMod.Content.NPCs
         private void HandleVerticalMovement(OvermorrowNPC npc)
         {
             NPC baseNPC = npc.NPC;
-            var target = npc.TargetingModule.Target;
-
+            //var target = npc.TargetingModule.Target;
             float verticalBuffer = 16 * 5;
             float targetSpeed = 2f;
 
-            if (baseNPC.Center.Y <= target.Center.Y - verticalBuffer)
+            //if (baseNPC.Center.Y <= target.Center.Y - verticalBuffer)
             {
                 baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, targetSpeed);
 

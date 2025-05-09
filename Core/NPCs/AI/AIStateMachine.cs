@@ -81,7 +81,6 @@ namespace OvermorrowMod.Core.NPCs
             if (availableStates.TryGetValue(superstateType, out var state))
             {
                 var type = state.GetType();
-                //var method = state.GetType().GetMethod("RemoveSubstate", new[] { typeof(BaseState) });
                 var method = state.GetType().GetMethod("RemoveSubstate", Type.EmptyTypes);
 
                 if (method != null)
@@ -89,20 +88,12 @@ namespace OvermorrowMod.Core.NPCs
                     var generic = method?.MakeGenericMethod(typeof(T));
                     generic?.Invoke(state, null);
 
-                    //method.Invoke(state, new object[] { substate });
                     Main.NewText("removed substate by type");
                 }
                 else
                 {
                     Main.NewText("method not found");
                 }
-
-                /*if (state is SuperState<BaseState> superstate)
-                {
-                    var removeMethod = state.GetType().GetMethod("RemoveSubstate")?.MakeGenericMethod(typeof(T));
-                    removeMethod?.Invoke(state, null);
-                    Main.NewText("removed substate");
-                }*/
             }
         }
 
@@ -121,15 +112,6 @@ namespace OvermorrowMod.Core.NPCs
                 else
                 {
                     Main.NewText("method not found");
-                }
-
-                if (state is SuperState<BaseState> superstate)
-                {
-                    //var addMethod = state.GetType().GetMethod("AddSubstate");
-                    superstate.AddSubstate(substate);
-                    //addMethod?.Invoke(state, new object[] { substate });
-
-                    Main.NewText("added new substate");
                 }
             }
         }
@@ -240,22 +222,22 @@ namespace OvermorrowMod.Core.NPCs
 
         public void Update(OvermorrowNPC npc)
         {
-            currentState?.Update(npc);
             EvaluateState(npc);
+            currentState?.Update(npc);
         }
 
         // Select the next state based on conditions
         public void EvaluateState(OvermorrowNPC npc)
         {
             // Prevent evaluating state change if locked in current state
-            Main.NewText(currentState?.ToString());
+            //Main.NewText(currentState?.ToString());
             if (!(currentState?.CanExit ?? true))
             {
-                Main.NewText("prevented");
+                //Main.NewText("prevented");
                 return;
             }
 
-            /*if (npc.TargetingModule.HasTarget())
+            if (npc.TargetingModule.HasTarget())
             {
                 float distanceToTarget = Vector2.Distance(npc.NPC.Center, npc.TargetingModule.Target.Center);
 
@@ -290,14 +272,14 @@ namespace OvermorrowMod.Core.NPCs
                     }
                 }
             }
-            else*/
+            else
             {
                 if (npc.SpawnerID.HasValue)
                 {
                     //Main.NewText("yo 2" + npc.Name);
 
                 }
-                //ChangeState(AIStateType.Idle, npc);
+                ChangeState(AIStateType.Idle, npc);
             }
         }
     }

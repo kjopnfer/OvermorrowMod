@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.NPCs
         int distanceFromGround = 180;
 
         public override int Weight => 1;
-
+        public override bool CanExit => true;
         public override void Enter(OvermorrowNPC npc)
         {
             Main.NewText("starting basic fly");
