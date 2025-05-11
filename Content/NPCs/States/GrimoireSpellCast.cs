@@ -37,17 +37,7 @@ namespace OvermorrowMod.Content.NPCs
             if (attackDelay-- > 0)
                 return false;
 
-            NPC baseNPC = npc.NPC;
-            Entity target = npc.TargetingModule.Target;
-
-            float xDistance = Math.Abs(baseNPC.Center.X - target.Center.X);
-            float yDistance = Math.Abs(baseNPC.Center.Y - target.Center.Y);
-
-            bool isWithinXRange = xDistance <= tileAttackDistance * 18;
-            bool isWithinYRange = yDistance < 100;
-            bool hasLineOfSight = Collision.CanHitLine(target.Center, 1, 1, baseNPC.Center, 1, 1);
-
-            return isWithinXRange && isWithinYRange && hasLineOfSight;
+            return AttackCondition(npc);
         }
 
         public override void Enter(OvermorrowNPC npc)
@@ -86,7 +76,7 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        int chairProjectilesNeeded = 0;
+        int chairProjectilesNeeded = 3;
         private void CastSpell(OvermorrowNPC npc)
         {
             NPC baseNPC = npc.NPC;
@@ -167,11 +157,13 @@ namespace OvermorrowMod.Content.NPCs
             }
 
             float xDistance = Math.Abs(baseNPC.Center.X - npc.TargetingModule.Target.Center.X);
+            float yDistance = Math.Abs(baseNPC.Center.Y - npc.TargetingModule.Target.Center.Y);
 
-            bool xDistanceCheck = xDistance <= tileAttackDistance * 18;
-            bool yDistanceCheck = Math.Abs(baseNPC.Center.Y - npc.TargetingModule.Target.Center.Y) < 100;
+            bool isWithinXRange = xDistance <= tileAttackDistance * 18;
+            bool isWithinYRange = yDistance < 100;
+            bool hasLineOfSight = Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, baseNPC.Center, 1, 1);
 
-            return xDistanceCheck && yDistanceCheck && Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, baseNPC.Center, 1, 1);
+            return isWithinXRange && isWithinYRange && hasLineOfSight;
         }
 
         private void HandleGroundProximity(OvermorrowNPC npc)
