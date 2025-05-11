@@ -109,6 +109,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 NPC.direction = NPC.GetDirection(targetPosition);
             }
 
+            State substate = AIStateMachine.GetCurrentSubstate();
+            NPC.dontTakeDamage = substate is GrimoireHidden;
+
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 
             //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);

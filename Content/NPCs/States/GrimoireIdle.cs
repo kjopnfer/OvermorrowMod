@@ -30,7 +30,26 @@ namespace OvermorrowMod.Content.NPCs
         {
             npc.AICounter = 0;
             IsFinished = false;
-            Main.NewText("do idling " + IsFinished);
+
+            if (npc.SpawnPoint != null)
+            {
+                Vector2 spawnPosition = npc.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
+
+                Vector2 newPosition;
+                do
+                {
+                    float offsetX = Main.rand.NextFloat(-10f, 10f) * 16; // Random X within 10 tiles
+                    float offsetY = Main.rand.NextFloat(-10f, 10f) * 16; // Random Y within 10 tiles
+                    newPosition = spawnPosition + new Vector2(offsetX, offsetY);
+
+                    // Find the nearest ground position for the generated newPosition
+                    newPosition = TileUtils.FindNearestGround(newPosition);
+
+                } while (Vector2.Distance(npc.NPC.Center, newPosition) < 4 * 16); // Ensure at least 4 tiles away
+
+                // There is no target so pick a random position to walk towards.
+                npc.TargetingModule.MiscTargetPosition = newPosition;
+            }
         }
 
         public override void Exit(OvermorrowNPC npc)
@@ -51,6 +70,11 @@ namespace OvermorrowMod.Content.NPCs
 
             // TODO: Change this so tha the NPC picks a random spot and then hovers around it
             //if (npc.TargetingModule.HasTarget())
+            if (npc.SpawnPoint != null)
+            {
+
+            }
+            else
             {
 
                 HandleVerticalMovement(npc);

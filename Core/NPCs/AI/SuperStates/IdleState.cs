@@ -1,9 +1,7 @@
-using Ionic;
 using OvermorrowMod.Common;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
-using Terraria.Utilities;
 
 namespace OvermorrowMod.Core.NPCs
 {

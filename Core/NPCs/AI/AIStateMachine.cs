@@ -50,14 +50,34 @@ namespace OvermorrowMod.Core.NPCs
         public State GetCurrentState() => currentState;
 
         /// <summary>
+        /// Get current active substate (most recent one registered).
+        /// </summary>
+        public State GetCurrentSubstate()
+        {
+            if (currentState == null)
+                return null;
+
+            // Look for a base type matching SuperState<something>
+            var type = currentState.GetType();
+            while (type != null)
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(SuperState<>))
+                {
+                    var substateProperty = type.GetProperty("currentSubstate");
+                    if (substateProperty != null)
+                        return substateProperty.GetValue(currentState) as State;
+                }
+
+                type = type.BaseType;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Accessor for previous substates, returned from most recent to oldest.
         /// </summary>
         public IEnumerable<State> GetPreviousSubstates() => substateHistory.Reverse();
-
-        /// <summary>
-        /// Get current active substate (most recent one registered).
-        /// </summary>
-        public State GetCurrentSubstate() => substateHistory.LastOrDefault();
 
         /// <summary>
         /// Dictionary of available superstates (Idle, Moving, Attacking).
