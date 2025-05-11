@@ -92,6 +92,32 @@ namespace OvermorrowMod.Content.NPCs
             NPC baseNPC = npc.NPC;
             switch (baseNPC.ModNPC)
             {
+                case BarrierBook:
+                    if (npc.AICounter == 10)
+                    {
+                        float radius = 500f;
+                        var nearbyHostileEnemies = Main.npc
+                            .Where(enemy => enemy.active && !enemy.friendly && Vector2.Distance(baseNPC.Center, enemy.Center) <= radius && enemy.whoAmI != baseNPC.whoAmI)
+                            .ToList();
+
+                        foreach (NPC enemy in nearbyHostileEnemies)
+                        {
+                            enemy.AddBarrier(50, 100);
+                            Projectile.NewProjectile(baseNPC.GetSource_FromAI(), enemy.Center, Vector2.Zero, ModContent.ProjectileType<BarrierEffect>(), 1, 1f, Main.myPlayer, ai0: enemy.whoAmI);
+                        }
+                    }
+                    break;
+                case BlasterBook:
+                    if (npc.AICounter == 20)
+                    {
+                        Vector2 directionToPlayer = (npc.TargetingModule.Target.Center - baseNPC.Center).SafeNormalize(Vector2.Zero); // Direction vector to the player
+
+                        float angleSpread = MathHelper.ToRadians(25); // Spread angle for randomness
+                        Vector2 projectileVelocity = directionToPlayer.RotatedByRandom(angleSpread) * 8; // Randomized rotation towards the player
+                        Vector2 spawnPosition = baseNPC.Center + new Vector2(32, 0).RotatedBy(directionToPlayer.ToRotation());
+                        Projectile.NewProjectile(baseNPC.GetSource_FromAI(), spawnPosition, projectileVelocity, ModContent.ProjectileType<BlastRune>(), baseNPC.damage, 1f, Main.myPlayer, baseNPC.whoAmI);
+                    }
+                    break;
                 case PlantBook:
                     if (npc.AICounter == 30)
                     {
