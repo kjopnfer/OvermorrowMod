@@ -98,6 +98,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
         float aggroDelay = 60;
         public override void AI()
         {
+            if (TargetingModule.HasTarget())
+            {
+                Vector2 targetPosition = TargetingModule.Target.Center;
+                NPC.direction = NPC.GetDirection(targetPosition);
+            }
+            else if (TargetingModule.MiscTargetPosition.HasValue)
+            {
+                Vector2 targetPosition = TargetingModule.MiscTargetPosition.Value;
+                NPC.direction = NPC.GetDirection(targetPosition);
+            }
+
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 
             //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);
