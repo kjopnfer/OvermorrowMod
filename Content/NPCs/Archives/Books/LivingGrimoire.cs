@@ -93,93 +93,42 @@ namespace OvermorrowMod.Content.NPCs.Archives
             new BasicFly(),
         };
 
+        public override NPCTargetingConfig TargetingConfig()
+        {
+            return new NPCTargetingConfig(
+                maxAggroTime: 300f,
+                aggroLossRate: 1f,
+                aggroCooldownTime: 180f,
+                maxMissedAttacks: 3,
+                maxTargetRange: 12 * 45,
+                prioritizeAggro: true
+            );
+        }
+
         float flySpeedX = 2;
         float flySpeedY = 0;
         float aggroDelay = 60;
         public override void AI()
         {
-            if (TargetingModule.HasTarget())
+            State substate = AIStateMachine.GetCurrentSubstate();
+
+            if (substate is not GrimoireSpellCast)
             {
-                Vector2 targetPosition = TargetingModule.Target.Center;
-                NPC.direction = NPC.GetDirection(targetPosition);
-            }
-            else if (TargetingModule.MiscTargetPosition.HasValue)
-            {
-                Vector2 targetPosition = TargetingModule.MiscTargetPosition.Value;
-                NPC.direction = NPC.GetDirection(targetPosition);
+                if (TargetingModule.HasTarget())
+                {
+                    Vector2 targetPosition = TargetingModule.Target.Center;
+                    NPC.direction = NPC.GetDirection(targetPosition);
+                }
+                else if (TargetingModule.MiscTargetPosition.HasValue)
+                {
+                    Vector2 targetPosition = TargetingModule.MiscTargetPosition.Value;
+                    NPC.direction = NPC.GetDirection(targetPosition);
+                }
             }
 
-            State substate = AIStateMachine.GetCurrentSubstate();
             NPC.dontTakeDamage = substate is GrimoireHidden;
 
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
-
-            //Dust.NewDust(targetPosition, 1, 1, DustID.Torch);
-            /*switch ((AICase)AIState)
-            {
-                case AICase.Hidden:
-                    if (TargetingModule.HasTarget())
-                    {
-                        AIState = (int)AICase.Fall;
-                        AICounter = 0;
-                    }
-                    break;
-                case AICase.Fall:
-                    NPC.noGravity = false;
-
-                    if (AICounter++ >= 36)
-                    {
-                        NPC.noGravity = true;
-                        AIState = (int)AICase.Fly;
-                        AICounter = 0;
-                    }
-                    break;
-                case AICase.Fly:
-                    NPC.TargetClosest();
-
-                    HandleHorizontalMovement();
-                    HandleVerticalMovement();
-                    HandleGroundProximity();
-                    HandleObstacleAvoidance();
-
-                    if (AttackCondition())
-                    {
-                        aggroDelay--;
-                        if (aggroDelay <= 0)
-                        {
-                            AIState = (int)AICase.Cast;
-                            AICounter = 0;
-                        }
-                    }
-
-                    if (AICounter++ > 120)
-                    {
-                        AIState = (int)AICase.Fly;
-                        AICounter = 0;
-                        targetPosition = NPC.Center + new Vector2(26 * 16 * NPC.direction, 0).RotatedByRandom(MathHelper.PiOver4);
-                    }
-                    break;
-                case AICase.Cast:
-                    NPC.velocity.X /= 2f;
-
-                    HandleVerticalMovement();
-                    HandleGroundProximity();
-
-                    CastSpell();
-
-                    if (AICounter++ > CastTime)
-                    {
-                        distanceFromGround = Main.rand.Next(16, 19) * 8;
-                        aggroDelayTime = Main.rand.Next(10, 20) * 10;
-                        tileAttackDistance = Main.rand.Next(16, 32) * 16;
-
-                        AIState = (int)AICase.Fly;
-                        AICounter = 0;
-                        NPC.localAI[0] = 0;
-                        aggroDelay = aggroDelayTime;
-                    }
-                    break;
-            }*/
 
             NPC.rotation = NPC.velocity.Y * 0.08f;
 
@@ -188,64 +137,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public abstract bool AttackCondition();
         public virtual void CastSpell() { }
-
-        private void HandleHorizontalMovement()
-        {
-            float targetSpeed = 2f;
-
-            if (NPC.Center.X >= targetPosition.X)
-            {
-                NPC.velocity.X = Math.Max(NPC.velocity.X - 0.05f, -targetSpeed);
-                flySpeedX = Math.Max(flySpeedX - 0.1f, -targetSpeed);
-            }
-            else if (NPC.Center.X <= targetPosition.X)
-            {
-                NPC.velocity.X = Math.Min(NPC.velocity.X + 0.05f, targetSpeed);
-                flySpeedX = Math.Min(flySpeedX + 0.1f, targetSpeed);
-            }
-        }
-
-        private void HandleVerticalMovement()
-        {
-            float verticalBuffer = 16 * 5;
-            float targetSpeed = 2f;
-
-            if (NPC.Center.Y <= Player.Center.Y - verticalBuffer)
-            {
-                NPC.velocity.Y = Math.Min(NPC.velocity.Y + 0.1f, targetSpeed);
-
-                // Add randomness to avoid straight-line movement
-                if (Main.rand.NextBool(3))
-                    NPC.velocity.Y += 0.05f;
-
-                flySpeedY = Math.Min(flySpeedY + 0.1f, targetSpeed);
-            }
-        }
-
-        private void HandleGroundProximity()
-        {
-            float groundBuffer = distanceFromGround;
-
-            if (RayTracing.CastTileCollisionLength(NPC.Center, Vector2.UnitY, groundBuffer) < groundBuffer)
-            {
-                NPC.velocity.Y -= 0.1f;
-                flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
-            }
-        }
-
-        private void HandleObstacleAvoidance()
-        {
-            float obstacleBuffer = 45f;
-
-            if (RayTracing.CastTileCollisionLength(NPC.Center, Vector2.UnitX * NPC.direction, obstacleBuffer) < obstacleBuffer)
-            {
-                NPC.velocity.X -= 0.25f * NPC.direction;
-                flySpeedX -= 0.25f * NPC.direction;
-
-                NPC.velocity.Y -= 0.5f;
-                flySpeedY = Math.Max(flySpeedY - 0.5f, -2f);
-            }
-        }
 
         bool drawWings = true;
         bool drawRuneCircle = false;

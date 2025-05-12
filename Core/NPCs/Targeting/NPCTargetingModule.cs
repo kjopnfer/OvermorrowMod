@@ -170,7 +170,8 @@ namespace OvermorrowMod.Core.NPCs
         private bool HasLineOfSight(Entity entity)
         {
             // Implement logic to determine if the entity is visible (raycasting, tile checks, etc.)
-            return true;
+            bool canSee = Collision.CanHitLine(npc.Center, 1, 1, entity.Center, 1, 1);
+            return canSee;
         }
 
         private bool IsVisible(Entity entity)
