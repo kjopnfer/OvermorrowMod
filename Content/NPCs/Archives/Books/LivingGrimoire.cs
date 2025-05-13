@@ -160,11 +160,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch (currentState)
             {
                 case IdleState idleState:
-                    drawWings = false;
 
                     switch (idleState.currentSubstate)
                     {
                         case GrimoireHidden:
+                            drawWings = false;
+
                             if (TargetingModule.HasTarget())
                             {
                                 if (NPC.frameCounter++ % 4 == 0)
@@ -179,6 +180,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
                             }
                             break;
                         case GrimoireIdle:
+                            if (NPC.frameCounter++ % 3 == 0)
+                            {
+                                yFrameWing++;
+                                if (yFrameWing >= 3) yFrameWing = 0;
+                            }
                             break;
                     }
                     break;

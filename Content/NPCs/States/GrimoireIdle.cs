@@ -5,6 +5,7 @@ using OvermorrowMod.Core.NPCs;
 using System;
 using System.Linq;
 using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -62,25 +63,73 @@ namespace OvermorrowMod.Content.NPCs
         private int castTime = 120;
         float flySpeedX = 2;
         float flySpeedY = 0;
+
+        /// <summary>
+        /// Max distance from ground the NPC should float above.
+        /// </summary>
         int distanceFromGround = 180;
         public override void Update(OvermorrowNPC npc)
         {
-            npc.AICounter++;
-            npc.NPC.velocity.X /= 2f;
+            //npc.NPC.velocity.X /= 2f;
+            distanceFromGround = 16 * 8;
+            NPC baseNPC = npc.NPC;
 
             // TODO: Change this so tha the NPC picks a random spot and then hovers around it
             //if (npc.TargetingModule.HasTarget())
             if (npc.SpawnPoint != null)
             {
+                if (npc.TargetingModule.MiscTargetPosition.HasValue)
+                {
+                    Dust.NewDust(npc.TargetingModule.MiscTargetPosition.Value, 1, 1, DustID.BlueTorch);
 
+                    Vector2 targetPosition = npc.TargetingModule.MiscTargetPosition.Value;
+                    baseNPC.direction = baseNPC.GetDirection(targetPosition);
+                    float xDistance = Math.Abs(baseNPC.Center.X - targetPosition.X);
+
+                    BasicFly.HandleHorizontalMovement(ref npc, ref flySpeedX);
+                    BasicFly.HandleVerticalMovementToTarget(ref npc, ref flySpeedY);
+                    BasicFly.HandleGroundProximity(ref npc, ref flySpeedY, distanceFromGround);
+                    BasicFly.HandleObstacleAvoidance(ref npc, ref flySpeedX, ref flySpeedY);
+
+                    //Main.NewText(flySpeedX + " " + flySpeedY);
+                    if (xDistance <= 16)
+                    {
+                        baseNPC.velocity.X /= 2f;
+
+                        npc.AICounter++;
+
+                        if (npc.AICounter >= 180)
+                        {
+                            Main.NewText("Finished wandering.");
+
+                            npc.IdleCounter = 5;
+                            npc.NPC.velocity.X = 0;
+                        }
+                    }
+                }
             }
             else
             {
-
-                HandleVerticalMovement(npc);
-                HandleGroundProximity(npc);
-
                 IsFinished = true;
+            }
+        }
+
+        private void HandleHorizontalMovement(OvermorrowNPC npc)
+        {
+            NPC baseNPC = npc.NPC;
+            float targetSpeed = 2f;
+
+            var target = npc.TargetingModule.Target;
+
+            if (baseNPC.Center.X >= target.Center.X)
+            {
+                baseNPC.velocity.X = Math.Max(baseNPC.velocity.X - 0.05f, -targetSpeed);
+                flySpeedX = Math.Max(flySpeedX - 0.1f, -targetSpeed);
+            }
+            else if (baseNPC.Center.X <= target.Center.X)
+            {
+                baseNPC.velocity.X = Math.Min(baseNPC.velocity.X + 0.05f, targetSpeed);
+                flySpeedX = Math.Min(flySpeedX + 0.1f, targetSpeed);
             }
         }
 
@@ -110,7 +159,7 @@ namespace OvermorrowMod.Content.NPCs
             float verticalBuffer = 16 * 5;
             float targetSpeed = 2f;
 
-            //if (baseNPC.Center.Y <= target.Center.Y - verticalBuffer)
+            if (baseNPC.Center.Y <= npc.TargetingModule.MiscTargetPosition.Value.Y - verticalBuffer)
             {
                 baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, targetSpeed);
 
@@ -122,5 +171,19 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
+        private void HandleObstacleAvoidance(OvermorrowNPC npc)
+        {
+            NPC baseNPC = npc.NPC;
+            float obstacleBuffer = 45f;
+
+            if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitX * baseNPC.direction, obstacleBuffer) < obstacleBuffer)
+            {
+                baseNPC.velocity.X -= 0.25f * baseNPC.direction;
+                flySpeedX -= 0.25f * baseNPC.direction;
+
+                baseNPC.velocity.Y -= 0.5f;
+                flySpeedY = Math.Max(flySpeedY - 0.5f, -2f);
+            }
+        }
     }
 }

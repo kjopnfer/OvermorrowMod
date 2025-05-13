@@ -29,64 +29,93 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Update(OvermorrowNPC npc)
         {
-            HandleHorizontalMovement(npc);
-            HandleVerticalMovement(npc);
-            HandleGroundProximity(npc);
-            HandleObstacleAvoidance(npc);
+            HandleHorizontalMovement(ref npc, ref flySpeedX);
+            HandleVerticalMovementToTarget(ref npc, ref flySpeedY);
+            HandleGroundProximity(ref npc, ref flySpeedY, distanceFromGround);
+            HandleObstacleAvoidance(ref npc, ref flySpeedX, ref flySpeedY);
         }
 
-        private void HandleHorizontalMovement(OvermorrowNPC npc)
+        public static void HandleHorizontalMovement(ref OvermorrowNPC npc, ref float flySpeedX)
         {
             NPC baseNPC = npc.NPC;
             float targetSpeed = 2f;
 
-            var target = npc.TargetingModule.Target;
+            // Safely retrieve target X position
+            float? targetPosition = npc.TargetingModule.Target?.Center.X
+                                  ?? npc.TargetingModule.MiscTargetPosition?.X;
 
-            if (baseNPC.Center.X >= target.Center.X)
+            if (targetPosition == null)
+                return; // No valid target, don't apply horizontal movement
+
+            if (baseNPC.Center.X >= targetPosition.Value)
             {
                 baseNPC.velocity.X = Math.Max(baseNPC.velocity.X - 0.05f, -targetSpeed);
                 flySpeedX = Math.Max(flySpeedX - 0.1f, -targetSpeed);
             }
-            else if (baseNPC.Center.X <= target.Center.X)
+            else
             {
                 baseNPC.velocity.X = Math.Min(baseNPC.velocity.X + 0.05f, targetSpeed);
                 flySpeedX = Math.Min(flySpeedX + 0.1f, targetSpeed);
             }
         }
 
-        private void HandleVerticalMovement(OvermorrowNPC npc)
+        public static void HandleVerticalMovementToTarget(ref OvermorrowNPC npc, ref float flySpeedY, float buffer = 16 * 5, float speed = 2f)
         {
             NPC baseNPC = npc.NPC;
-            var target = npc.TargetingModule.Target;
 
-            float verticalBuffer = 16 * 5;
-            float targetSpeed = 2f;
+            float? targetPosition = npc.TargetingModule.Target?.Center.Y
+                                  ?? npc.TargetingModule.MiscTargetPosition?.Y;
 
-            if (baseNPC.Center.Y <= target.Center.Y - verticalBuffer)
+            if (targetPosition == null)
+                return;
+
+            if (baseNPC.Center.Y <= targetPosition.Value - buffer)
             {
-                baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, targetSpeed);
 
-                // Add randomness to avoid straight-line movement
+                baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, speed);
+
                 if (Main.rand.NextBool(3))
                     baseNPC.velocity.Y += 0.05f;
 
-                flySpeedY = Math.Min(flySpeedY + 0.1f, targetSpeed);
+                flySpeedY = Math.Min(flySpeedY + 0.1f, speed);
             }
         }
 
-        private void HandleGroundProximity(OvermorrowNPC npc)
+
+        public static void HandleVerticalMovementToPoint(ref OvermorrowNPC npc, Vector2 point, ref float flySpeedY, float buffer = 16 * 5, float speed = 2f)
         {
             NPC baseNPC = npc.NPC;
-            float groundBuffer = distanceFromGround;
 
-            if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer) < groundBuffer)
+            if (baseNPC.Center.Y <= point.Y - buffer)
             {
-                baseNPC.velocity.Y -= 0.1f;
-                flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
+                baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, speed);
+
+                if (Main.rand.NextBool(3))
+                    baseNPC.velocity.Y += 0.05f;
+
+                flySpeedY = Math.Min(flySpeedY + 0.1f, speed);
             }
         }
 
-        private void HandleObstacleAvoidance(OvermorrowNPC npc)
+        public static void HandleGroundProximity(ref OvermorrowNPC npc, ref float flySpeedY, int groundBuffer, float heightLimit = 192f)
+        {
+            NPC baseNPC = npc.NPC;
+
+            float dist = RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer);
+
+            if (dist < groundBuffer)
+            {
+                baseNPC.velocity.Y -= 0.2f;
+                flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
+            }
+            else if (dist > heightLimit)
+            {
+                baseNPC.velocity.Y += 0.1f;
+                flySpeedY = Math.Min(flySpeedY + 0.1f, 2f);
+            }
+        }
+
+        public static void HandleObstacleAvoidance(ref OvermorrowNPC npc, ref float flySpeedX, ref float flySpeedY)
         {
             NPC baseNPC = npc.NPC;
             float obstacleBuffer = 45f;
@@ -100,5 +129,72 @@ namespace OvermorrowMod.Content.NPCs
                 flySpeedY = Math.Max(flySpeedY - 0.5f, -2f);
             }
         }
+
+
+        //private void HandleHorizontalMovement(OvermorrowNPC npc)
+        //{
+        //    NPC baseNPC = npc.NPC;
+        //    float targetSpeed = 2f;
+
+        //    var target = npc.TargetingModule.Target;
+
+        //    if (baseNPC.Center.X >= target.Center.X)
+        //    {
+        //        baseNPC.velocity.X = Math.Max(baseNPC.velocity.X - 0.05f, -targetSpeed);
+        //        flySpeedX = Math.Max(flySpeedX - 0.1f, -targetSpeed);
+        //    }
+        //    else if (baseNPC.Center.X <= target.Center.X)
+        //    {
+        //        baseNPC.velocity.X = Math.Min(baseNPC.velocity.X + 0.05f, targetSpeed);
+        //        flySpeedX = Math.Min(flySpeedX + 0.1f, targetSpeed);
+        //    }
+        //}
+
+        //private void HandleVerticalMovement(OvermorrowNPC npc)
+        //{
+        //    NPC baseNPC = npc.NPC;
+        //    var target = npc.TargetingModule.Target;
+
+        //    float verticalBuffer = 16 * 5;
+        //    float targetSpeed = 2f;
+
+        //    if (baseNPC.Center.Y <= target.Center.Y - verticalBuffer)
+        //    {
+        //        baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, targetSpeed);
+
+        //        // Add randomness to avoid straight-line movement
+        //        if (Main.rand.NextBool(3))
+        //            baseNPC.velocity.Y += 0.05f;
+
+        //        flySpeedY = Math.Min(flySpeedY + 0.1f, targetSpeed);
+        //    }
+        //}
+
+        //private void HandleGroundProximity(OvermorrowNPC npc)
+        //{
+        //    NPC baseNPC = npc.NPC;
+        //    float groundBuffer = distanceFromGround;
+
+        //    if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer) < groundBuffer)
+        //    {
+        //        baseNPC.velocity.Y -= 0.1f;
+        //        flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
+        //    }
+        //}
+
+        //private void HandleObstacleAvoidance(OvermorrowNPC npc)
+        //{
+        //    NPC baseNPC = npc.NPC;
+        //    float obstacleBuffer = 45f;
+
+        //    if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitX * baseNPC.direction, obstacleBuffer) < obstacleBuffer)
+        //    {
+        //        baseNPC.velocity.X -= 0.25f * baseNPC.direction;
+        //        flySpeedX -= 0.25f * baseNPC.direction;
+
+        //        baseNPC.velocity.Y -= 0.5f;
+        //        flySpeedY = Math.Max(flySpeedY - 0.5f, -2f);
+        //    }
+        //}
     }
 }
