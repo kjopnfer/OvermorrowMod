@@ -100,7 +100,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 aggroLossRate: 1f,
                 aggroCooldownTime: 180f,
                 maxMissedAttacks: 3,
-                maxTargetRange: 12 * 45,
+                maxTargetRange: 16 * 30,
                 prioritizeAggro: true
             );
         }

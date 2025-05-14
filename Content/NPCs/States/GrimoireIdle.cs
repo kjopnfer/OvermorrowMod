@@ -74,13 +74,10 @@ namespace OvermorrowMod.Content.NPCs
             distanceFromGround = 16 * 8;
             NPC baseNPC = npc.NPC;
 
-            // TODO: Change this so tha the NPC picks a random spot and then hovers around it
-            //if (npc.TargetingModule.HasTarget())
             if (npc.SpawnPoint != null)
             {
                 if (npc.TargetingModule.MiscTargetPosition.HasValue)
                 {
-                    Dust.NewDust(npc.TargetingModule.MiscTargetPosition.Value, 1, 1, DustID.BlueTorch);
 
                     Vector2 targetPosition = npc.TargetingModule.MiscTargetPosition.Value;
                     baseNPC.direction = baseNPC.GetDirection(targetPosition);

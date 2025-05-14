@@ -63,8 +63,8 @@ namespace OvermorrowMod.Content.NPCs
             npc.AICounter++;
             npc.NPC.velocity.X /= 2f;
 
-            HandleVerticalMovement(npc);
-            HandleGroundProximity(npc);
+            BasicFly.HandleVerticalMovementToTarget(ref npc, ref flySpeedY);
+            BasicFly.HandleGroundProximity(ref npc, ref flySpeedY, distanceFromGround);
 
             CastSpell(npc);
 
@@ -160,8 +160,12 @@ namespace OvermorrowMod.Content.NPCs
             float yDistance = Math.Abs(baseNPC.Center.Y - npc.TargetingModule.Target.Center.Y);
 
             bool isWithinXRange = xDistance <= tileAttackDistance * 18;
-            bool isWithinYRange = yDistance < 100;
+            bool isWithinYRange = yDistance < 200;
             bool hasLineOfSight = Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, baseNPC.Center, 1, 1);
+
+            Main.NewText(isWithinYRange, Color.CornflowerBlue);
+            Main.NewText(isWithinXRange , Color.Red);
+            Main.NewText(hasLineOfSight, Color.LightGreen);
 
             return isWithinXRange && isWithinYRange && hasLineOfSight;
         }
