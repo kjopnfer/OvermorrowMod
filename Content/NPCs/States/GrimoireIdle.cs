@@ -17,16 +17,9 @@ namespace OvermorrowMod.Content.NPCs
         {
             //Main.NewText(npc.AIStateMachine.get)
             return true;
-
-            if (npc.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
-            {
-                //Main.NewText("grimoire idle cannot run", Color.Red);
-                return false;
-            }
-
-            return true;
         }
 
+        Vector2? lastTarget = null;
         public override void Enter(OvermorrowNPC npc)
         {
             npc.AICounter = 0;
@@ -34,21 +27,29 @@ namespace OvermorrowMod.Content.NPCs
 
             if (npc.SpawnPoint != null)
             {
+                int attempts = 0;
+                float distanceRange = 16f;
                 Vector2 spawnPosition = npc.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
 
                 Vector2 newPosition;
                 do
                 {
-                    float offsetX = Main.rand.NextFloat(-10f, 10f) * 16; // Random X within 10 tiles
-                    float offsetY = Main.rand.NextFloat(-10f, 10f) * 16; // Random Y within 10 tiles
+                    float offsetX = Main.rand.NextFloat(-distanceRange, distanceRange) * 16; // Random X within 10 tiles
+                    float offsetY = Main.rand.NextFloat(-distanceRange, distanceRange) * 16; // Random Y within 10 tiles
                     newPosition = spawnPosition + new Vector2(offsetX, offsetY);
 
-                    // Find the nearest ground position for the generated newPosition
                     newPosition = TileUtils.FindNearestGround(newPosition);
+                    if (!lastTarget.HasValue)
+                        break;
 
-                } while (Vector2.Distance(npc.NPC.Center, newPosition) < 4 * 16); // Ensure at least 4 tiles away
+                    attempts++;
+                } while (
+                    lastTarget.HasValue &&
+                    Vector2.Distance(lastTarget.Value, newPosition) < 10 * 16 &&
+                    attempts < 100 // Prevent infinite loops
+                );
 
-                // There is no target so pick a random position to walk towards.
+                lastTarget = newPosition;
                 npc.TargetingModule.MiscTargetPosition = newPosition;
             }
         }
@@ -76,7 +77,11 @@ namespace OvermorrowMod.Content.NPCs
 
             if (npc.SpawnPoint != null)
             {
-                if (npc.TargetingModule.MiscTargetPosition.HasValue)
+                if (npc.TargetingModule.HasTarget())
+                {
+                    IsFinished = true;
+                }
+                else if (npc.TargetingModule.MiscTargetPosition.HasValue)
                 {
 
                     Vector2 targetPosition = npc.TargetingModule.MiscTargetPosition.Value;
@@ -87,6 +92,8 @@ namespace OvermorrowMod.Content.NPCs
                     BasicFly.HandleVerticalMovementToTarget(ref npc, ref flySpeedY);
                     BasicFly.HandleGroundProximity(ref npc, ref flySpeedY, distanceFromGround);
                     BasicFly.HandleObstacleAvoidance(ref npc, ref flySpeedX, ref flySpeedY);
+
+                    Dust.NewDust(targetPosition, 1, 1, DustID.BlueTorch);
 
                     //Main.NewText(flySpeedX + " " + flySpeedY);
                     if (xDistance <= 16)
@@ -108,78 +115,6 @@ namespace OvermorrowMod.Content.NPCs
             else
             {
                 IsFinished = true;
-            }
-        }
-
-        private void HandleHorizontalMovement(OvermorrowNPC npc)
-        {
-            NPC baseNPC = npc.NPC;
-            float targetSpeed = 2f;
-
-            var target = npc.TargetingModule.Target;
-
-            if (baseNPC.Center.X >= target.Center.X)
-            {
-                baseNPC.velocity.X = Math.Max(baseNPC.velocity.X - 0.05f, -targetSpeed);
-                flySpeedX = Math.Max(flySpeedX - 0.1f, -targetSpeed);
-            }
-            else if (baseNPC.Center.X <= target.Center.X)
-            {
-                baseNPC.velocity.X = Math.Min(baseNPC.velocity.X + 0.05f, targetSpeed);
-                flySpeedX = Math.Min(flySpeedX + 0.1f, targetSpeed);
-            }
-        }
-
-        private void HandleGroundProximity(OvermorrowNPC npc)
-        {
-            NPC baseNPC = npc.NPC;
-            float groundBuffer = distanceFromGround;
-            float heightLimit = 16 * 12;
-
-
-            if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer) < groundBuffer)
-            {
-                baseNPC.velocity.Y -= 0.2f;
-                flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
-            }
-            else if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer) > heightLimit)
-            {
-                baseNPC.velocity.Y += 0.1f;
-                flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
-            }
-        }
-
-        private void HandleVerticalMovement(OvermorrowNPC npc)
-        {
-            NPC baseNPC = npc.NPC;
-            //var target = npc.TargetingModule.Target;
-            float verticalBuffer = 16 * 5;
-            float targetSpeed = 2f;
-
-            if (baseNPC.Center.Y <= npc.TargetingModule.MiscTargetPosition.Value.Y - verticalBuffer)
-            {
-                baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, targetSpeed);
-
-                // Add randomness to avoid straight-line movement
-                if (Main.rand.NextBool(3))
-                    baseNPC.velocity.Y += 0.05f;
-
-                flySpeedY = Math.Min(flySpeedY + 0.1f, targetSpeed);
-            }
-        }
-
-        private void HandleObstacleAvoidance(OvermorrowNPC npc)
-        {
-            NPC baseNPC = npc.NPC;
-            float obstacleBuffer = 45f;
-
-            if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitX * baseNPC.direction, obstacleBuffer) < obstacleBuffer)
-            {
-                baseNPC.velocity.X -= 0.25f * baseNPC.direction;
-                flySpeedX -= 0.25f * baseNPC.direction;
-
-                baseNPC.velocity.Y -= 0.5f;
-                flySpeedY = Math.Max(flySpeedY - 0.5f, -2f);
             }
         }
     }

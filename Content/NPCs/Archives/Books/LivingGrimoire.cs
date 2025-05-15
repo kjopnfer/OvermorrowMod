@@ -122,7 +122,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 else if (TargetingModule.MiscTargetPosition.HasValue)
                 {
                     Vector2 targetPosition = TargetingModule.MiscTargetPosition.Value;
-                    NPC.direction = NPC.GetDirection(targetPosition);
+                    bool canTurn = substate is not GrimoireIdle;
+                    if (canTurn)
+                        NPC.direction = NPC.GetDirection(targetPosition);
                 }
             }
 

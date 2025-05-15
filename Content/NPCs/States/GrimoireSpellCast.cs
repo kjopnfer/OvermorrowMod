@@ -169,38 +169,5 @@ namespace OvermorrowMod.Content.NPCs
 
             return isWithinXRange && isWithinYRange && hasLineOfSight;
         }
-
-        private void HandleGroundProximity(OvermorrowNPC npc)
-        {
-            NPC baseNPC = npc.NPC;
-            float groundBuffer = distanceFromGround;
-
-            if (RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer) < groundBuffer)
-            {
-                baseNPC.velocity.Y -= 0.1f;
-                flySpeedY = Math.Max(flySpeedY - 0.1f, -2f);
-            }
-        }
-
-        private void HandleVerticalMovement(OvermorrowNPC npc)
-        {
-            NPC baseNPC = npc.NPC;
-            var target = npc.TargetingModule.Target;
-
-            float verticalBuffer = 16 * 5;
-            float targetSpeed = 2f;
-
-            if (baseNPC.Center.Y <= target.Center.Y - verticalBuffer)
-            {
-                baseNPC.velocity.Y = Math.Min(baseNPC.velocity.Y + 0.1f, targetSpeed);
-
-                // Add randomness to avoid straight-line movement
-                if (Main.rand.NextBool(3))
-                    baseNPC.velocity.Y += 0.05f;
-
-                flySpeedY = Math.Min(flySpeedY + 0.1f, targetSpeed);
-            }
-        }
-
     }
 }
