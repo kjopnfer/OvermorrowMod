@@ -89,9 +89,9 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         public AIStateMachine(OvermorrowNPC npc, List<BaseIdleState> idleSubstates, List<BaseMovementState> movementSubstates, List<BaseAttackState> attackSubstates)
         {
-            availableStates[AIStateType.Idle] = new IdleState(idleSubstates);
-            availableStates[AIStateType.Moving] = new MovementState(movementSubstates);
-            availableStates[AIStateType.Attacking] = new AttackState(attackSubstates);
+            availableStates[AIStateType.Idle] = new IdleState(idleSubstates, npc);
+            availableStates[AIStateType.Moving] = new MovementState(movementSubstates, npc);
+            availableStates[AIStateType.Attacking] = new AttackState(attackSubstates, npc);
 
             SetInitialState(npc);
         }
@@ -194,7 +194,7 @@ namespace OvermorrowMod.Core.NPCs
         private void SetInitialState(OvermorrowNPC npc)
         {
             currentState = availableStates[AIStateType.Idle];
-            currentState.Enter(npc); // Null if NPC not yet passed
+            currentState.Enter(); // Null if NPC not yet passed
             stateHistory.Enqueue(currentState);
 
             hasInitializedInitialState = false;
@@ -226,7 +226,7 @@ namespace OvermorrowMod.Core.NPCs
                     return;
                 }
 
-                currentState?.Exit(npc);  // Exit the current state if any
+                currentState?.Exit();  // Exit the current state if any
 
                 if (stateHistory.Count >= historySize)
                 {
@@ -234,7 +234,7 @@ namespace OvermorrowMod.Core.NPCs
                 }
 
                 currentState = nextState;
-                currentState.Enter(npc);  // Enter the new state
+                currentState.Enter();  // Enter the new state
 
                 stateHistory.Enqueue(currentState); // Add the new state to the history
             }
@@ -243,7 +243,7 @@ namespace OvermorrowMod.Core.NPCs
         public void Update(OvermorrowNPC npc)
         {
             EvaluateState(npc);
-            currentState?.Update(npc);
+            currentState?.Update();
         }
 
         // Select the next state based on conditions

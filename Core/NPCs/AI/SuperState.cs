@@ -14,10 +14,11 @@ namespace OvermorrowMod.Core.NPCs
         public T currentSubstate { get; protected set; }
         public override bool CanExit => base.CanExit && (currentSubstate?.CanExit ?? true);
 
-        public SuperState(List<T> substates)
+        public SuperState(List<T> substates, OvermorrowNPC npc) : base(npc)
         {
             this.substates = substates;
         }
+
 
         public bool ContainsSubstate(State substate)
         {
@@ -61,9 +62,9 @@ namespace OvermorrowMod.Core.NPCs
 
             if (currentSubstate != substate)
             {
-                currentSubstate?.Exit(npc);
+                currentSubstate?.Exit();
                 currentSubstate = (T)substate;
-                currentSubstate.Enter(npc);
+                currentSubstate.Enter();
             }
         }
     }

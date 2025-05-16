@@ -42,16 +42,16 @@ namespace OvermorrowMod.Content.NPCs
             return AttackCondition(npc);
         }
 
-        public override void Enter(OvermorrowNPC npc)
+        public override void Enter()
         {
-            npc.AICounter = 0;
+            OvermorrowNPC.AICounter = 0;
             IsFinished = false;
             Main.NewText("entering cast spell");
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
-            npc.AICounter = 0;
+            OvermorrowNPC.AICounter = 0;
             attackDelay = 60;
             Main.NewText("exiting spell", Color.Red);
         }
@@ -60,19 +60,19 @@ namespace OvermorrowMod.Content.NPCs
         float flySpeedX = 2;
         float flySpeedY = 0;
         int distanceFromGround = 180;
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
-            npc.AICounter++;
-            npc.NPC.velocity.X /= 2f;
+            OvermorrowNPC.AICounter++;
+            NPC.velocity.X /= 2f;
 
             BasicFly.HandleVerticalMovementToTarget(OvermorrowNPC, ref flySpeedY);
             BasicFly.HandleGroundProximity(OvermorrowNPC, ref flySpeedY, distanceFromGround);
 
-            CastSpell(npc);
+            CastSpell(OvermorrowNPC);
 
-            LivingGrimoire bookNPC = npc as LivingGrimoire;
+            LivingGrimoire bookNPC = OvermorrowNPC as LivingGrimoire;
             //Main.NewText("spell : " + npc.AICounter);
-            if (npc.AICounter >= bookNPC.CastTime)
+            if (OvermorrowNPC.AICounter >= bookNPC.CastTime)
             {
                 IsFinished = true;
             }
@@ -81,33 +81,32 @@ namespace OvermorrowMod.Content.NPCs
         int chairProjectilesNeeded = 3;
         private void CastSpell(OvermorrowNPC npc)
         {
-            NPC baseNPC = npc.NPC;
-            switch (baseNPC.ModNPC)
+            switch (NPC.ModNPC)
             {
                 case BarrierBook:
                     if (npc.AICounter == 10)
                     {
                         float radius = 500f;
                         var nearbyHostileEnemies = Main.npc
-                            .Where(enemy => enemy.active && !enemy.friendly && Vector2.Distance(baseNPC.Center, enemy.Center) <= radius && enemy.whoAmI != baseNPC.whoAmI)
+                            .Where(enemy => enemy.active && !enemy.friendly && Vector2.Distance(NPC.Center, enemy.Center) <= radius && enemy.whoAmI != NPC.whoAmI)
                             .ToList();
 
                         foreach (NPC enemy in nearbyHostileEnemies)
                         {
                             enemy.AddBarrier(50, 100);
-                            Projectile.NewProjectile(baseNPC.GetSource_FromAI(), enemy.Center, Vector2.Zero, ModContent.ProjectileType<BarrierEffect>(), 1, 1f, Main.myPlayer, ai0: enemy.whoAmI);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), enemy.Center, Vector2.Zero, ModContent.ProjectileType<BarrierEffect>(), 1, 1f, Main.myPlayer, ai0: enemy.whoAmI);
                         }
                     }
                     break;
                 case BlasterBook:
                     if (npc.AICounter == 20)
                     {
-                        Vector2 directionToPlayer = (npc.TargetingModule.Target.Center - baseNPC.Center).SafeNormalize(Vector2.Zero); // Direction vector to the player
+                        Vector2 directionToPlayer = (npc.TargetingModule.Target.Center - NPC.Center).SafeNormalize(Vector2.Zero); // Direction vector to the player
 
                         float angleSpread = MathHelper.ToRadians(25); // Spread angle for randomness
                         Vector2 projectileVelocity = directionToPlayer.RotatedByRandom(angleSpread) * 8; // Randomized rotation towards the player
-                        Vector2 spawnPosition = baseNPC.Center + new Vector2(32, 0).RotatedBy(directionToPlayer.ToRotation());
-                        Projectile.NewProjectile(baseNPC.GetSource_FromAI(), spawnPosition, projectileVelocity, ModContent.ProjectileType<BlastRune>(), baseNPC.damage, 1f, Main.myPlayer, baseNPC.whoAmI);
+                        Vector2 spawnPosition = NPC.Center + new Vector2(32, 0).RotatedBy(directionToPlayer.ToRotation());
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, projectileVelocity, ModContent.ProjectileType<BlastRune>(), NPC.damage, 1f, Main.myPlayer, NPC.whoAmI);
                     }
                     break;
                 case PlantBook:
@@ -115,8 +114,8 @@ namespace OvermorrowMod.Content.NPCs
                     {
 
                         float angle = MathHelper.ToRadians(75);
-                        Vector2 projectileVelocity = new Vector2(100 * baseNPC.direction, 0).RotatedByRandom(angle) * 50;
-                        Projectile.NewProjectile(baseNPC.GetSource_FromAI(), npc.TargetingModule.Target.Center, Vector2.Zero, ModContent.ProjectileType<PlantAura>(), 1, 1f, Main.myPlayer);
+                        Vector2 projectileVelocity = new Vector2(100 * NPC.direction, 0).RotatedByRandom(angle) * 50;
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npc.TargetingModule.Target.Center, Vector2.Zero, ModContent.ProjectileType<PlantAura>(), 1, 1f, Main.myPlayer);
                     }
                     break;
                 case ChairBook:
@@ -129,7 +128,7 @@ namespace OvermorrowMod.Content.NPCs
 
                         // Make sure the x-offset is never zero
                         Vector2 projectileVelocity = new Vector2(Main.rand.Next(-3, 2) + 1, Main.rand.Next(8, 10)).RotatedByRandom(angle);
-                        Projectile.NewProjectile(baseNPC.GetSource_FromAI(), baseNPC.Center, projectileVelocity, ModContent.ProjectileType<ChairBolt>(), 1, 1f, Main.myPlayer, 0f, baseNPC.whoAmI);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, ModContent.ProjectileType<ChairBolt>(), 1, 1f, Main.myPlayer, 0f, NPC.whoAmI);
 
                         chairProjectilesNeeded--;
                     }
@@ -141,14 +140,13 @@ namespace OvermorrowMod.Content.NPCs
 
         private bool AttackCondition(OvermorrowNPC npc)
         {
-            NPC baseNPC = npc.NPC;
-            switch (baseNPC.ModNPC)
+            switch (NPC.ModNPC)
             {
                 case ChairBook:
                     var chairSummons = Main.npc
                     .Where(npc => npc.active
                         && npc.ModNPC is ChairSummon chairSummon
-                        && chairSummon.ParentID == baseNPC.whoAmI)
+                        && chairSummon.ParentID == NPC.whoAmI)
                     .Select(npc => npc.ModNPC as ChairSummon)
                     .ToList();
 
@@ -158,12 +156,12 @@ namespace OvermorrowMod.Content.NPCs
                     break;
             }
 
-            float xDistance = Math.Abs(baseNPC.Center.X - npc.TargetingModule.Target.Center.X);
-            float yDistance = Math.Abs(baseNPC.Center.Y - npc.TargetingModule.Target.Center.Y);
+            float xDistance = Math.Abs(NPC.Center.X - npc.TargetingModule.Target.Center.X);
+            float yDistance = Math.Abs(NPC.Center.Y - npc.TargetingModule.Target.Center.Y);
 
             bool isWithinXRange = xDistance <= tileAttackDistance * 18;
             bool isWithinYRange = yDistance < 200;
-            bool hasLineOfSight = Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, baseNPC.Center, 1, 1);
+            bool hasLineOfSight = Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, NPC.Center, 1, 1);
 
             Main.NewText(isWithinYRange, Color.CornflowerBlue);
             Main.NewText(isWithinXRange , Color.Red);

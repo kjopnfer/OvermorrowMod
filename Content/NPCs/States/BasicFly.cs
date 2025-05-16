@@ -19,17 +19,17 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => true;
         public BasicFly(OvermorrowNPC npc) : base(npc) { }
 
-        public override void Enter(OvermorrowNPC npc)
+        public override void Enter()
         {
             Main.NewText("starting basic fly");
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
             Main.NewText("exiting basic fly");
         }
 
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
             HandleHorizontalMovement(OvermorrowNPC, ref flySpeedX);
             HandleVerticalMovementToTarget(OvermorrowNPC, ref flySpeedY);

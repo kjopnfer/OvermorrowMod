@@ -27,49 +27,46 @@ namespace OvermorrowMod.Content.NPCs
             return false;
         }
 
-        public override void Enter(OvermorrowNPC npc)
+        public override void Enter()
         {
-            NPC baseNPC = npc.NPC;
-
             Main.NewText("Dash attack begin");
-            npc.AICounter = 0;
-            npc.NPC.velocity.X = 0;
+            OvermorrowNPC.AICounter = 0;
+            NPC.velocity.X = 0;
 
 
             IsFinished = false;
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
             Main.NewText("Dash attack ends.");
-            npc.NPC.velocity.X = 0;
-            npc.NPC.RemoveStealth();
+            NPC.velocity.X = 0;
+            NPC.RemoveStealth();
         }
 
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
-            npc.AICounter++;
-            NPC baseNPC = npc.NPC;
+            OvermorrowNPC.AICounter++;
 
-            if (npc.AICounter == 30)
+            if (OvermorrowNPC.AICounter == 30)
             {
-                baseNPC.velocity.X = Main.rand.Next(14, 17) * baseNPC.direction;
+                NPC.velocity.X = Main.rand.Next(14, 17) * NPC.direction;
             }
-            else if (npc.AICounter >= 30)
+            else if (OvermorrowNPC.AICounter >= 30)
             {
-                if (baseNPC.collideX)
-                    Collision.StepUp(ref baseNPC.position, ref baseNPC.velocity, baseNPC.width, baseNPC.height, ref baseNPC.stepSpeed, ref baseNPC.gfxOffY);
+                if (NPC.collideX)
+                    Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
 
-                if (baseNPC.velocity.X != 0 && npc.AICounter >= 40)
+                if (NPC.velocity.X != 0 && OvermorrowNPC.AICounter >= 40)
                 {
-                    baseNPC.velocity.X *= 0.9f;
+                    NPC.velocity.X *= 0.9f;
                 }
 
-                if (baseNPC.collideX)
-                    Collision.StepUp(ref baseNPC.position, ref baseNPC.velocity, baseNPC.width, baseNPC.height, ref baseNPC.stepSpeed, ref baseNPC.gfxOffY);
+                if (NPC.collideX)
+                    Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
 
-                if (npc.AICounter++ >= 102)
-                //if(Math.Abs(baseNPC.velocity.X) <= 2)
+                if (OvermorrowNPC.AICounter++ >= 102)
+                //if(Math.Abs(NPC.velocity.X) <= 2)
                 {
                     IsFinished = true;
                 }

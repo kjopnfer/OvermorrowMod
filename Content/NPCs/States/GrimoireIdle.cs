@@ -22,16 +22,16 @@ namespace OvermorrowMod.Content.NPCs
         }
 
         Vector2? lastTarget = null;
-        public override void Enter(OvermorrowNPC npc)
+        public override void Enter()
         {
-            npc.AICounter = 0;
+            OvermorrowNPC.AICounter = 0;
             IsFinished = false;
 
-            if (npc.SpawnPoint != null)
+            if (OvermorrowNPC.SpawnPoint != null)
             {
                 int attempts = 0;
                 float distanceRange = 16f;
-                Vector2 spawnPosition = npc.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
+                Vector2 spawnPosition = OvermorrowNPC.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
 
                 Vector2 newPosition;
                 do
@@ -52,13 +52,13 @@ namespace OvermorrowMod.Content.NPCs
                 );
 
                 lastTarget = newPosition;
-                npc.TargetingModule.MiscTargetPosition = newPosition;
+                OvermorrowNPC.TargetingModule.MiscTargetPosition = newPosition;
             }
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
-            npc.AICounter = 0;
+            OvermorrowNPC.AICounter = 0;
             Main.NewText("exit idle");
 
         }
@@ -71,24 +71,23 @@ namespace OvermorrowMod.Content.NPCs
         /// Max distance from ground the NPC should float above.
         /// </summary>
         int distanceFromGround = 180;
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
             //npc.NPC.velocity.X /= 2f;
             distanceFromGround = 16 * 8;
-            NPC baseNPC = npc.NPC;
 
-            if (npc.SpawnPoint != null)
+            if (OvermorrowNPC.SpawnPoint != null)
             {
-                if (npc.TargetingModule.HasTarget())
+                if (OvermorrowNPC.TargetingModule.HasTarget())
                 {
                     IsFinished = true;
                 }
-                else if (npc.TargetingModule.MiscTargetPosition.HasValue)
+                else if (OvermorrowNPC.TargetingModule.MiscTargetPosition.HasValue)
                 {
 
-                    Vector2 targetPosition = npc.TargetingModule.MiscTargetPosition.Value;
-                    baseNPC.direction = baseNPC.GetDirection(targetPosition);
-                    float xDistance = Math.Abs(baseNPC.Center.X - targetPosition.X);
+                    Vector2 targetPosition = OvermorrowNPC.TargetingModule.MiscTargetPosition.Value;
+                    NPC.direction = NPC.GetDirection(targetPosition);
+                    float xDistance = Math.Abs(NPC.Center.X - targetPosition.X);
 
                     BasicFly.HandleHorizontalMovement(OvermorrowNPC, ref flySpeedX);
                     BasicFly.HandleVerticalMovementToTarget(OvermorrowNPC, ref flySpeedY);
@@ -100,16 +99,16 @@ namespace OvermorrowMod.Content.NPCs
                     //Main.NewText(flySpeedX + " " + flySpeedY);
                     if (xDistance <= 16)
                     {
-                        baseNPC.velocity.X /= 2f;
+                        NPC.velocity.X /= 2f;
 
-                        npc.AICounter++;
+                        OvermorrowNPC.AICounter++;
 
-                        if (npc.AICounter >= 180)
+                        if (OvermorrowNPC.AICounter >= 180)
                         {
                             Main.NewText("Finished wandering.");
 
-                            npc.IdleCounter = 5;
-                            npc.NPC.velocity.X = 0;
+                            OvermorrowNPC.IdleCounter = 5;
+                            NPC.velocity.X = 0;
                         }
                     }
                 }

@@ -12,21 +12,21 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => true;
         public MeleeWalk(OvermorrowNPC npc) : base(npc) { }
 
-        public override void Enter(OvermorrowNPC npc)
+        public override void Enter()
         {
             Main.NewText("enter walk");
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
             Main.NewText("exited walk");
         }
 
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
             float maxSpeed = 1.8f;
-            npc.NPC.direction = npc.NPC.GetDirection(npc.TargetingModule.Target);
-            Vector2 distance = npc.NPC.Move(npc.TargetingModule.Target.Center, 0.2f, maxSpeed, 8f);
+            NPC.direction = NPC.GetDirection(OvermorrowNPC.TargetingModule.Target);
+            Vector2 distance = NPC.Move(OvermorrowNPC.TargetingModule.Target.Center, 0.2f, maxSpeed, 8f);
 
             Main.NewText("the walk state");
         }

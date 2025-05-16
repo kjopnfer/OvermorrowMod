@@ -11,33 +11,34 @@ namespace OvermorrowMod.Core.NPCs
         private List<(BaseAttackState state, int weight)> states;
         public bool HasValidAttack { get; private set; } = false;
 
-        public AttackState(List<BaseAttackState> availableSubstates) : base(availableSubstates)
+        public AttackState(List<BaseAttackState> availableSubstates, OvermorrowNPC npc): base(availableSubstates, npc)
         {
             states = availableSubstates.Select(sub => (sub, sub.Weight)).ToList();
         }
 
-        public override void Enter(OvermorrowNPC npc)
+
+        public override void Enter()
         {
             Main.NewText("NPC enters Attack state.");
-            currentSubstate = PickSubstate(npc);
+            currentSubstate = PickSubstate(OvermorrowNPC);
 
             HasValidAttack = currentSubstate != null;
             if (HasValidAttack)
             {
-                npc.AIStateMachine.RegisterSubstate(currentSubstate);
-                currentSubstate?.Enter(npc);
+                OvermorrowNPC.AIStateMachine.RegisterSubstate(currentSubstate);
+                currentSubstate?.Enter();
             }
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
-            currentSubstate?.Exit(npc);
+            currentSubstate?.Exit();
             Main.NewText("NPC exits Attack state.");
         }
 
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
-            if (!npc.TargetingModule.HasTarget())
+            if (!OvermorrowNPC.TargetingModule.HasTarget())
             {
                 // No target, exit back to AI decision elsewhere.
                 return;
@@ -47,12 +48,12 @@ namespace OvermorrowMod.Core.NPCs
             if (currentSubstate?.IsFinished ?? true)
             {
                 Main.NewText("attack state update: is finished");
-                currentSubstate?.Exit(npc);
+                currentSubstate?.Exit();
                 currentSubstate = null;
             }
             else
             {
-                currentSubstate?.Update(npc);
+                currentSubstate?.Update();
             }
         }
 

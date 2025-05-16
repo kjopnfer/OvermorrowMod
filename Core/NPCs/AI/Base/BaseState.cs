@@ -15,14 +15,7 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         public abstract int Weight { get; }
         public bool IsFinished { get; protected set; } = false;
-
-        protected OvermorrowNPC OvermorrowNPC { get; }
-        protected NPC NPC => OvermorrowNPC.NPC;
-
-        protected BaseState(OvermorrowNPC npc)
-        {
-            OvermorrowNPC = npc;
-        }
+        public BaseState(OvermorrowNPC npc) : base(npc) { }
 
         /// <summary>
         /// By default, assume this state can execute unless overridden.

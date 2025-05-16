@@ -25,30 +25,28 @@ namespace OvermorrowMod.Content.NPCs
             return false;
         }
 
-        public override void Enter(OvermorrowNPC npc)
+        public override void Enter()
         {
-            NPC baseNPC = npc.NPC;
-
             Main.NewText("Stealth gain begin");
-            npc.AICounter = 0;
-            npc.NPC.velocity.X = 0;
+            OvermorrowNPC.AICounter = 0;
+            NPC.velocity.X = 0;
 
             var stealthDelay = 300;
-            baseNPC.SetStealth(stealthTime: 18000, stealthDelay);
+            NPC.SetStealth(stealthTime: 18000, stealthDelay);
 
             IsFinished = false;
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
             Main.NewText("Stealth gain ends.");
-            npc.AICounter = 0;
-            npc.NPC.velocity.X = 0;
+            OvermorrowNPC.AICounter = 0;
+            NPC.velocity.X = 0;
         }
 
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
-            if (npc.AICounter++ >= 60)
+            if (OvermorrowNPC.AICounter++ >= 60)
             {
                 IsFinished = true;
             }

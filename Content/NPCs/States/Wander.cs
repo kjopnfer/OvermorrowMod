@@ -12,18 +12,18 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => true;
         public Wander(OvermorrowNPC npc) : base(npc) { }
 
-        public override void Enter(OvermorrowNPC npc)
+        public override void Enter()
         {
             IsFinished = false;
 
             Main.NewText("entering the wander state", Color.Red);
 
-            npc.NPC.velocity.X = 0;
-            npc.NPC.RemoveStealth();
+            NPC.velocity.X = 0;
+            NPC.RemoveStealth();
 
-            if (npc.SpawnPoint != null)
+            if (OvermorrowNPC.SpawnPoint != null)
             {
-                Vector2 spawnPosition = npc.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
+                Vector2 spawnPosition = OvermorrowNPC.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
 
                 Vector2 newPosition;
                 do
@@ -35,14 +35,14 @@ namespace OvermorrowMod.Content.NPCs
                     // Find the nearest ground position for the generated newPosition
                     newPosition = TileUtils.FindNearestGround(newPosition);
 
-                } while (Vector2.Distance(npc.NPC.Center, newPosition) < 4 * 16); // Ensure at least 4 tiles away
+                } while (Vector2.Distance(NPC.Center, newPosition) < 4 * 16); // Ensure at least 4 tiles away
 
                 // There is no target so pick a random position to walk towards.
-                npc.TargetingModule.MiscTargetPosition = newPosition;
+                OvermorrowNPC.TargetingModule.MiscTargetPosition = newPosition;
             }
             else
             {
-                if (npc.SpawnerID.HasValue)
+                if (OvermorrowNPC.SpawnerID.HasValue)
                 {
 
                 }
@@ -52,27 +52,25 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        public override void Exit(OvermorrowNPC npc)
+        public override void Exit()
         {
-            npc.AICounter = 0;
-            npc.TargetingModule.MiscTargetPosition = null;
+            OvermorrowNPC.AICounter = 0;
+            OvermorrowNPC.TargetingModule.MiscTargetPosition = null;
 
             Main.NewText("exited wander");
         }
 
-        public override void Update(OvermorrowNPC npc)
+        public override void Update()
         {
-            NPC baseNPC = npc.NPC;
-
             // TODO: Change this to an NPC properties module.
             float maxSpeed = 1.8f;
-            if (npc.SpawnPoint != null)
+            if (OvermorrowNPC.SpawnPoint != null)
             {
-                if (npc.TargetingModule.MiscTargetPosition.HasValue)
+                if (OvermorrowNPC.TargetingModule.MiscTargetPosition.HasValue)
                 {
-                    Vector2 targetPosition = npc.TargetingModule.MiscTargetPosition.Value;
-                    baseNPC.direction = baseNPC.GetDirection(targetPosition);
-                    Vector2 distance = baseNPC.Move(targetPosition, 0.2f, maxSpeed, 8f);
+                    Vector2 targetPosition = OvermorrowNPC.TargetingModule.MiscTargetPosition.Value;
+                    NPC.direction = NPC.GetDirection(targetPosition);
+                    Vector2 distance = NPC.Move(targetPosition, 0.2f, maxSpeed, 8f);
 
                     if (distance.X <= 16)
                     {
@@ -80,9 +78,9 @@ namespace OvermorrowMod.Content.NPCs
                         {
                             Main.NewText("Finished wandering.");
 
-                            npc.IdleCounter = 120;
+                            OvermorrowNPC.IdleCounter = 120;
                             IsFinished = true;
-                            npc.NPC.velocity.X = 0;
+                            NPC.velocity.X = 0;
                         }
                     }
                 }
