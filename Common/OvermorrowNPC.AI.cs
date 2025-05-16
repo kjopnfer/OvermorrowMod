@@ -11,15 +11,15 @@ namespace OvermorrowMod.Common
     {
         // TODO: Make these abstract instead.
         public virtual List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-                new Wander()
+                new Wander(this)
         };
         
         public virtual List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
-                new GroundDashAttack()
+                new GroundDashAttack(this)
         };
 
         public virtual List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
-                new MeleeWalk()
+                new MeleeWalk(this)
         };
     }
 }

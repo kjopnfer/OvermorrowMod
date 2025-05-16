@@ -14,6 +14,7 @@ namespace OvermorrowMod.Content.NPCs
         /// Prevent exiting until attack is done.
         /// </summary>
         public override bool CanExit => IsFinished;
+        public GroundDashAttack(OvermorrowNPC npc) : base(npc) { }
 
         public override bool CanExecute(OvermorrowNPC npc)
         {

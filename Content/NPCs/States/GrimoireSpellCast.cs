@@ -18,6 +18,8 @@ namespace OvermorrowMod.Content.NPCs
 
         private int tileAttackDistance = 24;
         private int attackDelay = 60;
+        public GrimoireSpellCast(OvermorrowNPC npc) : base(npc) { }
+
         public override bool CanExecute(OvermorrowNPC npc)
         {
             if (npc is not LivingGrimoire)
@@ -63,8 +65,8 @@ namespace OvermorrowMod.Content.NPCs
             npc.AICounter++;
             npc.NPC.velocity.X /= 2f;
 
-            BasicFly.HandleVerticalMovementToTarget(ref npc, ref flySpeedY);
-            BasicFly.HandleGroundProximity(ref npc, ref flySpeedY, distanceFromGround);
+            BasicFly.HandleVerticalMovementToTarget(OvermorrowNPC, ref flySpeedY);
+            BasicFly.HandleGroundProximity(OvermorrowNPC, ref flySpeedY, distanceFromGround);
 
             CastSpell(npc);
 

@@ -92,7 +92,7 @@ namespace OvermorrowMod.Content.NPCs
             int randomDirection = Main.rand.NextBool() ? -1 : 1;
             Projectile.netUpdate = true;
 
-            ChairSummon npc = NPC.NewNPCDirect(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, npcType).ModNPC as ChairSummon;
+            Archives.ChairSummon npc = NPC.NewNPCDirect(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, npcType).ModNPC as Archives.ChairSummon;
             npc.ParentID = ParentID;
             npc.NPC.direction = randomDirection;
 

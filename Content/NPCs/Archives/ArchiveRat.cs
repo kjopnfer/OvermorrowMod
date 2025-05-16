@@ -184,16 +184,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-            new Wander()
+            new Wander(this)
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
-            new GroundDashAttack(),
-            new GainStealth()
+            new GroundDashAttack(this),
+            new GainStealth(this)
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
-            new MeleeWalk(),
+            new MeleeWalk(this),
         };
 
         public override void AI()

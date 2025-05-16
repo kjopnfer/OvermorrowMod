@@ -10,6 +10,7 @@ namespace OvermorrowMod.Content.NPCs
     {
         public override int Weight => 1;
         public override bool CanExit => true;
+        public MeleeWalk(OvermorrowNPC npc) : base(npc) { }
 
         public override void Enter(OvermorrowNPC npc)
         {

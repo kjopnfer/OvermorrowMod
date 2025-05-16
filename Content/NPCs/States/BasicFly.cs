@@ -17,6 +17,8 @@ namespace OvermorrowMod.Content.NPCs
 
         public override int Weight => 1;
         public override bool CanExit => true;
+        public BasicFly(OvermorrowNPC npc) : base(npc) { }
+
         public override void Enter(OvermorrowNPC npc)
         {
             Main.NewText("starting basic fly");
@@ -29,13 +31,13 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Update(OvermorrowNPC npc)
         {
-            HandleHorizontalMovement(ref npc, ref flySpeedX);
-            HandleVerticalMovementToTarget(ref npc, ref flySpeedY);
-            HandleGroundProximity(ref npc, ref flySpeedY, distanceFromGround);
-            HandleObstacleAvoidance(ref npc, ref flySpeedX, ref flySpeedY);
+            HandleHorizontalMovement(OvermorrowNPC, ref flySpeedX);
+            HandleVerticalMovementToTarget(OvermorrowNPC, ref flySpeedY);
+            HandleGroundProximity(OvermorrowNPC, ref flySpeedY, distanceFromGround);
+            HandleObstacleAvoidance(OvermorrowNPC, ref flySpeedX, ref flySpeedY);
         }
 
-        public static void HandleHorizontalMovement(ref OvermorrowNPC npc, ref float flySpeedX)
+        public static void HandleHorizontalMovement(OvermorrowNPC npc, ref float flySpeedX)
         {
             NPC baseNPC = npc.NPC;
             float targetSpeed = 2f;
@@ -58,7 +60,7 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        public static void HandleVerticalMovementToTarget(ref OvermorrowNPC npc, ref float flySpeedY, float buffer = 16 * 5, float speed = 2f)
+        public static void HandleVerticalMovementToTarget(OvermorrowNPC npc, ref float flySpeedY, float buffer = 16 * 5, float speed = 2f)
         {
             NPC baseNPC = npc.NPC;
 
@@ -81,7 +83,7 @@ namespace OvermorrowMod.Content.NPCs
         }
 
 
-        public static void HandleVerticalMovementToPoint(ref OvermorrowNPC npc, Vector2 point, ref float flySpeedY, float buffer = 16 * 5, float speed = 2f)
+        public static void HandleVerticalMovementToPoint(OvermorrowNPC npc, Vector2 point, ref float flySpeedY, float buffer = 16 * 5, float speed = 2f)
         {
             NPC baseNPC = npc.NPC;
 
@@ -96,7 +98,7 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        public static void HandleGroundProximity(ref OvermorrowNPC npc, ref float flySpeedY, int groundBuffer, float heightLimit = 192f)
+        public static void HandleGroundProximity(OvermorrowNPC npc, ref float flySpeedY, int groundBuffer, float heightLimit = 192f)
         {
             NPC baseNPC = npc.NPC;
 
@@ -109,7 +111,6 @@ namespace OvermorrowMod.Content.NPCs
                 float velocityBoost = MathHelper.Lerp(0.05f, 0.1f, t); // Small to strong boost based on t
                 baseNPC.velocity.Y -= velocityBoost;
 
-                // You can also scale flySpeedY similarly if needed
                 flySpeedY = Math.Max(flySpeedY - velocityBoost, -1f);
 
                 Main.NewText($"dist: {dist:0.00}, t: {t:0.00}, boost: {velocityBoost:0.00}");
@@ -122,7 +123,7 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        public static void HandleObstacleAvoidance(ref OvermorrowNPC npc, ref float flySpeedX, ref float flySpeedY)
+        public static void HandleObstacleAvoidance(OvermorrowNPC npc, ref float flySpeedX, ref float flySpeedY)
         {
             NPC baseNPC = npc.NPC;
             float obstacleBuffer = 45f;

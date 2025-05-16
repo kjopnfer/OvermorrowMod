@@ -13,6 +13,8 @@ namespace OvermorrowMod.Content.NPCs
     {
         public override int Weight => 1;
         public override bool CanExit => IsFinished;
+        public GrimoireIdle(OvermorrowNPC npc) : base(npc) { }
+
         public override bool CanExecute(OvermorrowNPC npc)
         {
             //Main.NewText(npc.AIStateMachine.get)
@@ -88,10 +90,10 @@ namespace OvermorrowMod.Content.NPCs
                     baseNPC.direction = baseNPC.GetDirection(targetPosition);
                     float xDistance = Math.Abs(baseNPC.Center.X - targetPosition.X);
 
-                    BasicFly.HandleHorizontalMovement(ref npc, ref flySpeedX);
-                    BasicFly.HandleVerticalMovementToTarget(ref npc, ref flySpeedY);
-                    BasicFly.HandleGroundProximity(ref npc, ref flySpeedY, distanceFromGround);
-                    BasicFly.HandleObstacleAvoidance(ref npc, ref flySpeedX, ref flySpeedY);
+                    BasicFly.HandleHorizontalMovement(OvermorrowNPC, ref flySpeedX);
+                    BasicFly.HandleVerticalMovementToTarget(OvermorrowNPC, ref flySpeedY);
+                    BasicFly.HandleGroundProximity(OvermorrowNPC, ref flySpeedY, distanceFromGround);
+                    BasicFly.HandleObstacleAvoidance(OvermorrowNPC, ref flySpeedX, ref flySpeedY);
 
                     Dust.NewDust(targetPosition, 1, 1, DustID.BlueTorch);
 

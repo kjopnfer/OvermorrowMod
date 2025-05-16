@@ -82,15 +82,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-            new GrimoireHidden()
+            new GrimoireHidden(this)
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
-            new GrimoireSpellCast()
+            new GrimoireSpellCast(this)
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
-            new BasicFly(),
+            new BasicFly(this),
         };
 
         public override NPCTargetingConfig TargetingConfig()
