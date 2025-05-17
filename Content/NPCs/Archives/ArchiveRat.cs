@@ -58,7 +58,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
-        private bool canAttack = false;
         private int afterimageLinger = 0;
 
         public enum AICase
@@ -70,8 +69,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Attack = 2,
             Stealth = 3
         }
-
-        private AIStateMachine aiStateMachine;
 
         private float maxSpeed = 1.8f;
         private int idleTime = 30;

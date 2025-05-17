@@ -55,13 +55,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public virtual int CastTime => 120;
         //public ref float AIState => ref NPC.ai[0];
         //public ref float AICounter => ref NPC.ai[1];
-        public enum AICase
-        {
-            Hidden = -2,
-            Fall = -1,
-            Fly = 0,
-            Cast = 1
-        }
 
         protected int distanceFromGround = 180;
         protected int aggroDelayTime = 60;
@@ -69,15 +62,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         protected Vector2 targetPosition;
         public override void OnSpawn(IEntitySource source)
         {
-            /*AIState = (int)AICase.Hidden;
-            distanceFromGround = Main.rand.Next(16, 19) * 8;
-            aggroDelayTime = Main.rand.Next(10, 20) * 10;
-            tileAttackDistance = Main.rand.Next(16, 32) * 16;
-
-            aggroDelay = aggroDelayTime;
-            targetPosition = NPC.Center + new Vector2(14 * 16 * NPC.direction, 0).RotatedByRandom(MathHelper.PiOver2);
-
-            NPC.netUpdate = true;*/
             AIStateMachine.SetSubstate<GrimoireHidden>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
         }
 
@@ -96,18 +80,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override NPCTargetingConfig TargetingConfig()
         {
             return new NPCTargetingConfig(
-                maxAggroTime: 300f,
+                maxAggroTime: ModUtils.SecondsToTicks(15),
                 aggroLossRate: 1f,
                 aggroCooldownTime: 180f,
                 maxMissedAttacks: 3,
-                maxTargetRange: 16 * 30,
+                maxTargetRange: ModUtils.TilesToPixels(55),
                 prioritizeAggro: true
             );
         }
 
-        float flySpeedX = 2;
-        float flySpeedY = 0;
-        float aggroDelay = 60;
         public override void AI()
         {
             State substate = AIStateMachine.GetCurrentSubstate();

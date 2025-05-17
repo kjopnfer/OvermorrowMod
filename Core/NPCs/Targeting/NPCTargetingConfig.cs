@@ -1,3 +1,5 @@
+using OvermorrowMod.Common.Utilities;
+
 namespace OvermorrowMod.Core.NPCs
 {
     /// <summary>
@@ -30,7 +32,7 @@ namespace OvermorrowMod.Core.NPCs
         /// The maximum distance (in pixels) an NPC can detect and target an entity.
         /// Defaults to 10 tiles (16 pixels per tile).
         /// </summary>
-        public float MaxTargetRange { get; set; } = 16 * 10;
+        public float MaxTargetRange { get; set; } = ModUtils.TilesToPixels(10);
 
         /// <summary>
         /// Determines whether the NPC should prioritize targets based on player aggro values.

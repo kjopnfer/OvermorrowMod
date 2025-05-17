@@ -44,6 +44,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float frequency = 0.1f; // Controls how quickly the sine wave oscillates
             float amplitude = 0.5f;   // Controls the amplitude of the sinusoidal rotation
 
+            Lighting.AddLight(Projectile.Center, 0, 0.5f, 0.5f);
 
             // Compute the sine-based offset
             float sineOffset = (float)Math.Sin(Projectile.ai[0]++ * frequency) * amplitude;

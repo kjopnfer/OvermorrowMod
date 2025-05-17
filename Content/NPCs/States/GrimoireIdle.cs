@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.NPCs
             if (OvermorrowNPC.SpawnPoint != null)
             {
                 int attempts = 0;
-                float distanceRange = 16f;
+                float distanceRange = ModUtils.TilesToPixels(1);
                 Vector2 spawnPosition = OvermorrowNPC.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
 
                 Vector2 newPosition;
@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.NPCs
                     attempts++;
                 } while (
                     lastTarget.HasValue &&
-                    Vector2.Distance(lastTarget.Value, newPosition) < 10 * 16 &&
+                    Vector2.Distance(lastTarget.Value, newPosition) < ModUtils.TilesToPixels(10) &&
                     attempts < 100 // Prevent infinite loops
                 );
 
@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.NPCs
         public override void Update()
         {
             //npc.NPC.velocity.X /= 2f;
-            distanceFromGround = 16 * 8;
+            distanceFromGround = ModUtils.TilesToPixels(8);
 
             if (OvermorrowNPC.SpawnPoint != null)
             {
@@ -94,10 +94,10 @@ namespace OvermorrowMod.Content.NPCs
                     BasicFly.HandleGroundProximity(OvermorrowNPC, ref flySpeedY, distanceFromGround);
                     BasicFly.HandleObstacleAvoidance(OvermorrowNPC, ref flySpeedX, ref flySpeedY);
 
-                    Dust.NewDust(targetPosition, 1, 1, DustID.BlueTorch);
+                    //Dust.NewDust(targetPosition, 1, 1, DustID.BlueTorch);
 
                     //Main.NewText(flySpeedX + " " + flySpeedY);
-                    if (xDistance <= 16)
+                    if (xDistance <= ModUtils.TilesToPixels(1))
                     {
                         NPC.velocity.X /= 2f;
 

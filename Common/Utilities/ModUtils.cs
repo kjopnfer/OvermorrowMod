@@ -41,5 +41,15 @@ namespace OvermorrowMod.Common.Utilities
         {
             return (int)(seconds * 60f);
         }
+
+        /// <summary>
+        /// Converts the number of tiles to pixels, can be used for distance checks.
+        /// </summary>
+        /// <param name="seconds">The number of tiles.</param>
+        /// <returns>The equivalent number of pixels.</returns>
+        public static int TilesToPixels(float tiles)
+        {
+            return (int)(tiles * 16f);
+        }
     }
 }

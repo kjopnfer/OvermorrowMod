@@ -56,8 +56,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Retract = 3
         }
 
-        private float Rotation;
-
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
 

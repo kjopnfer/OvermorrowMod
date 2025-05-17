@@ -12,7 +12,6 @@ namespace OvermorrowMod.Content.NPCs
         // TODO: These should probably be base properties of the NPC
         float flySpeedX = 2;
         float flySpeedY = 0;
-        float aggroDelay = 60;
         int distanceFromGround = 180;
 
         public override int Weight => 1;
@@ -112,8 +111,6 @@ namespace OvermorrowMod.Content.NPCs
                 baseNPC.velocity.Y -= velocityBoost;
 
                 flySpeedY = Math.Max(flySpeedY - velocityBoost, -1f);
-
-                Main.NewText($"dist: {dist:0.00}, t: {t:0.00}, boost: {velocityBoost:0.00}");
 
             }
             else if (dist > heightLimit)
