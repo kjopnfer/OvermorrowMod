@@ -29,6 +29,21 @@ namespace OvermorrowMod.Core.NPCs
             this.config = config ?? new NPCTargetingConfig();
         }
 
+        /// <summary>
+        /// Manually set a target. Useful for effects that force target changes like Taunt.
+        /// </summary>
+        /// <param name="target"></param>
+        public void SetTarget(Entity target)
+        {
+            if (target.active)
+            {
+                Target = target;
+
+                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                aggroTimer = config.MaxAggroTime;
+            }
+        }
+
         public void Update()
         {
             if (!HasTarget() || aggroTimer <= 0)
@@ -41,6 +56,10 @@ namespace OvermorrowMod.Core.NPCs
             }
         }
 
+        /// <summary>
+        /// Determines whether the NPC has an active Entity target
+        /// </summary>
+        /// <returns></returns>
         public bool HasTarget()
         {
             return Target != null && Target.active;

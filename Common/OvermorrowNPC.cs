@@ -107,6 +107,25 @@ namespace OvermorrowMod.Common
             }
         }
 
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            if (!TargetingModule.HasTarget())
+            {
+                // TODO: Probably create some standardized projectile class for the friendly NPCs to use in order to define them as an "owner"
+                if (false)
+                {
+
+                }
+                else // Otherwise, it is a player.
+                {
+                    Player player = Main.player[projectile.owner];
+                    TargetingModule.SetTarget(player);
+                }
+            }
+
+            base.OnHitByProjectile(projectile, hit, damageDone);
+        }
+
         /// <summary>
         /// Finds the nearest valid target (either an NPC or a Player) within a specified range.
         /// Prioritizes targets based on distance, aggro (if applicable), and whether they are in front of the NPC.
