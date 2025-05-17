@@ -7,12 +7,8 @@ namespace OvermorrowMod.Core.NPCs
 {
     public class MovementState : SuperState<BaseMovementState>
     {
-        private List<(BaseMovementState state, int weight)> states = new List<(BaseMovementState, int)>();
-
         public MovementState(List<BaseMovementState> availableSubstates, OvermorrowNPC npc) : base(availableSubstates, npc)
         {
-            foreach (var substate in availableSubstates)
-                states.Add((substate, substate.Weight));  // Assume BaseIdleState has a `Weight` property
         }
 
         public override void Enter()
@@ -43,10 +39,13 @@ namespace OvermorrowMod.Core.NPCs
 
         private BaseMovementState PickSubstate(OvermorrowNPC npc)
         {
-            return states
-                .Where(s => s.state.CanExecute(npc))
-                .OrderByDescending(s => s.weight) // or random weighted choice
-                .FirstOrDefault().state;
+            if (substates == null || substates.Count == 0)
+                return null;
+
+            return substates
+                .Where(s => s.CanExecute(npc))
+                .OrderByDescending(s => s.Weight) // or random weighted choice
+                .FirstOrDefault();
         }
     }
 }

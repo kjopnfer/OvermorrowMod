@@ -8,12 +8,10 @@ namespace OvermorrowMod.Core.NPCs
 {
     public class AttackState : SuperState<BaseAttackState>
     {
-        private List<(BaseAttackState state, int weight)> states;
         public bool HasValidAttack { get; private set; } = false;
 
-        public AttackState(List<BaseAttackState> availableSubstates, OvermorrowNPC npc): base(availableSubstates, npc)
+        public AttackState(List<BaseAttackState> availableSubstates, OvermorrowNPC npc) : base(availableSubstates, npc)
         {
-            states = availableSubstates.Select(sub => (sub, sub.Weight)).ToList();
         }
 
 
@@ -62,10 +60,13 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         private BaseAttackState PickSubstate(OvermorrowNPC npc)
         {
-            return states
-             .Where(s => s.state.CanExecute(npc))
-             .OrderByDescending(s => s.weight) // Or random weighted if preferred
-             .FirstOrDefault().state;
+            if (substates == null || substates.Count == 0)
+                return null;
+
+            return substates
+             .Where(s => s.CanExecute(npc))
+             .OrderByDescending(s => s.Weight) // Or random weighted if preferred
+             .FirstOrDefault();
 
             // Option 2: Weighted random pick (uncomment to use)
             // return PickWeightedRandom(validAttacks);

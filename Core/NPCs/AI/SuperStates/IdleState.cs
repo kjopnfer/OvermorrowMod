@@ -7,13 +7,8 @@ namespace OvermorrowMod.Core.NPCs
 {
     public class IdleState : SuperState<BaseIdleState>
     {
-        //private List<(BaseIdleState state, int weight)> states;
-
         public IdleState(List<BaseIdleState> availableSubstates, OvermorrowNPC npc) : base(availableSubstates, npc)
         {
-            /*states = new List<(BaseIdleState, int)>();
-            foreach (var sub in availableSubstates)
-                states.Add((sub, sub.Weight));*/
         }
 
         public override void Enter()
@@ -62,6 +57,9 @@ namespace OvermorrowMod.Core.NPCs
 
         private BaseIdleState PickSubstate(OvermorrowNPC npc)
         {
+            if (substates == null || substates.Count == 0)
+                return null;
+
             return substates
                 .Where(s => s.CanExecute(npc))
                 .OrderByDescending(s => s.Weight)
