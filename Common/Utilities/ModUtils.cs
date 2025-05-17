@@ -31,5 +31,15 @@ namespace OvermorrowMod.Common.Utilities
         {
             return position.X > source.Center.X ? 1 : -1;
         }
+
+        /// <summary>
+        /// Converts seconds to ticks.
+        /// </summary>
+        /// <param name="seconds">The number of seconds.</param>
+        /// <returns>The equivalent number of ticks.</returns>
+        public static int SecondsToTicks(float seconds)
+        {
+            return (int)(seconds * 60f);
+        }
     }
 }
