@@ -35,11 +35,9 @@ namespace OvermorrowMod.Content.NPCs
             OvermorrowNPC.AICounter = 0;
 
             OvermorrowNPC.AIStateMachine.RemoveSubstate<ChairSummonAnimation>(AIStateType.Idle, new ChairSummonAnimation(OvermorrowNPC));
-            Main.NewText("wtf remove hidden and add idle");
-            var newIdle = new GrimoireIdle(OvermorrowNPC);
+            Main.NewText("remove summon animation and add idle");
+            var newIdle = new InactiveIdle(OvermorrowNPC);
             OvermorrowNPC.AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
-
-            Main.NewText("exited hidden state");
         }
 
         public override void Update()

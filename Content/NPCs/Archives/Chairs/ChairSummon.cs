@@ -8,49 +8,54 @@ using Terraria.DataStructures;
 using Terraria.Localization;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.NPCs;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
     public abstract class ChairSummon : OvermorrowNPC
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => (AICase)AIState != AICase.Summon;
- 
-        public ref float AIState => ref NPC.ai[0];
-        public ref float AICounter => ref NPC.ai[1];
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AIState is not ChairSummonAnimation;
+
         /// <summary>
         /// Chairs are spawned by a parent which caps summons to only three active.
         /// </summary>
         public ref float ParentID => ref NPC.ai[2];
 
-        public enum AICase
-        {
-            Summon = -1,
-            Idle = 0,
-            Jump = 1
-        }
 
-        int maxAttempts = 1000;
-        private int failCount = 0;
         protected float maxSpeed = 2f;
         public override void OnSpawn(IEntitySource source)
         {
-            AIState = (int)AICase.Summon;
-            while (!Collision.SolidTiles((int)(NPC.position.X / 16), (int)((NPC.position.X + NPC.width) / 16), (int)((NPC.position.Y + NPC.height) / 16), (int)((NPC.position.Y + NPC.height + 1) / 16)) && failCount < maxAttempts)
-            {
-                NPC.position.Y += 1; // Move the NPC downward
-                failCount++; // Increment the fail count to avoid infinite loops
-            }
-
-            maxSpeed = Main.rand.NextFloat(2f, 3.5f);
+            AIStateMachine.SetSubstate<ChairSummonAnimation>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
         }
 
         protected int idleTime = 30;
+
+        public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
+            new ChairSummonAnimation(this)
+        };
+
+        public override List<BaseAttackState> InitializeAttackStates() => null;
+
+        public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
+            new MeleeWalk(this),
+        };
+
+        protected State AIState => AIStateMachine.GetCurrentSubstate();
+
         public override void AI()
         {
-            NPC.knockBackResist = (AICase)AIState == AICase.Summon ? 0f : 1f;
+            //NPC.knockBackResist = (AICase)AIState == AICase.Summon ? 0f : 1f;
+            State substate = AIStateMachine.GetCurrentSubstate();
 
-            switch ((AICase)AIState)
+            NPC.knockBackResist = 1f;
+            if (substate is ChairSummonAnimation)
+                NPC.knockBackResist = 0f;
+
+            AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
+
+            /*switch ((AICase)AIState)
             {
                 case AICase.Summon:
                     while (!Collision.SolidTiles((int)(NPC.position.X / 16), (int)((NPC.position.X + NPC.width) / 16), (int)((NPC.position.Y + NPC.height) / 16), (int)((NPC.position.Y + NPC.height + 1) / 16)) && failCount < maxAttempts)
@@ -81,7 +86,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AICase.Jump:
                     MovementAI();
                     break;
-            }
+            }*/
         }
 
         public abstract void MovementAI();
@@ -120,7 +125,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, drawRectangle, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             // Handle summon effects
-            if (AIState == (int)AICase.Summon)
+            if (AIState is ChairSummonAnimation)
             {
                 HandleParticleEffects();
                 DrawSpawnAura(spriteBatch, spriteEffects);
@@ -132,7 +137,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private Rectangle GetDrawRectangle()
         {
             Rectangle drawRectangle = NPC.frame;
-            if (AIState == (int)AICase.Summon && AICounter < 60)
+            if (AIState is ChairSummonAnimation && AICounter < 60)
             {
                 float rectangleHeight = MathHelper.SmoothStep(-NPC.frame.Height, 0, AICounter / 60f);
                 drawRectangle = new Rectangle(0, (int)rectangleHeight, NPC.frame.Width, NPC.frame.Height);

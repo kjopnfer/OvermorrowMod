@@ -36,7 +36,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void MovementAI()
         {
-            NPC.TargetClosest();
+            /*NPC.TargetClosest();
             if (AICounter++ == 0)
             {
                 int jumpDirection = Main.rand.Next(2, 6) * NPC.direction;
@@ -51,12 +51,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                 AIState = (int)AICase.Idle;
                 AICounter = 0;
-            }
+            }*/
         }
 
         public override void SetFrame()
         {
-            if (NPC.IsABestiaryIconDummy) AIState = (int)AICase.Idle;
+            /*if (NPC.IsABestiaryIconDummy) AIState = (int)AICase.Idle;
 
             switch ((AICase)AIState)
             {
@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     yFrame = 2;
                     break;
 
-            }
+            }*/
         }
 
         protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)

@@ -43,9 +43,39 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SetFrame()
         {
-            if (NPC.IsABestiaryIconDummy) AIState = (int)AICase.Jump;
+            if (NPC.IsABestiaryIconDummy)
+            {
+                xFrame = 0;
+                if (NPC.velocity.Y == 0) NPC.frameCounter++;
 
-            switch ((AICase)AIState)
+                if (NPC.frameCounter % 6 == 0)
+                {
+                    yFrame++;
+                    if (yFrame >= 6) yFrame = 0;
+                }
+
+                return;
+            }
+
+
+            switch (AIState)
+            {
+                case MeleeWalk:
+                    xFrame = 0;
+                    if (NPC.velocity.Y == 0) NPC.frameCounter++;
+
+                    if (NPC.frameCounter % 6 == 0)
+                    {
+                        yFrame++;
+                        if (yFrame >= 6) yFrame = 0;
+                    }
+                    break;
+                default:
+                    xFrame = 0;
+                    yFrame = 0;
+                    break;
+            }
+            /*switch ((AICase)AIState)
             {
                 case AICase.Idle:
                     xFrame = 0;
@@ -61,7 +91,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         if (yFrame >= 6) yFrame = 0;
                     }
                     break;
-            }
+            }*/
         }
 
         protected override void DrawNPCBestiary(SpriteBatch spriteBatch, Color drawColor)
@@ -71,7 +101,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             spriteBatch.Draw(texture, NPC.Center, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
         }
-       
+
         protected override int GlowRectangleWidth => NPC.width + 16;
         protected override Vector2 ParticleSpawnOffset => new Vector2(Main.rand.Next(-2, 3) * 6, 20);
         protected override int AuraHeightOffset => 39;
