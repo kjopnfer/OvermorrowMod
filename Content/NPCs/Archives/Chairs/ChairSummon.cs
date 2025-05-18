@@ -10,6 +10,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
+using OvermorrowMod.Common.Utilities;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -38,20 +39,36 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override List<BaseAttackState> InitializeAttackStates() => null;
 
-        public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
-            new MeleeWalk(this),
-        };
+        public override List<BaseMovementState> InitializeMovementStates()
+        {
+            switch (NPC.ModNPC)
+            {
+                case AnimatedSofa:
+                    return new List<BaseMovementState> {
+                        new Hop(this)
+                    };
+                default:
+                    return new List<BaseMovementState> {
+                        new MeleeWalk(this)
+                    };
+            }
+        }
 
         protected State AIState => AIStateMachine.GetCurrentSubstate();
 
         public override void AI()
         {
-            //NPC.knockBackResist = (AICase)AIState == AICase.Summon ? 0f : 1f;
             State substate = AIStateMachine.GetCurrentSubstate();
 
             NPC.knockBackResist = 1f;
             if (substate is ChairSummonAnimation)
                 NPC.knockBackResist = 0f;
+
+            if (TargetingModule.HasTarget())
+            {
+                Vector2 targetPosition = TargetingModule.Target.Center;
+                NPC.direction = NPC.GetDirection(targetPosition);
+            }
 
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 

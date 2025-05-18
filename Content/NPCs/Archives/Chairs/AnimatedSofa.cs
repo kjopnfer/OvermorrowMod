@@ -56,6 +56,34 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SetFrame()
         {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                xFrame = 0;
+                if (NPC.frameCounter++ % 8 == 0)
+                {
+                    yFrame++;
+                    if (yFrame >= 2) yFrame = 0;
+                }
+
+                return;
+            }
+
+            switch (AIState)
+            {
+                case Hop:
+                    xFrame = 0;
+                    yFrame = 2;
+                    break;
+                default:
+                    xFrame = 0;
+                    if (NPC.frameCounter++ % 8 == 0)
+                    {
+                        yFrame++;
+                        if (yFrame >= 2) yFrame = 0;
+                    }
+                    break;
+            }
+
             /*if (NPC.IsABestiaryIconDummy) AIState = (int)AICase.Idle;
 
             switch ((AICase)AIState)
