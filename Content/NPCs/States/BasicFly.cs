@@ -101,11 +101,11 @@ namespace OvermorrowMod.Content.NPCs
         {
             NPC baseNPC = npc.NPC;
 
-            float dist = RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer);
+            float groundDistance = RayTracing.CastTileCollisionLength(baseNPC.Center, Vector2.UnitY, groundBuffer);
 
-            if (dist < groundBuffer)
+            if (groundDistance < groundBuffer)
             {
-                float t = 1f - MathHelper.Clamp(dist / groundBuffer, 0f, 1f); // t ranges from 0 (far) to 1 (very close)
+                float t = 1f - MathHelper.Clamp(groundDistance / groundBuffer, 0f, 1f); // t ranges from 0 (far) to 1 (very close)
 
                 float velocityBoost = MathHelper.Lerp(0.05f, 0.1f, t); // Small to strong boost based on t
                 baseNPC.velocity.Y -= velocityBoost;
@@ -113,10 +113,22 @@ namespace OvermorrowMod.Content.NPCs
                 flySpeedY = Math.Max(flySpeedY - velocityBoost, -1f);
 
             }
-            else if (dist > heightLimit)
+            else if (groundDistance > heightLimit)
             {
                 baseNPC.velocity.Y += 0.1f;
                 flySpeedY = Math.Min(flySpeedY + 0.1f, 2f);
+            }
+
+            float ceilingBuffer = groundBuffer / 2;
+            float ceilingDistance = RayTracing.CastTileCollisionLength(baseNPC.Center, -Vector2.UnitY, ceilingBuffer);
+            if (ceilingDistance < ceilingBuffer)
+            {
+                float t = 1f - MathHelper.Clamp(groundDistance / groundBuffer, 0f, 1f); // t ranges from 0 (far) to 1 (very close)
+
+                float velocityBoost = MathHelper.Lerp(0.05f, 0.1f, t); // Small to strong boost based on t
+                baseNPC.velocity.Y += velocityBoost;
+
+                flySpeedY = Math.Max(flySpeedY - velocityBoost, -1f);
             }
         }
 

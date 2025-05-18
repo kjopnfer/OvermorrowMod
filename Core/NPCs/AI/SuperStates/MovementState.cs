@@ -7,23 +7,29 @@ namespace OvermorrowMod.Core.NPCs
 {
     public class MovementState : SuperState<BaseMovementState>
     {
+        public bool HasValidMovement { get; private set; } = false;
+
         public MovementState(List<BaseMovementState> availableSubstates, OvermorrowNPC npc) : base(availableSubstates, npc)
         {
         }
 
         public override void Enter()
         {
-            Main.NewText("NPC enters Movement state");
+            //Main.NewText("NPC enters Movement state");
             currentSubstate = PickSubstate(OvermorrowNPC);
 
-            OvermorrowNPC.AIStateMachine.RegisterSubstate(currentSubstate);
-            currentSubstate?.Enter();
+            HasValidMovement = currentSubstate != null;
+            if (HasValidMovement)
+            {
+                OvermorrowNPC.AIStateMachine.RegisterSubstate(currentSubstate);
+                currentSubstate?.Enter();
+            }
         }
 
         public override void Exit()
         {
             currentSubstate?.Exit();
-            Main.NewText("NPC exits Move state.");
+            //Main.NewText("NPC exits Move state.");
         }
 
         public override void Update()
@@ -31,7 +37,14 @@ namespace OvermorrowMod.Core.NPCs
             if (currentSubstate == null || currentSubstate.IsFinished)
             {
                 currentSubstate = PickSubstate(OvermorrowNPC);
+                HasValidMovement = currentSubstate != null;
+                if (!HasValidMovement)
+                {
+                    return;
+                }
+
                 currentSubstate.Enter();
+
             }
 
             currentSubstate?.Update();
@@ -43,7 +56,7 @@ namespace OvermorrowMod.Core.NPCs
                 return null;
 
             return substates
-                .Where(s => s.CanExecute(npc))
+                .Where(s => s.CanExecute())
                 .OrderByDescending(s => s.Weight) // or random weighted choice
                 .FirstOrDefault();
         }

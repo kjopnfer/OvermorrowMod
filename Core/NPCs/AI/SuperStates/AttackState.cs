@@ -17,7 +17,7 @@ namespace OvermorrowMod.Core.NPCs
 
         public override void Enter()
         {
-            Main.NewText("NPC enters Attack state.");
+            //Main.NewText("NPC enters Attack state.");
             currentSubstate = PickSubstate(OvermorrowNPC);
 
             HasValidAttack = currentSubstate != null;
@@ -31,7 +31,7 @@ namespace OvermorrowMod.Core.NPCs
         public override void Exit()
         {
             currentSubstate?.Exit();
-            Main.NewText("NPC exits Attack state.");
+            //Main.NewText("NPC exits Attack state.");
         }
 
         public override void Update()
@@ -45,7 +45,7 @@ namespace OvermorrowMod.Core.NPCs
             HasValidAttack = currentSubstate != null;
             if (currentSubstate?.IsFinished ?? true)
             {
-                Main.NewText("attack state update: is finished");
+                //Main.NewText("attack state update: is finished");
                 currentSubstate?.Exit();
                 currentSubstate = null;
             }
@@ -64,7 +64,7 @@ namespace OvermorrowMod.Core.NPCs
                 return null;
 
             return substates
-             .Where(s => s.CanExecute(npc))
+             .Where(s => s.CanExecute())
              .OrderByDescending(s => s.Weight) // Or random weighted if preferred
              .FirstOrDefault();
 

@@ -20,26 +20,25 @@ namespace OvermorrowMod.Content.NPCs
         private int attackDelay = 60;
         public GrimoireSpellCast(OvermorrowNPC npc) : base(npc) { }
 
-        public override bool CanExecute(OvermorrowNPC npc)
+        public override bool CanExecute()
         {
-            if (npc is not LivingGrimoire)
-            {
-                // return false;
-            }
+            if (OvermorrowNPC is not LivingGrimoire)
+                 return false;
+         
 
-            if (npc.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
+            if (OvermorrowNPC.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
             {
                 Main.NewText("have not flown yet, preventin early attack", Color.Red);
                 return false;
             }
 
-            if (!npc.TargetingModule.HasTarget())
+            if (!OvermorrowNPC.TargetingModule.HasTarget())
                 return false;
 
             if (attackDelay-- > 0)
                 return false;
 
-            return AttackCondition(npc);
+            return AttackCondition(OvermorrowNPC);
         }
 
         public override void Enter()

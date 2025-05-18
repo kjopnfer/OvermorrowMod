@@ -15,7 +15,7 @@ namespace OvermorrowMod.Core.NPCs
         {
             //currentSubstate = PickSubstate(npc);
             //currentSubstate.Enter(npc);
-            Main.NewText(OvermorrowNPC.Name + " enters Idle state.");
+            //Main.NewText(OvermorrowNPC.Name + " enters Idle state.");
             currentSubstate = null;
         }
 
@@ -61,7 +61,7 @@ namespace OvermorrowMod.Core.NPCs
                 return null;
 
             return substates
-                .Where(s => s.CanExecute(npc))
+                .Where(s => s.CanExecute())
                 .OrderByDescending(s => s.Weight)
                 .FirstOrDefault();
             /*return states

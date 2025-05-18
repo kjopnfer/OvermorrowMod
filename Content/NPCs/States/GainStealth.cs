@@ -15,9 +15,9 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => IsFinished;
         public GainStealth(OvermorrowNPC npc) : base(npc) { }
 
-        public override bool CanExecute(OvermorrowNPC npc)
+        public override bool CanExecute()
         {
-            if (!npc.NPC.IsStealthOnCooldown() && !npc.NPC.IsStealthed())
+            if (!NPC.IsStealthOnCooldown() && !NPC.IsStealthed())
             {
                 return true;
             }

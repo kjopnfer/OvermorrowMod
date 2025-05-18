@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => IsFinished;
         public GrimoireIdle(OvermorrowNPC npc) : base(npc) { }
 
-        public override bool CanExecute(OvermorrowNPC npc)
+        public override bool CanExecute()
         {
             //Main.NewText(npc.AIStateMachine.get)
             return true;

@@ -275,6 +275,12 @@ namespace OvermorrowMod.Core.NPCs
                 }
                 else
                 {
+                    if (currentState is MovementState moveState && !moveState.HasValidMovement)
+                    {
+                        ChangeState(AIStateType.Idle, npc);
+                        return;
+                    }
+
                     // If too far away, move toward the target
                     if (distanceToTarget > npc.TargetingConfig().MaxTargetRange)
                     {

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System.Diagnostics.Metrics;
 using Terraria;
@@ -12,6 +13,14 @@ namespace OvermorrowMod.Content.NPCs
         public override int Weight => 1;
         public override bool CanExit => IsFinished;
         public GrimoireHidden(OvermorrowNPC npc) : base(npc) { }
+
+        public override bool CanExecute()
+        {
+            if (OvermorrowNPC is not LivingGrimoire)
+                return false;
+
+            return true;
+        }
 
         public override void Enter()
         {

@@ -16,12 +16,12 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => IsFinished;
         public GroundDashAttack(OvermorrowNPC npc) : base(npc) { }
 
-        public override bool CanExecute(OvermorrowNPC npc)
+        public override bool CanExecute()
         {
             // Check if target is close enough to melee attack
-            if (npc.TargetingModule.Target is Entity target)
+            if (OvermorrowNPC.TargetingModule.Target is Entity target)
             {
-                return Vector2.Distance(npc.NPC.Center, target.Center) <= 10 * 16;
+                return Vector2.Distance(NPC.Center, target.Center) <= 10 * 16;
             }
 
             return false;

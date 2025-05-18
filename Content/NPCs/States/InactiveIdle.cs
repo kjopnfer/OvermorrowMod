@@ -10,12 +10,13 @@ namespace OvermorrowMod.Content.NPCs
     public class InactiveIdle : BaseIdleState
     {
         public override int Weight => 1;
-        public override bool CanExit => true;
+        public override bool CanExit => IsFinished;
         public InactiveIdle(OvermorrowNPC npc) : base(npc) { }
 
         public override void Enter()
         {
             OvermorrowNPC.AICounter = 0;
+            IsFinished = false;
         }
 
         public override void Exit()

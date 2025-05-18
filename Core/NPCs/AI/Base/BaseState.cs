@@ -20,7 +20,7 @@ namespace OvermorrowMod.Core.NPCs
         /// <summary>
         /// By default, assume this state can execute unless overridden.
         /// </summary>
-        public virtual bool CanExecute(OvermorrowNPC npc) => true;
+        public virtual bool CanExecute() => true;
 
         /// <summary>
         /// By default, states cannot be exited until finished.
