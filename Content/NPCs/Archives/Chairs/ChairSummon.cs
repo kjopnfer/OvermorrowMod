@@ -54,6 +54,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
         }
 
+        public override NPCTargetingConfig TargetingConfig()
+        {
+            return new NPCTargetingConfig(
+                maxAggroTime: ModUtils.SecondsToTicks(15),
+                aggroLossRate: 1f,
+                aggroCooldownTime: 180f,
+                maxMissedAttacks: 3,
+                maxTargetRange: ModUtils.TilesToPixels(55),
+                prioritizeAggro: true
+            );
+        }
+
         protected State AIState => AIStateMachine.GetCurrentSubstate();
 
         public override void AI()

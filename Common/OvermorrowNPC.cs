@@ -31,12 +31,6 @@ namespace OvermorrowMod.Common
         /// </summary>
         public int? SpawnerID { get; set; } = null;
 
-        public ref float AICounter => ref NPC.ai[0];
-        public ref float IdleCounter => ref NPC.ai[1];
-
-
-        public AIStateMachine AIStateMachine = null;
-
         /// <summary>
         /// Gets the associated NPCSpawnPoint if the NPC was created by a spawner.
         /// Returns null if no valid SpawnerID exists.
