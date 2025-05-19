@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.NPCs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,11 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
+    /// <summary>
+    /// This NPC was made before the AI State machine was implemented.
+    /// It is too complicated (and I am too lazy) to convert it to the new system, so it will remain as is.
+    /// The NPC does not benefit from any of the modular AI features since it is a unique NPC anyways.
+    /// </summary>
     public class InkWormBody : OvermorrowNPC
     {
         public override string Texture => AssetDirectory.Empty;
@@ -54,6 +60,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Extend = 1,
             Idle = 2,
             Retract = 3
+        }
+
+        public override NPCTargetingConfig TargetingConfig()
+        {
+            NPCTargetingConfig config = new NPCTargetingConfig();
+            config.DisplayAggroIndicator = false;
+
+            return config;
         }
 
         public ref float AIState => ref NPC.ai[0];
@@ -292,6 +306,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             direction = NPC.Center - Parent.Center;
 
             AIState = (int)AICase.Idle;
+        }
+
+        public override NPCTargetingConfig TargetingConfig()
+        {
+            NPCTargetingConfig config = new NPCTargetingConfig();
+            config.DisplayAggroIndicator = false;
+
+            return config;
         }
 
         public override void AI()

@@ -41,6 +41,11 @@ namespace OvermorrowMod.Core.NPCs
         public bool PrioritizeAggro { get; set; } = true;
 
         /// <summary>
+        /// Determines whether the NPC displays an aggro indicator above their head when a target is found.
+        /// </summary>
+        public bool DisplayAggroIndicator { get; set; } = true;
+
+        /// <summary>
         /// Initializes a new instance of <see cref="NPCTargetingConfig"/> with default values.
         /// </summary>
         public NPCTargetingConfig() { }

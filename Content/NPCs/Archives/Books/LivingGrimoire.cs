@@ -118,9 +118,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             base.AI();
         }
 
-        public abstract bool AttackCondition();
-        public virtual void CastSpell() { }
-
         bool drawWings = true;
         bool drawRuneCircle = false;
         private void SetFrame()

@@ -39,7 +39,9 @@ namespace OvermorrowMod.Core.NPCs
             {
                 Target = target;
 
-                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                if (config.DisplayAggroIndicator)
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                
                 aggroTimer = config.MaxAggroTime;
             }
         }
@@ -72,7 +74,9 @@ namespace OvermorrowMod.Core.NPCs
             {
                 Main.NewText("found target.");
 
-                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                if (config.DisplayAggroIndicator)
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                
                 aggroTimer = config.MaxAggroTime;
             }
         }
