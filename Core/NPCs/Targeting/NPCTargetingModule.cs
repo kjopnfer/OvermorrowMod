@@ -50,6 +50,39 @@ namespace OvermorrowMod.Core.NPCs
         {
             if (!HasTarget() || aggroTimer <= 0)
             {
+                // If no aggro, check for alert range
+                if (config.AlertRange.HasValue)
+                {
+                    float alertRange = config.AlertRange.Value;
+
+                    Entity alertTarget = GetAlertTarget();
+                    if (alertTarget != null)
+                    {
+                        float distance = Vector2.Distance(npc.Center, alertTarget.Center);
+                        if (distance > config.MaxTargetRange && distance <= alertRange)
+                        {
+                            bool alreadyExists = false;
+
+                            // Check all projectiles for an existing AlertIndicator owned by this NPC
+                            for (int i = 0; i < Main.maxProjectiles; i++)
+                            {
+                                Projectile proj = Main.projectile[i];
+                                if (proj.active && proj.type == ModContent.ProjectileType<AlertIndicator>() && proj.ai[0] == npc.whoAmI)
+                                {
+                                    alreadyExists = true;
+                                    break;
+                                }
+                            }
+
+                            if (!alreadyExists)
+                            {
+                                Main.NewText("Target is within alert range.");
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AlertIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                            }
+                        }
+                    }
+                }
+
                 FindTarget();
             }
             else
@@ -190,6 +223,38 @@ namespace OvermorrowMod.Core.NPCs
             return bestTarget;
         }
 
+        public Entity GetAlertTarget()
+        {
+            if (!config.AlertRange.HasValue)
+                return null;
+
+            float alertRange = config.AlertRange.Value;
+            Entity bestTarget = null;
+            float nearestDistance = alertRange;
+
+            foreach (var entity in Main.player)
+            {
+                if (entity == null || !entity.active || entity.dead)
+                    continue;
+
+                float distance = Vector2.Distance(npc.Center, entity.Center);
+                if (distance > config.MaxTargetRange && distance <= alertRange)
+                {
+                    if (!HasLineOfSight(entity) || !IsVisible(entity))
+                        continue;
+
+                    if (distance < nearestDistance)
+                    {
+                        bestTarget = entity;
+                        nearestDistance = distance;
+                    }
+                }
+            }
+
+            return bestTarget;
+        }
+
+
         private bool HasLineOfSight(Entity entity)
         {
             // Implement logic to determine if the entity is visible (raycasting, tile checks, etc.)
@@ -201,6 +266,27 @@ namespace OvermorrowMod.Core.NPCs
         {
             // Implement visibility logic based on light, direction, etc.
             return true;
+        }
+
+        /// <summary>
+        /// Checks whether there is a valid entity within alert range but outside aggro range.
+        /// </summary>
+        /// <returns>True if an alert target exists, false otherwise.</returns>
+        public bool IsInAlertState()
+        {
+            return GetAlertTarget() != null;
+        }
+
+        /// <summary>
+        /// Gets the distance buffer between alert range and aggro range.
+        /// Returns null if alert range is not defined.
+        /// </summary>
+        public float? GetAlertBuffer()
+        {
+            if (!config.AlertRange.HasValue)
+                return null;
+
+            return config.AlertRange.Value - config.MaxTargetRange;
         }
     }
 }

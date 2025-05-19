@@ -174,8 +174,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAggroTime: 300f,
                 aggroLossRate: 1f,
                 aggroCooldownTime: 180f,
-                maxMissedAttacks: 3,
-                maxTargetRange: 16 * 45,
+                maxTargetRange: ModUtils.TilesToPixels(45),
+                maxAttackRange: ModUtils.TilesToPixels(45),
+                alertRange: ModUtils.TilesToPixels(50),
                 prioritizeAggro: true
             );
         }

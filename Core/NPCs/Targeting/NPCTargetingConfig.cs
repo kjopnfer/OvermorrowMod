@@ -35,6 +35,18 @@ namespace OvermorrowMod.Core.NPCs
         public float MaxTargetRange { get; set; } = ModUtils.TilesToPixels(10);
 
         /// <summary>
+        /// The maximum distance (in pixels) for an NPC to attack.
+        /// Defaults to 10 tiles (16 pixels per tile).
+        /// </summary>
+        public float MaxAttackRange { get; set; } = ModUtils.TilesToPixels(10);
+
+        /// <summary>
+        /// The distance at which the NPC enters an alert state (greater than aggro range).
+        /// Leave null to have no alert range.
+        /// </summary>
+        public float? AlertRange { get; set; } = ModUtils.TilesToPixels(10 + 2.5f); // Example: 160px if aggro is 120px
+
+        /// <summary>
         /// Determines whether the NPC should prioritize targets based on player aggro values.
         /// If set to true, NPCs will favor players with higher aggro values over closer targets.
         /// </summary>
@@ -56,16 +68,18 @@ namespace OvermorrowMod.Core.NPCs
         /// <param name="maxAggroTime">The maximum duration (in frames) the NPC remains aggroed.</param>
         /// <param name="aggroLossRate">The rate at which aggro decreases per frame.</param>
         /// <param name="aggroCooldownTime">The cooldown time before re-targeting a lost target.</param>
-        /// <param name="maxMissedAttacks">The number of missed attacks before losing interest.</param>
         /// <param name="maxTargetRange">The maximum detection range (in pixels) for acquiring a target.</param>
+        /// <param name="maxAttackRange">The maximum attack range after acquiring a target, not the same as the aggro range which is used for finding a target.</param>
+        /// <param name="alertRange">The maximum detection range (in pixels) to be within alert.</param>
         /// <param name="prioritizeAggro">Whether the NPC should prioritize targets with higher aggro values.</param>
-        public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime, int maxMissedAttacks, float maxTargetRange, bool prioritizeAggro)
+        public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime, float maxTargetRange, float maxAttackRange, float alertRange, bool prioritizeAggro)
         {
             MaxAggroTime = maxAggroTime;
             AggroLossRate = aggroLossRate;
             AggroCooldownTime = aggroCooldownTime;
-            MaxMissedAttacks = maxMissedAttacks;
             MaxTargetRange = maxTargetRange;
+            MaxAttackRange = maxAttackRange;
+            AlertRange = alertRange;
             PrioritizeAggro = prioritizeAggro;
         }
     }

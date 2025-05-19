@@ -42,7 +42,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         List<(string Title, string Text)> tooltips = new List<(string, string)>
         {
             ("Combat Targeting", "NPCs prioritize players with higher aggro. Taunts increase it; stealth or invisibility can reduce it."),
-            ("Hidden Items", "Certain items can be found by clearing rooms or interacting with objects in the environment."),
+            ("Hidden Items", "Certain items can be obtained by clearing rooms or interacting with objects in the environment."),
             //("Companions", "The Adventurer's Guild hosts a variety of companions. Hire them to make full use of their abilities to help you in combat."),
             ("Enemy Perception", "Enemies start passive and become alert when a player is nearby. Staying out of range or using stealth can avoid combat."),
             ("Scouting", "Use items that increase your range to help spot threats early and plan your approach."),
