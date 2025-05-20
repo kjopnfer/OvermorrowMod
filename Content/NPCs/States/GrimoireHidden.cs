@@ -38,6 +38,11 @@ namespace OvermorrowMod.Content.NPCs
             Main.NewText("wtf remove hidden and add idle");
             var newIdle = new GrimoireIdle(OvermorrowNPC);
             OvermorrowNPC.AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
+
+            if (OvermorrowNPC is LivingGrimoire grimoire)
+            {
+                grimoire.ReenableAlertIndicator();
+            }
             //npc.AIStateMachine.SetSubstate<GrimoireIdle>(AIStateType.Idle, npc);
 
             Main.NewText("exited hidden state");

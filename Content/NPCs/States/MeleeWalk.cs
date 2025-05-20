@@ -27,8 +27,6 @@ namespace OvermorrowMod.Content.NPCs
             float maxSpeed = 1.8f;
             NPC.direction = NPC.GetDirection(OvermorrowNPC.TargetingModule.Target);
             Vector2 distance = NPC.Move(OvermorrowNPC.TargetingModule.Target.Center, 0.2f, maxSpeed, 8f);
-
-            Main.NewText("the walk state");
         }
     }
 }

@@ -70,9 +70,9 @@ namespace OvermorrowMod.Core.NPCs
         /// <param name="aggroCooldownTime">The cooldown time before re-targeting a lost target.</param>
         /// <param name="maxTargetRange">The maximum detection range (in pixels) for acquiring a target.</param>
         /// <param name="maxAttackRange">The maximum attack range after acquiring a target, not the same as the aggro range which is used for finding a target.</param>
-        /// <param name="alertRange">The maximum detection range (in pixels) to be within alert.</param>
+        /// <param name="alertRange">The maximum detection range (in pixels) to be within alert. Set null to have no alert range.</param>
         /// <param name="prioritizeAggro">Whether the NPC should prioritize targets with higher aggro values.</param>
-        public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime, float maxTargetRange, float maxAttackRange, float alertRange, bool prioritizeAggro)
+        public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime, float maxTargetRange, float maxAttackRange, float? alertRange, bool prioritizeAggro)
         {
             MaxAggroTime = maxAggroTime;
             AggroLossRate = aggroLossRate;

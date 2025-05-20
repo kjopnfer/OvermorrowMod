@@ -35,8 +35,7 @@ namespace OvermorrowMod.Content.Misc
             OvermorrowNPC overmorrowNPC = npc.ModNPC as OvermorrowNPC;
             if (overmorrowNPC.TargetingModule.IsInAlertState())
             {
-                Main.NewText("test");
-                Projectile.timeLeft = 5;
+                Projectile.timeLeft = 10;
 
 
                 var config = overmorrowNPC.TargetingConfig();
@@ -52,13 +51,13 @@ namespace OvermorrowMod.Content.Misc
 
                     // Compute progress: 0 at aggroThreshold, 1 at alertThreshold
                     float flashProgress = MathHelper.Clamp((distance - aggroThreshold) / alertBuffer, 0f, 1f);
-                    flashSpeed = MathHelper.Lerp(5f, 20f, flashProgress);
+                    flashSpeed = MathHelper.Lerp(5f, 30f, flashProgress);
 
                     Main.NewText(flashProgress + " " + flashSpeed);
                 }
                 else
                 {
-                    flashSpeed = 20f; // Fallback if alert is undefined (shouldn't happen in IsInAlertState)
+                    flashSpeed = 30f; // Fallback if alert is undefined (shouldn't happen in IsInAlertState)
                 }
             }
 
@@ -82,7 +81,7 @@ namespace OvermorrowMod.Content.Misc
             }
 
             //Projectile.rotation = MathHelper.Lerp(0, -MathHelper.PiOver4, EasingUtils.EaseOutBounce(Math.Clamp(MathHelper.Lerp(0, 1f, Projectile.timeLeft / 60f), 0, 1f)));
-            //if (AICounter >= 60) alpha = Math.Clamp(MathHelper.Lerp(1f, 0f, (AICounter - 60) / 60f), 0, 1f);
+            alpha = Math.Clamp(MathHelper.Lerp(0f, 1f, Projectile.timeLeft / 10f), 0, 1f);
 
             Rectangle drawRectangle = new Rectangle(0, (texture.Height / 2) * textureFrame, texture.Width, texture.Height / 2);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, drawRectangle, textureColor * alpha, Projectile.rotation, texture.Size() / 2f, size, SpriteEffects.None, 0);

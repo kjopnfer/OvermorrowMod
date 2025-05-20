@@ -15,7 +15,7 @@ namespace OvermorrowMod.Common
 {
     public abstract partial class OvermorrowNPC : ModNPC
     {
-        public NPCTargetingModule TargetingModule { get; private set; }
+        public NPCTargetingModule TargetingModule { get; protected set; }
 
         public ref Player Player => ref Main.player[NPC.target];
 

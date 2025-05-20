@@ -85,9 +85,25 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 aggroCooldownTime: 180f,
                 maxTargetRange: ModUtils.TilesToPixels(20),
                 maxAttackRange: ModUtils.TilesToPixels(30),
-                alertRange: ModUtils.TilesToPixels(25),
+                alertRange: null,
                 prioritizeAggro: true
             );
+        }
+
+        /// <summary>
+        /// Exposes the config in order to allow for the NPC to have an alert indicator when it is no longer hidden.
+        /// </summary>
+        public void ReenableAlertIndicator()
+        {
+            TargetingModule = new NPCTargetingModule(NPC, new NPCTargetingConfig(
+                maxAggroTime: ModUtils.SecondsToTicks(15),
+                aggroLossRate: 1f,
+                aggroCooldownTime: 180f,
+                maxTargetRange: ModUtils.TilesToPixels(20),
+                maxAttackRange: ModUtils.TilesToPixels(30),
+                alertRange: ModUtils.TilesToPixels(30),
+                prioritizeAggro: true
+            ));
         }
 
         public override void AI()
