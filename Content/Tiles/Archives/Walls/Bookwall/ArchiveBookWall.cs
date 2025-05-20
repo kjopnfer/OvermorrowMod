@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
 using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Graphics;
 using Terraria.ID;
@@ -45,25 +47,31 @@ namespace OvermorrowMod.Content.Tiles.Archives
             int index = ModContent.GetInstance<NPCSpawnPoint>().Find(i, j);
             if (index != -1)
             {
-                switch (rng.Next(3))
-                {
-                    case 0:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 2, 36, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                    case 1:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 7, 36, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                    case 2:
-                        Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 11, 0, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
-                        break;
-                }
+                NPCSpawnPoint entity = (NPCSpawnPoint)TileEntity.ByID[index];
+                var npc = NPCLoader.GetNPC(entity.NPCType);
 
-                return false;
+                if (entity != null && (npc is LivingGrimoire || npc is InkWormBody))
+                {
+                    switch (rng.Next(3))
+                    {
+                        case 0:
+                            Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 2, 36, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
+                            break;
+                        case 1:
+                            Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 7, 36, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
+                            break;
+                        case 2:
+                            Main.tileBatch.Draw(texture, drawPosition, new Rectangle(36 * 11, 0, 32, 32), vertices, Vector2.Zero, 1f, SpriteEffects.None);
+                            break;
+                    }
+
+                    return false;
+                }
             }
 
             // Reserve the holes in the bookshelves for the NPC spawners
             if (frame.Intersects(new Rectangle(36 * 2, 36, 36, 36)) ||
-                frame.Intersects(new Rectangle(36 * 7, 36, 36, 36)) || 
+                frame.Intersects(new Rectangle(36 * 7, 36, 36, 36)) ||
                 frame.Intersects(new Rectangle(36 * 11, 0, 36, 36)))
             {
                 switch (rng.Next(12))

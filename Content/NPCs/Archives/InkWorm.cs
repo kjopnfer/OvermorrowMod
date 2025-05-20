@@ -66,6 +66,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             NPCTargetingConfig config = new NPCTargetingConfig();
             config.DisplayAggroIndicator = false;
+            config.AlertRange = null;
 
             return config;
         }
@@ -312,6 +313,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             NPCTargetingConfig config = new NPCTargetingConfig();
             config.DisplayAggroIndicator = false;
+            config.AlertRange = null;
 
             return config;
         }
