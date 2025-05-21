@@ -72,7 +72,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
         public GunBuilder WithReloadZones(params (int start, int end)[] zones)
         {
-            gun.ClickZones = zones.Select(z => new ReloadZone(z.start, z.end)).ToList();
+            gun.ClickZonesValue = zones.Select(z => new ReloadZone(z.start, z.end)).ToList();
             return this;
         }
 

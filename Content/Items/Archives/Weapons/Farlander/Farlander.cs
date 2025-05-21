@@ -20,17 +20,16 @@ namespace OvermorrowMod.Content.Items.Weapons
     {
         public override string Texture => AssetDirectory.ArchiveItems + "Farlander";
         public override int ParentItem => ModContent.GetInstance<Farlander>().Type;
-
         public override GunType GunType => GunType.Sniper;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
+        //public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
 
-        public override bool TwoHanded => true;
+        //public override bool TwoHanded => true;
 
-        public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(26, -12));
-        public override (Vector2, Vector2) PositionOffset => (new Vector2(28, -9), new Vector2(28, -2));
+        //public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(26, -12));
+        //public override (Vector2, Vector2) PositionOffset => (new Vector2(28, -9), new Vector2(28, -2));
 
-        public override float ProjectileScale => 0.95f;
+        //public override float ProjectileScale => 0.95f;
 
         public override void SafeSetDefaults()
         {
@@ -39,9 +38,24 @@ namespace OvermorrowMod.Content.Items.Weapons
             RecoilAmount = 10;
             ShootSound = SoundID.Item41;
             UsesRightClickDelay = false;
+
+            new GunBuilder(this)
+                .AsType(GunType.Sniper)
+                .WithMaxShots(2)
+                .WithReloadTime(200)
+                .WithRecoil(10)
+                .WithSound(SoundID.Item41)
+                .WithReloadZones((45, 60))
+                .WithPositionOffset(new Vector2(28, -9), new Vector2(28, -2))
+                .WithBulletPosition(new Vector2(20, 18), new Vector2(26, -12))
+                .WithScale(0.95f)
+                .TwoHanded()
+                .CanRightClick()
+                .WithRightClickDelay(false)
+                .Build();
         }
 
-        public override bool CanRightClick => true;
+        //public override bool CanRightClick => true;
         public override void RightClickEvent(Player player, ref int BonusDamage, int baseDamage)
         {
             if (player.ownedProjectileCounts[ModContent.ProjectileType<FarlanderScope>()] < 1 && ShotsFired < MaxShots)

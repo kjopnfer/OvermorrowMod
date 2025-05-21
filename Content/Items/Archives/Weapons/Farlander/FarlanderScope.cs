@@ -73,10 +73,10 @@ namespace OvermorrowMod.Content.Items.Weapons
             float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 8f), 0, 1);
             if (DeathFlag == 1) flashProgress = 0;
 
-            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
-            effect.Parameters["WhiteoutProgress"].SetValue(flashProgress);
-            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+            Effect effect = OvermorrowModFile.Instance.ColorFill.Value;
+            effect.Parameters["ColorFillColor"].SetValue(Color.White.ToVector3());
+            effect.Parameters["ColorFillProgress"].SetValue(flashProgress);
+            effect.CurrentTechnique.Passes["ColorFill"].Apply();
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             Vector2 yOffset = Vector2.UnitY * -12;

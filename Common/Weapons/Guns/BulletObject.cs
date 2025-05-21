@@ -57,7 +57,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + BulletTexture).Value;
+            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.GunUI + BulletTexture).Value;
             float scale = 1;
 
             Vector2 positionOffset = Vector2.UnitY * MathHelper.Lerp(-1, 1, (float)Math.Sin(DrawCounter / 30f) * 0.5f + 0.5f);

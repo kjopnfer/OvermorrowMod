@@ -14,6 +14,57 @@ namespace OvermorrowMod.Common.Weapons.Guns
 {
     public abstract partial class HeldGun : ModProjectile
     {
+        protected (Vector2, Vector2) positionOffsetValue = (new Vector2(15, 0), new Vector2(15, 0));
+        protected (Vector2, Vector2) bulletShootPositionValue = (new Vector2(15, -5), new Vector2(15, 15));
+        protected float projectileScaleValue = 1f;
+        protected bool twoHandedValue = false;
+        protected bool canRightClickValue = false;
+        protected List<ReloadZone> clickZonesValue = new List<ReloadZone>();
+
+        public virtual (Vector2, Vector2) PositionOffset => positionOffsetValue;
+        public virtual (Vector2, Vector2) BulletShootPosition => bulletShootPositionValue;
+        public virtual float ProjectileScale => projectileScaleValue;
+        public virtual bool TwoHanded => twoHandedValue;
+        public virtual bool CanRightClick => canRightClickValue;
+        public virtual List<ReloadZone> ClickZones => clickZonesValue;
+
+        // these properties allow the builder to set values
+        public (Vector2, Vector2) PositionOffsetValue
+        {
+            get => positionOffsetValue;
+            set => positionOffsetValue = value;
+        }
+
+        public (Vector2, Vector2) BulletShootPositionValue
+        {
+            get => bulletShootPositionValue;
+            set => bulletShootPositionValue = value;
+        }
+
+        public float ProjectileScaleValue
+        {
+            get => projectileScaleValue;
+            set => projectileScaleValue = value;
+        }
+
+        public bool TwoHandedValue
+        {
+            get => twoHandedValue;
+            set => twoHandedValue = value;
+        }
+
+        public bool CanRightClickValue
+        {
+            get => canRightClickValue;
+            set => canRightClickValue = value;
+        }
+
+        public List<ReloadZone> ClickZonesValue
+        {
+            get => clickZonesValue;
+            set => clickZonesValue = value;
+        }
+
         public override bool? CanDamage() => false;
         public override bool ShouldUpdatePosition() => false;
 
@@ -41,10 +92,10 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// <summary>
         /// Used to determine where the gun is held for the left and right directions, respectively.
         /// </summary>
-        public virtual (Vector2, Vector2) PositionOffset => (new Vector2(15, 0), new Vector2(15, 0));
+        //public virtual (Vector2, Vector2) PositionOffset => (new Vector2(15, 0), new Vector2(15, 0));
 
-        public virtual bool CanRightClick => false;
-        public virtual bool TwoHanded => false;
+        //public virtual bool CanRightClick => false;
+        //public virtual bool TwoHanded => false;
 
         private int _maxShots = 6;
         public int MaxShots { get { return _maxShots; } set { _maxShots = value <= 0 ? 1 : value; } }
@@ -54,10 +105,10 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// <summary>
         /// Defines the shot bullet positions for the gun for left and right directions, respectively.
         /// </summary>
-        public virtual (Vector2, Vector2) BulletShootPosition => (new Vector2(15, -5), new Vector2(15, 15));
-        public virtual float ProjectileScale => 1;
+        //public virtual (Vector2, Vector2) BulletShootPosition => (new Vector2(15, -5), new Vector2(15, 15));
+        //public virtual float ProjectileScale => 1;
 
-        public SoundStyle ReloadFinishSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/RevolverReload");
+        public SoundStyle ReloadFinishSound = new($"{nameof(OvermorrowMod)}/Sounds/RevolverReload");
 
         public abstract int ParentItem { get; }
 
@@ -547,14 +598,14 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// <param name="BonusAmmo"></param>
         public virtual void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier) { }
 
-        public List<BulletObject> BulletDisplay = new List<BulletObject>();
+        public List<BulletObject> BulletDisplay = new();
 
         #region Ammo Drawing
         private void DrawAmmo()
         {
             if (Main.gamePaused || Main.LocalPlayer != Main.player[Projectile.owner]) return;
 
-            float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.UI + BulletTexture()).Value.Width;
+            float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.GunUI + BulletTexture()).Value.Width;
 
             int bulletCounts = BulletDisplay.Count % 10;
             if (bulletCounts == 0 && BulletDisplay.Count > 0) bulletCounts = 10;
@@ -587,12 +638,12 @@ namespace OvermorrowMod.Common.Weapons.Guns
         {
             if (BulletDisplay.Count > 10)
             {
-                Texture2D xTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "OverflowDisplay_X").Value;
+                Texture2D xTexture = ModContent.Request<Texture2D>(AssetDirectory.GunUI + "OverflowDisplay_X").Value;
 
                 Vector2 counterOffset = new Vector2(startPosition + 18 * bulletCounts, 42);
                 Main.spriteBatch.Draw(xTexture, player.Center + counterOffset - Main.screenPosition, null, Color.White, 0f, xTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
 
-                Texture2D counterTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "OverflowDisplay_Numbers").Value;
+                Texture2D counterTexture = ModContent.Request<Texture2D>(AssetDirectory.GunUI + "OverflowDisplay_Numbers").Value;
                 int counterTextureWidth = counterTexture.Width / 10;
 
                 int initialCount = BulletDisplay.Count - 1;
@@ -658,14 +709,14 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
 
         private List<ReloadZone> _clickZones;
-        public abstract List<ReloadZone> ClickZones { get; }
+        //public abstract List<ReloadZone> ClickZones { get; }
 
         private void DrawReloadBar()
         {
             float scale = 1;
             if (clickDelay > 0) scale = MathHelper.Lerp(1.25f, 1f, 1 - (clickDelay / 15f));
 
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunReloadFrame").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.GunUI + "GunReloadFrame").Value;
             Vector2 offset = new Vector2(-2, 41);
             Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
 
@@ -677,18 +728,18 @@ namespace OvermorrowMod.Common.Weapons.Guns
                 Vector2 zonePosition = player.Center + zoneOffset;
 
                 float clickWidth = (clickZone.EndPercentage - clickZone.StartPercentage) / 100f;
-                Texture2D clickTexture = clickZone.HasClicked ? ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadZone_Clicked").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadZone").Value;
+                Texture2D clickTexture = clickZone.HasClicked ? ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadZone_Clicked").Value : ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadZone").Value;
                 Rectangle drawRectangle = new Rectangle(0, 0, (int)(clickTexture.Width * clickWidth), clickTexture.Height);
                 Main.spriteBatch.Draw(clickTexture, zonePosition - Main.screenPosition, drawRectangle, Color.White, 0f, clickTexture.Size() / 2f, scale, SpriteEffects.None, 1);
             }
 
             float cursorProgress = MathHelper.Lerp(0, texture.Width, 1 - ((float)reloadTime / MaxReloadTime));
-            Texture2D cursor = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadCursor").Value;
+            Texture2D cursor = ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadCursor").Value;
             Vector2 cursorOffset = new Vector2(-66 + cursorProgress, 42.5f);
             Vector2 cursorPosition = player.Center + cursorOffset;
             Main.spriteBatch.Draw(cursor, cursorPosition - Main.screenPosition, null, Color.White, 0f, cursor.Size() / 2f, scale, SpriteEffects.None, 1);
 
-            Texture2D bullet = ModContent.Request<Texture2D>(AssetDirectory.UI + BulletTexture()).Value;
+            Texture2D bullet = ModContent.Request<Texture2D>(AssetDirectory.GunUI + BulletTexture()).Value;
             Vector2 bulletPosition = player.Center + new Vector2(-68 * scale, 40f);
             Main.spriteBatch.Draw(bullet, bulletPosition - Main.screenPosition, null, Color.White, 0f, bullet.Size() / 2f, scale, SpriteEffects.None, 1);
         }

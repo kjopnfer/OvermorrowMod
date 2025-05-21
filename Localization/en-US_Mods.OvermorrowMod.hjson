@@ -57,6 +57,11 @@ Items: {
 		DisplayName: Tower Key
 		Tooltip: ""
 	}
+
+	Farlander: {
+		DisplayName: Farlander
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -100,4 +105,6 @@ Projectiles: {
 	FireBolt.DisplayName: Fire Bolt
 	AggroIndicator.DisplayName: Aggro Indicator
 	AlertIndicator.DisplayName: Alert Indicator
+	FarlanderHeld.DisplayName: Farlander Held
+	FarlanderScope.DisplayName: Farlander Scope
 }
