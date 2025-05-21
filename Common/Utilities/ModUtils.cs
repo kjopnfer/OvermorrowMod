@@ -1,5 +1,8 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Core.Globals;
 using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.Utilities
 {
@@ -50,6 +53,41 @@ namespace OvermorrowMod.Common.Utilities
         public static int TilesToPixels(float tiles)
         {
             return (int)(tiles * 16f);
+        }
+
+        /// <summary>
+        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty or the wrong ammo type.
+        /// </summary>
+        public static void AutofillAmmoSlots(Player player, int ammoID)
+        {
+            for (int j = 0; j <= 3; j++) // Check if any of the ammo slots are empty or are the right ammo
+            {
+                Item ammoItem = player.inventory[54 + j];
+                if (ammoItem.type != ItemID.None && ammoItem.ammo == ammoID) continue;
+
+                // Loop through the player's inventory in order to find any useable ammo types to use
+                for (int i = 0; i <= 49; i++)
+                {
+                    Item item = player.inventory[i];
+                    if (item.type == ItemID.None || item.ammo != ammoID) continue;
+
+                    Item tempItem = ammoItem;
+                    player.inventory[54 + j] = item;
+                    player.inventory[i] = tempItem;
+
+                    break;
+                }
+            }
+        }
+
+        public static void SetWeaponType(this Item item, GunType gunType)
+        {
+            item.GetGlobalItem<GlobalGun>().GunType = gunType;
+        }
+
+        public static GunType GetWeaponType(this Item item)
+        {
+            return item.GetGlobalItem<GlobalGun>().GunType;
         }
     }
 }

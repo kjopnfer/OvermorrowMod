@@ -28,6 +28,7 @@ namespace OvermorrowMod.Content.Particles
             particle.scale = particle.customData[0];
             smokeVariant = Main.rand.Next(1, 8);
         }
+
         public override void Update()
         {
 
