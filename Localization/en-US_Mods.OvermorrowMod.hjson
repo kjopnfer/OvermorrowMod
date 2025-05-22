@@ -30,6 +30,11 @@ Buffs: {
 		DisplayName: Stealth
 		Description: Mods.OvermorrowMod.Buffs.Stealth.Description
 	}
+
+	PhoenixMarkBuff: {
+		DisplayName: Phoenix Mark Buff
+		Description: Mods.OvermorrowMod.Buffs.PhoenixMarkBuff.Description
+	}
 }
 
 Items: {
@@ -107,4 +112,15 @@ Projectiles: {
 	AlertIndicator.DisplayName: Alert Indicator
 	FarlanderHeld.DisplayName: Farlander Held
 	FarlanderScope.DisplayName: Farlander Scope
+	BoomstickHeld.DisplayName: Boomstick Held
+	HandgunHeld.DisplayName: Handgun Held
+	MinisharkHeld.DisplayName: Minishark Held
+	MusketHeld.DisplayName: Musket Held
+	PhoenixBlasterHeld.DisplayName: Phoenix Blaster Held
+	PhoenixBurst.DisplayName: Phoenix Burst
+	PhoenixMark.DisplayName: Phoenix Mark
+	PhoenixMisfire.DisplayName: Phoenix Misfire
+	QuadBarrelHeld.DisplayName: Quad Barrel Held
+	RevolverHeld.DisplayName: Revolver Held
+	UndertakerHeld.DisplayName: Undertaker Held
 }

@@ -249,8 +249,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
         }
 
         // Cannot make this static and put this into GunEffects because spawning gores is stupid
-        protected void SpawnBulletCasing(Projectile projectile, Player player, Vector2 position,
-            Vector2 offset = default, float scale = 0.75f, bool sticky = true)
+        protected void SpawnBulletCasing(Projectile projectile, Player player, Vector2 position, Vector2 offset = default, float scale = 0.75f, bool sticky = true)
         {
             Vector2 velocity = new Vector2(player.direction * -0.03f, 0.01f);
             int gore = Gore.NewGore(null, position + offset, velocity, Mod.Find<ModGore>("BulletCasing").Type, scale);

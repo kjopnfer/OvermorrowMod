@@ -6,6 +6,7 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Audio;
 using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged;
 
 namespace OvermorrowMod.Core.Globals
 {
@@ -32,14 +33,14 @@ namespace OvermorrowMod.Core.Globals
 
         public Dictionary<int, GunStats> OverridedGuns = new Dictionary<int, GunStats>()
         {
-            /*{ ItemID.Revolver, new GunStats(ModContent.ProjectileType<Revolver_Held>(), 30, GunType.Revolver) },
-            { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 20, GunType.Shotgun) },
-            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32, GunType.Handgun) },
-            { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20, GunType.Shotgun) },
-            { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13, GunType.Revolver) },
-            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22, GunType.Handgun) },
-            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 15, GunType.MachineGun) },
-            { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 56, GunType.Musket) },*/
+            { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<BoomstickHeld>(), 20, GunType.Shotgun) },
+            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<HandgunHeld>(), 22, GunType.Handgun) },
+            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<MinisharkHeld>(), 15, GunType.MachineGun) },
+            { ItemID.Revolver, new GunStats(ModContent.ProjectileType<RevolverHeld>(), 30, GunType.Revolver) },
+            { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrelHeld>(), 20, GunType.Shotgun) },
+            { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<UndertakerHeld>(), 13, GunType.Revolver) },
+            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlasterHeld>(), 32, GunType.Handgun) },
+            { ItemID.Musket, new GunStats(ModContent.ProjectileType<MusketHeld>(), 56, GunType.Musket) }
         };
 
         private string ConvertWeaponTypeString(GunType weaponType)
@@ -77,7 +78,7 @@ namespace OvermorrowMod.Core.Globals
                 item.noUseGraphic = true;
                 item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
 
-                //GunType = gun.WeaponType;
+                GunType = gun.WeaponType;
             }
 
             if (item.type == ItemID.Handgun) item.useTime = item.useAnimation = 18;

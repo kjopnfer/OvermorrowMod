@@ -22,30 +22,15 @@ namespace OvermorrowMod.Content.Items.Weapons
         public override int ParentItem => ModContent.GetInstance<Farlander>().Type;
         public override GunType GunType => GunType.Sniper;
 
-        //public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
-
-        //public override bool TwoHanded => true;
-
-        //public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(26, -12));
-        //public override (Vector2, Vector2) PositionOffset => (new Vector2(28, -9), new Vector2(28, -2));
-
-        //public override float ProjectileScale => 0.95f;
-
         public override void SafeSetDefaults()
         {
-            MaxReloadTime = 200;
-            MaxShots = 2;
-            RecoilAmount = 10;
-            ShootSound = SoundID.Item41;
-            UsesRightClickDelay = false;
-
             new GunBuilder(this)
                 .AsType(GunType.Sniper)
                 .WithMaxShots(2)
                 .WithReloadTime(200)
                 .WithRecoil(10)
                 .WithSound(SoundID.Item41)
-                .WithReloadZones((45, 60))
+                .WithReloadZones((45, 50))
                 .WithPositionOffset(new Vector2(28, -9), new Vector2(28, -2))
                 .WithBulletPosition(new Vector2(20, 18), new Vector2(26, -12))
                 .WithScale(0.95f)
@@ -55,7 +40,6 @@ namespace OvermorrowMod.Content.Items.Weapons
                 .Build();
         }
 
-        //public override bool CanRightClick => true;
         public override void RightClickEvent(Player player, ref int BonusDamage, int baseDamage)
         {
             if (player.ownedProjectileCounts[ModContent.ProjectileType<FarlanderScope>()] < 1 && ShotsFired < MaxShots)
@@ -69,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Weapons
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
             float chargeProgress = Utils.Clamp(gunPlayer.FarlanderCharge / 120f, 0, 1);
-            float accuracy = MathHelper.Lerp(12, 0, chargeProgress);
+            float accuracy = MathHelper.Lerp(35, 0, chargeProgress);
 
             Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(accuracy));
             int chargeDamage = (int)(chargeProgress == 1 ? damage * 1.5f : damage);
@@ -112,7 +96,7 @@ namespace OvermorrowMod.Content.Items.Weapons
 
             if (shootCounter > maxShootTime - 9)
             {
-                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(54, 4) : new Vector2(54, -4);
+                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(48, 4) : new Vector2(48, -4);
                 GunEffects.DrawMuzzleFlash(spriteBatch, Projectile, player, muzzleDirectionOffset);
             }
         }

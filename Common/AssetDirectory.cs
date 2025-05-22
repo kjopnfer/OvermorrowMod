@@ -22,7 +22,14 @@ namespace OvermorrowMod.Common
 
         public const string GunUI = UI + "Gun/";
 
-        // For TexGen mapping, not shader mapping
+        /// <summary>
+        /// Stores vanilla resprites.
+        /// </summary>
+        public const string Resprites = Items + "Resprites/";
+
+        /// <summary>
+        /// For TexGen mapping, not shader mapping
+        /// </summary>
         public const string TexGen = Assets + "Maps/";
         #endregion
 
