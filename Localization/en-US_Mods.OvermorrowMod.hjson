@@ -102,7 +102,7 @@ Items: {
 
 	Farlander: {
 		DisplayName: Farlander
-		Tooltip: 
+		Tooltip:
 			'''
 			{Keyword:Reload}: Your next clip gains 1 piercing
 			{Keyword:Secondary}: Increase view range and charge
@@ -110,6 +110,50 @@ Items: {
 			Improves charge time for each enemy hit by a {Keyword:Focus} shot
 			Charge bonus resets on miss
 			'''
+	}
+
+	Boomstick: {
+		DisplayName: Boomstick
+		Tooltip: "{Keyword:Reload}: Increase recoil and bullets fired for each block clicked"
+	}
+
+	Revolver: {
+		DisplayName: Boomstick
+		Tooltip: "{Keyword:Reload}: Reload instantly. Your next clip has increased damage"
+	}
+
+	Handgun: {
+		DisplayName: Handgun
+		Tooltip: "{Keyword:Reload}: Your next clip has increased firing speed"
+	}
+
+	Musket: {
+		DisplayName: Musket
+		Tooltip: "{Keyword:Reload}: Increase accuracy for each block clicked"
+	}
+
+	PhoenixBlaster: {
+		DisplayName: Phoenix Blaster
+		Tooltip:
+			'''
+			{Keyword:Reload}: Release a burst of flame, inflicting <Debuff:Phoenix Mark>
+			{Keyword:Misfire}: Damage yourself, inflicting <Debuff:On Fire!>
+			'''
+	}
+
+	TheUndertaker: {
+		DisplayName: The Undertaker
+		Tooltip:
+			'''
+			{Keyword:Reload}: Your next clip has 6 bullets and increased firing speed
+			{Keyword:Misfire}: Your next clip has 2 bullets
+			Bullets deal more damage at point blank range
+			'''
+	}
+
+	QuadBarrelShotgun: {
+		DisplayName: Quad Barrel
+		Tooltip: "{Keyword:Reload}: Increase number of bullets and recoil for each block clicked"
 	}
 }
 

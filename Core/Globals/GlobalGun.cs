@@ -7,6 +7,8 @@ using Terraria.DataStructures;
 using Terraria.Audio;
 using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged;
+using OvermorrowMod.Common;
+using Terraria.Localization;
 
 namespace OvermorrowMod.Core.Globals
 {
@@ -58,12 +60,32 @@ namespace OvermorrowMod.Core.Globals
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            /*int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
+            int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             if (GunType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + " Type]"));
 
-            if (MeleeType.ToString() != "None")
+            /*if (MeleeType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));*/
+            
+            // Check if this item is an overridden gun
+            if (OverridedGuns.ContainsKey(item.type))
+            {
+                var blacklistedTooltips = new HashSet<int> { ItemID.Minishark };
+
+                string tooltipKey = item.type switch
+                {
+                    ItemID.PhoenixBlaster => "PhoenixBlaster",
+                    ItemID.TheUndertaker => "TheUndertaker",
+                    ItemID.QuadBarrelShotgun => "QuadBarrelShotgun",
+                    _ => item.Name
+                };
+
+                // Some items don't have an entry in the Localization file, do not display it if it doesn't exist.
+                if (!blacklistedTooltips.Contains(item.type))
+                {
+                    tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", Language.GetTextValue(LocalizationPath.Items + tooltipKey + ".Tooltip")));
+                }
+            }
 
             base.ModifyTooltips(item, tooltips);
         }
