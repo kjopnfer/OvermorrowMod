@@ -15,7 +15,7 @@ namespace OvermorrowMod.Common.Tooltips
         public readonly float ProjectileDamage;
         public readonly ProjectileTooltipType Type;
 
-        public ProjectileTooltip(Texture2D projectileIcon, string projectileTitle, string projectileDescription, float projectileDamage, ProjectileTooltipType type)
+        public ProjectileTooltip(Texture2D projectileIcon, string projectileTitle, string[] projectileDescription, float projectileDamage, ProjectileTooltipType type)
         {
             Priority = 2;
             ObjectIcon = projectileIcon;

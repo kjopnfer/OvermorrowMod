@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Tooltips;
+using OvermorrowMod.Core.NPCs;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Terraria;
@@ -92,14 +94,62 @@ namespace OvermorrowMod.Core.Items
 
         public static void DrawSetBonusTooltip(SpriteBatch spriteBatch, SetBonusTooltip setBonus, Vector2 containerPosition, float height, Color primaryColor)
         {
+            // Pre-calculate all text sizes
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.Title, new Vector2(1.25f));
             var setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetName, Vector2.One) + new Vector2(8, 0);
-            var snippets = ChatManager.ParseMessage(setBonus.Description, Color.White).ToArray();
+            var subtitleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Set Bonus", Vector2.One);
 
-            // Draw background
+            // Calculate description height - now works with string array
+            float descriptionHeight = 0;
+            foreach (string descriptionLine in setBonus.Description)
+            {
+                descriptionHeight += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
+                // Parse each line separately to handle color codes properly
+                /*var snippets = ChatManager.ParseMessage(descriptionLine, Color.White).ToArray();
+                foreach (var snippet in snippets)
+                {
+                    descriptionHeight += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text,
+                        Vector2.One * 0.95f, TooltipConfiguration.MAXIMUM_TEXT_LENGTH).Y;
+                }*/
+            }
+
+            // Calculate set items height
+            float setItemsHeight = setBonusTitleLength.Y + 8; // Set name + padding
+            setItemsHeight += setBonus.SetItems.Count * 20; // Each item is 20px tall
+
+            // Calculate ACTUAL total height of all elements
+            float actualTotalHeight = 0;
+
+            // 1. Icon/Title section height (use the larger of icon or title)
+            float iconTitleHeight = Math.Max(setBonus.ObjectIcon.Height, titleSize.Y + 16); // +16 for positioning offset
+            actualTotalHeight += iconTitleHeight;
+
+            // 2. First divider
+            actualTotalHeight += 2; // Divider height
+            actualTotalHeight += 16; // Padding after divider
+
+            // 3. "Set Bonus" subtitle
+            actualTotalHeight += subtitleSize.Y;
+            actualTotalHeight += 8; // Padding after subtitle
+
+            // 4. Description text
+            actualTotalHeight += descriptionHeight;
+            actualTotalHeight += 16; // Padding after description
+
+            // 5. Second divider
+            actualTotalHeight += 2; // Divider height
+            actualTotalHeight += 8; // Padding after divider
+
+            // 6. Set items section
+            actualTotalHeight += setItemsHeight;
+
+            // 7. Bottom padding
+            actualTotalHeight += TooltipConfiguration.BOTTOM_PADDING;
+
+            // Draw background with the ACTUAL calculated height
             Utils.DrawInvBG(spriteBatch,
                 new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10,
-                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)height),
+                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)actualTotalHeight),
                 TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
 
             // Draw icon and title
@@ -108,24 +158,44 @@ namespace OvermorrowMod.Core.Items
             // Draw divider
             DrawDivider(spriteBatch, containerPosition, TooltipConfiguration.DIVIDER_OFFSET);
 
-            // Draw set bonus description
-            var titleHeight = titleSize.Y * 2 + TooltipConfiguration.BOTTOM_OFFSET;
+            // Calculate title section height
+            var titleHeight = titleSize.Y + TooltipConfiguration.BOTTOM_OFFSET;
+
+            // Draw "Set Bonus" subtitle
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, "Set Bonus",
-                new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight),
-                TooltipConfiguration.SubtitleColor, 0f, titleSize, Vector2.One);
+                new Vector2(containerPosition.X, containerPosition.Y + titleHeight + 16),
+                TooltipConfiguration.SubtitleColor, 0f, Vector2.Zero, Vector2.One);
 
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets,
-                new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero,
-                Vector2.One * 0.95f, out _, TooltipConfiguration.MAXIMUM_TEXT_LENGTH);
+            // Calculate where the description starts (after subtitle)
+            var subtitleHeight = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Set Bonus", Vector2.One).Y;
+            var descriptionStartY = titleHeight + subtitleHeight + 16; // 8 padding above + 8 padding below subtitle
 
-            // Draw set items
-            DrawSetItems(spriteBatch, setBonus, containerPosition, setBonusTitleLength, height - titleHeight);
+            // Draw set bonus description - now handles string array
+            float currentDescriptionY = descriptionStartY;
+            foreach (string descriptionLine in setBonus.Description)
+            {
+                var snippets = ChatManager.ParseMessage(descriptionLine, Color.White);
+                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, descriptionLine,
+                    new Vector2(containerPosition.X, containerPosition.Y + currentDescriptionY), Color.White, 0f, Vector2.Zero,
+                    Vector2.One * 0.95f);
+
+                // Move to next line
+                //currentDescriptionY += lineSize.Y;
+                currentDescriptionY += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
+            }
+
+            // Calculate where set items should start (right after description ends)
+            var setItemsStartY = currentDescriptionY; // No extra padding yet
+
+            // Draw another divider before set items
+            DrawDivider(spriteBatch, containerPosition, (int)setItemsStartY);
+            // Draw set items starting right after the divider
+            DrawSetItems(spriteBatch, setBonus, containerPosition, setBonusTitleLength, setItemsStartY + 8);
         }
 
         public static void DrawProjectileTooltip(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
         {
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Title, new Vector2(1.25f));
-            var snippets = ChatManager.ParseMessage(projectileTooltip.Description, Color.White).ToArray();
 
             // Adjust for screen overflow
             containerPosition = AdjustPositionForOverflow(containerPosition, height);
@@ -149,10 +219,15 @@ namespace OvermorrowMod.Core.Items
             // Draw divider
             DrawDivider(spriteBatch, containerPosition, TooltipConfiguration.DIVIDER_OFFSET);
 
-            // Draw description
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets,
-                new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero,
-                Vector2.One * 0.95f, out _, TooltipConfiguration.MAXIMUM_TEXT_LENGTH);
+            // Draw description - handle string array
+            float currentY = titleHeight;
+            foreach (string descriptionLine in projectileTooltip.Description)
+            {
+                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, descriptionLine,
+                    new Vector2(containerPosition.X, containerPosition.Y + currentY), Color.White, 0f, Vector2.Zero,
+                    Vector2.One * 0.95f);
+                //currentY += lineSize.Y;
+            }
 
             // Draw damage value
             DrawProjectileStats(spriteBatch, projectileTooltip, containerPosition, height);
@@ -161,7 +236,6 @@ namespace OvermorrowMod.Core.Items
         public static void DrawBuffTooltip(SpriteBatch spriteBatch, BuffTooltip buffTooltip, Vector2 containerPosition, float height)
         {
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.Title, new Vector2(1.25f));
-            var snippets = ChatManager.ParseMessage(buffTooltip.Description, Color.White).ToArray();
 
             // Adjust for screen overflow
             containerPosition = AdjustPositionForOverflow(containerPosition, height);
@@ -189,10 +263,15 @@ namespace OvermorrowMod.Core.Items
             // Draw divider
             DrawDivider(spriteBatch, containerPosition, TooltipConfiguration.DIVIDER_OFFSET);
 
-            // Draw description
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets,
-                new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero,
-                Vector2.One * 0.95f, out _, TooltipConfiguration.MAXIMUM_TEXT_LENGTH);
+            // Draw description - handle string array
+            float currentY = titleHeight;
+            foreach (string descriptionLine in buffTooltip.Description)
+            {
+                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, descriptionLine,
+                    new Vector2(containerPosition.X, containerPosition.Y + currentY), Color.White, 0f, Vector2.Zero,
+                    Vector2.One * 0.95f);
+                //currentY += lineSize.Y;
+            }
 
             // Draw duration value
             DrawBuffStats(spriteBatch, buffTooltip, containerPosition, height);
@@ -228,10 +307,18 @@ namespace OvermorrowMod.Core.Items
             int setCount = 0;
             int maxSetCount = setBonus.SetItems.Count;
 
+            // Draw set name
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, setBonus.SetName,
-                new Vector2(containerPosition.X, containerPosition.Y + yOffset + 8), Color.Orange, 0f, Vector2.Zero, Vector2.One);
+                new Vector2(containerPosition.X, containerPosition.Y + yOffset), Color.Orange, 0f, Vector2.Zero, Vector2.One);
 
-            int itemOffsetCount = 1;
+            // Draw set count next to set name
+            Color setCountColor = setCount == maxSetCount ? Color.Orange : Color.Gray;
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, $"({setCount}/{maxSetCount})",
+                new Vector2(containerPosition.X + setBonusTitleLength.X, containerPosition.Y + yOffset),
+                setCountColor, 0f, Vector2.Zero, Vector2.One);
+
+            // Draw each set item
+            float currentY = yOffset + setBonusTitleLength.Y + 4; // Small padding after set name
             foreach (int itemID in setBonus.SetItems)
             {
                 var setItem = new Item();
@@ -241,14 +328,17 @@ namespace OvermorrowMod.Core.Items
                 if (drawColor != Color.Gray) setCount++;
 
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, " > " + setItem.Name,
-                    new Vector2(containerPosition.X, containerPosition.Y + yOffset + (setBonusTitleLength.Y * itemOffsetCount) + 8),
+                    new Vector2(containerPosition.X, containerPosition.Y + currentY),
                     drawColor, 0f, Vector2.Zero, Vector2.One);
-                itemOffsetCount++;
+
+                // Move to next line
+                currentY += setBonusTitleLength.Y;
             }
 
-            Color setCountColor = setCount == maxSetCount ? Color.Orange : Color.Gray;
+            // Update the set count now that we've counted equipped items
+            setCountColor = setCount == maxSetCount ? Color.Orange : Color.Gray;
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, $"({setCount}/{maxSetCount})",
-                new Vector2(containerPosition.X + setBonusTitleLength.X, containerPosition.Y + yOffset + 8),
+                new Vector2(containerPosition.X + setBonusTitleLength.X, containerPosition.Y + yOffset),
                 setCountColor, 0f, Vector2.Zero, Vector2.One);
         }
 
@@ -329,18 +419,28 @@ namespace OvermorrowMod.Core.Items
         public static float CalculateTooltipHeight(TooltipEntity tooltip)
         {
             Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, tooltip.Title, new Vector2(1.25f));
-            var snippets = ChatManager.ParseMessage(tooltip.Description, Color.White).ToArray();
 
             float height = titleSize.Y * 2 + TooltipConfiguration.BOTTOM_OFFSET;
-            foreach (var snippet in snippets)
+
+            // Handle string array description
+            foreach (string descriptionLine in tooltip.Description)
             {
-                height += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text,
-                    Vector2.One * 0.95f, TooltipConfiguration.MAXIMUM_TEXT_LENGTH).Y;
+                var snippets = ChatManager.ParseMessage(descriptionLine, Color.White).ToArray();
+                foreach (var snippet in snippets)
+                {
+                    height += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text,
+                        Vector2.One * 0.95f, TooltipConfiguration.MAXIMUM_TEXT_LENGTH).Y;
+                }
             }
 
-            // Adjust for colored text and line breaks
-            int coloredTextCount = tooltip.Description.Split('[').Length - 1;
-            int lineBreakCount = tooltip.Description.Split('\n').Length - 1;
+            // Adjust for colored text and line breaks - now check each line
+            int coloredTextCount = 0;
+            int lineBreakCount = 0;
+            foreach (string descriptionLine in tooltip.Description)
+            {
+                coloredTextCount += descriptionLine.Split('[').Length - 1;
+                lineBreakCount += descriptionLine.Split('\n').Length - 1;
+            }
             height -= (28 * coloredTextCount + 26.6f * lineBreakCount);
 
             // Add extra space for specific tooltip types

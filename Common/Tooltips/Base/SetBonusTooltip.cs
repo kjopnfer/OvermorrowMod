@@ -9,7 +9,7 @@ namespace OvermorrowMod.Common.Tooltips
         public readonly string SetName;
         public readonly List<int> SetItems;
 
-        public SetBonusTooltip(Texture2D setIcon, string setTitle, string setName, string setDescription, List<int> setItems)
+        public SetBonusTooltip(Texture2D setIcon, string setTitle, string setName, string[] setDescription, List<int> setItems)
         {
             Priority = 1;
             ObjectIcon = setIcon;

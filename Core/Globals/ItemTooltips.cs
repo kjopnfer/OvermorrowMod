@@ -92,7 +92,7 @@ namespace OvermorrowMod.Core.Globals
                 TooltipEntities.Add(TooltipEntity.CreateSetBonusTooltip(
                     "Wooden Warrior",
                     "Wood Armor",
-                    " + Increased defense by [c/58D68D:1]\n + Increased damage by [c/58D68D:5]\n + [c/58D68D:5%] chance to instantly kill all enemies",
+                    [" + Increased defense by [c/58D68D:1]", " + Increased damage by [c/58D68D:5]", " + [c/58D68D:5%] chance to instantly kill all enemies"],
                     new List<int> { ItemID.WoodHelmet, ItemID.WoodBreastplate, ItemID.WoodGreaves }));
             }
 
@@ -102,7 +102,7 @@ namespace OvermorrowMod.Core.Globals
                 TooltipEntities.Add(TooltipEntity.CreateSetBonusTooltip(
                     "Wild West Deadeye",
                     "Cowboy Armor",
-                    " + Critical hits with [c/FAD5A5:Revolvers] rebound to the nearest enemy",
+                    [" + Critical hits with [c/FAD5A5:Revolvers] rebound to the nearest enemy"],
                     new List<int> { ItemID.CowboyHat, ItemID.CowboyJacket, ItemID.CowboyPants }));
             }
         }

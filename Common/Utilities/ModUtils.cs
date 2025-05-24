@@ -99,7 +99,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>
         /// Quick method to create a simple projectile tooltip
         /// </summary>
-        public static List<TooltipEntity> CreateProjectileTooltip(this ModItem item, string title, string description, float damage)
+        public static List<TooltipEntity> CreateProjectileTooltip(this ModItem item, string title, string[] description, float damage)
         {
             return new List<TooltipEntity>
             {
@@ -110,7 +110,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>
         /// Quick method to create a simple buff tooltip
         /// </summary>
-        public static List<TooltipEntity> CreateBuffTooltip(this ModItem item, string title, string description, float duration, bool isBuff = true)
+        public static List<TooltipEntity> CreateBuffTooltip(this ModItem item, string title, string[] description, float duration, bool isBuff = true)
         {
             return new List<TooltipEntity>
             {

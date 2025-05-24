@@ -14,7 +14,7 @@ namespace OvermorrowMod.Common.Tooltips
         public readonly float BuffTime;
         public readonly BuffTooltipType Type;
 
-        public BuffTooltip(Texture2D buffIcon, string buffTitle, string buffDescription, float buffTime, BuffTooltipType type)
+        public BuffTooltip(Texture2D buffIcon, string buffTitle, string[] buffDescription, float buffTime, BuffTooltipType type)
         {
             Priority = 3;
             ObjectIcon = buffIcon;
