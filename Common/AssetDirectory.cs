@@ -21,6 +21,7 @@ namespace OvermorrowMod.Common
         public const string Trails = Textures + "Trails/";
 
         public const string GunUI = UI + "Gun/";
+        public const string Tooltips = UI + "Tooltips/";
 
         /// <summary>
         /// Stores vanilla resprites.

@@ -37,6 +37,43 @@ Buffs: {
 	}
 }
 
+Keywords: {
+	Focus: {
+		DisplayName: Focus,
+		Description: Triggers when firing a shot during the weapon's white flash window
+	}
+
+	Quickslot: {
+		DisplayName: Quickslot,
+		Description: Triggers while this item is in your hotbar
+	}
+
+	Secondary: {
+		DisplayName: Secondary,
+		Description: Triggers when holding right-click with this item
+	}
+
+	Reap: {
+		DisplayName: Reap,
+		Description: Triggers after killing an enemy with this item
+	}
+
+	Respite: {
+		DisplayName: Respite,
+		Description: Triggers after 5 seconds without dealing or taking damage
+	}
+
+	Reload: {
+		DisplayName: Reload,
+		Description: Triggers on a successful Reload Skill Check
+	}
+
+	Misfire: {
+		DisplayName: Misfire,
+		Description: Triggers on a failed Reload Skill Check
+	}
+}
+
 Items: {
 	ScholarsArmor: {
 		DisplayName: Scholars Armor

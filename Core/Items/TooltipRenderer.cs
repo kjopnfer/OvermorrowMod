@@ -1,0 +1,468 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Tooltips;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Terraria;
+using Terraria.GameContent;
+using Terraria.UI.Chat;
+
+namespace OvermorrowMod.Core.Items
+{
+    /// <summary>
+    /// Handles all tooltip rendering logic
+    /// </summary>
+    public static class TooltipRenderer
+    {
+        private static readonly Dictionary<string, string> TextHighlights = new Dictionary<string, string>
+        {
+            { "Type", "FAD5A5" },
+            { "Increase", "58D68D" },
+            { "Decrease", "ff5555" },
+            { "Keyword", "ff79c6" },
+        };
+
+        private static readonly Dictionary<string, string> ObjectHighlights = new Dictionary<string, string>
+        {
+            { "Key", "808080" },
+            { "Buff", "50fa7b" },
+            { "Debuff", "ff5555" },
+            { "Projectile", "8be9fd" },
+        };
+
+        #region Main Drawing Methods
+
+        /// <summary>
+        /// Draws all tooltip entities with proper positioning and overflow handling
+        /// </summary>
+        public static void DrawTooltipEntities(SpriteBatch spriteBatch, List<TooltipEntity> tooltips, string widestLine, int x, int y)
+        {
+            float yOffset = 0;
+            foreach (var tooltip in tooltips)
+            {
+                float height = CalculateTooltipHeight(tooltip);
+                Vector2 position = CalculateTooltipPosition(x, y, yOffset, widestLine, height);
+
+                // Draw based on tooltip type
+                if (tooltip is SetBonusTooltip setBonus)
+                {
+                    DrawSetBonusTooltip(spriteBatch, setBonus, position, height, Color.White);
+                }
+                else if (tooltip is ProjectileTooltip projectileTooltip)
+                {
+                    DrawProjectileTooltip(spriteBatch, projectileTooltip, position, height);
+                }
+                else if (tooltip is BuffTooltip buffTooltip)
+                {
+                    DrawBuffTooltip(spriteBatch, buffTooltip, position, height);
+                }
+
+                yOffset += height + 5;
+            }
+        }
+
+        /// <summary>
+        /// Draws keyword explanation tooltips
+        /// </summary>
+        public static void DrawKeywordTooltips(SpriteBatch spriteBatch, HashSet<string> keywords, string widestLine, int x, int y, int tooltipCount)
+        {
+            if (keywords.Count == 0) return;
+
+            float offset = 0;
+            float containerWidth = tooltipCount == 0 ? 0 : TooltipConfiguration.CONTAINER_WIDTH;
+
+            foreach (string keyword in keywords)
+            {
+                Vector2 position = new Vector2(
+                    x + containerWidth + TooltipConfiguration.CONTAINER_OFFSET +
+                    ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X,
+                    y + offset);
+
+                float height = CalculateKeywordHeight(keyword);
+                position = AdjustForScreenBounds(position, height, x, widestLine);
+
+                DrawKeywordTooltip(spriteBatch, keyword, position, height);
+                offset += height + 5 + TooltipConfiguration.BOTTOM_PADDING;
+            }
+        }
+
+        #endregion
+
+        #region Specific Tooltip Drawing
+
+        public static void DrawSetBonusTooltip(SpriteBatch spriteBatch, SetBonusTooltip setBonus, Vector2 containerPosition, float height, Color primaryColor)
+        {
+            var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.Title, new Vector2(1.25f));
+            var setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetName, Vector2.One) + new Vector2(8, 0);
+            var snippets = ChatManager.ParseMessage(setBonus.Description, Color.White).ToArray();
+
+            // Draw background
+            Utils.DrawInvBG(spriteBatch,
+                new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10,
+                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)height),
+                TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
+
+            // Draw icon and title
+            DrawIconAndTitle(spriteBatch, setBonus, containerPosition, titleSize, primaryColor);
+
+            // Draw divider
+            DrawDivider(spriteBatch, containerPosition, TooltipConfiguration.DIVIDER_OFFSET);
+
+            // Draw set bonus description
+            var titleHeight = titleSize.Y * 2 + TooltipConfiguration.BOTTOM_OFFSET;
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, "Set Bonus",
+                new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight),
+                TooltipConfiguration.SubtitleColor, 0f, titleSize, Vector2.One);
+
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets,
+                new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero,
+                Vector2.One * 0.95f, out _, TooltipConfiguration.MAXIMUM_TEXT_LENGTH);
+
+            // Draw set items
+            DrawSetItems(spriteBatch, setBonus, containerPosition, setBonusTitleLength, height - titleHeight);
+        }
+
+        public static void DrawProjectileTooltip(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
+        {
+            var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Title, new Vector2(1.25f));
+            var snippets = ChatManager.ParseMessage(projectileTooltip.Description, Color.White).ToArray();
+
+            // Adjust for screen overflow
+            containerPosition = AdjustPositionForOverflow(containerPosition, height);
+
+            // Draw background
+            Utils.DrawInvBG(spriteBatch,
+                new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10,
+                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)height),
+                TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
+
+            // Draw icon and title
+            DrawIconAndTitle(spriteBatch, projectileTooltip, containerPosition, titleSize);
+
+            // Draw subtitle (projectile type)
+            var titleHeight = titleSize.Y * 2 + TooltipConfiguration.BOTTOM_OFFSET;
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value,
+                projectileTooltip.Type.ToString(),
+                new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight),
+                TooltipConfiguration.SubtitleColor, 0f, titleSize, Vector2.One);
+
+            // Draw divider
+            DrawDivider(spriteBatch, containerPosition, TooltipConfiguration.DIVIDER_OFFSET);
+
+            // Draw description
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets,
+                new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero,
+                Vector2.One * 0.95f, out _, TooltipConfiguration.MAXIMUM_TEXT_LENGTH);
+
+            // Draw damage value
+            DrawProjectileStats(spriteBatch, projectileTooltip, containerPosition, height);
+        }
+
+        public static void DrawBuffTooltip(SpriteBatch spriteBatch, BuffTooltip buffTooltip, Vector2 containerPosition, float height)
+        {
+            var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.Title, new Vector2(1.25f));
+            var snippets = ChatManager.ParseMessage(buffTooltip.Description, Color.White).ToArray();
+
+            // Adjust for screen overflow
+            containerPosition = AdjustPositionForOverflow(containerPosition, height);
+
+            // Set title color based on buff/debuff type
+            Color titleColor = buffTooltip.Type == BuffTooltipType.Buff ?
+                TooltipConfiguration.BuffColor : TooltipConfiguration.DebuffColor;
+
+            // Draw background
+            Utils.DrawInvBG(spriteBatch,
+                new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10,
+                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)height),
+                TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
+
+            // Draw icon and title with appropriate color
+            DrawIconAndTitle(spriteBatch, buffTooltip, containerPosition, titleSize, titleColor);
+
+            // Draw subtitle (buff/debuff type)
+            var titleHeight = titleSize.Y * 2 + TooltipConfiguration.BOTTOM_OFFSET;
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value,
+                buffTooltip.Type.ToString(),
+                new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight),
+                TooltipConfiguration.SubtitleColor, 0f, titleSize, Vector2.One);
+
+            // Draw divider
+            DrawDivider(spriteBatch, containerPosition, TooltipConfiguration.DIVIDER_OFFSET);
+
+            // Draw description
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets,
+                new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero,
+                Vector2.One * 0.95f, out _, TooltipConfiguration.MAXIMUM_TEXT_LENGTH);
+
+            // Draw duration value
+            DrawBuffStats(spriteBatch, buffTooltip, containerPosition, height);
+        }
+
+        private static void DrawKeywordTooltip(SpriteBatch spriteBatch, string keyword, Vector2 position, float height)
+        {
+            Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyword, Vector2.One);
+
+            // Draw background
+            Utils.DrawInvBG(spriteBatch,
+                new Rectangle((int)position.X - 10, (int)position.Y - 10,
+                TooltipConfiguration.KEYWORD_WIDTH + 40, (int)height + TooltipConfiguration.BOTTOM_PADDING),
+                TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
+
+            // Draw keyword title
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, keyword,
+                position + new Vector2(titleSize.X, 24), TooltipConfiguration.KeywordColor, 0f, titleSize, Vector2.One);
+
+            // Draw keyword description
+            var snippets = ChatManager.ParseMessage(TooltipParser.GetKeyword(keyword), Color.White).ToArray();
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets,
+                new Vector2(position.X, position.Y + titleSize.Y - 4), 0f, Color.White, Vector2.Zero,
+                Vector2.One * 0.95f, out _, 225f);
+        }
+
+        #endregion
+
+        #region Helper Drawing Methods
+
+        private static void DrawSetItems(SpriteBatch spriteBatch, SetBonusTooltip setBonus, Vector2 containerPosition, Vector2 setBonusTitleLength, float yOffset)
+        {
+            int setCount = 0;
+            int maxSetCount = setBonus.SetItems.Count;
+
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, setBonus.SetName,
+                new Vector2(containerPosition.X, containerPosition.Y + yOffset + 8), Color.Orange, 0f, Vector2.Zero, Vector2.One);
+
+            int itemOffsetCount = 1;
+            foreach (int itemID in setBonus.SetItems)
+            {
+                var setItem = new Item();
+                setItem.SetDefaults(itemID);
+
+                Color drawColor = CheckEquippedItem(itemID) ? new Color(255, 255, 143) : Color.Gray;
+                if (drawColor != Color.Gray) setCount++;
+
+                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, " > " + setItem.Name,
+                    new Vector2(containerPosition.X, containerPosition.Y + yOffset + (setBonusTitleLength.Y * itemOffsetCount) + 8),
+                    drawColor, 0f, Vector2.Zero, Vector2.One);
+                itemOffsetCount++;
+            }
+
+            Color setCountColor = setCount == maxSetCount ? Color.Orange : Color.Gray;
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, $"({setCount}/{maxSetCount})",
+                new Vector2(containerPosition.X + setBonusTitleLength.X, containerPosition.Y + yOffset + 8),
+                setCountColor, 0f, Vector2.Zero, Vector2.One);
+        }
+
+        private static void DrawProjectileStats(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
+        {
+            string damageText = (projectileTooltip.ProjectileDamage * 100) + "%";
+            var damageSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, damageText, new Vector2(1.25f));
+            var damageTypeSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Damage", new Vector2(0.8f));
+
+            float descriptionHeight = height - 24;
+
+            // Draw bottom divider
+            DrawDivider(spriteBatch, containerPosition, (int)descriptionHeight);
+
+            // Draw damage percentage
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, damageText,
+                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - damageSize.X - 30,
+                containerPosition.Y + descriptionHeight + 12),
+                Color.Orange, 0f, Vector2.Zero, Vector2.One * 1.25f);
+
+            // Draw "Damage" label
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, "Damage",
+                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - damageTypeSize.X - damageSize.X - 35,
+                containerPosition.Y + descriptionHeight + 18),
+                Color.Gray, 0f, Vector2.Zero, Vector2.One * 0.8f);
+        }
+
+        private static void DrawBuffStats(SpriteBatch spriteBatch, BuffTooltip buffTooltip, Vector2 containerPosition, float height)
+        {
+            string durationText = buffTooltip.BuffTime + " seconds";
+            var durationSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, durationText, new Vector2(1.25f));
+            var timeTypeSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Time", new Vector2(0.8f));
+
+            float descriptionHeight = height - 24;
+
+            // Draw bottom divider
+            DrawDivider(spriteBatch, containerPosition, (int)descriptionHeight);
+
+            // Draw duration
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, durationText,
+                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - durationSize.X - 30,
+                containerPosition.Y + descriptionHeight + 12),
+                Color.Orange, 0f, Vector2.Zero, Vector2.One * 1.25f);
+
+            // Draw "Time" label
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, "Time",
+                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - timeTypeSize.X - durationSize.X - 35,
+                containerPosition.Y + descriptionHeight + 18),
+                Color.Gray, 0f, Vector2.Zero, Vector2.One * 0.8f);
+        }
+
+        private static void DrawIconAndTitle(SpriteBatch spriteBatch, TooltipEntity tooltipEntity, Vector2 containerPosition, Vector2 titleSize, Color? titleColor = null)
+        {
+            var texture = tooltipEntity.ObjectIcon;
+            Color useTitleColor = titleColor ?? TooltipConfiguration.TitleColor;
+
+            // Draw icon
+            spriteBatch.Draw(texture, containerPosition + texture.Size() / 2f, null, Color.White, 0f,
+                texture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+
+            // Draw title
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, tooltipEntity.Title,
+                containerPosition + new Vector2(texture.Width + 12, 8), useTitleColor, 0f, Vector2.Zero, new Vector2(1.25f));
+        }
+
+        private static void DrawDivider(SpriteBatch spriteBatch, Vector2 containerPosition, int yOffset)
+        {
+            float dividerWidth = TooltipConfiguration.CONTAINER_WIDTH - 20;
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value,
+                new Rectangle((int)containerPosition.X, (int)containerPosition.Y + yOffset, (int)dividerWidth, 2),
+                Color.Black * 0.25f);
+        }
+
+        #endregion
+
+        #region Calculation and Positioning Methods
+
+        public static float CalculateTooltipHeight(TooltipEntity tooltip)
+        {
+            Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, tooltip.Title, new Vector2(1.25f));
+            var snippets = ChatManager.ParseMessage(tooltip.Description, Color.White).ToArray();
+
+            float height = titleSize.Y * 2 + TooltipConfiguration.BOTTOM_OFFSET;
+            foreach (var snippet in snippets)
+            {
+                height += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text,
+                    Vector2.One * 0.95f, TooltipConfiguration.MAXIMUM_TEXT_LENGTH).Y;
+            }
+
+            // Adjust for colored text and line breaks
+            int coloredTextCount = tooltip.Description.Split('[').Length - 1;
+            int lineBreakCount = tooltip.Description.Split('\n').Length - 1;
+            height -= (28 * coloredTextCount + 26.6f * lineBreakCount);
+
+            // Add extra space for specific tooltip types
+            if (tooltip is SetBonusTooltip setBonus)
+            {
+                height += setBonus.SetItems.Count * 20;
+                height += ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetName, Vector2.One).Y * 3;
+            }
+            else if (tooltip is ProjectileTooltip || tooltip is BuffTooltip)
+            {
+                height += 50; // Space for damage/duration display
+            }
+
+            return height + 8;
+        }
+
+        public static float CalculateKeywordHeight(string keyword)
+        {
+            Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyword, Vector2.One);
+            float height = titleSize.Y + 4;
+
+            var snippets = ChatManager.ParseMessage(TooltipParser.GetKeyword(keyword), Color.White).ToArray();
+            foreach (var snippet in snippets)
+            {
+                height += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text, new Vector2(0.95f), 225f).Y;
+            }
+
+            return height;
+        }
+
+        public static Vector2 CalculateTooltipPosition(int x, int y, float yOffset, string widestLine, float height)
+        {
+            float containerOffset = ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X;
+            Vector2 position = new Vector2(x, y + yOffset) + new Vector2(containerOffset + 30, 0);
+
+            // Adjust for screen bounds
+            if (Main.MouseScreen.X > Main.screenWidth / 2)
+                position = new Vector2(x, y + yOffset) - new Vector2(360, 0);
+
+            if (y + yOffset + height > Main.screenHeight)
+            {
+                float yOverflow = y + yOffset + height - Main.screenHeight;
+                position -= new Vector2(0, yOverflow);
+            }
+
+            return position;
+        }
+
+        public static Vector2 AdjustForScreenBounds(Vector2 position, float height, int x, string widestLine)
+        {
+            if (position.Y + height > Main.screenHeight)
+            {
+                float yOverflow = position.Y + height - Main.screenHeight;
+                position -= new Vector2(0, yOverflow);
+            }
+
+            if (Main.MouseScreen.X > Main.screenWidth / 2)
+            {
+                position = new Vector2(
+                    x + TooltipConfiguration.RIGHT_OFFSET - TooltipConfiguration.CONTAINER_WIDTH -
+                    ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X,
+                    position.Y);
+            }
+
+            return position;
+        }
+
+        private static Vector2 AdjustPositionForOverflow(Vector2 containerPosition, float height)
+        {
+            if (containerPosition.Y + height > Main.screenHeight)
+            {
+                float yOverflow = containerPosition.Y + height - Main.screenHeight;
+                containerPosition.Y -= yOverflow;
+            }
+            return containerPosition;
+        }
+
+        private static bool CheckEquippedItem(int id)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if (Main.LocalPlayer.armor[i].type == id) return true;
+            }
+            return false;
+        }
+
+        #endregion
+
+        #region Text Parsing Methods
+
+        public static string ParseTooltipText(string text)
+        {
+            string convertedText = text;
+            foreach (var highlight in TextHighlights)
+            {
+                string pattern = $@"({{{highlight.Key}:.*}})";
+                var matches = Regex.Matches(text, pattern);
+                foreach (Match match in matches)
+                {
+                    string newValue = match.Value.Replace($"{{{highlight.Key}:", $"[c/{highlight.Value}:");
+                    convertedText = convertedText.Replace(match.Value, newValue);
+                }
+            }
+            return convertedText.Replace("}", "]");
+        }
+
+        public static string ParseTooltipObjects(string text)
+        {
+            string convertedText = text;
+            foreach (var highlight in ObjectHighlights)
+            {
+                string pattern = $@"(<{highlight.Key}:.*>)";
+                var matches = Regex.Matches(text, pattern);
+                foreach (Match match in matches)
+                {
+                    string newValue = match.Value.Replace($"<{highlight.Key}:", $"[c/{highlight.Value}:{{");
+                    convertedText = convertedText.Replace(match.Value, newValue);
+                }
+            }
+            return convertedText.Replace(">", "}]");
+        }
+
+        #endregion
+    }
+}
