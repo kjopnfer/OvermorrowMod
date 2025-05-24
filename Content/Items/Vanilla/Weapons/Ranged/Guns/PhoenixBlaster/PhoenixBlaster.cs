@@ -80,6 +80,9 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 
             float progress = shotsFired / (float)MaxShots;
 
+            float glowAmount = MathHelper.Lerp(0.5f, 1.4f, progress);
+            Lighting.AddLight(Projectile.Center, new Vector3(1.2f * glowAmount, 0.7f * glowAmount, 0));
+
             float shakeDistance = MathHelper.Lerp(0, 1.1f, progress);
             Vector2 shakeOffset = new Vector2(Main.rand.NextFloat(-shakeDistance, shakeDistance), Main.rand.NextFloat(-shakeDistance, shakeDistance));
 
