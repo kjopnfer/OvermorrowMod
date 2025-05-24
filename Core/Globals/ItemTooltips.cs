@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
@@ -8,6 +9,7 @@ using System.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
 
@@ -49,8 +51,24 @@ namespace OvermorrowMod.Core.Globals
             return base.PreDrawTooltip(item, lines, ref x, ref y);
         }
 
+        /// <summary>
+        /// Determines whether or not the item is equipped in vanity based on if the 'Social' tooltip is displayed
+        /// </summary>
+        private bool CheckInVanity(List<TooltipLine> tooltips)
+        {
+            for (int lines = 0; lines < tooltips.Count; lines++)
+            {
+                if (tooltips[lines].Name == "Social") return true;
+            }
+
+            return false;
+        }
+
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
+            if (CheckInVanity(tooltips)) return;
+            var name = item.Name.Replace(" ", "");
+
             // Add weapon type
             int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             string type = item.GetWeaponType();
@@ -62,6 +80,21 @@ namespace OvermorrowMod.Core.Globals
             foreach (var tooltipText in interfaceTooltips)
             {
                 tooltips.Insert(3, new TooltipLine(Mod, "InterfaceTooltip", tooltipText));
+            }
+
+
+            // Draw flavor text
+            var flavorKey = LocalizationPath.Items + name + ".Flavor";
+            //Main.NewText(Language.GetTextValue(flavorKey));
+
+            if (Language.Exists(flavorKey))
+            {
+                var flavor = Language.GetTextValue(flavorKey);
+                var flavorTextLines = flavor.Split("\n");
+                foreach (var flavorTextLine in flavorTextLines)
+                {
+                    tooltips.Add(new TooltipLine(Mod, "Flavor", $"[c/C19A6B:{flavorTextLine}]"));
+                }
             }
 
             // Add shift prompt

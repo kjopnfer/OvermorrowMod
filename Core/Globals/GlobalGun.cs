@@ -66,12 +66,9 @@ namespace OvermorrowMod.Core.Globals
 
             /*if (MeleeType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));*/
-            
-            // Check if this item is an overridden gun
+
             if (OverridedGuns.ContainsKey(item.type))
             {
-                var blacklistedTooltips = new HashSet<int> { ItemID.Minishark };
-
                 string tooltipKey = item.type switch
                 {
                     ItemID.PhoenixBlaster => "PhoenixBlaster",
@@ -80,10 +77,11 @@ namespace OvermorrowMod.Core.Globals
                     _ => item.Name
                 };
 
-                // Some items don't have an entry in the Localization file, do not display it if it doesn't exist.
-                if (!blacklistedTooltips.Contains(item.type))
+                // Only add tooltip if the localization key exists
+                var localizationKey = LocalizationPath.Items + tooltipKey + ".Tooltip";
+                if (Language.Exists(localizationKey))
                 {
-                    tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", Language.GetTextValue(LocalizationPath.Items + tooltipKey + ".Tooltip")));
+                    tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", Language.GetTextValue(localizationKey)));
                 }
             }
 
