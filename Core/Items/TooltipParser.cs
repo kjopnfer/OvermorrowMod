@@ -1,8 +1,10 @@
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Terraria.Localization;
 
 namespace OvermorrowMod.Core.Items
 {
@@ -25,21 +27,8 @@ namespace OvermorrowMod.Core.Items
         /// </summary>
         public static string GetKeyword(string id)
         {
-            /*XmlDocument xmlDoc = ModUtils.GetXML("Common/Tooltips/Keywords.xml");
-            var keywordList = xmlDoc.GetElementsByTagName("Keyword");
-
-            foreach (XmlNode node in keywordList)
-            {
-                if (node.Attributes["id"]?.Value == id)
-                {
-                    foreach (XmlNode info in node.ChildNodes)
-                    {
-                        if (info.Name == "Description") return info.InnerText;
-                    }
-                }
-            }*/
-
-            return "";
+            var text = Language.GetTextValue(LocalizationPath.Keywords + id + ".Description");
+            return text;
         }
 
         /// <summary>

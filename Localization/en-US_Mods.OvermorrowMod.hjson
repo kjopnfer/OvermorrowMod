@@ -39,37 +39,37 @@ Buffs: {
 
 Keywords: {
 	Focus: {
-		DisplayName: Focus,
+		DisplayName: Focus
 		Description: Triggers when firing a shot during the weapon's white flash window
 	}
 
 	Quickslot: {
-		DisplayName: Quickslot,
+		DisplayName: Quickslot
 		Description: Triggers while this item is in your hotbar
 	}
 
 	Secondary: {
-		DisplayName: Secondary,
+		DisplayName: Secondary
 		Description: Triggers when holding right-click with this item
 	}
 
 	Reap: {
-		DisplayName: Reap,
+		DisplayName: Reap
 		Description: Triggers after killing an enemy with this item
 	}
 
 	Respite: {
-		DisplayName: Respite,
+		DisplayName: Respite
 		Description: Triggers after 5 seconds without dealing or taking damage
 	}
 
 	Reload: {
-		DisplayName: Reload,
+		DisplayName: Reload
 		Description: Triggers on a successful Reload Skill Check
 	}
 
 	Misfire: {
-		DisplayName: Misfire,
+		DisplayName: Misfire
 		Description: Triggers on a failed Reload Skill Check
 	}
 }
@@ -102,7 +102,14 @@ Items: {
 
 	Farlander: {
 		DisplayName: Farlander
-		Tooltip: ""
+		Tooltip: 
+			'''
+			{Keyword:Reload}: Your next clip gains 1 piercing
+			{Keyword:Secondary}: Increase view range and charge
+			{Keyword:Focus}: Gain increased damage and accuracy
+			Improves charge time for each enemy hit by a {Keyword:Focus} shot
+			Charge bonus resets on miss
+			'''
 	}
 }
 

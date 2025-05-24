@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Core.NPCs;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.Localization;
 using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Core.Items
@@ -279,7 +281,8 @@ namespace OvermorrowMod.Core.Items
 
         private static void DrawKeywordTooltip(SpriteBatch spriteBatch, string keyword, Vector2 position, float height)
         {
-            Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyword, Vector2.One);
+            var title = Language.GetTextValue(LocalizationPath.Keywords + keyword + ".DisplayName");
+            Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, title, Vector2.One);
 
             // Draw background
             Utils.DrawInvBG(spriteBatch,
@@ -288,7 +291,7 @@ namespace OvermorrowMod.Core.Items
                 TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
 
             // Draw keyword title
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, keyword,
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, title,
                 position + new Vector2(titleSize.X, 24), TooltipConfiguration.KeywordColor, 0f, titleSize, Vector2.One);
 
             // Draw keyword description
