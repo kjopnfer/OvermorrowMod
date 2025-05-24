@@ -62,7 +62,7 @@ namespace OvermorrowMod.Core.Globals
         {
             int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             if (GunType.ToString() != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + " Type]"));
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + "]"));
 
             /*if (MeleeType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));*/

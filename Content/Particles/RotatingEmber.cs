@@ -32,6 +32,10 @@ namespace OvermorrowMod.Content.Particles
 
             //particle.scale = (1f - particle.customData[0] / maxTime) * particle.customData[2];
             particle.rotation = particle.velocity.ToRotation();
+            if (particle.customData[0] < 55)
+            {
+                Lighting.AddLight(particle.position, new Vector3(0.6f, 0.35f, 0));
+            }
 
             if (particle.customData[0] > maxTime) particle.Kill();
         }

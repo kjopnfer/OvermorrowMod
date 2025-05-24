@@ -37,6 +37,10 @@ namespace OvermorrowMod.Content.Particles
             //particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, particle.activeTime / maxTime);
             particle.alpha = Utils.GetLerpValue(0f, 0.05f, particle.activeTime / maxTime, clamped: true) * Utils.GetLerpValue(1f, 0.9f, particle.activeTime / maxTime, clamped: true);
             //particle.scale = Utils.GetLerpValue(0f, 20f, particle.activeTime, clamped: true) * Utils.GetLerpValue(45f, 30f, particle.activeTime, clamped: true);
+            if (particle.customData[0] < 55)
+            {
+                Lighting.AddLight(particle.position, new Vector3(0.6f, 0.35f, 0));
+            }
 
             if (particle.activeTime > maxTime) particle.Kill();
         }
