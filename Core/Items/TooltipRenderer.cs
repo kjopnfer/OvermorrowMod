@@ -191,42 +191,94 @@ namespace OvermorrowMod.Core.Items
 
         public static void DrawProjectileTooltip(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
         {
+            // Pre-calculate all text sizes
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Title, new Vector2(1.25f));
+            var subtitleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), Vector2.One);
+
+            // Calculate description height - now works with string array
+            float descriptionHeight = 0;
+            foreach (string descriptionLine in projectileTooltip.Description)
+            {
+                descriptionHeight += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
+            }
+
+            // Calculate projectile stats height
+            string damageText = (projectileTooltip.ProjectileDamage * 100) + "%";
+            var damageSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, damageText, Vector2.One * 1.25f);
+            var damageTypeSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Damage", Vector2.One * 0.8f);
+            float projectileStatsHeight = Math.Max(damageSize.Y, damageTypeSize.Y);
+
+            // Calculate ACTUAL total height of all elements
+            float actualTotalHeight = 0;
+
+            // 1. Icon/Title section height (use the larger of icon or title)
+            float iconTitleHeight = Math.Max(projectileTooltip.ObjectIcon.Height, titleSize.Y + 16); // +16 for positioning offset
+            actualTotalHeight += iconTitleHeight;
+
+            // 2. First divider
+            actualTotalHeight += 2; // Divider height
+            actualTotalHeight += 16; // Padding after divider
+
+            // 3. Subtitle (projectile type)
+            actualTotalHeight += subtitleSize.Y;
+            actualTotalHeight += 8; // Padding after subtitle
+
+            // 4. Description text
+            actualTotalHeight += descriptionHeight;
+            actualTotalHeight += 16; // Padding after description
+
+            // 5. Second divider
+            actualTotalHeight += 2; // Divider height
+            actualTotalHeight += 8; // Padding after divider
+
+            // 6. Projectile stats section
+            actualTotalHeight += projectileStatsHeight;
+
+            // 7. Bottom padding
+            actualTotalHeight += TooltipConfiguration.BOTTOM_PADDING;
 
             // Adjust for screen overflow
-            containerPosition = AdjustPositionForOverflow(containerPosition, height);
+            containerPosition = AdjustPositionForOverflow(containerPosition, actualTotalHeight);
 
-            // Draw background
+            // Draw background with the ACTUAL calculated height
             Utils.DrawInvBG(spriteBatch,
                 new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10,
-                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)height),
+                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)actualTotalHeight),
                 TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
 
             // Draw icon and title
             DrawIconAndTitle(spriteBatch, projectileTooltip, containerPosition, titleSize);
 
-            // Draw subtitle (projectile type)
-            var titleHeight = titleSize.Y * 2 + TooltipConfiguration.BOTTOM_OFFSET;
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value,
-                projectileTooltip.Type.ToString(),
-                new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight),
-                TooltipConfiguration.SubtitleColor, 0f, titleSize, Vector2.One);
+            // Calculate title section height
+            var titleHeight = titleSize.Y + TooltipConfiguration.BOTTOM_OFFSET;
 
             // Draw divider
             DrawDivider(spriteBatch, containerPosition, TooltipConfiguration.DIVIDER_OFFSET);
 
+            // Draw subtitle (projectile type)
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value,
+                projectileTooltip.Type.ToString(),
+                new Vector2(containerPosition.X, containerPosition.Y + titleHeight + 16),
+                TooltipConfiguration.SubtitleColor, 0f, Vector2.Zero, Vector2.One);
+
+            // Calculate where the description starts (after subtitle)
+            var subtitleHeight = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), Vector2.One).Y;
+            var descriptionStartY = titleHeight + subtitleHeight + 24; // 16 for divider padding + 8 for subtitle padding
+
             // Draw description - handle string array
-            float currentY = titleHeight;
+            float currentDescriptionY = descriptionStartY;
             foreach (string descriptionLine in projectileTooltip.Description)
             {
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, descriptionLine,
-                    new Vector2(containerPosition.X, containerPosition.Y + currentY), Color.White, 0f, Vector2.Zero,
+                    new Vector2(containerPosition.X, containerPosition.Y + currentDescriptionY), Color.White, 0f, Vector2.Zero,
                     Vector2.One * 0.95f);
-                //currentY += lineSize.Y;
+
+                // Move to next line
+                currentDescriptionY += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
             }
 
             // Draw damage value
-            DrawProjectileStats(spriteBatch, projectileTooltip, containerPosition, height);
+            DrawProjectileStats(spriteBatch, projectileTooltip, containerPosition, currentDescriptionY);
         }
 
         public static void DrawBuffTooltip(SpriteBatch spriteBatch, BuffTooltip buffTooltip, Vector2 containerPosition, float height)
@@ -385,24 +437,25 @@ namespace OvermorrowMod.Core.Items
         private static void DrawProjectileStats(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
         {
             string damageText = (projectileTooltip.ProjectileDamage * 100) + "%";
-            var damageSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, damageText, new Vector2(1.25f));
-            var damageTypeSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Damage", new Vector2(0.8f));
-
-            float descriptionHeight = height - 24;
+            var damageSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, damageText, Vector2.One * 1.25f);
+            var damageTypeSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Damage", Vector2.One * 0.8f);
 
             // Draw bottom divider
-            DrawDivider(spriteBatch, containerPosition, (int)descriptionHeight);
+            DrawDivider(spriteBatch, containerPosition, (int)height);
 
-            // Draw damage percentage
+            // Calculate positioning for right-aligned stats
+            float statsY = height + 8; // Add some padding after divider
+
+            // Draw damage percentage (right-aligned)
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, damageText,
-                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - damageSize.X - 30,
-                containerPosition.Y + descriptionHeight + 12),
+                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - damageSize.X - 20,
+                containerPosition.Y + statsY),
                 Color.Orange, 0f, Vector2.Zero, Vector2.One * 1.25f);
 
-            // Draw "Damage" label
+            // Draw "Damage" label to the left of damage value
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, "Damage",
-                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - damageTypeSize.X - damageSize.X - 35,
-                containerPosition.Y + descriptionHeight + 18),
+                new Vector2(containerPosition.X + TooltipConfiguration.CONTAINER_WIDTH - damageTypeSize.X - damageSize.X - 28,
+                containerPosition.Y + statsY + 3), // +3 to align baselines of different sized text
                 Color.Gray, 0f, Vector2.Zero, Vector2.One * 0.8f);
         }
 

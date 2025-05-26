@@ -24,7 +24,7 @@ namespace OvermorrowMod.Core.Globals
 
         public override void SetDefaults(Item item)
         {
-            // Initialize set bonuses
+            // Initialize set bonuses for vanilla items, these items aren't able to have the interfaces attached
             InitializeSetBonuses(item);
             InitializeVanillaItems(item);
 
