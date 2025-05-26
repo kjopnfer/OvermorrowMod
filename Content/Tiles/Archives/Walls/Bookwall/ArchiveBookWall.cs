@@ -44,6 +44,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             int seed = (int)i * 10007 + (int)j * 5003; // Unique seed per position
             Random rng = new Random(seed);
 
+            // Creates a hole for NPC spawners that only have a specific type
             int index = ModContent.GetInstance<NPCSpawnPoint>().Find(i, j);
             if (index != -1)
             {

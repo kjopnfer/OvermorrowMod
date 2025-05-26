@@ -30,22 +30,70 @@ Buffs: {
 		DisplayName: Stealth
 		Description: Mods.OvermorrowMod.Buffs.Stealth.Description
 	}
+
+	PhoenixMarkBuff: {
+		DisplayName: Phoenix Mark Buff
+		Description: Mods.OvermorrowMod.Buffs.PhoenixMarkBuff.Description
+	}
+}
+
+Keywords: {
+	Focus: {
+		DisplayName: Focus
+		Description: Triggers when firing a shot during the weapon's white flash window
+	}
+
+	Quickslot: {
+		DisplayName: Quickslot
+		Description: Triggers while this item is in your hotbar
+	}
+
+	Secondary: {
+		DisplayName: Secondary
+		Description: Triggers when holding right-click with this item
+	}
+
+	Reap: {
+		DisplayName: Reap
+		Description: Triggers after killing an enemy with this item
+	}
+
+	Respite: {
+		DisplayName: Respite
+		Description: Triggers after 5 seconds without dealing or taking damage
+	}
+
+	Reload: {
+		DisplayName: Reload
+		Description: Triggers on a successful Reload Skill Check
+	}
+
+	Misfire: {
+		DisplayName: Misfire
+		Description: Triggers on a failed Reload Skill Check
+	}
 }
 
 Items: {
 	ScholarsArmor: {
 		DisplayName: Scholars Armor
-		Tooltip: ""
+		Tooltip: yo merry christmas
+		Flavor: Armor flavortext.
 	}
 
 	ScholarsHat: {
 		DisplayName: Scholars Hat
-		Tooltip: ""
+		Tooltip: shikanoko nokonoko
+		Flavor:
+			'''
+			The Archivists adorned their hats with antlers 
+			to pay homage to their deer friend Noko.
+			'''
 	}
 
 	ScholarsRobes: {
 		DisplayName: Scholars Robes
-		Tooltip: ""
+		Tooltip: th robe
 	}
 
 	TestPlaceable: {
@@ -56,6 +104,67 @@ Items: {
 	TowerKey: {
 		DisplayName: Tower Key
 		Tooltip: ""
+	}
+
+	Farlander: {
+		DisplayName: Farlander
+		Tooltip:
+			'''
+			{Keyword:Reload}: Your next clip gains 1 piercing
+			{Keyword:Secondary}: Increase view range and charge
+			{Keyword:Focus}: Gain increased damage and accuracy
+			Improves charge time for each enemy hit by a {Keyword:Focus} shot
+			Charge bonus resets on miss
+			'''
+		Flavor:
+			'''
+			Issued by the Farland Ranger Corps to train rookies.
+			Most veterans outgrow it, but the best never let it go.
+			'''
+	}
+
+	Boomstick: {
+		DisplayName: Boomstick
+		Tooltip: "{Keyword:Reload}: Increase recoil and bullets fired for each block clicked"
+	}
+
+	Revolver: {
+		DisplayName: Boomstick
+		Tooltip: "{Keyword:Reload}: Reload instantly. Your next clip has increased damage"
+	}
+
+	Handgun: {
+		DisplayName: Handgun
+		Tooltip: "{Keyword:Reload}: Your next clip has increased firing speed"
+	}
+
+	Musket: {
+		DisplayName: Musket
+		Tooltip: "{Keyword:Reload}: Increase accuracy for each block clicked"
+	}
+
+	PhoenixBlaster: {
+		DisplayName: Phoenix Blaster
+		Tooltip:
+			'''
+			{Keyword:Reload}: Release a burst of flame, inflicting <Debuff:Phoenix Mark>
+			{Keyword:Misfire}: Damage yourself, inflicting <Debuff:On Fire!>
+			'''
+	}
+
+	TheUndertaker: {
+		DisplayName: The Undertaker
+		Tooltip:
+			'''
+			{Keyword:Reload}: Your next clip has 6 bullets and increased firing speed
+			{Keyword:Misfire}: Your next clip has 2 bullets
+			Bullets deal more damage at point blank range
+			'''
+	}
+
+	QuadBarrelShotgun: {
+		DisplayName: Quad Barrel
+		Tooltip: "{Keyword:Reload}: Increase number of bullets and recoil for each block clicked"
 	}
 }
 
@@ -100,4 +209,17 @@ Projectiles: {
 	FireBolt.DisplayName: Fire Bolt
 	AggroIndicator.DisplayName: Aggro Indicator
 	AlertIndicator.DisplayName: Alert Indicator
+	FarlanderHeld.DisplayName: Farlander Held
+	FarlanderScope.DisplayName: Farlander Scope
+	BoomstickHeld.DisplayName: Boomstick Held
+	HandgunHeld.DisplayName: Handgun Held
+	MinisharkHeld.DisplayName: Minishark Held
+	MusketHeld.DisplayName: Musket Held
+	PhoenixBlasterHeld.DisplayName: Phoenix Blaster Held
+	PhoenixBurst.DisplayName: Phoenix Burst
+	PhoenixMark.DisplayName: Phoenix Mark
+	PhoenixMisfire.DisplayName: Phoenix Misfire
+	QuadBarrelHeld.DisplayName: Quad Barrel Held
+	RevolverHeld.DisplayName: Revolver Held
+	UndertakerHeld.DisplayName: Undertaker Held
 }

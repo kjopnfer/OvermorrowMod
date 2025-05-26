@@ -8,6 +8,7 @@ namespace OvermorrowMod.Common
         public const string Empty = Assets + "Empty";
         public const string Textures = Assets + "Textures/";
         public const string TextureMaps = Textures + "TextureMaps/";
+        public const string UI = Assets + "UI/";
 
         public const string Backgrounds = Assets + "Backgrounds/";
         public const string Buffs = Assets + "Sprites/Buffs/";
@@ -19,7 +20,17 @@ namespace OvermorrowMod.Common
         public const string Projectiles = Assets + "Sprites/Projectiles/";
         public const string Trails = Textures + "Trails/";
 
-        // For TexGen mapping, not shader mapping
+        public const string GunUI = UI + "Gun/";
+        public const string Tooltips = UI + "Tooltips/";
+
+        /// <summary>
+        /// Stores vanilla resprites.
+        /// </summary>
+        public const string Resprites = Items + "Resprites/";
+
+        /// <summary>
+        /// For TexGen mapping, not shader mapping
+        /// </summary>
         public const string TexGen = Assets + "Maps/";
         #endregion
 

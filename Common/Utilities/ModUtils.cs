@@ -1,5 +1,11 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Tooltips;
+using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Core.Globals;
+using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Utilities
 {
@@ -51,5 +57,74 @@ namespace OvermorrowMod.Common.Utilities
         {
             return (int)(tiles * 16f);
         }
+
+        #region Weapons
+        /// <summary>
+        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty or the wrong ammo type.
+        /// </summary>
+        public static void AutofillAmmoSlots(Player player, int ammoID)
+        {
+            for (int j = 0; j <= 3; j++) // Check if any of the ammo slots are empty or are the right ammo
+            {
+                Item ammoItem = player.inventory[54 + j];
+                if (ammoItem.type != ItemID.None && ammoItem.ammo == ammoID) continue;
+
+                // Loop through the player's inventory in order to find any useable ammo types to use
+                for (int i = 0; i <= 49; i++)
+                {
+                    Item item = player.inventory[i];
+                    if (item.type == ItemID.None || item.ammo != ammoID) continue;
+
+                    Item tempItem = ammoItem;
+                    player.inventory[54 + j] = item;
+                    player.inventory[i] = tempItem;
+
+                    break;
+                }
+            }
+        }
+
+        public static void SetWeaponType(this Item item, GunType gunType)
+        {
+            item.GetGlobalItem<GlobalGun>().GunType = gunType;
+        }
+
+        public static GunType GetWeaponType(this Item item)
+        {
+            return item.GetGlobalItem<GlobalGun>().GunType;
+        }
+        #endregion
+
+        #region Tooltips
+        /// <summary>
+        /// Quick method to create a simple projectile tooltip
+        /// </summary>
+        public static List<TooltipEntity> CreateProjectileTooltip(this ModItem item, string title, string[] description, float damage)
+        {
+            return new List<TooltipEntity>
+            {
+                TooltipEntity.CreateProjectileTooltip(title, description, damage)
+            };
+        }
+
+        /// <summary>
+        /// Quick method to create a simple buff tooltip
+        /// </summary>
+        public static List<TooltipEntity> CreateBuffTooltip(this ModItem item, string title, string[] description, float duration, bool isBuff = true)
+        {
+            return new List<TooltipEntity>
+            {
+                TooltipEntity.CreateBuffTooltip(title, description, duration, isBuff ? BuffTooltipType.Buff : BuffTooltipType.Debuff)
+            };
+        }
+
+        /// <summary>
+        /// Combine multiple tooltip creation methods
+        /// </summary>
+        public static List<TooltipEntity> CreateMultipleTooltips(this ModItem item, params TooltipEntity[] tooltips)
+        {
+            return new List<TooltipEntity>(tooltips);
+        }
+        #endregion
     }
 }

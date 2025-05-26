@@ -5,5 +5,7 @@ namespace OvermorrowMod.Common
         public const string Localization = "Mods.OvermorrowMod.";
 
         public const string Bestiary = Localization + "Bestiary.";
+        public const string Keywords = Localization + "Keywords.";
+        public const string Items = Localization + "Items.";
     }
 }
