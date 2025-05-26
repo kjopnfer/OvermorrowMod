@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Core.Interfaces;
@@ -25,6 +26,7 @@ namespace OvermorrowMod.Core.Globals
         {
             // Initialize set bonuses
             InitializeSetBonuses(item);
+            InitializeVanillaItems(item);
 
             // Initialize from interface
             if (item.ModItem is ITooltipEntities tooltipProvider)
@@ -137,6 +139,23 @@ namespace OvermorrowMod.Core.Globals
                     "Cowboy Armor",
                     [" + Critical hits with [c/FAD5A5:Revolvers] rebound to the nearest enemy"],
                     new List<int> { ItemID.CowboyHat, ItemID.CowboyJacket, ItemID.CowboyPants }));
+            }
+        }
+
+        private void InitializeVanillaItems(Item item)
+        {
+            if (item.type == ItemID.PhoenixBlaster)
+            {
+                TooltipEntities.Add(new BuffTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "Default").Value,
+                    "Phoenix Mark",
+                    [" + Increases all incoming damage by [c/58D68D:15%]"],
+                    6,
+                    BuffTooltipType.Debuff));
+                TooltipEntities.Add(new BuffTooltip(TextureAssets.Buff[BuffID.OnFire].Value,
+                    "On Fire!",
+                    [" - Prevents health regeneration"," - Loses [c/ff5555:4] health per second"],
+                    4,
+                    BuffTooltipType.Debuff));
             }
         }
 
