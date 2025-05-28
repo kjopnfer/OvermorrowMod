@@ -70,6 +70,10 @@ namespace OvermorrowMod.Core.Globals
         {
             if (CheckInVanity(tooltips)) return;
             var name = item.Name.Replace(" ", "");
+            if (item.ModItem != null)
+            {
+                name = item.ModItem.Name;
+            }
 
             // Add weapon type
             int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));

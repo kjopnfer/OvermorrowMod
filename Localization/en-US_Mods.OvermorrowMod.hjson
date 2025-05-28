@@ -76,13 +76,17 @@ Keywords: {
 
 Items: {
 	ScholarsArmor: {
-		DisplayName: Scholars Armor
-		Tooltip: yo merry christmas
-		Flavor: Armor flavortext.
+		DisplayName: Scholar's Mantle
+		Tooltip: BODY
+		Flavor: 
+			'''
+			Donning the mantle marked one as ready 
+			to speak the forgotten names of stars.
+			'''
 	}
 
 	ScholarsHat: {
-		DisplayName: Scholars Hat
+		DisplayName: Antlers of Wisdom
 		Tooltip: shikanoko nokonoko
 		Flavor:
 			'''
@@ -92,8 +96,13 @@ Items: {
 	}
 
 	ScholarsRobes: {
-		DisplayName: Scholars Robes
-		Tooltip: th robe
+		DisplayName: Scholar's Boots
+		Tooltip: BOOT
+		Flavor: 
+			'''
+			Worn long enough, they begin to 
+			remember paths no map ever drew.
+			'''
 	}
 
 	TestPlaceable: {
