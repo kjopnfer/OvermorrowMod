@@ -39,6 +39,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             }
         }
 
+        // TODO: This should be part of a LoadingTooltips class or something
         List<(string Title, string Text)> tooltips = new List<(string, string)>
         {
             ("Combat Targeting", "NPCs prioritize players with higher aggro. Taunts increase it; stealth or invisibility can reduce it."),

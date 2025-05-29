@@ -364,12 +364,33 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
         private void SetupSpawners()
         {
-            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(890, 106), ModContent.NPCType<BlasterBook>());
-            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(920, 114), ModContent.NPCType<InkWormBody>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(696, 110), ModContent.NPCType<InkWormBody>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(734, 108), ModContent.NPCType<ChairBook>());
 
-            //ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(754, 76), ModContent.NPCType<InkWormBody>());
-            //ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(749, 114), ModContent.NPCType<ArchiveRat>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(816, 114), ModContent.NPCType<ArchiveRat>());
 
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(894, 106), ModContent.NPCType<BlasterBook>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(889, 114), ModContent.NPCType<ArchiveRat>());
+
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(918, 76), ModContent.NPCType<PlantBook>());
+
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(754, 82), ModContent.NPCType<InkWormBody>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(724, 84), ModContent.NPCType<ArchiveRat>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(702, 84), ModContent.NPCType<ArchiveRat>());
+
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1100, 84), ModContent.NPCType<ArchiveRat>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1081, 108), ModContent.NPCType<PlantBook>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1106, 112), ModContent.NPCType<InkWormBody>());
+
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1181, 114), ModContent.NPCType<ArchiveRat>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1245, 84), ModContent.NPCType<ArchiveRat>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1265, 78), ModContent.NPCType<BarrierBook>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1296, 75), ModContent.NPCType<ChairBook>());
+
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1246, 106), ModContent.NPCType<BlasterBook>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1174, 114), ModContent.NPCType<ArchiveRat>());
+
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1293, 110), ModContent.NPCType<InkWormBody>());
         }
 
         private void PlaceLoungeArea(int x, int y, RoomID room)

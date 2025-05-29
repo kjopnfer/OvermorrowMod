@@ -49,8 +49,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.width = 30;
             NPC.height = 44;
-            NPC.lifeMax = 100;
-            NPC.defense = 8;
+            NPC.lifeMax = 210;
+            NPC.defense = 12;
             NPC.damage = 23;
             NPC.knockBackResist = 0.5f;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);

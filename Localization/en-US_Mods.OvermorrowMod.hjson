@@ -78,7 +78,7 @@ Items: {
 	ScholarsArmor: {
 		DisplayName: Scholar's Mantle
 		Tooltip: BODY
-		Flavor: 
+		Flavor:
 			'''
 			Donning the mantle marked one as ready 
 			to speak the forgotten names of stars.
@@ -98,7 +98,7 @@ Items: {
 	ScholarsRobes: {
 		DisplayName: Scholar's Boots
 		Tooltip: BOOT
-		Flavor: 
+		Flavor:
 			'''
 			Worn long enough, they begin to 
 			remember paths no map ever drew.
