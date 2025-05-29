@@ -108,7 +108,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 if (tileEntity is NPCSpawnPoint spawnPoint)
                 {
                     if (spawnPoint.ChildNPC == null && spawnPoint.SpawnerCooldown <= 0)
+                    {
+                        Main.NewText("subworld spawning", Color.Red);
                         spawnPoint.SpawnNPC();
+                    }
                 }
             }
         }

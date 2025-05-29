@@ -29,7 +29,6 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter()
         {
-            Main.NewText("Dash attack begin");
             OvermorrowNPC.AICounter = 0;
             NPC.velocity.X = 0;
 
@@ -39,7 +38,6 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit()
         {
-            Main.NewText("Dash attack ends.");
             NPC.velocity.X = 0;
             NPC.RemoveStealth();
         }

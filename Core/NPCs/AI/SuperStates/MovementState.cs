@@ -15,7 +15,6 @@ namespace OvermorrowMod.Core.NPCs
 
         public override void Enter()
         {
-            //Main.NewText("NPC enters Movement state");
             currentSubstate = PickSubstate(OvermorrowNPC);
 
             HasValidMovement = currentSubstate != null;
@@ -29,7 +28,6 @@ namespace OvermorrowMod.Core.NPCs
         public override void Exit()
         {
             currentSubstate?.Exit();
-            //Main.NewText("NPC exits Move state.");
         }
 
         public override void Update()

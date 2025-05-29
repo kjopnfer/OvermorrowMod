@@ -15,7 +15,6 @@ namespace OvermorrowMod.Core.NPCs
         {
             //currentSubstate = PickSubstate(npc);
             //currentSubstate.Enter(npc);
-            //Main.NewText(OvermorrowNPC.Name + " enters Idle state.");
             currentSubstate = null;
         }
 
@@ -38,7 +37,6 @@ namespace OvermorrowMod.Core.NPCs
                 if (currentSubstate != null)
                 {
                     currentSubstate.Exit();
-                    //Main.NewText($"Previous substate finished: {currentSubstate.GetType().Name}");
                 }
 
                 // Pick a new idle substate
@@ -46,7 +44,6 @@ namespace OvermorrowMod.Core.NPCs
 
                 if (currentSubstate != null)
                 {
-                    Main.NewText("Switching to new Idle substate: " + currentSubstate.GetType().Name);
                     OvermorrowNPC.AIStateMachine.RegisterSubstate(currentSubstate);
                     currentSubstate.Enter();
                 }

@@ -76,7 +76,6 @@ namespace OvermorrowMod.Core.NPCs
 
                             if (!alreadyExists)
                             {
-                                Main.NewText("Target is within alert range.");
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AlertIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
                             }
                         }
@@ -105,8 +104,6 @@ namespace OvermorrowMod.Core.NPCs
             Target = FindNearestTarget(npc.Center, config.MaxTargetRange, config.PrioritizeAggro, ignoreLineOfSight);
             if (Target != null)
             {
-                Main.NewText("found target.");
-
                 if (config.DisplayAggroIndicator)
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
                 

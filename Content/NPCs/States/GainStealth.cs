@@ -27,7 +27,6 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter()
         {
-            Main.NewText("Stealth gain begin");
             OvermorrowNPC.AICounter = 0;
             NPC.velocity.X = 0;
 
@@ -39,7 +38,6 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit()
         {
-            Main.NewText("Stealth gain ends.");
             OvermorrowNPC.AICounter = 0;
             NPC.velocity.X = 0;
         }

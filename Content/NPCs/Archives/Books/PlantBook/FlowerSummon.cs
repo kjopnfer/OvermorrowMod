@@ -7,6 +7,7 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using OvermorrowMod.Common.Utilities;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -41,6 +42,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             if (AICounter < 30) AICounter++;
             Projectile.Opacity = Math.Clamp(MathHelper.Lerp(0, 1f, Projectile.timeLeft / 60f), 0, 1f);
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Poisoned, ModUtils.SecondsToTicks(5));
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(BuffID.Poisoned, ModUtils.SecondsToTicks(5));
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

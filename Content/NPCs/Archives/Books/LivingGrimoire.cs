@@ -42,9 +42,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             NPC.width = 30;
             NPC.height = 44;
-            NPC.lifeMax = 180;
+            NPC.lifeMax = 110;
             NPC.defense = 8;
-            NPC.damage = 12;
+            NPC.damage = 15;
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAggroTime: ModUtils.SecondsToTicks(15),
                 aggroLossRate: 1f,
                 aggroCooldownTime: 180f,
-                maxTargetRange: ModUtils.TilesToPixels(20),
+                maxTargetRange: ModUtils.TilesToPixels(26),
                 maxAttackRange: ModUtils.TilesToPixels(30),
                 alertRange: null,
                 prioritizeAggro: true

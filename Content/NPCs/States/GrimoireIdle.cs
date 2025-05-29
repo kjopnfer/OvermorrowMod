@@ -59,8 +59,6 @@ namespace OvermorrowMod.Content.NPCs
         public override void Exit()
         {
             OvermorrowNPC.AICounter = 0;
-            Main.NewText("exit idle");
-
         }
 
         private int castTime = 120;
@@ -105,8 +103,6 @@ namespace OvermorrowMod.Content.NPCs
 
                         if (OvermorrowNPC.AICounter >= 180)
                         {
-                            Main.NewText("Finished wandering.");
-
                             OvermorrowNPC.IdleCounter = 5;
                             NPC.velocity.X = 0;
                         }

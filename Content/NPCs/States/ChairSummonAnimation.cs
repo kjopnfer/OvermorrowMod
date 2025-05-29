@@ -24,7 +24,6 @@ namespace OvermorrowMod.Content.NPCs
                 failCount++; // Increment the fail count to avoid infinite loops
             }
 
-            Main.NewText("entered chair summon state");
             OvermorrowNPC.AICounter = 0;
 
             IsFinished = false;
@@ -35,7 +34,6 @@ namespace OvermorrowMod.Content.NPCs
             OvermorrowNPC.AICounter = 0;
 
             OvermorrowNPC.AIStateMachine.RemoveSubstate<ChairSummonAnimation>(AIStateType.Idle, new ChairSummonAnimation(OvermorrowNPC));
-            Main.NewText("remove summon animation and add idle");
             var newIdle = new InactiveIdle(OvermorrowNPC);
             OvermorrowNPC.AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
         }

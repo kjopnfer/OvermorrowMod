@@ -20,12 +20,10 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter()
         {
-            Main.NewText("starting basic fly");
         }
 
         public override void Exit()
         {
-            Main.NewText("exiting basic fly");
         }
 
         public override void Update()

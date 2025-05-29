@@ -24,7 +24,6 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter()
         {
-            Main.NewText("entered hidden state");
             OvermorrowNPC.AICounter = 0;
             IsFinished = false;
         }
@@ -35,7 +34,6 @@ namespace OvermorrowMod.Content.NPCs
             OvermorrowNPC.AICounter = 0;
 
             OvermorrowNPC.AIStateMachine.RemoveSubstate<GrimoireHidden>(AIStateType.Idle, new GrimoireHidden(OvermorrowNPC));
-            Main.NewText("wtf remove hidden and add idle");
             var newIdle = new GrimoireIdle(OvermorrowNPC);
             OvermorrowNPC.AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
 
@@ -43,20 +41,14 @@ namespace OvermorrowMod.Content.NPCs
             {
                 grimoire.ReenableAlertIndicator();
             }
-            //npc.AIStateMachine.SetSubstate<GrimoireIdle>(AIStateType.Idle, npc);
-
-            Main.NewText("exited hidden state");
         }
 
         public override void Update()
         {
-            //Main.NewText("hidden");
-
             if (OvermorrowNPC.TargetingModule.HasTarget())
             {
 
                 NPC.noGravity = false;
-                //Main.NewText("yt " + npc.AICounter);
                 if (OvermorrowNPC.AICounter++ >= 36)
                 {
                     IsFinished = true;

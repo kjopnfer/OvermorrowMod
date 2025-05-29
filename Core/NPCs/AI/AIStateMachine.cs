@@ -107,8 +107,6 @@ namespace OvermorrowMod.Core.NPCs
                 {
                     var generic = method?.MakeGenericMethod(typeof(T));
                     generic?.Invoke(state, null);
-
-                    Main.NewText("removed substate by type");
                 }
                 else
                 {
@@ -127,7 +125,6 @@ namespace OvermorrowMod.Core.NPCs
                 if (method != null)
                 {
                     method.Invoke(state, new object[] { substate });
-                    Main.NewText("added substate via reflection");
                 }
                 else
                 {
@@ -250,10 +247,8 @@ namespace OvermorrowMod.Core.NPCs
         public void EvaluateState(OvermorrowNPC npc)
         {
             // Prevent evaluating state change if locked in current state
-            //Main.NewText(currentState?.ToString());
             if (!(currentState?.CanExit ?? true))
             {
-                //Main.NewText("prevented");
                 return;
             }
 
@@ -288,8 +283,6 @@ namespace OvermorrowMod.Core.NPCs
                     }
                     else
                     {
-                        Main.NewText(distanceToTarget < npc.TargetingConfig().MaxAttackRange);
-
                         ChangeState(AIStateType.Attacking, npc);
 
                         // If no valid attack found after switching, fallback to moving
@@ -304,7 +297,6 @@ namespace OvermorrowMod.Core.NPCs
             {
                 if (npc.SpawnerID.HasValue)
                 {
-                    //Main.NewText("yo 2" + npc.Name);
 
                 }
                 ChangeState(AIStateType.Idle, npc);

@@ -14,12 +14,10 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter()
         {
-            Main.NewText("enter walk");
         }
 
         public override void Exit()
         {
-            Main.NewText("exited walk");
         }
 
         public override void Update()

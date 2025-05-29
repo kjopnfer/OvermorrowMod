@@ -261,7 +261,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.lifeMax = 140;
             NPC.aiStyle = -1;
             NPC.defense = 16;
-            NPC.damage = 12;
+            NPC.damage = 42;
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.friendly = false;

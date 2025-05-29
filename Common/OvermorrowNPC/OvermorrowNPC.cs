@@ -97,7 +97,7 @@ namespace OvermorrowMod.Common
         {
             if (SpawnerID.HasValue && TileEntity.ByID.TryGetValue(SpawnerID.Value, out TileEntity entity) && entity is NPCSpawnPoint spawner)
             {
-                spawner.HasBeenKilled = true;
+                spawner.SetSpawnerCleared();
             }
         }
 

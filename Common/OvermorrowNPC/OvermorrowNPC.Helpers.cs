@@ -32,12 +32,6 @@ namespace OvermorrowMod.Common
                 }
 
                 Rectangle hitbox = Main.player[i].Hitbox;
-                /*if (rectangle.Intersects(hitbox))
-                {
-                    isOffscreen = false;
-                    Main.NewText("hit 1");
-
-                }*/
 
                 if (rectangle2.Intersects(hitbox))
                 {

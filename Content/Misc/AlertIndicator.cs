@@ -52,8 +52,6 @@ namespace OvermorrowMod.Content.Misc
                     // Compute progress: 0 at aggroThreshold, 1 at alertThreshold
                     float flashProgress = MathHelper.Clamp((distance - aggroThreshold) / alertBuffer, 0f, 1f);
                     flashSpeed = MathHelper.Lerp(5f, 30f, flashProgress);
-
-                    Main.NewText(flashProgress + " " + flashSpeed);
                 }
                 else
                 {

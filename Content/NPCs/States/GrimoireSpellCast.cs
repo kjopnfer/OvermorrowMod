@@ -114,7 +114,7 @@ namespace OvermorrowMod.Content.NPCs
 
                         float angle = MathHelper.ToRadians(75);
                         Vector2 projectileVelocity = new Vector2(100 * NPC.direction, 0).RotatedByRandom(angle) * 50;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npc.TargetingModule.Target.Center, Vector2.Zero, ModContent.ProjectileType<PlantAura>(), 1, 1f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npc.TargetingModule.Target.Center, Vector2.Zero, ModContent.ProjectileType<PlantAura>(), NPC.damage, 1f, Main.myPlayer);
                     }
                     break;
                 case ChairBook:

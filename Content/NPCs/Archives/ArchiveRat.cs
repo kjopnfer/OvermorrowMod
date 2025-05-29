@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.width = 30;
             NPC.height = 44;
-            NPC.lifeMax = 210;
+            NPC.lifeMax = 160;
             NPC.defense = 12;
             NPC.damage = 23;
             NPC.knockBackResist = 0.5f;
@@ -196,8 +196,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
+            State currentState = AIStateMachine.GetCurrentSubstate();
+
             NPC.noGravity = false;
-            NPC.knockBackResist = NPC.IsStealthed() ? 0f : 0.5f;
+            NPC.knockBackResist = NPC.IsStealthed() || currentState is GroundDashAttack ? 0f : 0.5f;
             if (afterimageLinger > 0) afterimageLinger--;
 
             // TODO: Generalize this into a collision module
@@ -250,7 +252,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
-            State currentState = AIStateMachine.GetCurrentSubstate();
 
             if (currentState is GroundDashAttack)
             {

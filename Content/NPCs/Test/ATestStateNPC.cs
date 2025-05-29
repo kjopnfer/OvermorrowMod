@@ -45,7 +45,6 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void OnSpawn(IEntitySource source)
         {
-            Main.NewText("spawned and forced to hidden", Color.Green);
             AIStateMachine.SetSubstate<GrimoireHidden>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
         }
 
@@ -59,13 +58,6 @@ namespace OvermorrowMod.Content.NPCs
             if (AIStateMachine.GetPreviousSubstates().FirstOrDefault() is GrimoireHidden)
             {
                 // Do something
-                //Main.NewText("remove the hidden state and add new idle", Color.Cyan);
-
-                //AIStateMachine.RemoveSubstate<GrimoireHidden>(AIStateType.Idle, new GrimoireHidden());
-                //Main.NewText("wtf");
-                //var newIdle = new GrimoireIdle();
-                //AIStateMachine.AddSubstate(AIStateType.Idle, newIdle);
-                //AIStateMachine.SetSubstate<GrimoireIdle>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
             }
         }
 

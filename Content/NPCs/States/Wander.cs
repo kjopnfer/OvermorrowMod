@@ -16,8 +16,6 @@ namespace OvermorrowMod.Content.NPCs
         {
             IsFinished = false;
 
-            Main.NewText("entering the wander state", Color.Red);
-
             NPC.velocity.X = 0;
             NPC.RemoveStealth();
 
@@ -56,8 +54,6 @@ namespace OvermorrowMod.Content.NPCs
         {
             OvermorrowNPC.AICounter = 0;
             OvermorrowNPC.TargetingModule.MiscTargetPosition = null;
-
-            Main.NewText("exited wander");
         }
 
         public override void Update()
@@ -76,9 +72,7 @@ namespace OvermorrowMod.Content.NPCs
                     {
                         if (!IsFinished) // Prevent setting multiple times
                         {
-                            Main.NewText("Finished wandering.");
-
-                            OvermorrowNPC.IdleCounter = 120;
+                            OvermorrowNPC.IdleCounter = Main.rand.Next(12, 15) * 10;
                             IsFinished = true;
                             NPC.velocity.X = 0;
                         }

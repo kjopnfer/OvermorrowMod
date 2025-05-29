@@ -24,18 +24,15 @@ namespace OvermorrowMod.Content.NPCs
         {
             OvermorrowNPC.AICounter = 0;
 
-            Main.NewText("enter hop");
             int jumpDirection = Main.rand.Next(2, 6) * NPC.direction;
             int jumpHeight = Main.rand.Next(-10, -4);
             NPC.velocity = new Vector2(jumpDirection, jumpHeight);
 
-            Main.NewText(NPC.direction);
             IsFinished = false;
         }
 
         public override void Exit()
         {
-            Main.NewText("exited hop");
             OvermorrowNPC.AICounter = 0;
 
         }
