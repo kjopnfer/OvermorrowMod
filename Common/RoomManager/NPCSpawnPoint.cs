@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Utilities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -43,9 +44,8 @@ namespace OvermorrowMod.Common.RoomManager
 
         /// <summary>
         /// Number of ticks it takes before the NPC gets respawned.
-        /// 60 ticks is equivalent to one second.
         /// </summary>
-        public int CooldownTime { get; private set; } = 60 * 120;
+        public int CooldownTime { get; private set; } = ModUtils.SecondsToTicks(120);
 
         public override void SaveData(TagCompound tag)
         {
@@ -59,35 +59,39 @@ namespace OvermorrowMod.Common.RoomManager
 
         public void SpawnNPC()
         {
+            if (ChildNPC != null && ChildNPC.active)
+            {
+                Main.NewText("NPC already spawned: " + ChildNPC.FullName);
+                return;
+            }
+
             ChildNPC = NPC.NewNPCDirect(null, Position.ToWorldCoordinates(10, 28), NPCType);
 
             OvermorrowNPC modNPC = ChildNPC.ModNPC as OvermorrowNPC;
             modNPC.SpawnerID = ID;
 
             Main.NewText("spawn " + modNPC.Name + " with id: " + ID);
+            HasBeenKilled = false;
+        }
+
+        public void SetSpawnerCleared()
+        {
+            ChildNPC = null;
+            HasBeenKilled = true;
+            HasBeenCleared = true;
+
+            SpawnerCooldown = CooldownTime;
         }
 
         public override void Update()
         {
+            // For if the NPC has been somehow manually despawned without being killed.
             if (ChildNPC != null)
             {
-                if (HasBeenKilled)
+                if (!HasBeenKilled && !ChildNPC.active)
                 {
+                    Main.NewText("not active");
                     ChildNPC = null;
-                    HasBeenCleared = true;
-
-                    SpawnerCooldown = CooldownTime;
-                }
-                else
-                {
-                    if (ChildNPC.active)
-                    {
-                    }
-                    else
-                    {
-                        Main.NewText("not active");
-                        ChildNPC = null;
-                    }
                 }
             }
 
