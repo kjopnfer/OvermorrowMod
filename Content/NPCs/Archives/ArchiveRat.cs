@@ -199,7 +199,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             State currentState = AIStateMachine.GetCurrentSubstate();
 
             NPC.noGravity = false;
-            NPC.knockBackResist = NPC.IsStealthed() || currentState is GroundDashAttack ? 0f : 0.5f;
+            NPC.knockBackResist = 0.5f;
+            if (NPC.IsStealthed() || currentState is GroundDashAttack || currentState is GainStealth)
+            {
+                NPC.knockBackResist = 0f;
+            }
+
             if (afterimageLinger > 0) afterimageLinger--;
 
             // TODO: Generalize this into a collision module

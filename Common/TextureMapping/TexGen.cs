@@ -37,7 +37,9 @@ namespace OvermorrowMod.Common.TextureMapping
         public static Dictionary<Color, int> colorToLiquid;
         public static Dictionary<Color, int> colorToSlope;
 
-        private int width, height;
+        public int width { get; private set; }
+        public int height { get; private set; }
+
         private TileInfo[,] tileGen;
         private int torchStyle = 0, platformStyle = 0;
 

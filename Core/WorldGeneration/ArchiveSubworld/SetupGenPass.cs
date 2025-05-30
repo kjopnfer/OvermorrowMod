@@ -7,6 +7,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Content.WorldGeneration.Archives;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
@@ -46,12 +47,21 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
         {
             progress.Message = "Generating tiles";
+            //Main.spawnTileX = 1000;
+            //Main.spawnTileY = 110;
             Main.spawnTileX = 1000;
-            Main.spawnTileY = 110;
+            Main.spawnTileY = 140;
 
             // Move the backgrounds somewhere else
             Main.worldSurface = ArchiveSubworld.GetHeight();
             Main.rockLayer = ArchiveSubworld.GetHeight();
+
+            ArchiveFoyer foyer = new();
+            foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2, 25));
+
+            return;
+
+            
 
             Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
             Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
@@ -87,6 +97,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             Dictionary<Color, (int objectId, int styleRange)> objectMapping = new()
             {
+                [new Color(215, 186, 87)] = (ModContent.TileType<ArchivePot>(), 1),
                 [new Color(178, 149, 52)] = (ModContent.TileType<SanctumGate>(), 1),
                 [new Color(75, 105, 47)] = (ModContent.TileType<BookPileTable>(), 1),
                 [new Color(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
@@ -141,6 +152,21 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceBookshelfArch(863, 90);
             PlaceBookshelfArch(889, 90);
             PlaceBookshelfArch(915, 90);
+
+            WorldGen.PlaceObject(801, 115, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(835, 115, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(844, 115, ModContent.TileType<ArchivePot>());
+
+            WorldGen.PlaceObject(933, 115, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(944, 115, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(974, 110, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(968, 111, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(962, 112, ModContent.TileType<ArchivePot>());
+
+            WorldGen.PlaceObject(1024, 110, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(1042, 113, ModContent.TileType<ArchivePot>());
+            WorldGen.PlaceObject(1054, 115, ModContent.TileType<ArchivePot>());
+
 
             #region Left Bridge
             WorldGen.PlaceObject(773, 60, ModContent.TileType<WoodenArch>());
@@ -365,7 +391,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         private void SetupSpawners()
         {
             #region Center Room
-            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(696, 110), ModContent.NPCType<InkWormBody>());
+            /*ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(696, 110), ModContent.NPCType<InkWormBody>());
             ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(734, 108), ModContent.NPCType<ChairBook>());
 
             ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(816, 114), ModContent.NPCType<ArchiveRat>());
@@ -390,7 +416,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1246, 106), ModContent.NPCType<BlasterBook>());
             ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1174, 114), ModContent.NPCType<ArchiveRat>());
 
-            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1293, 110), ModContent.NPCType<InkWormBody>());
+            ArchiveSubworld.CenterRoom.AddSpawnPoint(new Vector2(1293, 110), ModContent.NPCType<InkWormBody>());*/
             #endregion
         }
 

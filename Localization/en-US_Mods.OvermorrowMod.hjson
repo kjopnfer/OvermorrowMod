@@ -6,6 +6,7 @@ Tiles: {
 	WaxCandelabra.MapEntry: Wax Candelabra
 	WaxCandleholder.MapEntry: Wax Candleholder
 	WizardStatue.MapEntry: Wizard Statue
+	ArchivePot.MapEntry: Archive Pot
 }
 
 Biomes: {

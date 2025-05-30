@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAggroTime: ModUtils.SecondsToTicks(15),
                 aggroLossRate: 1f,
                 aggroCooldownTime: 180f,
-                maxTargetRange: ModUtils.TilesToPixels(26),
+                maxTargetRange: ModUtils.TilesToPixels(30),
                 maxAttackRange: ModUtils.TilesToPixels(30),
                 alertRange: null,
                 prioritizeAggro: true

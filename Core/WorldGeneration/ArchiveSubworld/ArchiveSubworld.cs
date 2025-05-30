@@ -91,7 +91,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             //Main.spriteBatch.DrawString(FontAssets.MouseText.Value, text, offset + new Vector2(Main.screenWidth, Main.screenHeight) / 2 - FontAssets.DeathText.Value.MeasureString(text) / 2, Color.White);
         }
 
-        public static Room CenterRoom = new Room();
+        //public static Room CenterRoom = new Room();
         public override void Update()
         {
             Main.dayTime = false;

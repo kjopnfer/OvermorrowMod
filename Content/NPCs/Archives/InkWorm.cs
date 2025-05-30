@@ -42,7 +42,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void SafeSetDefaults()
         {
             NPC.width = NPC.height = 32;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 30;
             NPC.aiStyle = -1;
             NPC.defense = 16;
             NPC.knockBackResist = 0f;
