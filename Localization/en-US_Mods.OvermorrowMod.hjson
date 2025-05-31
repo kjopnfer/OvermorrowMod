@@ -88,7 +88,7 @@ Items: {
 
 	ScholarsHat: {
 		DisplayName: Antlers of Wisdom
-		Tooltip: shikanoko nokonoko
+		Tooltip: Gain +2 antlers.
 		Flavor:
 			'''
 			The Archivists adorned their hats with antlers 

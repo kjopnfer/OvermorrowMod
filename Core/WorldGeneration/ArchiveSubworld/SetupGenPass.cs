@@ -61,9 +61,12 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             ArchiveGreenRoom greenRoom = new();
             greenRoom.Generate(new Vector2(0, 25));
+
+            ArchiveRedRoom redRoom = new();
+            redRoom.Generate(new Vector2(0, greenRoom.Height + 25));
             return;
 
-            
+
 
             /*Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
             Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
