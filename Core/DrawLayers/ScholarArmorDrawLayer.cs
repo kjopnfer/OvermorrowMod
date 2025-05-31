@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.Armor.Kagenoi;
+using OvermorrowMod.Content.Items.Archives.Armor;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;

@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.Armor.Kagenoi
+namespace OvermorrowMod.Content.Items.Archives.Armor
 {
 
     [AutoloadEquip(EquipType.Head)]

@@ -39,9 +39,34 @@ Buffs: {
 }
 
 Keywords: {
+	Aerial: {
+		DisplayName: Aerial
+		Description: Triggers while airborne
+	}
+
+	Ambush: {
+		DisplayName: Ambush
+		Description: Triggers when attacking unaware enemies
+	}
+
+	Awakened: {
+		DisplayName: Awakened
+		Description: Activates bonuses while inside the "dungeon"
+	}
+
+	Execute: {
+		DisplayName: Execute
+		Description: Triggers after killing an enemy with this item
+	}
+
 	Focus: {
 		DisplayName: Focus
 		Description: Triggers when firing a shot during the weapon's white flash window
+	}
+
+	Misfire: {
+		DisplayName: Misfire
+		Description: Triggers on a failed Reload Skill Check
 	}
 
 	Quickslot: {
@@ -49,19 +74,14 @@ Keywords: {
 		Description: Triggers while this item is in your hotbar
 	}
 
-	Secondary: {
-		DisplayName: Secondary
-		Description: Triggers when holding right-click with this item
-	}
-
-	Reap: {
-		DisplayName: Reap
-		Description: Triggers after killing an enemy with this item
-	}
-
 	Respite: {
 		DisplayName: Respite
 		Description: Triggers after 5 seconds without dealing or taking damage
+	}
+
+	Retaliate: {
+		DisplayName: Retaliate
+		Description: Triggers when hit by an enemy or projectile
 	}
 
 	Reload: {
@@ -69,9 +89,14 @@ Keywords: {
 		Description: Triggers on a successful Reload Skill Check
 	}
 
-	Misfire: {
-		DisplayName: Misfire
-		Description: Triggers on a failed Reload Skill Check
+	Secondary: {
+		DisplayName: Secondary
+		Description: Triggers when holding right-click with this item
+	}
+
+	Strike: {
+		DisplayName: Strike
+		Description: Triggers on hitting an enemy
 	}
 }
 
@@ -175,6 +200,17 @@ Items: {
 	QuadBarrelShotgun: {
 		DisplayName: Quad Barrel
 		Tooltip: "{Keyword:Reload}: Increase number of bullets and recoil for each block clicked"
+	}
+
+	Cheese: {
+		DisplayName: Cheese
+		Tooltip:
+			'''
+			Enemies are less likely to target you
+			{Keyword:Awakened}: Decreases enemy aggro range by 10 tiles
+			{Keyword:Awakened}: Enemies lose interest in you faster
+			'''
+		Flavor: Finally, we can cheese the boss.
 	}
 }
 

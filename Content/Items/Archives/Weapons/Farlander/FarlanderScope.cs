@@ -13,7 +13,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.Weapons
+namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
     public class FarlanderScope : ModProjectile
     {
