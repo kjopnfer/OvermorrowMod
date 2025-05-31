@@ -22,7 +22,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 {
     public class SetupGenPass : GenPass
     {
-        public enum RoomID
+        /*public enum RoomID
         {
             Green,
             Red,
@@ -40,7 +40,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             BlueRoomEntrance,
             YellowRoom,
             BlueRoom,
-        }
+        }*/
 
         public SetupGenPass(string name, double loadWeight) : base(name, loadWeight) { }
 
@@ -57,13 +57,15 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             Main.rockLayer = ArchiveSubworld.GetHeight();
 
             ArchiveFoyer foyer = new();
-            foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2, 25));
+            foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2 - 15, 25));
 
+            ArchiveGreenRoom greenRoom = new();
+            greenRoom.Generate(new Vector2(0, 25));
             return;
 
             
 
-            Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
+            /*Texture2D tiles = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveTiles", AssetRequestMode.ImmediateLoad).Value;
             Texture2D walls = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
             Texture2D slopes = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveWalls", AssetRequestMode.ImmediateLoad).Value;
             Texture2D objects = ModContent.Request<Texture2D>(AssetDirectory.TexGen + "ArchiveObjects", AssetRequestMode.ImmediateLoad).Value;
@@ -385,7 +387,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             PlaceLoungeArea(1863, 226, RoomID.Blue);
             #endregion
 
-            SetupSpawners();
+            SetupSpawners();*/
         }
 
         private void SetupSpawners()
@@ -420,7 +422,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             #endregion
         }
 
-        private void PlaceLoungeArea(int x, int y, RoomID room)
+        /*private void PlaceLoungeArea(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>
             {
@@ -579,6 +581,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                     NetMessage.SendTileSquare(-1, x, y, 2);
                 }
             }
-        }
+        }*/
     }
 }
