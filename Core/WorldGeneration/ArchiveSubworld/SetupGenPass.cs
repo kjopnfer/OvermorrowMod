@@ -64,6 +64,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             ArchiveRedRoom redRoom = new();
             redRoom.Generate(new Vector2(0, greenRoom.Height + 25));
+
+            ArchiveYellowRoom yellowRoom = new();
+            yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
             return;
 
 
