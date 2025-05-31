@@ -102,6 +102,13 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 237, y + 86, ModContent.TileType<ArchiveBridge>());
             #endregion
 
+            PlaceBookshelfArch(x + 474, y + 55);
+            PlaceBookshelfArch(x + 500, y + 55);
+            PlaceBookshelfArch(x + 526, y + 55);
+            PlaceBookshelfArch(x + 474, y + 85);
+            PlaceBookshelfArch(x + 500, y + 85);
+            PlaceBookshelfArch(x + 526, y + 85);
+
             //PlaceLoungeArea(1490, 80, RoomID.Yellow);
             PlaceLoungeArea(x + 57, y + 80, RoomID.Yellow);
 
@@ -109,7 +116,6 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceLoungeArea(x + 432, y + 80, RoomID.Yellow);
 
             #endregion
-
         }
     }
 }
