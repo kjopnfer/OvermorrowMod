@@ -25,6 +25,8 @@ namespace OvermorrowMod.Content.Particles
 
         public override void Update()
         {
+            Lighting.AddLight(particle.position, particle.color.ToVector3() / 255f);
+
             particle.customData[0]++;
             particle.position += particle.velocity;
             particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(particle.customData[0] * Math.PI / 10) * flameOffset;

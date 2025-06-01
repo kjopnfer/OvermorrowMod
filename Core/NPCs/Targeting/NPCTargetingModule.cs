@@ -78,6 +78,9 @@ namespace OvermorrowMod.Core.NPCs
             {
                 int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
 
+                //Main.NewText("before is " + baseAlertRange);
+                //Main.NewText("bonus is " + (baseAlertRange + alertBonus));
+
                 // AlertBonus increases the alert threshold
                 return baseAlertRange + alertBonus;
             }

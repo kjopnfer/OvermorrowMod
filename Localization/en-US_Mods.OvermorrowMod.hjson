@@ -207,10 +207,27 @@ Items: {
 		Tooltip:
 			'''
 			Enemies are less likely to target you
-			{Keyword:Awakened}: Decreases enemy aggro range by 10 tiles
-			{Keyword:Awakened}: Enemies lose interest in you faster
+			{Keyword:Awakened}: 
+			- Decreases enemy aggro range by 10 tiles
+			- Enemies lose interest in you faster
 			'''
 		Flavor: Finally, we can cheese the boss.
+	}
+
+	CandlelitSanctuary: {
+		DisplayName: Candlelit Sanctuary
+		Tooltip:
+			'''
+			Builds up flame charges while not hit
+			{Keyword:Retaliate}: 
+			- Clears all flame charges to reduce incoming damage by 5% per charge
+			- Releases a burst of flame, damaging nearby enemies and inflicting <Debuff:Shadowflame>
+			'''
+		Flavor:
+			'''
+			The sanctuary glows with quiet menace.
+			Fed by patience, unleashed in vengeance.
+			'''
 	}
 }
 

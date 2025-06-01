@@ -15,6 +15,7 @@ using OvermorrowMod.Common.CustomCollision;
 using System.Collections.Generic;
 using OvermorrowMod.Core.NPCs;
 using System;
+using OvermorrowMod.Content.Items.Archives.Accessories;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -423,6 +424,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 10));
         }
     }
 }
