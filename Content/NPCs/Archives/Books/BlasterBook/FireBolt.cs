@@ -9,6 +9,7 @@ using Terraria;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 using System;
+using OvermorrowMod.Core.Particles;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -75,7 +76,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     // Add a small random offset to the center
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
 
-                    Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), Projectile.Bottom + offset, velocity, color, 1f, scale, 0f, 0, scale * 0.5f);
+                    var lightOrb = new Circle(0f, scale * 0.5f);
+                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Bottom + offset, velocity, color, 1f, scale, 0f);
                 }
             }
 

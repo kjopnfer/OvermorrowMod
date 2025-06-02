@@ -11,6 +11,7 @@ using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Core.Particles;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -186,7 +187,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 {
                     Color color = Color.Lerp(Color.Orange, Color.HotPink, Main.rand.NextFloat(0, 1f));
                     Vector2 spawnPosition = NPC.Center + ParticleSpawnOffset + new Vector2(Main.rand.Next(-3, 4) * 6, 20);
-                    Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), spawnPosition, -Vector2.UnitY, color, 1f, scale, 0f, 0, scale * 0.5f);
+
+                    var lightOrb = new Circle(0f, scale * 0.5f); // maxTime = random, initialScale = scale * 0.5f
+                    ParticleManager.CreateParticleDirect(lightOrb, spawnPosition, -Vector2.UnitY, color, 1f, scale, 0f);
                 }
             }
         }
