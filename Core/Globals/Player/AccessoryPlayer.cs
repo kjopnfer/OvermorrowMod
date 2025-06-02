@@ -1,3 +1,5 @@
+using OvermorrowMod.Common.Utilities;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Globals
@@ -15,10 +17,56 @@ namespace OvermorrowMod.Core.Globals
         /// </summary>
         public float AggroLossBonus = 0;
 
+        public bool CandlelitSanctuary = false;
+        public int CandleCharges { get; private set; } = 0;
+        private int CandleCounter = 0;
         public override void ResetEffects()
         {
             AlertBonus = 0;
             AggroLossBonus = 0;
+
+            CandlelitSanctuary = false;
+        }
+
+        public override void PostUpdate()
+        {
+            if (CandleCharges < 3)
+            {
+                CandleCounter++;
+                if (CandleCounter % ModUtils.SecondsToTicks(5) == 0)
+                {
+                    CandleCharges++;
+                    CandleCounter = 0;
+                    Main.NewText(CandleCharges);
+                }
+            }
+
+
+            base.PostUpdate();
+        }
+
+        
+        public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
+        {
+            CandleCounter = 0;
+            if (CandleCharges > 0)
+            {
+                var damageReduction = 1 - (0.05f * CandleCharges);
+
+                hurtInfo.Damage = (int)(hurtInfo.Damage * damageReduction);
+                CandleCharges = 0;
+            }
+        }
+
+        public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
+        {
+            CandleCounter = 0;
+            if (CandleCharges > 0)
+            {
+                var damageReduction = 1 - (0.05f * CandleCharges);
+                hurtInfo.Damage = (int)(hurtInfo.Damage * damageReduction);
+                CandleCharges = 0;
+            }
         }
     }
 }

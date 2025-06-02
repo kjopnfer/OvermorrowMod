@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Items.Archives.Armor;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Globals;
 using ReLogic.Content;
 using System.Linq;
 using Terraria;
@@ -33,7 +34,7 @@ namespace OvermorrowMod.Core.DrawLayers
             Player drawPlayer = drawInfo.drawPlayer;
             //Color color = drawPlayer.GetImmuneAlphaPure(drawInfo.colorArmorHead, drawInfo.shadow);
 
-            int charges = 3;
+            int charges = drawPlayer.GetModPlayer<AccessoryPlayer>().CandleCharges;
             float scale = 0.055f;
             int direction = drawPlayer.direction;
             Vector2 velocity = -Vector2.UnitY * 0.8f;
@@ -61,7 +62,7 @@ namespace OvermorrowMod.Core.DrawLayers
             }*/
 
             //CandleFlame = ModContent.Request<Texture2D>(AssetDirectory.ArchiveItems + "CandlelitSanctuaryFlame", ReLogic.Content.AssetRequestMode.ImmediateLoad);
-            var shieldMask = ModContent.Request<Texture2D>(AssetDirectory.ArchiveItems + "CandlelitSanctuaryFlame", ReLogic.Content.AssetRequestMode.ImmediateLoad);
+            var shieldMask = CandleFlame;
             Vector2 Position = drawInfo.Position;
             Vector2 origin = new(CandleFlame.Value.Width * 0.5f, CandleFlame.Value.Height * 0.5f);
             Vector2 drawPos = new Vector2((int)(Position.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(Position.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4f)) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
@@ -83,7 +84,6 @@ namespace OvermorrowMod.Core.DrawLayers
             var movementFrame = bodyFrame.Y / bodyFrame.Height;
 
             int[] upFrames = [7, 8, 9, 14, 15, 16];
-            Main.NewText(movementFrame);
 
             float jumpOffset = movementFrame == 5 ? -8 : 0;
             float walkOffset = upFrames.Contains(movementFrame) ? -2 : 0;
@@ -104,6 +104,7 @@ namespace OvermorrowMod.Core.DrawLayers
                 Vector2 position = new Vector2((14 + chargeOffset.X) * direction, -10 + chargeOffset.Y + jumpOffset + walkOffset) + new Vector2((int)(drawInfo.Position.X - Main.screenPosition.X - bodyFrame.Width / 2 + drawInfo.drawPlayer.width / 2), (int)(drawInfo.Position.Y - Main.screenPosition.Y + drawInfo.drawPlayer.height - drawInfo.drawPlayer.bodyFrame.Height + 4f)) + drawInfo.drawPlayer.bodyPosition + new Vector2(bodyFrame.Width / 2, drawInfo.drawPlayer.bodyFrame.Height / 2);
                 var frameOffset = (int)MathHelper.Lerp(0, 5, ((Main.GlobalTimeWrappedHourly + (0.15f * i)) % 0.6f) / 0.6f);
                 var frame = new Rectangle(0, (int)(shieldMask.Height() / 5 * frameOffset), shieldMask.Width(), shieldMask.Height() / 5);
+
                 DrawData drawData = new(shieldMask.Value, position, frame, Color.White, drawInfo.drawPlayer.bodyRotation, bodyVect, 0.7f, drawInfo.playerEffect, 1)
                 {
                     shader = drawInfo.cShield
@@ -113,7 +114,7 @@ namespace OvermorrowMod.Core.DrawLayers
                 if (drawInfo.drawPlayer.mount.Cart)
                     drawInfo.DrawDataCache.Reverse(drawInfo.DrawDataCache.Count - 2, 2);
 
-                Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.DarkBlue, 1f, scale, 0f, 0, scale);
+                //Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.DarkBlue, 1f, scale, 0f, 0, scale);
             }
 
             /*Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveItems + "ScholarsHat_DrawLayer", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;

@@ -221,12 +221,12 @@ Items: {
 			Builds up flame charges while not hit
 			{Keyword:Retaliate}: 
 			- Clears all flame charges to reduce incoming damage by 5% per charge
-			- Releases a burst of flame, damaging nearby enemies and inflicting <Debuff:Shadowflame>
+			- Inflicts <Debuff:Shadowflame> onto the attacker
 			'''
 		Flavor:
 			'''
-			The sanctuary glows with quiet menace.
-			Fed by patience, unleashed in vengeance.
+			The quiet burns with cursed intent,  
+			Its final spark is violence spent.
 			'''
 	}
 }
@@ -285,4 +285,5 @@ Projectiles: {
 	QuadBarrelHeld.DisplayName: Quad Barrel Held
 	RevolverHeld.DisplayName: Revolver Held
 	UndertakerHeld.DisplayName: Undertaker Held
+	CandleBurst.DisplayName: Candle Burst
 }

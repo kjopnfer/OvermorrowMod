@@ -1,6 +1,7 @@
 
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Core.Globals;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -28,7 +29,9 @@ namespace OvermorrowMod.Content.Items.Archives
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            Lighting.AddLight(player.Center, new Vector3(0.8f, 0.5f, 1f) * 1.2f);
+            int charges = player.GetModPlayer<AccessoryPlayer>().CandleCharges;
+            if (charges > 0)
+                Lighting.AddLight(player.Center, new Vector3(0.8f, 0.5f, 1f) * 1.2f);
         }
     }
 }
