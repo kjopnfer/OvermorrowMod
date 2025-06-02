@@ -137,8 +137,8 @@ namespace OvermorrowMod.Content.NPCs
                     Color color = Color.Lerp(Color.Purple, Color.DarkOrange, Main.rand.NextFloat(0, 1f));
                     for (int i = 0; i < randomIterations; i++)
                     {
-                        //Particle.CreateParticle(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity, Color.Wheat, particleScale);
-                        Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f, 0, particleScale);
+                        var emberParticle = new Circle(0f, particleScale, useSineFade: true); // Default max time, custom scale, sine fade
+                        ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f);
                     }
                 }
             }

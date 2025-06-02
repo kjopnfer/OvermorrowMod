@@ -20,12 +20,14 @@ namespace OvermorrowMod.Content.Particles
         private float maxTime;
         private float initialScale;
         private float flameOffset;
+        private bool useSineFade;
 
-        public Circle(float maxTimeOverride = 0f, float scaleOverride = 0f)
+        public Circle(float maxTimeOverride = 0f, float scaleOverride = 0f, bool useSineFade = true)
         {
-            maxTime = maxTimeOverride > 0 ? maxTimeOverride : Main.rand.Next(4, 5) * 10;
+            maxTime = maxTimeOverride > 0 ? maxTimeOverride : Main.rand.Next(3, 4) * 10;
             initialScale = scaleOverride > 0 ? scaleOverride : Main.rand.NextFloat(0.2f, 0.3f);
             flameOffset = Main.rand.NextFloat(0.1f, 0.2f) * (Main.rand.NextBool() ? 1 : -1);
+            this.useSineFade = useSineFade;
         }
 
         public override void OnSpawn()
@@ -36,14 +38,14 @@ namespace OvermorrowMod.Content.Particles
 
         public override void Update()
         {
-            Lighting.AddLight(particle.position, particle.color.ToVector3() * 0.2f * (1f - timeAlive / maxTime));
+            Lighting.AddLight(particle.position, particle.color.ToVector3() / 255f);
 
             timeAlive++;
             particle.position += particle.velocity;
             particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * flameOffset;
 
             float lifeProgress = 1f - timeAlive / maxTime;
-            particle.alpha = lifeProgress;
+            particle.alpha = useSineFade ? (float)(Math.Sin(lifeProgress * Math.PI)) : lifeProgress;
             particle.scale = lifeProgress * initialScale;
 
             if (timeAlive > maxTime) particle.Kill();
@@ -63,11 +65,3 @@ namespace OvermorrowMod.Content.Particles
         }
     }
 }
-
-// Usage example - how to spawn the particle:
-// if (Main.rand.NextBool(3))
-// {
-//     Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
-//     var lightOrb = new LightOrb(0f, scale * 0.5f); // maxTime = random, initialScale = scale * 0.5f
-//     OvermorrowMod.Core.ParticleManager.CreateParticleDirect(lightOrb, npc.Bottom + offset, -Vector2.UnitY, Color.White, 1f, scale, 0f);
-// }

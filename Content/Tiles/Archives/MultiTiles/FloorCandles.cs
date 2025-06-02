@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -44,8 +45,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         private void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
         {
-            Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.DarkOrange, 1f, scale, 0f, 0, scale);
-            Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), position, velocity, Color.White * 0.75f, 1f, scale, 0f, 0, scale * 0.5f);
+            var emberParticle = new Circle(0f, scale, useSineFade: true);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f);
         }
 
         public override void NearbyEffects(int i, int j, bool closer)

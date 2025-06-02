@@ -93,9 +93,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 Vector2 drawOffset = new Vector2(-4, -4).RotatedBy(Projectile.rotation);
                 Color color = Color.Lerp(Color.Cyan, Color.Cyan, Main.rand.NextFloat(0, 1f));
                 for (int i = 0; i < randomIterations; i++)
-                {
-                    Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity * 0.1f, Color.Purple, 1f, particleScale, 0f, 0, particleScale);
-                    Particle.CreateParticleDirect(Particle.ParticleType<FireBoltSpark>(), Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f, 0, particleScale);
+                {                    
+                    var emberParticle = new Circle(0f, particleScale, useSineFade: true); // Default max time, custom scale, sine fade
+                    ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity * 0.1f, Color.Purple, 1f, particleScale, 0f);
                 }
             }
 
