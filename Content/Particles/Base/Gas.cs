@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.Particles
         private float timeAlive = 0f;
         private float maxTime;
         private float initialScale;
-        private float flameOffset;
+        private float positionOffset;
         private Texture2D selectedTexture;
         private Texture2D[] textures;
 
@@ -44,7 +44,7 @@ namespace OvermorrowMod.Content.Particles
             this.selectedTexture = textures[Main.rand.Next(textures.Length)];
 
             // Generate random values
-            this.flameOffset = Main.rand.NextFloat(0.1f, 0.2f) * (Main.rand.NextBool() ? 1 : -1);
+            this.positionOffset = Main.rand.NextFloat(0.1f, 0.2f) * (Main.rand.NextBool() ? 1 : -1);
         }
 
         public override void OnSpawn()
@@ -64,13 +64,13 @@ namespace OvermorrowMod.Content.Particles
             if (hasWaveMovement)
             {
                 // PlantGas wave movement
-                particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * flameOffset;
+                particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * positionOffset;
             }
 
             if (driftsUpward)
             {
                 // Smoke movement - rises upward
-                particle.velocity.Y -= 0.03f;
+                particle.velocity.Y -= 0.1f;
             }
 
             if (rotatesOverTime)
@@ -107,11 +107,12 @@ namespace OvermorrowMod.Content.Particles
         {
             Vector2 origin = selectedTexture.Size() / 2f;
             float finalAlpha = particle.alpha * customAlpha;
+            Main.NewText(particle.scale);
 
             if (!hasAdditiveLayers)
             {
                 spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                    particle.color * finalAlpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
+                    particle.color * finalAlpha, particle.rotation, origin, particle.scale * 0.25f, SpriteEffects.None, 0f);
             }
             else
             {
@@ -124,13 +125,13 @@ namespace OvermorrowMod.Content.Particles
 
                 // Additive layer 1
                 spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                    particle.color * finalAlpha * 0.7f, particle.rotation, origin, particle.scale * 1.5f, SpriteEffects.None, 0f);
+                    particle.color * finalAlpha * 0.7f, particle.rotation, origin, particle.scale * 0.7f, SpriteEffects.None, 0f);
 
                 // Additive layer 2
                 if (Main.rand.NextBool())
                 {
                     spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                        particle.color * finalAlpha * 0.4f, particle.rotation, origin, particle.scale * 3f, SpriteEffects.None, 0f);
+                        particle.color * finalAlpha * 0.4f, particle.rotation, origin, particle.scale * 2f, SpriteEffects.None, 0f);
                 }
 
                 spriteBatch.Reload(BlendState.AlphaBlend);

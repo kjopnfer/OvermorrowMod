@@ -9,9 +9,7 @@ namespace OvermorrowMod.Core
     {
         // TODO: What the fuck turn these into ILoadables
         public static void Load()
-        {
-            Terraria.On_Main.DrawInterface += ParticleDetour.DrawParticles;
-           
+        {           
             #region Trails
             PrimitiveManager.trails = new List<Trail>();
 
@@ -28,8 +26,6 @@ namespace OvermorrowMod.Core
 
         public static void Unload()
         {
-            Terraria.On_Main.DrawInterface -= ParticleDetour.DrawParticles;
-
             #region Trails
             Terraria.On_Projectile.Kill -= PrimitiveManager.Kill;
             Terraria.On_NPC.NPCLoot -= PrimitiveManager.NPCLoot;
