@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -45,7 +46,8 @@ namespace OvermorrowMod.Content.NPCs
                 if (Main.rand.NextBool(3))
                 {
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
-                    Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), npc.Bottom + offset, -Vector2.UnitY, Color.White, 1f, scale, 0f, 0, scale * 0.5f);
+                    var lightOrb = new Circle(0f, scale * 0.5f);
+                    ParticleManager.CreateParticleDirect(lightOrb, npc.Bottom + offset, -Vector2.UnitY, Color.White, 1f, scale, 0f);
                 }
 
                 if (Main.rand.NextBool(3))

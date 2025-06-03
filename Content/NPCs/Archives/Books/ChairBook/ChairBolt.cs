@@ -7,6 +7,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -114,7 +115,9 @@ namespace OvermorrowMod.Content.NPCs
                     // Add a small random offset to the center
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
 
-                    Particle.CreateParticleDirect(Particle.ParticleType<LightOrb>(), Projectile.Bottom + offset, velocity, color, 1f, scale, 0f, 0, scale * 0.5f);
+                    var lightOrb = new Circle(0f, scale * 0.5f);
+                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Bottom + offset, velocity, color, 1f, scale, 0f);
+
                 }
             }
             return base.OnTileCollide(oldVelocity);
@@ -134,8 +137,8 @@ namespace OvermorrowMod.Content.NPCs
                     Color color = Color.Lerp(Color.Purple, Color.DarkOrange, Main.rand.NextFloat(0, 1f));
                     for (int i = 0; i < randomIterations; i++)
                     {
-                        //Particle.CreateParticle(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity, Color.Wheat, particleScale);
-                        Particle.CreateParticleDirect(Particle.ParticleType<Ember>(), Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f, 0, particleScale);
+                        var emberParticle = new Circle(0f, particleScale, useSineFade: true); // Default max time, custom scale, sine fade
+                        ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f);
                     }
                 }
             }

@@ -1,6 +1,7 @@
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -26,7 +27,7 @@ namespace OvermorrowMod.Core
         {
             if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
             {
-                Particle.UpdateParticles();
+                ParticleManager.UpdateParticles();
             }
         }
 

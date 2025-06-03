@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -66,13 +68,30 @@ namespace OvermorrowMod.Common.Weapons.Guns
         public static void CreateSmoke(Vector2 position, Vector2 velocity, int count = 8,
             float spreadAngle = 40f, float velocityScale = 0.2f, Color? color = null)
         {
-            Color smokeColor = color ?? Color.DarkGray;
+            var smokeTextures = new Texture2D[] {
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_01", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_02", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_03", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_04", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_05", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_06", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_07", AssetRequestMode.ImmediateLoad).Value
+            };
 
+            Color smokeColor = color ?? Color.DarkGray;
             for (int i = 0; i < count; i++)
             {
-                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, velocityScale))
+                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.025f, velocityScale))
                     .RotatedByRandom(MathHelper.ToRadians(spreadAngle));
-                Particle.CreateParticle(Particle.ParticleType<Smoke>(), position, particleVelocity, smokeColor);
+
+                var smoke = new Gas(smokeTextures, 30f, scaleOverride: Main.rand.NextFloat(0.2f, 0.5f));
+                smoke.growsOverTime = true;
+                smoke.driftsUpward = true;
+                smoke.rotatesOverTime = true;
+                smoke.scaleRate = 0.005f;
+                smoke.customAlpha = 0.5f;
+
+                ParticleManager.CreateParticleDirect(smoke, position, particleVelocity, smokeColor, 1f, scale: 0.2f, 0f);
             }
         }
     }

@@ -43,7 +43,7 @@ namespace OvermorrowMod.Content.Items.Archives
             Color color = new Color(108, 108, 224);
 
 
-            Particle.CreateParticle(Particle.ParticleType<Circle>(), Projectile.Center, Vector2.Zero, color, 1, randomScale, 0f, 0f, 1f);
+            //Particle.CreateParticle(Particle.ParticleType<Circle>(), Projectile.Center, Vector2.Zero, color, 1, randomScale, 0f, 0f, 1f);
         }
 
         public ref float AICounter => ref Projectile.ai[0];

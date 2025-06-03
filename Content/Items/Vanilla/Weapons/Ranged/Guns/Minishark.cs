@@ -77,7 +77,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             Vector2 shootOffset = new Vector2(-36 * player.direction, 0);
 
             SpawnBulletCasing(Projectile, player, shootPosition, shootOffset);
-            GunEffects.CreateSmoke(shootPosition, velocity);
+            GunEffects.CreateSmoke(shootPosition + new Vector2(16 * player.direction, 0), velocity);
         }
 
         public override bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor)
