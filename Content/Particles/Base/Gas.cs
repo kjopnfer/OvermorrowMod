@@ -107,7 +107,6 @@ namespace OvermorrowMod.Content.Particles
         {
             Vector2 origin = selectedTexture.Size() / 2f;
             float finalAlpha = particle.alpha * customAlpha;
-            Main.NewText(particle.scale);
 
             if (!hasAdditiveLayers)
             {
