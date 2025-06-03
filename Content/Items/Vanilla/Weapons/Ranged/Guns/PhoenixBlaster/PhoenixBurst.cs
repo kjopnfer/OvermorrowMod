@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -51,10 +52,14 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
                 Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 15);
                 Color color = Color.Orange;
 
-                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 2, color, 1, randomScale, 0f, 0f, 1f);
+                var lightSpark = new Spark(randomScale, true, 0f);
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity * 2, Color.Orange, 1f, 1f, 0f);
 
                 randomScale = Main.rand.NextFloat(20f, 30f);
-                Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(5, 7), Color.Orange, 1f, randomScale, 0f, 0f, -1f, randomScale);
+                
+                var rotatingEmber = new Spark(randomScale, false, Main.rand.Next(8, 10) * 10, -1f);
+                rotatingEmber.endColor = Color.Red;
+                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(5, 7), Color.Orange, 1f, randomScale, 0f);
             }
         }
 

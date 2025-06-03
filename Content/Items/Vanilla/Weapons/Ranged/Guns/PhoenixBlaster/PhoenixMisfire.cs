@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -60,11 +61,16 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
                 Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(13, 18);
                 Color color = Color.Orange;
 
-                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale, 0f, 0f, 1f);
+                //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale, 0f, 0f, 1f);
+                var lightSpark = new Spark(randomScale, true, 0f);
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity, color, 1f, 1f, 0f);
 
                 randomScale = Main.rand.NextFloat(3f, 6f);
                 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 12);
-                Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f, 0f, -1f);
+                //Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f, 0f, -1f);
+                var rotatingEmber = new Spark(randomScale, false, Main.rand.Next(8, 10) * 10, -1f);
+                rotatingEmber.endColor = Color.Red;
+                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f);
 
             }
         }

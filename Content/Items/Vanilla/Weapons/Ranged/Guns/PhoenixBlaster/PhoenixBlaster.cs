@@ -1,11 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -49,7 +49,9 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
                 float randomScale = Main.rand.NextFloat(0.05f, 0.15f);
 
                 Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.3f, 0.6f)).RotatedByRandom(MathHelper.ToRadians(15));
-                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), shootPosition + shootOffset, particleVelocity, Color.Orange, randomScale, 0.5f, 0f, randomScale, 0f, 20f);
+                
+                var lightSpark = new Spark(randomScale, false, 20f);
+                ParticleManager.CreateParticleDirect(lightSpark, shootPosition + shootOffset, particleVelocity, Color.Orange, 1f, 0.5f, 0f);
             }
         }
 
