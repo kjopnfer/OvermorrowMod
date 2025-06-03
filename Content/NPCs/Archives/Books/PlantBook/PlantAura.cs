@@ -7,6 +7,8 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 using System;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core.Particles;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -87,7 +89,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     Projectile.NewProjectile(
                         Projectile.GetSource_FromThis(),
                         spawnPosition,
-                        Vector2.Zero, 
+                        Vector2.Zero,
                         ModContent.ProjectileType<FlowerSummon>(),
                         Projectile.damage,
                         Projectile.knockBack,
@@ -97,6 +99,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }
         }
+
+        Texture2D[] gasTextures = new Texture2D[] {
+            ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_01").Value,
+            ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_02").Value,
+            ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_03").Value,
+            ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_04").Value
+        };
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -112,9 +121,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     new Rectangle(0, 0, 16, 16),
                     displayColor * 0.5f);*/
 
+                var plantGas = new Gas(gasTextures, 0f, 0f);
+                plantGas.hasLight = true;
+                plantGas.hasWaveMovement = true;
+                plantGas.hasAdditiveLayers = true;
+                plantGas.lightIntensity = 0.5f;
+
                 if (Main.rand.NextBool(4))
                 {
-                    Particle.CreateParticle(Particle.ParticleType<PlantGas>(), tileWorldPosition, -Vector2.UnitY, Color.LimeGreen, alpha: 1f, scale: 0.1f);
+                    ParticleManager.CreateParticleDirect(plantGas, tileWorldPosition, -Vector2.UnitY, Color.LimeGreen, alpha: 1f, scale: 0.1f, 0f);
                 }
                 /*switch (type)
                 {
