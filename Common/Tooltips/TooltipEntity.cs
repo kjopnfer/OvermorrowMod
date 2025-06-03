@@ -19,11 +19,11 @@ namespace OvermorrowMod.Common.Tooltips
         public abstract void Draw(SpriteBatch spriteBatch, Vector2 position, float containerWidth, Vector2 titleSize, Color primaryColor);
 
         // Factory methods for common tooltip types
-        public static ProjectileTooltip CreateProjectileTooltip(string title, string[] description, float damage,
+        public static ProjectileTooltip CreateProjectileTooltip(string title, string[] description, float damage, DamageClass damageClass,
             ProjectileTooltipType type = ProjectileTooltipType.Projectile, Texture2D icon = null)
         {
             icon ??= ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "Default").Value;
-            return new ProjectileTooltip(icon, title, description, damage, type);
+            return new ProjectileTooltip(icon, title, description, damage, type, damageClass);
         }
 
         public static BuffTooltip CreateBuffTooltip(string title, string[] description, float duration,

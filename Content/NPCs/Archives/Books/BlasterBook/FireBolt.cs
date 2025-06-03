@@ -10,6 +10,8 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 using System;
 using OvermorrowMod.Core.Particles;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -76,8 +78,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     // Add a small random offset to the center
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
 
-                    var lightOrb = new Circle(0f, scale * 0.5f);
-                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Bottom + offset, velocity, color, 1f, scale, 0f);
+                    Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
+                    var lightOrb = new Circle(texture, 0f);
+                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Bottom + offset, velocity, color, 1f, scale * 0.5f, 0f);
                 }
             }
 
@@ -93,8 +96,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 Vector2 drawOffset = new Vector2(-4, -4).RotatedBy(Projectile.rotation);
                 Color color = Color.Lerp(Color.Cyan, Color.Cyan, Main.rand.NextFloat(0, 1f));
                 for (int i = 0; i < randomIterations; i++)
-                {                    
-                    var emberParticle = new Circle(0f, particleScale, useSineFade: true); // Default max time, custom scale, sine fade
+                {
+                    Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
+
+                    var emberParticle = new Circle(texture, 0f, useSineFade: true);
                     ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity * 0.1f, Color.Purple, 1f, particleScale, 0f);
                 }
             }

@@ -99,11 +99,11 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>
         /// Quick method to create a simple projectile tooltip
         /// </summary>
-        public static List<TooltipEntity> CreateProjectileTooltip(this ModItem item, string title, string[] description, float damage)
+        public static List<TooltipEntity> CreateProjectileTooltip(this ModItem item, string title, string[] description, float damage, DamageClass damageClass)
         {
             return new List<TooltipEntity>
             {
-                TooltipEntity.CreateProjectileTooltip(title, description, damage)
+                TooltipEntity.CreateProjectileTooltip(title, description, damage, damageClass)
             };
         }
 

@@ -7,6 +7,7 @@ using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs
@@ -45,9 +46,11 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (Main.rand.NextBool(3))
                 {
+                    Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
+
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
-                    var lightOrb = new Circle(0f, scale * 0.5f);
-                    ParticleManager.CreateParticleDirect(lightOrb, npc.Bottom + offset, -Vector2.UnitY, Color.White, 1f, scale, 0f);
+                    var lightOrb = new Circle(texture, 0f);
+                    ParticleManager.CreateParticleDirect(lightOrb, npc.Bottom + offset, -Vector2.UnitY, Color.White, 1f, scale * 0.5f, 0f);
                 }
 
                 if (Main.rand.NextBool(3))

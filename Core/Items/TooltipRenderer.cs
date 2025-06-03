@@ -436,7 +436,8 @@ namespace OvermorrowMod.Core.Items
 
         private static void DrawProjectileStats(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
         {
-            string damageText = (projectileTooltip.ProjectileDamage * 100) + "%";
+            var damageClass = projectileTooltip.DamageClass.DisplayName;
+            string damageText = (projectileTooltip.ProjectileDamage) + $"{damageClass}";
             var damageSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, damageText, Vector2.One * 1.25f);
             var damageTypeSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Damage", Vector2.One * 0.8f);
 

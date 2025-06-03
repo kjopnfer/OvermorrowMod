@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.Particles
             // Add lighting if scale/time is small enough (original condition)
             if (initialScale < 55 || timeAlive < 55)
             {
-                Lighting.AddLight(particle.position, new Vector3(0.6f, 0.35f, 0));
+                Lighting.AddLight(particle.position, particle.color.ToVector3() * 0.5f);
             }
 
             if (timeAlive > maxTime) particle.Kill();
@@ -84,7 +84,7 @@ namespace OvermorrowMod.Content.Particles
         {
             spriteBatch.Reload(BlendState.Additive);
 
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_04").Value;
 
             // Calculate scale lerps - different for rotating vs regular sparks
             float heightLerp, widthLerp;

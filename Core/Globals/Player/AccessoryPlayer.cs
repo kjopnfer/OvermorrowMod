@@ -1,4 +1,6 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items.Archives;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -45,7 +47,7 @@ namespace OvermorrowMod.Core.Globals
             base.PostUpdate();
         }
 
-        
+
         public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
         {
             CandleCounter = 0;
@@ -55,6 +57,9 @@ namespace OvermorrowMod.Core.Globals
 
                 hurtInfo.Damage = (int)(hurtInfo.Damage * damageReduction);
                 CandleCharges = 0;
+
+                var item = Main.item[ModContent.ItemType<CandlelitSanctuary>()];
+                Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(item, hurtInfo.DamageSource), Player.Center, Vector2.Zero, ModContent.ProjectileType<CandleBurst>(), 50, 2f, Player.whoAmI);
             }
         }
 
@@ -66,6 +71,9 @@ namespace OvermorrowMod.Core.Globals
                 var damageReduction = 1 - (0.05f * CandleCharges);
                 hurtInfo.Damage = (int)(hurtInfo.Damage * damageReduction);
                 CandleCharges = 0;
+
+                var item = Main.item[ModContent.ItemType<CandlelitSanctuary>()];
+                Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(item, hurtInfo.DamageSource), Player.Center, Vector2.Zero, ModContent.ProjectileType<CandleBurst>(), 50, 2f, Player.whoAmI);
             }
         }
     }

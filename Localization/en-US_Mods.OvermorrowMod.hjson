@@ -38,6 +38,17 @@ Buffs: {
 	}
 }
 
+TooltipEntities: {
+	CandleBurst: {
+		DisplayName: Candle Burst
+
+		Description: {
+			Line0: + Increases damage per Flame Charge
+			Line1: + Deals high knockback
+		}
+	}
+}
+
 Keywords: {
 	Aerial: {
 		DisplayName: Aerial
@@ -218,10 +229,10 @@ Items: {
 		DisplayName: Candlelit Sanctuary
 		Tooltip:
 			'''
-			Builds up flame charges while not hit
+			While not damaged for 15 seconds, gain 1 Flame Charge
 			{Keyword:Retaliate}: 
-			- Clears all flame charges to reduce incoming damage by 5% per charge
-			- Inflicts <Debuff:Shadowflame> onto the attacker
+			- Creates a <Projectile:Candle Burst>, dealing damage to all nearby enemies.
+			- Clear all charges and reduce incoming damage by 20 for each charge.
 			'''
 		Flavor:
 			'''

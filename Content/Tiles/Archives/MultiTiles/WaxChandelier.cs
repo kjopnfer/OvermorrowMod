@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
@@ -48,7 +49,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         private void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
         {
-            var emberParticle = new Circle(0f, scale, useSineFade: true);
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
+
+            var emberParticle = new Circle(texture, 0f, useSineFade: true);
             ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f);
             ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f);
         }
