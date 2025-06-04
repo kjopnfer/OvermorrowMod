@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 ),
                 new TrailConfig(
                     typeof(FireTrail),
-                    progress => DrawUtils.ColorLerp3(Color.Gold, Color.MediumOrchid, Color.Gold, progress) *  MathHelper.SmoothStep(0, 1, progress),
+                    progress => DrawUtils.ColorLerp3(Color.Purple, Color.MediumOrchid, Color.Cyan, progress) *  MathHelper.SmoothStep(0, 1, progress),
                     progress => 40
                 )
             };
@@ -65,7 +65,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05", AssetRequestMode.ImmediateLoad).Value;
 
-            Color color = Color.Gold;
+            Color color = Color.Cyan;
             var lightOrb = new Circle(texture, ModUtils.SecondsToTicks(0.4f), canGrow: true, useSineFade: true);
             lightOrb.rotationAmount = 0.05f;
 
@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool PreDraw(ref Color lightColor)
         {
             float particleScale = 0.1f;
-            Color color = Color.Gold;
+            Color color = Color.Cyan;
 
             if (!Main.gamePaused)
             {
@@ -100,7 +100,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     //ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.5f, color, 1f, particleScale, 0f);
 
                     var emberParticle = new Circle(texture, ModUtils.SecondsToTicks(0.7f), useSineFade: true);
-                    ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity * 0.1f, Color.Gold * 0.1f, 1f, particleScale, 0f);
+                    emberParticle.endColor = Color.Purple;
+                    ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity * 0.1f, Color.Cyan * 0.1f, 0.5f, particleScale, 0f);
                 }
             }
 

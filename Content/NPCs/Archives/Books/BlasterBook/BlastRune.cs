@@ -59,7 +59,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             //DrawRing(AssetDirectory.Textures + "Crosshair", Main.spriteBatch, Projectile.Center + offset * (Projectile.height / 2 - 20), 1, 1, Main.GameUpdateCount / 40f, progress2, new Color(244, 188, 91));
             //DrawRing(AssetDirectory.Textures + "MagicCircle", spriteBatch, npc.Center, 2f, 2f, Main.GameUpdateCount / 40f, progress3, new Color(244, 188, 91));
-            Color color = Color.Gold;
+            Color color = Color.Cyan;
             DrawRing(AssetDirectory.Textures + "magic_01", Main.spriteBatch, Projectile.Center, 3f, 3f, Main.GameUpdateCount / 20f, progress, color);
             DrawRing(AssetDirectory.Textures + "magic_circle_02", Main.spriteBatch, Projectile.Center, 1f, 1f, Main.GameUpdateCount / 20f, progress, color);
 
