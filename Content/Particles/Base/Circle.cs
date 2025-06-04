@@ -94,12 +94,11 @@ namespace OvermorrowMod.Content.Particles
 
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, texture.Size() / 2, particle.scale, SpriteEffects.None, 0f);
 
-            //spriteBatch.Reload(BlendState.Additive);
+            spriteBatch.Reload(BlendState.Additive);
 
-            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.7f, 0f, texture.Size() / 2, particle.scale * 1.5f, SpriteEffects.None, 0f);
-            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.4f, 0f, texture.Size() / 2, particle.scale * 3f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.7f, 0f, texture.Size() / 2, particle.scale * 1.5f, SpriteEffects.None, 0f);
 
-            //spriteBatch.Reload(BlendState.AlphaBlend);
+            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
 }
