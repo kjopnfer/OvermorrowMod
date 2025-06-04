@@ -34,9 +34,10 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 
         public override void OnSpawn(IEntitySource source)
         {
+            //Player player = Main.player[Projectile.owner];
             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PhoenixBurst"));
 
-            Projectile.Center = Main.LocalPlayer.Center;
+            //Projectile.Center = Main.LocalPlayer.Center;
 
             float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
@@ -80,6 +81,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
         {
             AICounter++;
             Projectile.scale = MathHelper.Lerp(0.5f, 0, Projectile.timeLeft / 85f);
+
             Projectile.rotation += 0.08f;
         }
 

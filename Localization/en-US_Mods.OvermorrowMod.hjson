@@ -302,4 +302,5 @@ Projectiles: {
 	RevolverHeld.DisplayName: Revolver Held
 	UndertakerHeld.DisplayName: Undertaker Held
 	CandleBurst.DisplayName: Candle Burst
+	CandleGain.DisplayName: Candle Gain
 }

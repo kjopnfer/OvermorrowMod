@@ -18,7 +18,6 @@ namespace OvermorrowMod.Content.Particles
         private float maxTime;
         private float timeAlive = 0f;
 
-
         private readonly Texture2D texture;
 
         /// <summary>
@@ -38,11 +37,55 @@ namespace OvermorrowMod.Content.Particles
         /// </summary>
         public Color endColor = Color.Red;
 
+        // Anchor system fields
+        private Entity anchorEntity = null;
+        private Vector2 lastAnchorPosition;
+        private Vector2 relativeOffset;
+        private bool hasAnchor = false;
+
+        /// <summary>
+        /// Sets an entity that this particle will follow while still allowing velocity-based movement.
+        /// The particle will automatically track the entity's Center position.
+        /// </summary>
+        public Entity AnchorEntity
+        {
+            get => anchorEntity;
+            set
+            {
+                if (value != null && value.active)
+                {
+                    anchorEntity = value;
+
+                    // Only calculate relative offset if particle is already initialized
+                    if (particle != null)
+                    {
+                        if (!hasAnchor)
+                        {
+                            // First time setting anchor - calculate initial relative offset
+                            relativeOffset = particle.position - (value.Center + AnchorOffset);
+                            hasAnchor = true;
+                        }
+                        lastAnchorPosition = value.Center + AnchorOffset;
+                    }
+                    // If particle is null, we'll calculate offset in OnSpawn()
+                }
+                else
+                {
+                    // Remove anchor
+                    anchorEntity = null;
+                    hasAnchor = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Optional offset from the entity's center. Useful for attaching to specific parts of an entity.
+        /// </summary>
+        public Vector2 AnchorOffset { get; set; } = Vector2.Zero;
+
         public Spark(Texture2D texture, float maxTime = 0f, bool rotateWithVelocity = false, float rotationDirection = 0f)
         {
             this.texture = texture;
-
-            //this.initialScale = initialScale > 0 ? initialScale : Main.rand.NextFloat(0.05f, 0.15f);
             this.rotateWithVelocity = rotateWithVelocity;
             this.maxTime = maxTime > 0 ? maxTime : Main.rand.Next(4, 8) * 10;
             this.rotationDirection = rotationDirection;
@@ -59,13 +102,59 @@ namespace OvermorrowMod.Content.Particles
             if (rotationDirection != 0f)
             {
                 particle.alpha = 0f;
-                //maxTime = Main.rand.Next(8, 10) * 10;
+            }
+
+            // Initialize anchor system if anchor was set before spawn
+            if (anchorEntity != null && anchorEntity.active)
+            {
+                Vector2 anchorPos = anchorEntity.Center + AnchorOffset;
+                relativeOffset = particle.position - anchorPos;
+                lastAnchorPosition = anchorPos;
+                hasAnchor = true;
             }
         }
 
         public override void Update()
         {
             timeAlive++;
+
+            // Handle anchor movement first
+            if (hasAnchor && anchorEntity != null)
+            {
+                // Check if anchor entity is still valid
+                if (!anchorEntity.active)
+                {
+                    // Entity died/became inactive, remove anchor
+                    anchorEntity = null;
+                    hasAnchor = false;
+                }
+                else
+                {
+                    Vector2 currentAnchorPos = anchorEntity.Center + AnchorOffset;
+
+                    // Calculate how much the anchor moved
+                    Vector2 anchorDelta = currentAnchorPos - lastAnchorPosition;
+
+                    // Move the particle by the same amount the anchor moved
+                    particle.position += anchorDelta;
+
+                    // Update relative offset with velocity-based movement
+                    relativeOffset += particle.velocity;
+
+                    // Set final position as anchor + relative offset
+                    particle.position = currentAnchorPos + relativeOffset;
+
+                    // Update last anchor position for next frame
+                    lastAnchorPosition = currentAnchorPos;
+                }
+            }
+
+            if (!hasAnchor)
+            {
+                // Normal movement when no anchor
+                particle.position += particle.velocity;
+            }
+
             particle.rotation = particle.velocity.ToRotation() + MathHelper.PiOver2;
 
             if (rotationDirection != 0f)
@@ -91,6 +180,12 @@ namespace OvermorrowMod.Content.Particles
             }
 
             if (timeAlive > maxTime) particle.Kill();
+        }
+
+        public override bool ShouldUpdatePosition()
+        {
+            // Don't let the particle manager update position since we handle it manually
+            return false;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

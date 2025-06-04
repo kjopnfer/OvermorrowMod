@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
 
-            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_04", AssetRequestMode.ImmediateLoad).Value;
             for (int i = 0; i < 32; i++)
             {
                 //randomScale = Main.rand.NextFloat(0.15f, 0.35f);

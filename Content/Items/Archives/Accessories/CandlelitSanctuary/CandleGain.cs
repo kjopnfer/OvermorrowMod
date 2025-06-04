@@ -12,7 +12,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives
 {
-    public class CandleBurst : ModProjectile
+    public class CandleGain : ModProjectile
     {
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
@@ -23,21 +23,23 @@ namespace OvermorrowMod.Content.Items.Archives
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = ModUtils.SecondsToTicks(0.75f);
-            Projectile.DamageType = DamageClass.Magic;
         }
 
         public override void OnSpawn(IEntitySource source)
         {
             base.OnSpawn(source);
 
+            Player player = Main.player[Projectile.owner];
+            if (!player.active) return;
+
             float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
 
             randomScale = Main.rand.NextFloat(10f, 20f);
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_02", AssetRequestMode.ImmediateLoad).Value;
-
             Color color = new Color(108, 108, 224);
+
+            /*Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_02", AssetRequestMode.ImmediateLoad).Value;
+
             var lightOrb = new Circle(texture, ModUtils.SecondsToTicks(0.7f), canGrow: true, useSineFade: true);
             lightOrb.rotationAmount = 0.05f;
 
@@ -62,7 +64,34 @@ namespace OvermorrowMod.Content.Items.Archives
                 ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity * 2, color, 1f, randomScale, 0f);
             }
 
-            
+            float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
+            float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);*/
+
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_04", AssetRequestMode.ImmediateLoad).Value;
+            for (int i = 0; i < 32; i++)
+            {
+                //randomScale = Main.rand.NextFloat(0.15f, 0.35f);
+                randomScale = Main.rand.NextFloat(5f, 8f);
+                Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(13, 18);
+
+                /*float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
+                Vector2 angleTo = Projectile.DirectionTo(Main.LocalPlayer.Center);
+
+                //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale, 0f, 0f, 1f);
+                var lightSpark = new Spark(sparkTexture, 0f, true, 0f);
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity, color, 1f, randomScale, 0f);
+                */
+                randomScale = Main.rand.NextFloat(3f, 6f);
+                RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 12);
+                //Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f, 0f, -1f);
+                var rotatingEmber = new Spark(sparkTexture, Main.rand.Next(8, 10) * 10, false, -1f);
+                rotatingEmber.endColor = Color.Purple;
+                rotatingEmber.AnchorEntity = player;
+
+                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity), color, 1f, randomScale, 0f);
+            }
+
+
             //Particle.CreateParticle(Particle.ParticleType<Circle>(), Projectile.Center, Vector2.Zero, color, 1, randomScale, 0f, 0f, 1f);
         }
 

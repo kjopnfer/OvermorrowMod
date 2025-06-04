@@ -35,11 +35,13 @@ namespace OvermorrowMod.Core.Globals
             if (CandleCharges < 3)
             {
                 CandleCounter++;
-                if (CandleCounter % ModUtils.SecondsToTicks(5) == 0)
+                if (CandleCounter % ModUtils.SecondsToTicks(2) == 0)
                 {
                     CandleCharges++;
                     CandleCounter = 0;
                     Main.NewText(CandleCharges);
+
+                    Projectile.NewProjectile(null, Player.Center, Vector2.Zero, ModContent.ProjectileType<CandleGain>(), 0, 0, Player.whoAmI);
                 }
             }
 
