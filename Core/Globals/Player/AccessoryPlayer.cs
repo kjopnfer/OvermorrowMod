@@ -53,13 +53,12 @@ namespace OvermorrowMod.Core.Globals
             CandleCounter = 0;
             if (CandleCharges > 0)
             {
-                var damageReduction = 1 - (0.05f * CandleCharges);
-
-                hurtInfo.Damage = (int)(hurtInfo.Damage * damageReduction);
+                var damageReduction = 15 * CandleCharges;
+                hurtInfo.Damage -= damageReduction;
                 CandleCharges = 0;
 
-                var item = Main.item[ModContent.ItemType<CandlelitSanctuary>()];
-                Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(item, hurtInfo.DamageSource), Player.Center, Vector2.Zero, ModContent.ProjectileType<CandleBurst>(), 50, 2f, Player.whoAmI);
+                var item = ItemLoader.GetItem(ModContent.ItemType<CandlelitSanctuary>()).Item;
+                Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(item, hurtInfo.DamageSource), Player.Center, Vector2.Zero, ModContent.ProjectileType<CandleBurst>(), damageReduction, 6f, Player.whoAmI);
             }
         }
 
@@ -68,12 +67,12 @@ namespace OvermorrowMod.Core.Globals
             CandleCounter = 0;
             if (CandleCharges > 0)
             {
-                var damageReduction = 1 - (0.05f * CandleCharges);
-                hurtInfo.Damage = (int)(hurtInfo.Damage * damageReduction);
+                var damageReduction = 15 * CandleCharges;
+                hurtInfo.Damage -= damageReduction;
                 CandleCharges = 0;
 
-                var item = Main.item[ModContent.ItemType<CandlelitSanctuary>()];
-                Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(item, hurtInfo.DamageSource), Player.Center, Vector2.Zero, ModContent.ProjectileType<CandleBurst>(), 50, 2f, Player.whoAmI);
+                var item = ItemLoader.GetItem(ModContent.ItemType<CandlelitSanctuary>()).Item;
+                Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(item, hurtInfo.DamageSource), Player.Center, Vector2.Zero, ModContent.ProjectileType<CandleBurst>(), damageReduction, 6f, Player.whoAmI);
             }
         }
     }

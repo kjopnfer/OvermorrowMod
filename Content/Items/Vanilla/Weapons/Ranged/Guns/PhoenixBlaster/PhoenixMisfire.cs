@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -51,6 +53,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
 
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
             for (int i = 0; i < 32; i++)
             {
                 //randomScale = Main.rand.NextFloat(0.15f, 0.35f);
@@ -62,13 +65,13 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
                 Color color = Color.Orange;
 
                 //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale, 0f, 0f, 1f);
-                var lightSpark = new Spark(randomScale, true, 0f);
-                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity, color, 1f, 1f, 0f);
+                var lightSpark = new Spark(sparkTexture, 0f, true, 0f);
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity, color, 1f, randomScale, 0f);
 
                 randomScale = Main.rand.NextFloat(3f, 6f);
                 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 12);
                 //Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f, 0f, -1f);
-                var rotatingEmber = new Spark(randomScale, false, Main.rand.Next(8, 10) * 10, -1f);
+                var rotatingEmber = new Spark(sparkTexture, Main.rand.Next(8, 10) * 10, false,  -1f);
                 rotatingEmber.endColor = Color.Red;
                 ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f);
 

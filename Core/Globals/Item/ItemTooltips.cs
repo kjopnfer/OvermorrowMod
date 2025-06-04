@@ -86,8 +86,28 @@ namespace OvermorrowMod.Core.Globals
             foreach (var tooltipText in interfaceTooltips)
             {
                 tooltips.Insert(3, new TooltipLine(Mod, "InterfaceTooltip", tooltipText));
+                //tooltips.Add(new TooltipLine(Mod, "InterfaceTooltip", tooltipText));
             }
 
+            // Hijack and remove the tooltips from vanilla
+            List<TooltipLine> hijackedTooltips = new List<TooltipLine>();
+
+            foreach (var line in tooltips.ToList())
+            {
+                if (line.Name.Contains("Tooltip"))
+                {
+                    //Main.NewText($"Removed: {line.Name}");
+                    hijackedTooltips.Add(new TooltipLine(Mod, line.Name, line.Text));
+                    tooltips.Remove(line);
+                }
+            }
+
+            // Re-add modified tooltips using a for-loop
+            for (int i = 0; i < hijackedTooltips.Count; i++)
+            {
+                TooltipLine tooltipLine = hijackedTooltips[i];
+                tooltips.Add(new TooltipLine(Mod, $"Tooltip{i}", tooltipLine.Text));
+            }
 
             // Draw flavor text
             var flavorKey = LocalizationPath.Items + name + ".Flavor";
@@ -157,7 +177,7 @@ namespace OvermorrowMod.Core.Globals
                     BuffTooltipType.Debuff));
                 TooltipEntities.Add(new BuffTooltip(TextureAssets.Buff[BuffID.OnFire].Value,
                     "On Fire!",
-                    [" - Prevents health regeneration"," - Loses [c/ff5555:4] health per second"],
+                    [" - Prevents health regeneration", " - Loses [c/ff5555:4] health per second"],
                     4,
                     BuffTooltipType.Debuff));
             }

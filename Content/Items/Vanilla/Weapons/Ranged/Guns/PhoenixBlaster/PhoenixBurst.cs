@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -42,6 +43,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 
             //Particle.CreateParticle(Particle.ParticleType<Common.Particles.PhoenixBurst>(), Projectile.Center, Vector2.Zero, Color.Orange, 1);
 
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
             for (int i = 0; i < 32; i++)
             {
                 //randomScale = Main.rand.NextFloat(0.15f, 0.35f);
@@ -52,14 +54,14 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
                 Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 15);
                 Color color = Color.Orange;
 
-                var lightSpark = new Spark(randomScale, true, 0f);
-                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity * 2, Color.Orange, 1f, 1f, 0f);
+                var lightSpark = new Spark(sparkTexture, 0f, true, 0f);
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity * 2, Color.Orange, 1f, randomScale, 0f);
 
                 randomScale = Main.rand.NextFloat(20f, 30f);
                 
-                var rotatingEmber = new Spark(randomScale, false, Main.rand.Next(8, 10) * 10, -1f);
+                var rotatingEmber = new Spark(sparkTexture, Main.rand.Next(8, 10) * 10, false,  -1f);
                 rotatingEmber.endColor = Color.Red;
-                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(5, 7), Color.Orange, 1f, randomScale, 0f);
+                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(9, 10), Color.Orange, 1f, randomScale, 0f);
             }
         }
 

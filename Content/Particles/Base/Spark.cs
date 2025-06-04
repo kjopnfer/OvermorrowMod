@@ -14,10 +14,19 @@ namespace OvermorrowMod.Content.Particles
     {
         public override string Texture => AssetDirectory.Textures + "spotlight";
 
-        private float initialScale;
         private bool rotateWithVelocity;
         private float maxTime;
         private float timeAlive = 0f;
+
+
+        private readonly Texture2D texture;
+
+        /// <summary>
+        /// Stores the initial scale of the particle, used for scaling calculations.
+        /// If canGrow is true, this is the maximum scale the particle will reach.
+        /// Otherwise, it is the initial scale from which the particle shrinks to 0.
+        /// </summary>
+        private float initialScale;
 
         /// <summary>
         /// 0 = no rotation, positive/negative = rotation speed
@@ -28,18 +37,24 @@ namespace OvermorrowMod.Content.Particles
         /// The color the spark will fade to at the end of its lifetime.
         /// </summary>
         public Color endColor = Color.Red;
-        public Spark(float initialScale = 0f, bool rotateWithVelocity = false, float maxTimeOverride = 0f, float rotationDirection = 0f)
+
+        public Spark(Texture2D texture, float maxTime = 0f, bool rotateWithVelocity = false, float rotationDirection = 0f)
         {
-            this.initialScale = initialScale > 0 ? initialScale : Main.rand.NextFloat(0.05f, 0.15f);
+            this.texture = texture;
+
+            //this.initialScale = initialScale > 0 ? initialScale : Main.rand.NextFloat(0.05f, 0.15f);
             this.rotateWithVelocity = rotateWithVelocity;
-            this.maxTime = maxTimeOverride > 0 ? maxTimeOverride : Main.rand.Next(4, 8) * 10;
+            this.maxTime = maxTime > 0 ? maxTime : Main.rand.Next(4, 8) * 10;
             this.rotationDirection = rotationDirection;
         }
 
         public override void OnSpawn()
         {
+            this.initialScale = particle.scale;
+
             particle.rotation += MathHelper.Pi / 2;
             particle.scale = 0f;
+            particle.alpha = 0f;
 
             if (rotationDirection != 0f)
             {
@@ -51,6 +66,7 @@ namespace OvermorrowMod.Content.Particles
         public override void Update()
         {
             timeAlive++;
+            particle.rotation = particle.velocity.ToRotation() + MathHelper.PiOver2;
 
             if (rotationDirection != 0f)
             {
@@ -63,16 +79,13 @@ namespace OvermorrowMod.Content.Particles
             {
                 particle.velocity *= 0.95f;
 
-                if (rotateWithVelocity)
-                    particle.rotation = particle.velocity.ToRotation() + MathHelper.PiOver2;
-
-                // Complex alpha calculation from original
                 particle.alpha = Utils.GetLerpValue(0f, 0.05f, particle.activeTime / maxTime, clamped: true) *
                                Utils.GetLerpValue(1f, 0.9f, particle.activeTime / maxTime, clamped: true);
             }
 
             // Add lighting if scale/time is small enough (original condition)
-            if (initialScale < 55 || timeAlive < 55)
+            var lightTime = maxTime * 0.6f;
+            if (timeAlive < lightTime)
             {
                 Lighting.AddLight(particle.position, particle.color.ToVector3() * 0.5f);
             }
@@ -83,8 +96,6 @@ namespace OvermorrowMod.Content.Particles
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Reload(BlendState.Additive);
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_04").Value;
 
             // Calculate scale lerps - different for rotating vs regular sparks
             float heightLerp, widthLerp;

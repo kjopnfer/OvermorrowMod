@@ -43,8 +43,8 @@ TooltipEntities: {
 		DisplayName: Candle Burst
 
 		Description: {
-			Line0: + Increases damage per Flame Charge
-			Line1: + Deals high knockback
+			Line0: + Increases damage per Candle
+			Line1: + Deals strong knockback
 		}
 	}
 }
@@ -52,7 +52,7 @@ TooltipEntities: {
 Keywords: {
 	Aerial: {
 		DisplayName: Aerial
-		Description: Triggers while airborne
+		Description: Activates while airborne
 	}
 
 	Ambush: {
@@ -82,7 +82,7 @@ Keywords: {
 
 	Quickslot: {
 		DisplayName: Quickslot
-		Description: Triggers while this item is in your hotbar
+		Description: Activates while this item is in your hotbar
 	}
 
 	Respite: {
@@ -108,6 +108,11 @@ Keywords: {
 	Strike: {
 		DisplayName: Strike
 		Description: Triggers on hitting an enemy
+	}
+
+	Vigor: {
+		DisplayName: Vigor
+		Description: Activates while above 80% health
 	}
 }
 
@@ -229,10 +234,10 @@ Items: {
 		DisplayName: Candlelit Sanctuary
 		Tooltip:
 			'''
-			While not damaged for 15 seconds, gain 1 Flame Charge
+			While not damaged for 15 seconds, light a Candle (Max 3)
 			{Keyword:Retaliate}: 
-			- Creates a <Projectile:Candle Burst>, dealing damage to all nearby enemies.
-			- Clear all charges and reduce incoming damage by 20 for each charge.
+			- If a Candle is lit, release a <Projectile:Candle Burst>, dealing damage to all nearby enemies.
+			- Blow out all Candles and reduce incoming damage by 20 for each Candle.
 			'''
 		Flavor:
 			'''

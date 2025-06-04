@@ -6,6 +6,7 @@ using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -44,14 +45,16 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             SpawnBulletCasing(Projectile, player, shootPosition, shootOffset);
 
             shootOffset = new Vector2(26, 0).RotatedBy(Projectile.rotation);
+
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
             for (int i = 0; i < 4; i++)
             {
                 float randomScale = Main.rand.NextFloat(0.05f, 0.15f);
 
                 Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.3f, 0.6f)).RotatedByRandom(MathHelper.ToRadians(15));
                 
-                var lightSpark = new Spark(randomScale, false, 20f);
-                ParticleManager.CreateParticleDirect(lightSpark, shootPosition + shootOffset, particleVelocity, Color.Orange, 1f, 0.5f, 0f);
+                var lightSpark = new Spark(sparkTexture, 20f, false);
+                ParticleManager.CreateParticleDirect(lightSpark, shootPosition + shootOffset, particleVelocity, Color.Orange, 1f, randomScale, 0f);
             }
         }
 
