@@ -158,7 +158,7 @@ namespace OvermorrowMod.Content.NPCs
             float xDistance = Math.Abs(NPC.Center.X - npc.TargetingModule.Target.Center.X);
             float yDistance = Math.Abs(NPC.Center.Y - npc.TargetingModule.Target.Center.Y);
 
-            bool isWithinXRange = xDistance <= npc.TargetingConfig().MaxAttackRange;
+            bool isWithinXRange = xDistance <= npc.TargetingModule.Config.MaxAttackRange;
             bool isWithinYRange = yDistance < 200;
             bool hasLineOfSight = Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, NPC.Center, 1, 1);
 

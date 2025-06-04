@@ -65,7 +65,6 @@ namespace OvermorrowMod.Core.NPCs
              .OrderByDescending(s => s.Weight) // Or random weighted if preferred
              .FirstOrDefault();
 
-            // Option 2: Weighted random pick (uncomment to use)
             // return PickWeightedRandom(validAttacks);
         }
 

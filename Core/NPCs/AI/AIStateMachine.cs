@@ -277,7 +277,7 @@ namespace OvermorrowMod.Core.NPCs
                     }
 
                     // If too far away, move toward the target
-                    if (distanceToTarget > npc.TargetingConfig().MaxAttackRange)
+                    if (distanceToTarget > npc.TargetingModule.Config.MaxAttackRange)
                     {
                         ChangeState(AIStateType.Moving, npc);
                     }

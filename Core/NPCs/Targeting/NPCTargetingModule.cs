@@ -22,12 +22,12 @@ namespace OvermorrowMod.Core.NPCs
         private float aggroCooldown;
         private int missedAttacks;
 
-        private NPCTargetingConfig config;
+        public NPCTargetingConfig Config { get; private set; }
 
         public NPCTargetingModule(NPC npc, NPCTargetingConfig? config = null)
         {
             this.npc = npc;
-            this.config = config ?? new NPCTargetingConfig();
+            this.Config = config ?? new NPCTargetingConfig();
         }
 
         /// <summary>
@@ -40,10 +40,10 @@ namespace OvermorrowMod.Core.NPCs
             {
                 Target = target;
 
-                if (config.DisplayAggroIndicator)
+                if (Config.DisplayAggroIndicator)
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
 
-                aggroTimer = config.MaxAggroTime;
+                aggroTimer = Config.MaxAggroTime;
             }
         }
 
@@ -52,7 +52,7 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         private float GetEffectiveAggroRange(Entity entity)
         {
-            float baseRange = config.MaxTargetRange;
+            float baseRange = Config.MaxTargetRange;
 
             if (entity is Player player)
             {
@@ -69,10 +69,10 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         private float? GetEffectiveAlertRange(Entity entity)
         {
-            if (!config.AlertRange.HasValue)
+            if (!Config.AlertRange.HasValue)
                 return null;
 
-            float baseAlertRange = config.AlertRange.Value;
+            float baseAlertRange = Config.AlertRange.Value;
 
             if (entity is Player player)
             {
@@ -93,7 +93,7 @@ namespace OvermorrowMod.Core.NPCs
             if (!HasTarget() || aggroTimer <= 0)
             {
                 // If no aggro, check for alert range
-                if (config.AlertRange.HasValue)
+                if (Config.AlertRange.HasValue)
                 {
                     Entity alertTarget = GetAlertTarget();
                     if (alertTarget != null)
@@ -147,10 +147,10 @@ namespace OvermorrowMod.Core.NPCs
             Target = FindNearestTarget(npc.Center, ignoreLineOfSight);
             if (Target != null)
             {
-                if (config.DisplayAggroIndicator)
+                if (Config.DisplayAggroIndicator)
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
 
-                aggroTimer = config.MaxAggroTime;
+                aggroTimer = Config.MaxAggroTime;
             }
         }
 
@@ -169,7 +169,7 @@ namespace OvermorrowMod.Core.NPCs
             // Reset aggro timer if within effective range and has line of sight
             if (distanceToTarget <= effectiveAggroRange && hasLineOfSight)
             {
-                aggroTimer = config.MaxAggroTime;
+                aggroTimer = Config.MaxAggroTime;
             }
             else if (aggroTimer > 0)
             {
@@ -179,13 +179,13 @@ namespace OvermorrowMod.Core.NPCs
                     lossBonus += player.GetModPlayer<AccessoryPlayer>().AggroLossBonus;
                 }
 
-                aggroTimer -= config.AggroLossRate + lossBonus;
+                aggroTimer -= Config.AggroLossRate + lossBonus;
             }
             else
             {
                 Main.NewText("gave up!");
 
-                aggroCooldown = config.AggroCooldownTime;
+                aggroCooldown = Config.AggroCooldownTime;
                 Target = null;
             }
         }
@@ -197,13 +197,13 @@ namespace OvermorrowMod.Core.NPCs
                 FindTarget(true);
             }
 
-            aggroTimer = config.MaxAggroTime;
+            aggroTimer = Config.MaxAggroTime;
         }
 
         public void OnMissedAttack()
         {
             missedAttacks++;
-            if (missedAttacks >= config.MaxMissedAttacks)
+            if (missedAttacks >= Config.MaxMissedAttacks)
             {
                 aggroTimer = 0;
                 missedAttacks = 0;
@@ -245,7 +245,7 @@ namespace OvermorrowMod.Core.NPCs
 
                 if (!hasLineOfSight || !isVisible) continue;
 
-                if (entity is Player player && config.PrioritizeAggro)
+                if (entity is Player player && Config.PrioritizeAggro)
                 {
                     int aggro = player.aggro;
                     if (aggro > highestAggro ||
@@ -274,7 +274,7 @@ namespace OvermorrowMod.Core.NPCs
 
         public Entity GetAlertTarget()
         {
-            if (!config.AlertRange.HasValue)
+            if (!Config.AlertRange.HasValue)
                 return null;
 
             Entity bestTarget = null;
@@ -336,7 +336,7 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         public float? GetAlertBuffer(Entity entity = null)
         {
-            if (!config.AlertRange.HasValue)
+            if (!Config.AlertRange.HasValue)
                 return null;
 
             if (entity != null)
@@ -348,7 +348,7 @@ namespace OvermorrowMod.Core.NPCs
                     return effectiveAlertRange.Value - effectiveAggroRange;
             }
 
-            return config.AlertRange.Value - config.MaxTargetRange;
+            return Config.AlertRange.Value - Config.MaxTargetRange;
         }
     }
 }
