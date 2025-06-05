@@ -268,7 +268,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.noTileCollide = true;
             NPC.GetGlobalNPC<BarrierNPC>().CanGainBarrier = false;
 
-            SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
+            SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type, ModContent.GetInstance<Inkwell>().Type];
         }
 
         public override void DrawBehind(int index)

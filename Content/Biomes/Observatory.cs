@@ -7,12 +7,12 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Biomes
 {
-    public class Inkwell : ModBiome
+    public class Observatory : ModBiome
     {
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
         public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.GetInstance<ArchivesBackgroundStyle>();
         public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.GetInstance<ArchivesUndergroundBackgroundStyle>();
-        public override string BestiaryIcon => AssetDirectory.BiomeIcons + "InkwellBestiary";
+        public override string BestiaryIcon => AssetDirectory.BiomeIcons + "SanctumBestiary";
 
         public override bool IsBiomeActive(Player player)
         {

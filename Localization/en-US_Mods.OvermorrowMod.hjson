@@ -21,8 +21,13 @@ Biomes: {
 	}
 
 	Inkwell: {
-		DisplayName: Inkwell
+		DisplayName: The Inkwell
 		TownNPCDialogueName: the Inkwell
+	}
+
+	Observatory: {
+		DisplayName: The Observatory
+		TownNPCDialogueName: the Observatory
 	}
 }
 

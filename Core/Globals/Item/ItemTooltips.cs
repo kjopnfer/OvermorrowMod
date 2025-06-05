@@ -76,10 +76,10 @@ namespace OvermorrowMod.Core.Globals
             }
 
             // Add weapon type
-            int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
+            /*int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             string type = item.GetWeaponType();
             if (type != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", $"[c/FAD5A5:{type} Type]"));
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", $"[c/FAD5A5:{type}]"));*/
 
             // Add tooltips from interface
             var interfaceTooltips = TooltipSystem.GetTooltipLines(item);

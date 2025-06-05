@@ -1,3 +1,4 @@
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.Backgrounds;
 using OvermorrowMod.Core;
 using Terraria;
@@ -12,6 +13,7 @@ namespace OvermorrowMod.Content.Biomes
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
         public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.GetInstance<ArchivesBackgroundStyle>();
         public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.GetInstance<ArchivesUndergroundBackgroundStyle>();
+        public override string BestiaryIcon => AssetDirectory.BiomeIcons + "ArchiveBestiary";
         public override bool IsBiomeActive(Player player)
         {
             return OvermorrowModSystem.ArchiveTiles >= 50;
