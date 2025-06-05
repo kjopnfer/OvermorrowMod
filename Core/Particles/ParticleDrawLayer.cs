@@ -2,11 +2,12 @@ namespace OvermorrowMod.Core.Particles
 {
     public enum ParticleDrawLayer
     {
-        //BehindTiles,
-        //BehindNPCs,
+        BehindTiles,
+        AboveTiles,
+        BehindNPCs,
         BehindProjectiles,
-        //BehindPlayers,
+        BehindPlayers,
         AboveAll,
-        //Interface
+        Interface
     }
 }

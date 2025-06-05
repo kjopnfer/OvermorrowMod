@@ -53,8 +53,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
 
             var emberParticle = new Circle(texture, 0f, useSineFade: true);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f, ParticleDrawLayer.BehindProjectiles);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f, ParticleDrawLayer.BehindProjectiles);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

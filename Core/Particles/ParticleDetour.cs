@@ -18,8 +18,9 @@ namespace OvermorrowMod.Core.Particles
             if (Main.dedServ)
                 return;
 
-            Terraria.On_Main.DrawInterface += DrawParticles;
+            Terraria.On_Main.DrawPlayers_BehindNPCs += DrawParticles;
             Terraria.On_Main.DrawProjectiles += DrawParticles;
+            Terraria.On_Main.DrawInterface += DrawParticles;
         }
 
         public void Unload()
@@ -27,9 +28,18 @@ namespace OvermorrowMod.Core.Particles
             // No special unload logic needed currently.
         }
 
+        private void DrawParticles(On_Main.orig_DrawPlayers_BehindNPCs orig, Main self)
+        {
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.BehindNPCs);
+            Main.spriteBatch.End();
+
+            orig(self);
+        }
+
         private void DrawParticles(Terraria.On_Main.orig_DrawInterface orig, Main self, GameTime time)
         {
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.TransformationMatrix);
             ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.AboveAll);
             Main.spriteBatch.End();
 
