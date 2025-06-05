@@ -101,6 +101,23 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 474, y + 113, ModContent.TileType<ArchivePot>());
             WorldGen.PlaceObject(x + 486, y + 115, ModContent.TileType<ArchivePot>());
 
+            WorldGen.PlaceObject(x + 120, y + 115, ModContent.TileType<WaxCandleholder>());
+
+            PlaceBookPile(x + 128, y + 115, Main.rand.Next(2, 6));
+            PlaceBookPile(x + 132, y + 115, Main.rand.Next(3, 12));
+            PlaceBookPile(x + 135, y + 115, Main.rand.Next(4, 8), Main.rand.NextBool());
+            PlaceBookPile(x + 137, y + 115, Main.rand.Next(2, 4));
+
+            PlaceBookPile(x + 155, y + 115, Main.rand.Next(3, 12), true);
+            PlaceBookPile(x + 157, y + 115, Main.rand.Next(3, 12));
+            PlaceBookPile(x + 165, y + 115, Main.rand.Next(5, 7));
+
+            PlaceBookPile(x + 180, y + 115, Main.rand.Next(2, 6));
+            PlaceBookPile(x + 182, y + 115, Main.rand.Next(3, 7));
+            PlaceBookPile(x + 185, y + 115, Main.rand.Next(4, 8), Main.rand.NextBool());
+            PlaceBookPile(x + 191, y + 115, Main.rand.Next(2, 6));
+
+
             #region Left Bridge
             WorldGen.PlaceObject(x + 205, y + 60, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 247, y + 86, ModContent.TileType<ArchiveBridge>());
@@ -117,7 +134,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Fireplace
+            WorldGen.PlaceObject(x + 408, y + 110, ModContent.TileType<WaxCandleholder>());
+
             PlaceCozyArea(x + 418, y + 110, RoomID.Yellow);
+
+            WorldGen.PlaceObject(x + 454, y + 110, ModContent.TileType<WaxCandleholder>());
 
             WorldGen.PlaceObject(x + 425, y + 55, ModContent.TileType<WoodenArch>());
             TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(x + 425, y + 80);
@@ -171,6 +192,29 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 793, y + 110, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 819, y + 110, ModContent.TileType<WaxCandleholder>());
             //PlaceAndConfigureDoor(x + 801, y + 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
+
+            WorldGen.PlaceObject(x + 287, y + 115, ModContent.TileType<WaxCandleholder>());
+
+            PlaceBookPile(x + 295, y + 115, Main.rand.Next(2, 6));
+            PlaceBookPile(x + 298, y + 115, Main.rand.Next(2, 6));
+
+            PlaceBookPile(x + 301, y + 115, Main.rand.Next(3, 12), true);
+            PlaceBookPile(x + 303, y + 115, Main.rand.Next(3, 7));
+
+            PlaceBookPile(x + 313, y + 115, Main.rand.Next(3, 6));
+
+            PlaceBookPile(x + 322, y + 115, Main.rand.Next(3, 9));
+            PlaceBookPile(x + 328, y + 115, Main.rand.Next(3, 9));
+
+            PlaceBookPile(x + 338, y + 115, Main.rand.Next(3, 9));
+            PlaceBookPile(x + 340, y + 115, Main.rand.Next(5, 8));
+
+            PlaceBookPile(x + 347, y + 115, Main.rand.Next(6, 9));
+            PlaceBookPile(x + 349, y + 115, Main.rand.Next(3, 5));
+            PlaceBookPile(x + 353, y + 115, Main.rand.Next(8, 12), true);
+            PlaceBookPile(x + 359, y + 115, Main.rand.Next(3, 8));
+
+            WorldGen.PlaceObject(x + 367, y + 115, ModContent.TileType<WaxCandleholder>());
 
             SetupSpawners(x, y);
             #endregion

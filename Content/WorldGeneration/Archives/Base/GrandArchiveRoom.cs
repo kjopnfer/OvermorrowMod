@@ -31,6 +31,19 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             BlueRoom,
         }
 
+        protected void PlaceBookPile(int x, int y, int stackSize, bool withCandle = false)
+        {
+            if (stackSize < 0) stackSize = 1;
+
+            for (int i = 0; i < stackSize; i++)
+            {
+                WorldGen.PlaceObject(x, y - i, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+            }
+
+            if (withCandle)
+                WorldGen.PlaceObject(x, y - stackSize, ModContent.TileType<FloorCandles>(), true, Main.rand.Next(0, 6));
+        }
+
         protected void PlaceLoungeArea(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>

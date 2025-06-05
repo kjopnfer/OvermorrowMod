@@ -63,7 +63,10 @@ namespace OvermorrowMod.Content.Particles
         {
             this.initialScale = particle.scale;
             this.initialAlpha = particle.alpha;
-            //particle.alpha = 0f;
+
+            // This is needed so that particles spawning in don't start flickering
+            particle.alpha = 0f;
+            
             if (canGrow) particle.scale = 0;
             if (!endColor.HasValue) endColor = particle.color;
         }

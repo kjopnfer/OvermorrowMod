@@ -76,7 +76,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             var stealthDelay = ModUtils.SecondsToTicks(Main.rand.NextFloat(4, 5.5f));
 
-            if (Main.rand.NextBool())
+            if (Main.rand.NextBool() && Main.expertMode)
                 NPC.SetStealth(stealthTime: ModUtils.SecondsToTicks(300), stealthDelay);
             else
                 NPC.GetGlobalNPC<BuffNPC>().StealthDelay = stealthDelay;
