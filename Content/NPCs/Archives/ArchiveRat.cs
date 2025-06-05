@@ -305,7 +305,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                                 xFrame = 1;
                                 yFrame = 0;
                             }
-                            else if (NPC.velocity.X != 0)
+                            else if (NPC.velocity.X != 0 && NPC.collideY)
                             {
                                 xFrame = 0;
                                 if (NPC.frameCounter++ % 6 == 0)
