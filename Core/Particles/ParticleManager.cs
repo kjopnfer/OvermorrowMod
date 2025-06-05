@@ -21,6 +21,7 @@ namespace OvermorrowMod.Core.Particles
         public Color color = Color.White;
         public int activeTime;
         public Vector2[] oldPos = new Vector2[10];
+        public ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll;
 
         protected Vector2 DirectionTo(Vector2 pos) => Vector2.Normalize(pos - position);
         public void Kill() => ParticleManager.RemoveAtIndex(id);
@@ -67,11 +68,12 @@ namespace OvermorrowMod.Core.Particles
             }
         }
 
-        public static void DrawParticles(SpriteBatch spriteBatch)
+        public static void DrawParticles(SpriteBatch spriteBatch, ParticleDrawLayer layer)
         {
             foreach (ParticleInstance particle in particles)
             {
-                if (particle == null) continue;
+                if (particle == null || particle.drawLayer != layer) continue;
+
                 particle.cParticle.particle = particle;
                 try
                 {
@@ -84,6 +86,11 @@ namespace OvermorrowMod.Core.Particles
                     particle.Kill();
                 }
             }
+        }
+
+        public static void DrawParticles(SpriteBatch spriteBatch)
+        {
+            DrawParticles(spriteBatch, ParticleDrawLayer.AboveAll);
         }
 
         public static void RemoveAtIndex(int index)
@@ -100,13 +107,13 @@ namespace OvermorrowMod.Core.Particles
             ActiveParticles = 0;
         }
 
-        public static int CreateParticle(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f)
+        public static int CreateParticle(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll)
         {
-            ParticleInstance particle = CreateParticleDirect(customParticle, position, velocity, color, alpha, scale, rotation);
+            ParticleInstance particle = CreateParticleDirect(customParticle, position, velocity, color, alpha, scale, rotation, drawLayer);
             return particle?.id ?? -1;
         }
 
-        public static ParticleInstance CreateParticleDirect(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f)
+        public static ParticleInstance CreateParticleDirect(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll)
         {
             if (ActiveParticles >= MaxParticleCount || customParticle == null) return null;
 
@@ -122,7 +129,8 @@ namespace OvermorrowMod.Core.Particles
                 scale = scale,
                 rotation = rotation,
                 id = NextIndex,
-                cParticle = customParticle
+                cParticle = customParticle,
+                drawLayer = drawLayer
             };
 
             particle.cParticle.particle = particle;

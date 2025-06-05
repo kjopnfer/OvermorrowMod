@@ -48,13 +48,13 @@ namespace OvermorrowMod.Content.Tiles.Archives
             b = 0f;
         }
 
-        private void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
+        public static void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
         {
             Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
 
             var emberParticle = new Circle(texture, 0f, useSineFade: true);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f, ParticleDrawLayer.BehindProjectiles);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f, ParticleDrawLayer.BehindProjectiles);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

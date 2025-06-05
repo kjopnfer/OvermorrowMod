@@ -14,7 +14,7 @@ using Terraria.ObjectData;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
-    public class WaxCandelabra : ModTile
+    public class BookCandleholder : ModTile
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
 
@@ -47,7 +47,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             g = 0.675f;
             b = 0f;
         }
-
         public override void NearbyEffects(int i, int j, bool closer)
         {
             Tile tile = Framing.GetTileSafely(i, j);
@@ -56,9 +55,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 float scale = 0.1f;
                 Vector2 velocity = -Vector2.UnitY * 0.4f;
 
-                WaxCandleholder.CreateEmberParticle(new Vector2(i + 1, j + 0.5f) * 16, velocity, scale);
-                WaxCandleholder.CreateEmberParticle(new Vector2(i + 0.55f, j + 0.75f) * 16, velocity, scale);
-                WaxCandleholder.CreateEmberParticle(new Vector2(i + 1.5f, j + 0.5f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 1.1f, j + 0.5f) * 16, velocity, scale);
             }
 
             base.NearbyEffects(i, j, closer);

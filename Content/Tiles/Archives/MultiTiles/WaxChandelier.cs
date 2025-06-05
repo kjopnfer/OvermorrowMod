@@ -47,15 +47,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             b = 0f;
         }
 
-        private void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
-
-            var emberParticle = new Circle(texture, 0f, useSineFade: true);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f);
-        }
-
         public override void NearbyEffects(int i, int j, bool closer)
         {
             Tile tile = Framing.GetTileSafely(i, j);
@@ -64,15 +55,15 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 float scale = 0.1f;
                 Vector2 velocity = -Vector2.UnitY * 0.5f;
 
-                CreateEmberParticle(new Vector2(i + 1.15f, j + 2.45f) * 16, velocity, scale);
-                CreateEmberParticle(new Vector2(i + 2.35f, j + 2.25f) * 16, velocity, scale);
-                CreateEmberParticle(new Vector2(i + 3.0f, j + 2.5f) * 16, velocity, scale);
-                CreateEmberParticle(new Vector2(i + 3.45f, j + 2.25f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 1.15f, j + 2.45f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 2.35f, j + 2.25f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 3.0f, j + 2.5f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 3.45f, j + 2.25f) * 16, velocity, scale);
 
-                CreateEmberParticle(new Vector2(i + 4.55f, j + 2.25f) * 16, velocity, scale);
-                CreateEmberParticle(new Vector2(i + 4.9f, j + 2.45f) * 16, velocity, scale);
-                CreateEmberParticle(new Vector2(i + 5.7f, j + 2.2f) * 16, velocity, scale);
-                CreateEmberParticle(new Vector2(i + 6.8f, j + 2.5f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 4.55f, j + 2.25f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 4.9f, j + 2.45f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 5.7f, j + 2.2f) * 16, velocity, scale);
+                WaxCandleholder.CreateEmberParticle(new Vector2(i + 6.8f, j + 2.5f) * 16, velocity, scale);
             }
         }
     }
