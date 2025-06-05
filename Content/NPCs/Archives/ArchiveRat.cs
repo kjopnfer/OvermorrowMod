@@ -71,18 +71,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Stealth = 3
         }
 
-        private float maxSpeed = 1.8f;
-        private int idleTime = 30;
-        private int attackRange = 18 * 10;
         private int stealthDelay = 300;
         public override void OnSpawn(IEntitySource source)
         {
-            maxSpeed = Main.rand.NextFloat(1.8f, 3f);
-            idleTime = Main.rand.Next(24, 36);
-            attackRange = Main.rand.Next(16, 19) * 10;
-            stealthDelay = Main.rand.Next(24, 32) * 10;
+            var stealthDelay = ModUtils.SecondsToTicks(Main.rand.NextFloat(4, 5.5f));
 
-            NPC.GetGlobalNPC<BuffNPC>().StealthDelay = stealthDelay;
+            if (Main.rand.NextBool())
+                NPC.SetStealth(stealthTime: ModUtils.SecondsToTicks(300), stealthDelay);
+            else
+                NPC.GetGlobalNPC<BuffNPC>().StealthDelay = stealthDelay;
         }
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
@@ -252,10 +249,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
             #endregion
 
-            if (!TargetingModule.HasTarget())
+            /*if (!TargetingModule.HasTarget())
             {
                 NPC.RemoveStealth();
-            }
+            }*/
 
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 

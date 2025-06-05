@@ -51,7 +51,6 @@ namespace OvermorrowMod.Content.NPCs
 
             if (OvermorrowNPC.AICounter == 30)
             {
-                Main.NewText(MathHelper.ToDegrees(NPC.AngleTo(OvermorrowNPC.TargetingModule.Target.Center)), Color.Cyan);
                 //NPC.velocity.X = Main.rand.Next(14, 17) * NPC.direction;
 
                 float speed = Main.rand.Next(14, 17);
@@ -59,7 +58,6 @@ namespace OvermorrowMod.Content.NPCs
                     speed = 12;
 
                 NPC.velocity = toTarget * speed;
-                Main.NewText(NPC.velocity);
             }
             else if (OvermorrowNPC.AICounter >= 30)
             {

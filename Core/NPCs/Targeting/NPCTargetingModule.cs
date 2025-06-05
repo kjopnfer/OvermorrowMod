@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
 using Terraria;
@@ -117,7 +118,7 @@ namespace OvermorrowMod.Core.NPCs
                                 }
                             }
 
-                            if (!alreadyExists)
+                            if (!alreadyExists && !npc.IsStealthed())
                             {
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AlertIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
                             }

@@ -30,8 +30,8 @@ namespace OvermorrowMod.Content.NPCs
             OvermorrowNPC.AICounter = 0;
             NPC.velocity.X = 0;
 
-            var stealthDelay = 300;
-            NPC.SetStealth(stealthTime: 18000, stealthDelay);
+            var stealthDelay = ModUtils.SecondsToTicks(5);
+            NPC.SetStealth(stealthTime: ModUtils.SecondsToTicks(300), stealthDelay);
 
             IsFinished = false;
         }

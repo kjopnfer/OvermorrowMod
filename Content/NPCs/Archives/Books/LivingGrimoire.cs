@@ -52,14 +52,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
+        public override bool? CanFallThroughPlatforms() => true;
         public virtual int CastTime => 120;
         //public ref float AIState => ref NPC.ai[0];
         //public ref float AICounter => ref NPC.ai[1];
 
-        protected int distanceFromGround = 180;
-        protected int aggroDelayTime = 60;
-        protected int tileAttackDistance = 24;
-        protected Vector2 targetPosition;
         public override void OnSpawn(IEntitySource source)
         {
             AIStateMachine.SetSubstate<GrimoireHidden>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
@@ -205,38 +202,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
             }
-
-            /*switch ((AICase)AIState)
-            {
-                case AICase.Hidden:
-                    yFrame = 0;
-                    break;
-                case AICase.Fall:
-                    if (NPC.frameCounter++ % 4 == 0)
-                    {
-                        yFrame++;
-                        if (yFrameWing >= 8) yFrameWing = 8;
-                    }
-                    break;
-                case AICase.Fly:
-                    yFrame = 8;
-
-                    if (NPC.frameCounter++ % 3 == 0)
-                    {
-                        yFrameWing++;
-                        if (yFrameWing >= 3) yFrameWing = 0;
-                    }
-                    break;
-                case AICase.Cast:
-                    yFrame = AICounter <= 6 || AICounter >= CastTime - 6 ? 9 : 10;
-
-                    if (NPC.frameCounter++ % 3 == 0)
-                    {
-                        yFrameWing++;
-                        if (yFrameWing >= 3) yFrameWing = 0;
-                    }
-                    break;
-            }*/
         }
 
         int xFrame = 0;

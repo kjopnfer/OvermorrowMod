@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.NPCs
             IsFinished = false;
 
             NPC.velocity.X = 0;
-            NPC.RemoveStealth();
+            //NPC.RemoveStealth();
 
             if (OvermorrowNPC.SpawnPoint != null)
             {
