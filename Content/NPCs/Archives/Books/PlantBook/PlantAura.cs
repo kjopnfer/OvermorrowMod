@@ -125,6 +125,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 plantGas.hasLight = true;
                 plantGas.hasWaveMovement = true;
                 plantGas.hasAdditiveLayers = true;
+                plantGas.gasBehavior = GasBehavior.Shrink;
                 plantGas.lightIntensity = 0.5f;
 
                 if (Main.rand.NextBool(4))

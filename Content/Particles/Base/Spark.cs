@@ -37,6 +37,9 @@ namespace OvermorrowMod.Content.Particles
         /// </summary>
         public Color endColor = Color.Red;
 
+        public float slowModifier = 0.95f;
+        public bool squashHeight = true;
+
         // Anchor system fields
         private Entity anchorEntity = null;
         private Vector2 lastAnchorPosition;
@@ -111,6 +114,7 @@ namespace OvermorrowMod.Content.Particles
                 relativeOffset = particle.position - anchorPos;
                 lastAnchorPosition = anchorPos;
                 hasAnchor = true;
+
             }
         }
 
@@ -166,7 +170,7 @@ namespace OvermorrowMod.Content.Particles
             }
             else
             {
-                particle.velocity *= 0.95f;
+                particle.velocity *= slowModifier;
 
                 particle.alpha = Utils.GetLerpValue(0f, 0.05f, particle.activeTime / maxTime, clamped: true) *
                                Utils.GetLerpValue(1f, 0.9f, particle.activeTime / maxTime, clamped: true);
@@ -194,16 +198,21 @@ namespace OvermorrowMod.Content.Particles
 
             // Calculate scale lerps - different for rotating vs regular sparks
             float heightLerp, widthLerp;
-            if (rotationDirection != 0f)
+
+            if (squashHeight)
             {
-                // RotatingEmber scale behavior
-                heightLerp = MathHelper.Lerp(1f, 0, EasingUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+                heightLerp = MathHelper.Lerp(initialScale, 0, EasingUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
                 widthLerp = MathHelper.Lerp(0.25f, 0, EasingUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
             }
             else
             {
-                // Regular spark scale behavior
                 heightLerp = MathHelper.Lerp(initialScale, 0, EasingUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+                widthLerp = initialScale;
+            }
+
+            if (rotationDirection != 0f)
+            {
+                heightLerp = MathHelper.Lerp(1f, 0, EasingUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
                 widthLerp = MathHelper.Lerp(0.25f, 0, EasingUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
             }
 

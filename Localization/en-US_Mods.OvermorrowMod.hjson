@@ -42,6 +42,17 @@ Buffs: {
 		DisplayName: Phoenix Mark Buff
 		Description: Mods.OvermorrowMod.Buffs.PhoenixMarkBuff.Description
 	}
+
+	WarriorsResolve: {
+		DisplayName: Warriors Resolve
+		Description:
+			'''
+			Gain 10% increased movement speed
+			Your next melee strike gains 100% crit chance
+			The first enemy you kill restore 40 health
+			'Like a story refusing to end too soon, you gain one last surge to keep fighting.'
+			'''
+	}
 }
 
 TooltipEntities: {
@@ -51,6 +62,16 @@ TooltipEntities: {
 		Description: {
 			Line0: + Increases damage per Candle
 			Line1: + Deals strong knockback
+		}
+	}
+
+	WarriorsResolve: {
+		DisplayName: Warrior's Resolve
+
+		Description: {
+			Line0: + Your next Melee hit gains 100% crit chance
+			Line1: + Gain 10% increased movement speed
+			Line2: + Restore 40 health on the next enemy you kill
 		}
 	}
 }
@@ -69,6 +90,11 @@ Keywords: {
 	Awakened: {
 		DisplayName: Awakened
 		Description: Activates bonuses while inside the "dungeon"
+	}
+
+	DeathsDoor: {
+		DisplayName: Death's Door
+		Description: Activates while below 20% health
 	}
 
 	Execute: {
@@ -250,6 +276,18 @@ Items: {
 			The quiet burns with cursed intent,  
 			Its final spark is violence spent.
 			'''
+	}
+
+	WarriorsEpic: {
+		DisplayName: Warriors Epic
+		Tooltip:
+			'''
+			{Keyword:Vigor}: Gain 15% increased Melee damage
+			{Keyword:DeathsDoor}:
+			- Gain <Buff:Warriors Resolve> for 10 seconds
+			- This buff cannot be triggered for 30 seconds after activation
+			'''
+		Flavor: A lifetime of battles bound in parchment and hide
 	}
 }
 

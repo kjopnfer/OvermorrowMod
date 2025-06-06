@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Archives
             for (int i = 0; i < 32; i++)
             {
                 //randomScale = Main.rand.NextFloat(0.15f, 0.35f);
-                randomScale = Main.rand.NextFloat(5f, 8f);
+                randomScale = Main.rand.NextFloat(0.1f, 0.2f);
                 Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(13, 18);
 
                 /*float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));

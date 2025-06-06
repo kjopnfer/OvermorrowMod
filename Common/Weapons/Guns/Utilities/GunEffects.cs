@@ -85,7 +85,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
                     .RotatedByRandom(MathHelper.ToRadians(spreadAngle));
 
                 var smoke = new Gas(smokeTextures, 30f, scaleOverride: Main.rand.NextFloat(0.2f, 0.5f));
-                smoke.growsOverTime = true;
+                smoke.gasBehavior = GasBehavior.Grow;
                 smoke.driftsUpward = true;
                 smoke.rotatesOverTime = true;
                 smoke.scaleRate = 0.005f;

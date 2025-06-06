@@ -13,11 +13,6 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives
 {
-    /// <summary>
-    /// AbsorbTeamDamageAccessory mimics the unique effect of the Paladin's Shield item.
-    /// This example showcases some advanced interplay between accessories, buffs, and ModPlayer hooks.
-    /// Of particular note is how this accessory gives other players a buff and how a player might act on another player being hit.
-    /// </summary>
     [AutoloadEquip(EquipType.Shield)]
     public class CandlelitSanctuary : ModItem, ITooltipEntities
     {

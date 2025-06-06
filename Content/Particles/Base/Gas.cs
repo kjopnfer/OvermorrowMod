@@ -11,6 +11,13 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Particles
 {
+    public enum GasBehavior
+    {
+        Grow,
+        Shrink,
+        None
+    }
+
     public class Gas : CustomParticle
     {
         public override string Texture => AssetDirectory.Empty;
@@ -27,7 +34,7 @@ namespace OvermorrowMod.Content.Particles
         public bool hasLight = false;
         public bool hasWaveMovement = false;
         public bool hasAdditiveLayers = false;
-        public bool growsOverTime = false;
+        public GasBehavior gasBehavior = GasBehavior.Grow;
         public bool rotatesOverTime = false;
         public bool driftsUpward = false;
         public float scaleRate = 0.005f;
@@ -79,15 +86,14 @@ namespace OvermorrowMod.Content.Particles
             }
 
             // Scale behavior
-            if (growsOverTime)
+            switch (gasBehavior)
             {
-                // Smoke grows over time
-                particle.scale += scaleRate;
-            }
-            else
-            {
-                // PlantGas shrinks over time
-                particle.scale = (1f - timeAlive / maxTime) * initialScale;
+                case GasBehavior.Grow:
+                    particle.scale += scaleRate;
+                    break;
+                case GasBehavior.Shrink:
+                    particle.scale = (1f - timeAlive / maxTime) * initialScale;
+                    break;
             }
 
             // Alpha behavior
