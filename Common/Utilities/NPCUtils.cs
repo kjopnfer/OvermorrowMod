@@ -52,6 +52,71 @@ namespace OvermorrowMod.Common.Utilities
             return new Vector2(xDistance, yDistance);
         }
 
+        public static Vector2 MoveCeiling(this NPC npc, Vector2 targetPosition, float moveSpeed, float maxSpeed, float dropSpeed)
+        {
+            // Horizontal movement (same as normal)
+            if (npc.Center.X < targetPosition.X)
+            {
+                npc.velocity.X += moveSpeed;
+                if (npc.velocity.X > maxSpeed)
+                    npc.velocity.X = maxSpeed;
+            }
+            else if (npc.Center.X > targetPosition.X)
+            {
+                npc.velocity.X -= moveSpeed;
+                if (npc.velocity.X < -maxSpeed)
+                    npc.velocity.X = -maxSpeed;
+            }
+
+            // Ceiling movement (reverse vertical logic)
+            if (npc.collideY && npc.velocity.Y < 0)
+            {
+                //Main.NewText(npc.collideX);
+
+
+                // You might want to replace this with a ceiling-specific version of StepUp if needed
+
+                // Instead of jumping up, we "drop down" to avoid obstacles or gaps in the ceiling
+                if (npc.collideX || npc.CheckCeilingGap())
+                {
+                    npc.velocity.Y += dropSpeed; // Drop off the ceiling briefly
+                }
+            }
+
+            // Return horizontal and vertical distance to the target
+            float xDistance = Math.Abs(targetPosition.X - npc.Center.X);
+            float yDistance = Math.Abs(targetPosition.Y - npc.Center.Y);
+
+            return new Vector2(xDistance, yDistance);
+        }
+
+        public static bool CheckCeilingGap(this NPC npc)
+        {
+            Point topLeft = (npc.TopLeft - new Vector2(0, 8)).ToTileCoordinates();
+            Point topRight = (npc.TopRight - new Vector2(0, 8)).ToTileCoordinates();
+
+            // Ensure we check both left and right 2 columns above the NPC
+            int tileXStart = Math.Min(topLeft.X, topRight.X);
+            int tileXEnd = Math.Max(topLeft.X, topRight.X);
+
+            // Check a 2-tile-high area above the NPC
+            for (int x = tileXStart; x <= tileXEnd; x++)
+            {
+                // Require both tiles above to be non-solid for it to count as a gap
+                bool topTile = !WorldGen.SolidTile(x, topLeft.Y - 1);
+                bool secondTile = !WorldGen.SolidTile(x, topLeft.Y - 2);
+
+                if (!topTile || !secondTile)
+                {
+                    // One or both tiles are solid—no gap here
+                    return false;
+                }
+            }
+
+            return true; // All columns above NPC are clear for 2 tiles upward
+        }
+
+
         public static bool CheckGap(this NPC npc)
         {
             Rectangle npcHitbox = npc.getRect();

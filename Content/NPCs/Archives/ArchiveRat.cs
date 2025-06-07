@@ -61,16 +61,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private int afterimageLinger = 0;
 
-        public enum AICase
-        {
-            Decelerate = -1,
-            Pause = -2,
-            Idle = 0,
-            Walk = 1,
-            Attack = 2,
-            Stealth = 3
-        }
-
         private int stealthDelay = 300;
         public override void OnSpawn(IEntitySource source)
         {

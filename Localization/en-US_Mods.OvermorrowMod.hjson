@@ -326,6 +326,7 @@ NPCs: {
 	InkWormBody.DisplayName: Ink Worm Body
 	WaxWalker.DisplayName: Wax Walker
 	ATestStateNPC.DisplayName: A Test State N P C
+	ClockworkSpider.DisplayName: Clockwork Spider
 }
 
 Bestiary: {
