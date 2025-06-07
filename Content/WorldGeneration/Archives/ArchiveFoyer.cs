@@ -176,7 +176,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 50, y + 55, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 43, y + 80, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 69, y + 80, ModContent.TileType<WaxCandleholder>());
-            PlaceAndConfigureDoor(x + 51, y + 80, DoorID.GreenRoomEntrance, DoorID.GreenRoom);
+            PlaceAndConfigureDoor(x + 51, y + 80, DoorID.FoyerGreenRoomDoor, DoorID.GreenBridgeRoomEntrance);
 
             WorldGen.PlaceObject(x + 50, y + 85, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 43, y + 110, ModContent.TileType<WaxCandleholder>());
@@ -191,7 +191,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 800, y + 85, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 793, y + 110, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 819, y + 110, ModContent.TileType<WaxCandleholder>());
-            //PlaceAndConfigureDoor(x + 801, y + 110, DoorID.BlueRoomEntrance, DoorID.BlueRoom);
+            PlaceAndConfigureDoor(x + 801, y + 110, DoorID.FoyerBlueRoomDoor, DoorID.BlueShrimpRoomEntrance);
 
             WorldGen.PlaceObject(x + 287, y + 115, ModContent.TileType<WaxCandleholder>());
 

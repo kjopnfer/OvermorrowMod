@@ -19,7 +19,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
     {
 
         public override int Width => 5000;
-        public override int Height => 1300;
+        public override int Height => 2000;
 
         public static int GetWidth() => new ArchiveSubworld().Width;
         public static int GetHeight() => new ArchiveSubworld().Height;
@@ -95,7 +95,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         public override void Update()
         {
             Main.dayTime = false;
-            Main.time = 0.0;
+            Main.time = 16000.0;
 
             Main.windSpeedCurrent = 0.05f;
 

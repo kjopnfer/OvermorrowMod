@@ -24,10 +24,19 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         {
             GreenRoom,
             RedRoom,
-            GreenRoomEntrance,
+
+            FoyerGreenRoomDoor,
+            GreenBridgeRoomEntrance,
+            GreenBridgeRoomExit,
+
             RedRoomEntrance,
-            BlueRoomEntrance,
+
+            FoyerBlueRoomDoor,
+            BlueShrimpRoomEntrance,
+            BlueShrimpRoomExit,
+
             BlueRoom,
+
             FoyerYellowRoomDoor,
             YellowPitRoomDoorEntrance,
             YellowPitRoomDoorExit,

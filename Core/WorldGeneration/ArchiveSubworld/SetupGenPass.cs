@@ -22,26 +22,6 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 {
     public class SetupGenPass : GenPass
     {
-        /*public enum RoomID
-        {
-            Green,
-            Red,
-            Yellow,
-            Blue
-        }
-
-        public enum DoorID
-        {
-            GreenRoom,
-            RedRoom,
-            GreenRoomEntrance,
-            RedRoomEntrance,
-            YellowRoomEntrance,
-            BlueRoomEntrance,
-            YellowRoom,
-            BlueRoom,
-        }*/
-
         public SetupGenPass(string name, double loadWeight) : base(name, loadWeight) { }
 
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
@@ -60,19 +40,28 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
 
             ArchiveFoyer foyer = new();
-            foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2 - 15, ArchiveSubworld.GetHeight() / 2 - foyer.Height / 2));
+            foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2 - 15, ArchiveSubworld.GetHeight() / 2 - foyer.Height / 2 - 200));
 
-            ArchiveGreenRoom greenRoom = new();
-            greenRoom.Generate(new Vector2(0, 25));
+            //ArchiveGreenRoom greenRoom = new();
+            //greenRoom.Generate(new Vector2(0, 25));
 
-            ArchiveRedRoom redRoom = new();
-            redRoom.Generate(new Vector2(0, greenRoom.Height + 25));
+            //ArchiveRedRoom redRoom = new();
+            //redRoom.Generate(new Vector2(0, greenRoom.Height + 25));
+
+            GreenBridgeRoom bridgeRoom = new();
+            bridgeRoom.Generate(new Vector2(foyer.Position.X - bridgeRoom.Width, foyer.Position.Y - bridgeRoom.Height / 2));
 
             YellowPitRoom pitRoom = new();
             pitRoom.Generate(new Vector2(foyer.Position.X + foyer.Width, foyer.Position.Y -pitRoom.Height / 2));
 
             YellowStairsRoom stairsRoom = new();
             stairsRoom.Generate(new Vector2(pitRoom.Position.X + pitRoom.Width, pitRoom.Position.Y - pitRoom.Height / 2));
+
+            WaxheadRoom waxheadRoom = new();
+            waxheadRoom.Generate(new Vector2(stairsRoom.Position.X + stairsRoom.Width, stairsRoom.Position.Y));
+
+            BlueShrimpRoom shrimpRoom = new();
+            shrimpRoom.Generate(new Vector2(pitRoom.Position.X, pitRoom.Position.Y + pitRoom.Height));
 
             //ArchiveYellowRoom yellowRoom = new();
             //yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
@@ -81,7 +70,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             Main.spawnTileY = (int)foyer.Position.Y + 110;
 
             var surfaceLocation = ArchiveSubworld.GetHeight() / 2 - 300;
-            Main.worldSurface = ArchiveSubworld.GetHeight() / 2 + 300;
+            Main.worldSurface = ArchiveSubworld.GetHeight() - 300;
             Main.rockLayer = ArchiveSubworld.GetHeight();
 
             return;
