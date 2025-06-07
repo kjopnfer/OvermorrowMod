@@ -33,13 +33,15 @@ namespace OvermorrowMod.Content.Skies
 
                 int y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
 
-                for (int k = -1; k <= 1; k++)
+                spriteBatch.Draw(texture, new Rectangle(0, Math.Max(0, (int)((Main.worldSurface * 16.0 - Main.screenPosition.Y - 2400.0) * 0.10000000149011612)), Main.screenWidth, Main.screenHeight), Color.White);
+
+                /*for (int k = -1; k <= 1; k++)
                 {
                     var pos = new Vector2(width - x + (texture.Width * 1.15f) * k, height - y);
                     spriteBatch.Draw(texture, pos + new Vector2(0, 0), null, textureColor, 0f, origin, 1.15f, SpriteEffects.None, 0f);
 
                     //spriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y, Main.screenWidth, Main.screenHeight), Color.Lerp(Color.Black, Color.White, 1f));
-                }
+                }*/
                 //var pos = new Vector2(width - x + texture.Width / 2, height - y);
                 //spriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y, Main.screenWidth, Main.screenHeight), Color.White);
             }

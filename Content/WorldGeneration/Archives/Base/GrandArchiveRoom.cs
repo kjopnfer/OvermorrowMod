@@ -29,8 +29,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             BlueRoomEntrance,
             BlueRoom,
             FoyerYellowRoomDoor,
-            YellowRoomDoor,
-            YellowPitRoomDoor
+            YellowPitRoomDoorEntrance,
+            YellowPitRoomDoorExit,
+            YellowStairsRoomEntrance,
+            YellowStairsRoomExit,
+            WaxheadRoomEntrance,
+
         }
 
         protected void PlaceBookPile(int x, int y, int stackSize, bool withCandle = false)
@@ -187,6 +191,13 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="doorID">The ID of this door.</param>
+        /// <param name="pairedDoor">The ID of the other door that this will teleport to.</param>
         protected void PlaceAndConfigureDoor(int x, int y, DoorID doorID, DoorID pairedDoor)
         {
             // Place the door and get the placed entity

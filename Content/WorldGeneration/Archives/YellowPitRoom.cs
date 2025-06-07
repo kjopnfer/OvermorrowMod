@@ -66,7 +66,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
         public override void PostGenerate(int x, int y)
         {
-            PlaceAndConfigureDoor(x + 801, y + 80, DoorID.YellowPitRoomDoor, DoorID.FoyerYellowRoomDoor);
+            PlaceAndConfigureDoor(x + 73, y + 262, DoorID.YellowPitRoomDoorEntrance, DoorID.FoyerYellowRoomDoor);
+
+            PlaceAndConfigureDoor(x + 531, y + 82, DoorID.YellowPitRoomDoorExit, DoorID.YellowStairsRoomEntrance);
         }
     }
 }

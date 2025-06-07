@@ -49,16 +49,18 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             progress.Message = "Generating tiles";
             //Main.spawnTileX = 1000;
             //Main.spawnTileY = 110;
-            
+
             /*Main.spawnTileX = 1000;
             Main.spawnTileY = 140;*/
 
+            //Main.worldSurface = ArchiveSubworld.GetHeight() / 2;
+            //Main.rockLayer = ArchiveSubworld.GetHeight() / 2;
+
             // Move the backgrounds somewhere else
-            Main.worldSurface = ArchiveSubworld.GetHeight();
-            Main.rockLayer = ArchiveSubworld.GetHeight();
+
 
             ArchiveFoyer foyer = new();
-            foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2 - 15, 25));
+            foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2 - 15, ArchiveSubworld.GetHeight() / 2 - foyer.Height / 2));
 
             ArchiveGreenRoom greenRoom = new();
             greenRoom.Generate(new Vector2(0, 25));
@@ -66,11 +68,21 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             ArchiveRedRoom redRoom = new();
             redRoom.Generate(new Vector2(0, greenRoom.Height + 25));
 
-            ArchiveYellowRoom yellowRoom = new();
-            yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
+            YellowPitRoom pitRoom = new();
+            pitRoom.Generate(new Vector2(foyer.Position.X + foyer.Width, foyer.Position.Y -pitRoom.Height / 2));
+
+            YellowStairsRoom stairsRoom = new();
+            stairsRoom.Generate(new Vector2(pitRoom.Position.X + pitRoom.Width, pitRoom.Position.Y - pitRoom.Height / 2));
+
+            //ArchiveYellowRoom yellowRoom = new();
+            //yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
 
             Main.spawnTileX = (int)foyer.Position.X + 432;
             Main.spawnTileY = (int)foyer.Position.Y + 110;
+
+            var surfaceLocation = ArchiveSubworld.GetHeight() / 2 - 300;
+            Main.worldSurface = ArchiveSubworld.GetHeight() / 2 + 300;
+            Main.rockLayer = ArchiveSubworld.GetHeight();
 
             return;
 
