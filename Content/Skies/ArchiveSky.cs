@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.Skies
 
                 int y = (int)(Main.screenPosition.Y * 0.5f * ParallaxMultiplier);
 
-                spriteBatch.Draw(texture, new Rectangle(0, Math.Max(0, (int)((Main.worldSurface * 16.0 - Main.screenPosition.Y - 12000.0) * 0.10000000149011612)), Main.screenWidth, Main.screenHeight), Color.White);
+                spriteBatch.Draw(texture, new Rectangle(0, Math.Max(0, (int)((Main.worldSurface * 16.0 - Main.screenPosition.Y - 25000.0) * 0.10000000149011612)), Main.screenWidth, Main.screenHeight), Color.White);
 
                 /*for (int k = -1; k <= 1; k++)
                 {

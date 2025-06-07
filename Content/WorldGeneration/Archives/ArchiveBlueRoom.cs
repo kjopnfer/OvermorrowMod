@@ -9,12 +9,12 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.WorldGeneration.Archives
 {
-    public class BlueShrimpRoom : GrandArchiveRoom
+    public class ArchiveBlueRoom : GrandArchiveRoom
     {
-        protected override Texture2D Tiles => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "GrandArchives/BlueShrimpRoomTiles", AssetRequestMode.ImmediateLoad).Value;
-        protected override Texture2D Walls => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "GrandArchives/BlueShrimpRoomWalls", AssetRequestMode.ImmediateLoad).Value;
+        protected override Texture2D Tiles => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "GrandArchives/ArchiveBlueRoomTiles", AssetRequestMode.ImmediateLoad).Value;
+        protected override Texture2D Walls => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "GrandArchives/ArchiveBlueRoomWalls", AssetRequestMode.ImmediateLoad).Value;
         protected override Texture2D Slopes => null;
-        protected override Texture2D Objects => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "GrandArchives/BlueShrimpRoomObjects", AssetRequestMode.ImmediateLoad).Value;
+        protected override Texture2D Objects => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "GrandArchives/ArchiveBlueRoomObjects", AssetRequestMode.ImmediateLoad).Value;
         protected override Texture2D Liquids => null;
 
         protected override Dictionary<Color, int> TileMapping => new()
@@ -34,7 +34,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             [new Color(54, 36, 11)] = ModContent.WallType<ArchiveBookWallFrame>(),
             [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>(),
             [new Color(100, 61, 41)] = ModContent.WallType<ArchiveWoodWall>(),
-            [new Color(107, 50, 45)] = ModContent.WallType<ArchiveWoodWallRed>(),
+            [new Color(107, 50, 45)] = ModContent.WallType<ArchiveWoodWallBlue>(),
             [new Color(67, 84, 50)] = ModContent.WallType<ArchiveWoodWallGreen>(),
             [new Color(70, 67, 117)] = ModContent.WallType<ArchiveWoodWallBlue>(),
             [new Color(121, 80, 22)] = ModContent.WallType<ArchiveWoodWallYellow>(),
@@ -66,12 +66,62 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
         public override void PostGenerate(int x, int y)
         {
-            PlaceAndConfigureDoor(x + 167, y + 81, DoorID.BlueShrimpRoomEntrance, DoorID.FoyerBlueRoomDoor);
+            #region Bottom Left Room
+            WorldGen.PlaceObject(x + 60, y + 81, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 79, y + 106, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 53, y + 106, ModContent.TileType<WaxCandleholder>());
 
-            PlaceAndConfigureDoor(x + 662, y + 275, DoorID.BlueShrimpRoomExit, DoorID.BlueRoom);
+            PlaceAndConfigureDoor(x + 61, y + 106, DoorID.BlueRoom, DoorID.BlueShrimpRoomExit);
 
-            // This is Room 12
-            //PlaceAndConfigureDoor(x + 121, y + 313, DoorID.BlueShrimpRoomExit, DoorID.WaxheadRoomEntrance);
+            PlaceBookshelfArch(x + 138, y + 56);
+            PlaceBookshelfArch(x + 164, y + 56);
+            PlaceBookshelfArch(x + 190, y + 56);
+
+            PlaceBookshelfArch(x + 138, y + 86);
+            PlaceBookshelfArch(x + 164, y + 86);
+            PlaceBookshelfArch(x + 190, y + 86);
+
+            #region Bridge
+            WorldGen.PlaceObject(x + 218, y + 56, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(x + 255, y + 56, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 255, y + 86, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(x + 218, y + 56, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 218, y + 86, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(x + 215, y + 111, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 218, y + 81, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 232, y + 111, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(x + 252, y + 81, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 252, y + 111, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(x + 235, y + 82, ModContent.TileType<ArchiveBridge>());
+
+            #endregion
+
+            PlaceBookshelfArch(x + 305, y + 56);
+            PlaceBookshelfArch(x + 331, y + 56);
+            PlaceBookshelfArch(x + 357, y + 56);
+
+            PlaceBookshelfArch(x + 305, y + 86);
+            PlaceBookshelfArch(x + 331, y + 86);
+            PlaceBookshelfArch(x + 357, y + 86);
+
+            PlaceBookshelfArch(x + 472, y + 51);
+            PlaceBookshelfArch(x + 498, y + 51);
+            PlaceBookshelfArch(x + 524, y + 51);
+
+            PlaceBookshelfArch(x + 472, y + 81);
+            PlaceBookshelfArch(x + 498, y + 81);
+            PlaceBookshelfArch(x + 524, y + 81);
+
+            PlaceLoungeArea(x + 55, y + 76, RoomID.Blue);
+            PlaceCozyArea(x + 428, y + 106, RoomID.Blue);
+            PlaceLoungeArea(x + 430, y + 76, RoomID.Blue);
+
+            #endregion
         }
     }
 }

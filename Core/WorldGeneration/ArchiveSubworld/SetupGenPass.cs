@@ -63,6 +63,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             BlueShrimpRoom shrimpRoom = new();
             shrimpRoom.Generate(new Vector2(pitRoom.Position.X, pitRoom.Position.Y + pitRoom.Height));
 
+            ArchiveBlueRoom blueRoom = new();
+            blueRoom.Generate(new Vector2(shrimpRoom.Position.X + shrimpRoom.Width, shrimpRoom.Position.Y + shrimpRoom.Height - blueRoom.Height));
             //ArchiveYellowRoom yellowRoom = new();
             //yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
 
