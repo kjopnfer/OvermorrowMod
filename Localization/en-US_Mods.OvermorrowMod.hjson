@@ -70,7 +70,7 @@ TooltipEntities: {
 
 		Description: {
 			Line0: + Your next Melee hit gains 100% crit chance
-			Line1: + Gain 10% increased movement speed
+			Line1: + Gain 25% increased movement speed
 			Line2: + Restore 40 health on the next enemy you kill
 		}
 	}

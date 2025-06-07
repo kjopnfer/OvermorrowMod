@@ -283,16 +283,24 @@ namespace OvermorrowMod.Core.Items
 
         public static void DrawBuffTooltip(SpriteBatch spriteBatch, BuffTooltip buffTooltip, Vector2 containerPosition, float height)
         {
-            // Pre-calculate all text sizes
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.Title, new Vector2(1.25f));
             var subtitleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.Type.ToString(), Vector2.One);
 
-            // Calculate description height - now works with string array
+            // Calculate description height - now works with string array and text wrapping
             float descriptionHeight = 0;
             foreach (string descriptionLine in buffTooltip.Description)
             {
-                descriptionHeight += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
+                // Calculate wrapped text height
+                var wrappedSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine,
+                    Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40); // -40 for padding
+                descriptionHeight += wrappedSize.Y;
             }
+
+            // Calculate buff stats height
+            string durationText = buffTooltip.BuffTime + " seconds";
+            var durationSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, durationText, Vector2.One * 1.25f);
+            var timeTypeSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "Time", Vector2.One * 0.8f);
+            float buffStatsHeight = Math.Max(durationSize.Y, timeTypeSize.Y);
 
             // Calculate ACTUAL total height of all elements
             float actualTotalHeight = 0;
@@ -301,23 +309,26 @@ namespace OvermorrowMod.Core.Items
             float iconTitleHeight = Math.Max(buffTooltip.ObjectIcon.Height, titleSize.Y + 16); // +16 for positioning offset
             actualTotalHeight += iconTitleHeight;
 
-            // 2. Subtitle (buff/debuff type)
-            actualTotalHeight += subtitleSize.Y;
-            actualTotalHeight += 8; // Padding after subtitle
-
-            // 3. First divider
+            // 2. First divider
             actualTotalHeight += 2; // Divider height
             actualTotalHeight += 16; // Padding after divider
+
+            // 3. Subtitle (buff/debuff type)
+            actualTotalHeight += subtitleSize.Y;
+            actualTotalHeight += 8; // Padding after subtitle
 
             // 4. Description text
             actualTotalHeight += descriptionHeight;
             actualTotalHeight += 16; // Padding after description
 
-            // 5. Duration/stats section (if applicable)
-            // Add height calculation for buff stats here if needed
-            // actualTotalHeight += buffStatsHeight;
+            // 5. Second divider
+            actualTotalHeight += 2; // Divider height
+            actualTotalHeight += 8; // Padding after divider
 
-            // 6. Bottom padding
+            // 6. Buff stats section
+            actualTotalHeight += buffStatsHeight;
+
+            // 7. Bottom padding
             actualTotalHeight += TooltipConfiguration.BOTTOM_PADDING;
 
             // Adjust for screen overflow
@@ -327,10 +338,10 @@ namespace OvermorrowMod.Core.Items
             Color titleColor = buffTooltip.Type == BuffTooltipType.Buff ?
                 TooltipConfiguration.BuffColor : TooltipConfiguration.DebuffColor;
 
-            // Draw background with the calculated height
+            // Draw background with the ACTUAL calculated height
             Utils.DrawInvBG(spriteBatch,
                 new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10,
-                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)actualTotalHeight + 16),
+                (int)TooltipConfiguration.CONTAINER_WIDTH, (int)actualTotalHeight),
                 TooltipConfiguration.PrimaryBackgroundColor * 0.925f);
 
             // Draw icon and title with appropriate color
@@ -350,18 +361,20 @@ namespace OvermorrowMod.Core.Items
 
             // Calculate where the description starts (after subtitle)
             var subtitleHeight = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.Type.ToString(), Vector2.One).Y;
-            var descriptionStartY = titleHeight + subtitleHeight + 16;
+            var descriptionStartY = titleHeight + subtitleHeight + 24; // 16 for divider padding + 8 for subtitle padding
 
-            // Draw description - handle string array
+            // Draw description - handle string array with text wrapping
             float currentDescriptionY = descriptionStartY;
             foreach (string descriptionLine in buffTooltip.Description)
             {
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, descriptionLine,
                     new Vector2(containerPosition.X, containerPosition.Y + currentDescriptionY), Color.White, 0f, Vector2.Zero,
-                    Vector2.One * 0.95f);
+                    Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40); // Add max width parameter
 
-                // Move to next line
-                currentDescriptionY += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
+                // Move to next line using wrapped text height
+                var wrappedSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine,
+                    Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40);
+                currentDescriptionY += wrappedSize.Y;
             }
 
             DrawDivider(spriteBatch, containerPosition, (int)currentDescriptionY);
@@ -626,6 +639,7 @@ namespace OvermorrowMod.Core.Items
         public static string ParseTooltipText(string text)
         {
             string convertedText = text;
+
             foreach (var highlight in TextHighlights)
             {
                 string pattern = $@"({{{highlight.Key}:.*}})";
@@ -636,6 +650,7 @@ namespace OvermorrowMod.Core.Items
                     convertedText = convertedText.Replace(match.Value, newValue);
                 }
             }
+
             return convertedText.Replace("}", "]");
         }
 
@@ -652,6 +667,12 @@ namespace OvermorrowMod.Core.Items
                     convertedText = convertedText.Replace(match.Value, newValue);
                 }
             }
+
+            if (convertedText.Contains("DeathsDoor"))
+            {
+                convertedText = convertedText.Replace("DeathsDoor", "Deaths Door");
+            }
+
             return convertedText.Replace(">", "}]");
         }
 

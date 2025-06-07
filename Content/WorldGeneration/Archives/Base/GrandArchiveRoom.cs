@@ -41,7 +41,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             }
 
             if (withCandle)
-                WorldGen.PlaceObject(x, y - stackSize, ModContent.TileType<FloorCandles>(), true, Main.rand.Next(0, 6));
+                WorldGen.PlaceObject(x, y - stackSize, ModContent.TileType<BookCandleholder>(), true);
         }
 
         protected void PlaceLoungeArea(int x, int y, RoomID room)

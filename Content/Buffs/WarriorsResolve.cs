@@ -14,7 +14,10 @@ namespace OvermorrowMod.Content.Buffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.moveSpeed *= 1.10f; // 10% movement speed increase
+            if (player.HasBuff<WarriorsResolve>())
+            {
+                player.moveSpeed *= 1.25f; // 25% movement speed increase
+            }
         }
     }
 }
