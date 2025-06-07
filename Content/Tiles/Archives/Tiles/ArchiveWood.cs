@@ -17,8 +17,19 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
+            Main.tileLighted[Type] = true;
 
             AddMapEntry(new Color(74, 47, 33));
+        }
+
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            // IMPORTANT:
+            // There is a strange bug with DrawBlack which somehow makes the tiles invisible when there is little light
+            // This emits a minuscule amount of light to prevent these tiles from disappearing
+            r = 0.1f;
+            r = 0.1f;
+            base.ModifyLight(i, j, ref r, ref g, ref b);
         }
 
         bool isUpPanel(Tile tile)

@@ -28,5 +28,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             AddMapEntry(new Color(105, 99, 94));
         }
+
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            // IMPORTANT:
+            // There is a strange bug with DrawBlack which somehow makes the tiles invisible when there is little light
+            // This emits a minuscule amount of light to prevent these tiles from disappearing
+            r = 0.1f;
+            base.ModifyLight(i, j, ref r, ref g, ref b);
+        }
     }
 }
