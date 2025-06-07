@@ -49,8 +49,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             progress.Message = "Generating tiles";
             //Main.spawnTileX = 1000;
             //Main.spawnTileY = 110;
-            Main.spawnTileX = 1000;
-            Main.spawnTileY = 140;
+            
+            /*Main.spawnTileX = 1000;
+            Main.spawnTileY = 140;*/
 
             // Move the backgrounds somewhere else
             Main.worldSurface = ArchiveSubworld.GetHeight();
@@ -67,6 +68,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             ArchiveYellowRoom yellowRoom = new();
             yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
+
+            Main.spawnTileX = (int)foyer.Position.X + 432;
+            Main.spawnTileY = (int)foyer.Position.Y + 110;
+
             return;
 
 

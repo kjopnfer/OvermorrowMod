@@ -1,4 +1,5 @@
 
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
@@ -25,10 +26,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             RedRoom,
             GreenRoomEntrance,
             RedRoomEntrance,
-            YellowRoomEntrance,
             BlueRoomEntrance,
-            YellowRoom,
             BlueRoom,
+            FoyerYellowRoomDoor,
+            YellowRoomDoor,
+            YellowPitRoomDoor
         }
 
         protected void PlaceBookPile(int x, int y, int stackSize, bool withCandle = false)

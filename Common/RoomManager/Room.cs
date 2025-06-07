@@ -37,8 +37,14 @@ namespace OvermorrowMod.Common.RoomManager
         /// </summary>
         public virtual void PostGenerate(int x, int y) { }
 
+        /// <summary>
+        /// Position is not assigned until Generate has been called.
+        /// </summary>
+        public Vector2 Position { get; private set; }
         public void Generate(Vector2 position)
         {
+            Position = position;
+
             SystemUtils.InvokeOnMainThread(() =>
             {
                 TexGen gen = TexGen.GetTexGenerator(Tiles, TileMapping, Walls, WallMapping, Liquids, Slopes, Objects, ObjectMapping);

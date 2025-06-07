@@ -186,7 +186,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 800, y + 55, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 793, y + 80, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 819, y + 80, ModContent.TileType<WaxCandleholder>());
-            PlaceAndConfigureDoor(x + 801, y + 80, DoorID.YellowRoomEntrance, DoorID.YellowRoom);
+            PlaceAndConfigureDoor(x + 801, y + 80, DoorID.FoyerYellowRoomDoor, DoorID.YellowPitRoomDoor);
 
             WorldGen.PlaceObject(x + 800, y + 85, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 793, y + 110, ModContent.TileType<WaxCandleholder>());
