@@ -26,6 +26,7 @@ namespace OvermorrowMod.Core.Globals
 
         public bool CandlelitSanctuary = false;
         public bool WarriorsEpic = false;
+        public bool WhitePage = false;
 
         public int WarriorsEpicCooldown { get; private set; } = 0;
         public bool WarriorsResolveTriggered { get; private set; } = false;
@@ -42,6 +43,7 @@ namespace OvermorrowMod.Core.Globals
 
             CandlelitSanctuary = false;
             WarriorsEpic = false;
+            WhitePage = false;
         }
 
         public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)

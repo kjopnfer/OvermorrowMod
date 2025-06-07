@@ -191,15 +191,17 @@ namespace OvermorrowMod.Core.Items
 
         public static void DrawProjectileTooltip(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
         {
-            // Pre-calculate all text sizes
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Title, new Vector2(1.25f));
             var subtitleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), Vector2.One);
 
-            // Calculate description height - now works with string array
+            // Calculate description height - now works with string array and text wrapping
             float descriptionHeight = 0;
             foreach (string descriptionLine in projectileTooltip.Description)
             {
-                descriptionHeight += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
+                // Calculate wrapped text height
+                var wrappedSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine,
+                    Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40); // -40 for padding
+                descriptionHeight += wrappedSize.Y;
             }
 
             // Calculate projectile stats height
@@ -265,16 +267,18 @@ namespace OvermorrowMod.Core.Items
             var subtitleHeight = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), Vector2.One).Y;
             var descriptionStartY = titleHeight + subtitleHeight + 24; // 16 for divider padding + 8 for subtitle padding
 
-            // Draw description - handle string array
+            // Draw description - handle string array with text wrapping
             float currentDescriptionY = descriptionStartY;
             foreach (string descriptionLine in projectileTooltip.Description)
             {
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, descriptionLine,
                     new Vector2(containerPosition.X, containerPosition.Y + currentDescriptionY), Color.White, 0f, Vector2.Zero,
-                    Vector2.One * 0.95f);
+                    Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40); // Add max width parameter
 
-                // Move to next line
-                currentDescriptionY += ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine, Vector2.One * 0.95f).Y;
+                // Move to next line using wrapped text height
+                var wrappedSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, descriptionLine,
+                    Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40);
+                currentDescriptionY += wrappedSize.Y;
             }
 
             // Draw damage value

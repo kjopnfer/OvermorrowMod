@@ -65,6 +65,17 @@ TooltipEntities: {
 		}
 	}
 
+	StellarCorona: {
+		DisplayName: Stellar Corona
+
+		Description: {
+			Line0: + On spawn, this projectile is anchored ontop of the target
+			Line1: + Deals damage to all enemies within the circle, including the target
+			Line2: + Releases bursts of plasma while active
+			Line3: - Only one can be active per Player
+		}
+	}
+
 	WarriorsResolve: {
 		DisplayName: Warrior's Resolve
 
@@ -289,6 +300,12 @@ Items: {
 			'''
 		Flavor: A lifetime of battles bound in parchment and hide
 	}
+
+	WhitePage: {
+		DisplayName: The White Page
+		Tooltip: "{Keyword:Strike}: Magic hits have a 20% chance to create a <Projectile:Stellar Corona>"
+		Flavor: You feel compelled to read this
+	}
 }
 
 NPCs: {
@@ -347,4 +364,6 @@ Projectiles: {
 	UndertakerHeld.DisplayName: Undertaker Held
 	CandleBurst.DisplayName: Candle Burst
 	CandleGain.DisplayName: Candle Gain
+	StellarCorona.DisplayName: Stellar Corona
+	StellarProminence.DisplayName: Stellar Prominence
 }
