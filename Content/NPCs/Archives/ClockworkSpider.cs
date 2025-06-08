@@ -7,17 +7,10 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using Terraria.ID;
 using Terraria.DataStructures;
-using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Content.Biomes;
-using Terraria.GameContent.ItemDropRules;
-using System.Linq;
-using OvermorrowMod.Common.CustomCollision;
 using System.Collections.Generic;
 using OvermorrowMod.Core.NPCs;
-using System;
-using OvermorrowMod.Content.Items.Archives.Accessories;
-using static Terraria.GameContent.PlayerEyeHelper;
-using System.Xml.Linq;
+
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -26,7 +19,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            return false;
+            State currentState = AIStateMachine.GetCurrentState();
+
+            return currentState is AttackState;
         }
 
         public override void SetStaticDefaults()
@@ -50,7 +45,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.lifeMax = 200;
             NPC.defense = 18;
             NPC.damage = 23;
-            NPC.knockBackResist = 0.5f;
+            NPC.knockBackResist = 0.2f;
+            NPCID.Sets.ImmuneToAllBuffs[Type] = true;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
@@ -80,18 +76,39 @@ namespace OvermorrowMod.Content.NPCs.Archives
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
-            new GroundDashAttack(this),
+            new ClockworkSpiderSwap(this),
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
             new CeilingWalk(this),
+            new MeleeWalk(this),
         };
 
+
+        public override bool? CanFallThroughPlatforms()
+        {
+            return true;
+        }
+
+        public bool IsOnCeiling => NPC.noGravity;
         public override void AI()
         {
             State currentState = AIStateMachine.GetCurrentSubstate();
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 
+            NPC.knockBackResist = 0.2f;
+            if (currentState is ClockworkSpiderSwap)
+            {
+                NPC.knockBackResist = 0f;
+
+                if (AICounter > 30)
+                    NPC.rotation += 0.6f;
+            }
+            else
+            {
+                NPC.rotation = 0;
+            }
+            
         }
 
         private void SetFrame()
@@ -117,6 +134,33 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     if (NPC.frameCounter++ % 6 == 0)
                     {
                         yFrame = (yFrame + 1) % 8;
+                    }
+                    break;
+                case AttackState attackState:
+                    switch (attackState.currentSubstate)
+                    {
+                        case ClockworkSpiderSwap:
+                            //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter);
+
+                            xFrame = 2;
+                            if (AICounter < 30)
+                            {
+                                if (yFrame < 4)
+                                {
+                                    NPC.frameCounter++;
+                                }
+
+                                if (NPC.frameCounter++ % 6 == 0)
+                                    yFrame++;
+
+                                // Don't know why this keeps going
+                                if (yFrame > 4) yFrame = 4;
+                            }
+                            else
+                            {
+                                yFrame = 4;
+                            }
+                            break;
                     }
                     break;
                 default:
@@ -155,7 +199,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             State currentState = AIStateMachine.GetCurrentSubstate();
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Vector2 drawOffset = new Vector2(0, -2);
-            if (currentState is CeilingWalk)
+
+            var swapCondition = currentState is ClockworkSpiderSwap && NPC.noGravity;
+            if (currentState is CeilingWalk || swapCondition)
             {
                 spriteEffects |= SpriteEffects.FlipVertically; // Add vertical flip
                 drawOffset = new Vector2(0, 2);

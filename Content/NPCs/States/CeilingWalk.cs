@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using Terraria;
 
@@ -9,9 +10,19 @@ namespace OvermorrowMod.Content.NPCs
 {
     public class CeilingWalk : BaseMovementState
     {
-        public override int Weight => 1;
+        public override int Weight => 2;
         public override bool CanExit => true;
         public CeilingWalk(OvermorrowNPC npc) : base(npc) { }
+
+        public override bool CanExecute()
+        {
+            if (OvermorrowNPC is ClockworkSpider spider)
+            {
+                return NPC.noGravity;
+            }
+
+            return base.CanExecute();
+        }
 
         public override void Enter()
         {
@@ -20,7 +31,6 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit()
         {
-            NPC.noGravity = false;
         }
 
         public override void Update()
@@ -50,14 +60,11 @@ namespace OvermorrowMod.Content.NPCs
                         solidTileCount++;
                         if (solidTileCount >= requiredHeight)
                         {
-                            Main.NewText("beeg wall");
                             dropSpeed = 3.5f;
                             break;
                         }
                     }
                 }
-
-                Main.NewText(solidTileCount);
                 solidTileCount = 0;
             }
 
