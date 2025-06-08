@@ -106,7 +106,7 @@ namespace OvermorrowMod.Core.Globals
 
             if (WarriorsEpicCooldown > 0) WarriorsEpicCooldown--;
 
-            if (CandleCharges < 3)
+            if (CandlelitSanctuary && CandleCharges < 3)
             {
                 CandleCounter++;
                 if (CandleCounter % ModUtils.SecondsToTicks(15) == 0)
