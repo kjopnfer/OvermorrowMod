@@ -76,7 +76,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
-            new ClockworkSpiderSwap(this),
+            new ClockworkSpiderPinball(this),
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
@@ -97,11 +97,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 
             NPC.knockBackResist = 0.2f;
-            if (currentState is ClockworkSpiderSwap)
+            if (currentState is ClockworkSpiderSwap || currentState is ClockworkSpiderPinball)
             {
                 NPC.knockBackResist = 0f;
 
-                if (AICounter > 30)
+                if (AICounter > 10)
                     NPC.rotation += 0.6f;
             }
             else
@@ -139,24 +139,37 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AttackState attackState:
                     switch (attackState.currentSubstate)
                     {
+                        case ClockworkSpiderPinball:
                         case ClockworkSpiderSwap:
-                            //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter);
-
+                            //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter + " AI " + AICounter);
                             xFrame = 2;
-                            if (AICounter < 30)
+
+                            int delay = attackState.currentSubstate is ClockworkSpiderSwap ? 30 : 0;
+                            if (AICounter < delay)
+                            {
+                                yFrame = 0;
+                            }
+
+                            if (AICounter > delay)
                             {
                                 if (yFrame < 4)
                                 {
                                     NPC.frameCounter++;
                                 }
 
-                                if (NPC.frameCounter++ % 6 == 0)
+                                if (NPC.frameCounter % 6 == 0)
+                                {
                                     yFrame++;
+                                }
 
                                 // Don't know why this keeps going
-                                if (yFrame > 4) yFrame = 4;
+                                if (yFrame > 4)
+                                {
+                                    yFrame = 4;
+                                }
                             }
-                            else
+                            
+                            if (AICounter > delay + 40)
                             {
                                 yFrame = 4;
                             }
@@ -198,13 +211,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             State currentState = AIStateMachine.GetCurrentSubstate();
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Vector2 drawOffset = new Vector2(0, -2);
+            Vector2 drawOffset = new Vector2(0, -4);
 
             var swapCondition = currentState is ClockworkSpiderSwap && NPC.noGravity;
             if (currentState is CeilingWalk || swapCondition)
             {
                 spriteEffects |= SpriteEffects.FlipVertically; // Add vertical flip
-                drawOffset = new Vector2(0, 2);
+                drawOffset = new Vector2(0, 4);
             }
 
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);

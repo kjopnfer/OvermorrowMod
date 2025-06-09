@@ -31,11 +31,23 @@ namespace OvermorrowMod.Content.NPCs
             var target = OvermorrowNPC.TargetingModule.Target;
             float xDistance = Math.Abs(NPC.Center.X - target.Center.X);
 
-            return xDistance <= ModUtils.TilesToPixels(10) && NPC.collideY;
+            if (xDistance > ModUtils.TilesToPixels(10) || !NPC.collideY)
+                return false;
+
+            // Check for at least 4 tiles of clearance
+            Vector2 origin = NPC.Center;
+            Vector2 direction = NPC.noGravity ? Vector2.UnitY : -Vector2.UnitY;
+            float castLength = ModUtils.TilesToPixels(4);
+
+            float clearDistance = RayTracing.CastTileCollisionLength(origin, direction, castLength);
+
+            return clearDistance >= castLength;
         }
 
         public override void Enter()
         {
+            NPC.velocity.X = 0;
+
             OvermorrowNPC.AICounter = 0;
             IsFinished = false;
         }
@@ -49,20 +61,22 @@ namespace OvermorrowMod.Content.NPCs
         int numBounces = 0;
         public override void Update()
         {
-            NPC.velocity.X = 0;
-
             ClockworkSpider spider = NPC.ModNPC as ClockworkSpider;
 
             if (NPC.noGravity)
             {
-                NPC.velocity.Y -= 0.08f;
+                NPC.velocity.Y -= 0.12f;
+            } else
+            {
+                NPC.velocity.Y += 0.02f;
             }
 
             OvermorrowNPC.AICounter++;
 
             if (OvermorrowNPC.AICounter == 30)
             {
-                Main.NewText("do first bounce");
+                //Main.NewText("do first bounce");
+                NPC.velocity.X = 1.5f * NPC.direction;
                 if (NPC.noGravity)
                 {
                     NPC.velocity.Y = 3;
@@ -75,7 +89,7 @@ namespace OvermorrowMod.Content.NPCs
 
             if (OvermorrowNPC.AICounter > 30 && NPC.collideY && numBounces == 0)
             {
-                Main.NewText("I DID THE FIRS BOUNCEdo second bounce");
+                //Main.NewText("I DID THE FIRS BOUNCEdo second bounce");
                 numBounces++;
 
                 if (NPC.noGravity)
@@ -84,25 +98,23 @@ namespace OvermorrowMod.Content.NPCs
                     // why did they feel the need to cap this
                     //NPC.velocity.Y = 99999999;
                     NPC.velocity.Y = 8; // its always 10 its always 10?? huh??
-                    Main.NewText("HOLY SHIT FREDDIE MERCURY MAMA OOOOOOO", Color.Red);
+                    //Main.NewText("HOLY SHIT FREDDIE MERCURY MAMA OOOOOOO", Color.Red);
                     NPC.noGravity = false;
                 }
                 else
                 {
-                    Main.NewText("actiave tno at " + numBounces);
+                    //Main.NewText("actiave tno at " + numBounces);
                     NPC.velocity.Y = -20;
                     NPC.noGravity = true;
                 }
             }
-
-            if (!NPC.noGravity) Main.NewText(NPC.velocity.Y);
 
             var DUMBASSDELAY = !NPC.noGravity ? 110 : 40;
             if (OvermorrowNPC.AICounter > DUMBASSDELAY && NPC.collideY && numBounces == 1)
             {
                 if (NPC.noGravity)
                 {
-                    Main.NewText("???");
+                    //Main.NewText("???");
                     NPC.velocity.Y = -8;
                     numBounces++;
 
@@ -110,7 +122,7 @@ namespace OvermorrowMod.Content.NPCs
                 }
                 else
                 {
-                    Main.NewText("should bounce " + OvermorrowNPC.AICounter);
+                    //Main.NewText("should bounce " + OvermorrowNPC.AICounter);
                     NPC.velocity.Y = -8;
                     //NPC.velocity.Y *= -1;
                     numBounces++;
@@ -120,7 +132,7 @@ namespace OvermorrowMod.Content.NPCs
             if (numBounces == 2 && NPC.collideY && OvermorrowNPC.AICounter > 70)
             {
                 
-                Main.NewText("do third again " + OvermorrowNPC.AICounter + " no gravity is: " + NPC.noGravity);
+                //Main.NewText("do third again " + OvermorrowNPC.AICounter + " no gravity is: " + NPC.noGravity);
                 if (NPC.noGravity)
                 {
                     NPC.velocity.Y = 2;
@@ -134,7 +146,7 @@ namespace OvermorrowMod.Content.NPCs
 
             if (numBounces >= 3 && NPC.collideY)
             {
-                Main.NewText("end bounces at " + numBounces);
+                //Main.NewText("end bounces at " + numBounces);
                 numBounces = 0;
                 IsFinished = true;
                 NPC.frameCounter = 0;
