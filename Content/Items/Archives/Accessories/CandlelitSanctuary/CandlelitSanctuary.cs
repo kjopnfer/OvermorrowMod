@@ -44,6 +44,7 @@ namespace OvermorrowMod.Content.Items.Archives
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.GetModPlayer<AccessoryPlayer>().CandlelitSanctuary = true;
             int charges = player.GetModPlayer<AccessoryPlayer>().CandleCharges;
             if (charges > 0)
                 Lighting.AddLight(player.Center, new Vector3(0.8f, 0.5f, 1f) * 1.2f);
