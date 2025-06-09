@@ -43,7 +43,6 @@ namespace OvermorrowMod.Content.NPCs
                 NPC.velocity.Y = 6f;
             else
             {
-                Main.NewText("GO UP");
                 NPC.velocity.Y = -6f;
             }
 
@@ -52,7 +51,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit()
         {
-            pinballCooldown = ModUtils.SecondsToTicks(2);
+            pinballCooldown = ModUtils.SecondsToTicks(5);
             OvermorrowNPC.AICounter = 0;
         }
 

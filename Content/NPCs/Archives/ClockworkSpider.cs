@@ -77,6 +77,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
             new ClockworkSpiderPinball(this),
+            new ClockworkSpiderRoll(this),
+            new ClockworkSpiderSwap(this)
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
@@ -97,18 +99,20 @@ namespace OvermorrowMod.Content.NPCs.Archives
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 
             NPC.knockBackResist = 0.2f;
-            if (currentState is ClockworkSpiderSwap || currentState is ClockworkSpiderPinball)
+            if (currentState is not ClockworkSpiderRoll)
             {
-                NPC.knockBackResist = 0f;
+                if (currentState is ClockworkSpiderSwap || currentState is ClockworkSpiderPinball)
+                {
+                    NPC.knockBackResist = 0f;
 
-                if (AICounter > 10)
-                    NPC.rotation += 0.6f;
+                    if (AICounter > 10)
+                        NPC.rotation += 0.6f;
+                }
+                else
+                {
+                    NPC.rotation = 0;
+                }
             }
-            else
-            {
-                NPC.rotation = 0;
-            }
-            
         }
 
         private void SetFrame()
@@ -141,6 +145,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     {
                         case ClockworkSpiderPinball:
                         case ClockworkSpiderSwap:
+                        case ClockworkSpiderRoll:
                             //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter + " AI " + AICounter);
                             xFrame = 2;
 
@@ -219,6 +224,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 spriteEffects |= SpriteEffects.FlipVertically; // Add vertical flip
                 drawOffset = new Vector2(0, 4);
             }
+
+            if (currentState is ClockworkSpiderRoll && AICounter > 30)
+                drawOffset = new Vector2(0, 2);
 
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 

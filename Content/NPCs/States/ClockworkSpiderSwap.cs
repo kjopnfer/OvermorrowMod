@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.NPCs
 {
     public class ClockworkSpiderSwap : BaseAttackState
     {
-        public override int Weight => 1;
+        public override int Weight => 3;
         public override bool CanExit => IsFinished;
 
         int swapCooldown = 0;
@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit()
         {
-            swapCooldown = ModUtils.SecondsToTicks(2);
+            swapCooldown = ModUtils.SecondsToTicks(4);
             OvermorrowNPC.AICounter = 0;
         }
 
