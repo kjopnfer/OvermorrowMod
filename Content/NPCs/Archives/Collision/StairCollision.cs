@@ -22,10 +22,10 @@ namespace OvermorrowMod.Content.NPCs
 
                 Vector2 startLeft = NPC.TopLeft;
                 Vector2 startRight = NPC.TopRight;
-                int tileHeight = 18;
+                int tileHeight = 36;
                 int[] platformIDs = new int[] { CollisionID.Platform, 0, 0, 0 };
 
-                for (int i = 0; i < 10; i++) // Create 10 layers
+                for (int i = 0; i < 5; i++) // Create 10 layers
                 {
                     Vector2 offset = new Vector2(0, i * tileHeight + topOffset);
                     Vector2 left = startLeft + offset;

@@ -8,6 +8,7 @@ Tiles: {
 	WizardStatue.MapEntry: Wizard Statue
 	ArchivePot.MapEntry: Archive Pot
 	BookCandleholder.MapEntry: Book Candleholder
+	WoodenStairs.MapEntry: Wooden Stairs
 }
 
 Biomes: {
@@ -327,6 +328,7 @@ NPCs: {
 	WaxWalker.DisplayName: Wax Walker
 	ATestStateNPC.DisplayName: A Test State N P C
 	ClockworkSpider.DisplayName: Clockwork Spider
+	StairCollision.DisplayName: Stair Collision
 }
 
 Bestiary: {

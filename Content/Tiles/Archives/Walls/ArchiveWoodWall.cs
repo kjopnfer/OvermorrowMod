@@ -15,6 +15,16 @@ namespace OvermorrowMod.Content.Tiles.Archives
         }
     }
 
+    public class ArchiveWoodWallBlack : ModWall
+    {
+        public override string Texture => AssetDirectory.ArchiveTiles + Name;
+
+        public override void SetStaticDefaults()
+        {
+            AddMapEntry(new Color(32, 43, 46));
+        }
+    }
+
     public class ArchiveWoodWallRed : ModWall
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
