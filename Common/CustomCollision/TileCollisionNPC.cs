@@ -20,8 +20,8 @@ namespace OvermorrowMod.Common.CustomCollision
         public virtual void SafeSetDefaults() { }
         public sealed override void SetDefaults()
         {
-            NPC.width = 64;
-            NPC.height = 10;
+            NPC.width = 1;
+            NPC.height = 1;
             NPC.lifeMax = 1000;
             NPC.immortal = true;
             NPC.dontTakeDamage = true;
