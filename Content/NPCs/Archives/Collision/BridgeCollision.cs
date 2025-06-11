@@ -2,6 +2,7 @@ using CollisionLib;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.CustomCollision;
 using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -11,13 +12,15 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (colliders == null)
             {
-                var thirdEndpoint = NPC.TopRight + new Vector2(48, 0).RotatedBy(MathHelper.ToRadians(-30));
-                var fourthEndpoint = thirdEndpoint + new Vector2(54, 0);
-                var fifthEndpoint = fourthEndpoint + new Vector2(48, 0).RotatedBy(MathHelper.ToRadians(30));
-                var sixthEndpoint = fifthEndpoint + new Vector2(64, 0);
+                Vector2 offset = new Vector2(0, 67);
+           
+                var thirdEndpoint = NPC.TopLeft + new Vector2(54, 0) + offset;
+                var fourthEndpoint = thirdEndpoint + new Vector2(54, 0).RotatedBy(MathHelper.ToRadians(-30));
+
+                var fifthEndpoint = fourthEndpoint + new Vector2(48, 0);
+                var sixthEndpoint = fifthEndpoint + new Vector2(64, 0).RotatedBy(MathHelper.ToRadians(30));
                 colliders = new CollisionSurface[] {
-                    new CollisionSurface(NPC.TopLeft, NPC.TopRight, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
-                    new CollisionSurface(NPC.TopRight, thirdEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
+                    new CollisionSurface(NPC.TopLeft + offset, NPC.TopRight + offset, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
                     new CollisionSurface(thirdEndpoint, fourthEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
                     new CollisionSurface(fourthEndpoint, fifthEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
                     new CollisionSurface(fifthEndpoint, sixthEndpoint, new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
@@ -35,11 +38,11 @@ namespace OvermorrowMod.Content.NPCs
                     collider.Update();
 
                     // Debugging
-                    /*for (int i = 0; i < collider.endPoints.Length; i++)
-                    {
-                        var endPoint = Dust.NewDustDirect(collider.endPoints[i], 1, 1, DustID.RedTorch);
-                        endPoint.noGravity = true;
-                    }*/
+                    //for (int i = 0; i < collider.endPoints.Length; i++)
+                    //{
+                    //    var endPoint = Dust.NewDustDirect(collider.endPoints[i], 1, 1, DustID.RedTorch);
+                    //    endPoint.noGravity = true;
+                    //}
                 }
             }
         }
