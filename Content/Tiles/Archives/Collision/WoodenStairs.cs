@@ -41,17 +41,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            //var dust = Dust.NewDustDirect(new Vector2(i, j).ToWorldCoordinates(), 1, 1, DustID.Torch);
-            //dust.noGravity = true;
-
-            //Tile tile = Framing.GetTileSafely(i, j);
             Tile tile = Framing.GetTileSafely(i, j);
             var topLeft = TileObjectData.TopLeft(i, j);
            
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
                 SpawnCollisionHandler<StairCollision>(topLeft.X, topLeft.Y, 14, Height, ModContent.NPCType<StairCollision>());
-                //SpawnCollisionHandler<StairCollision>(i, j, 14, Height, ModContent.NPCType<StairCollision>());
             }
         }
     }

@@ -84,6 +84,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             [new Color(180, 58, 0)] = (ModContent.TileType<Fireplace>(), 1),
             [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
             [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 6),
+            [new Color(193, 0, 83)] = (ModContent.TileType<StairPillar>(), 1),
             [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
             [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
             [new Color(128, 20, 95)] = (ModContent.TileType<SmallPillar>(), 1),

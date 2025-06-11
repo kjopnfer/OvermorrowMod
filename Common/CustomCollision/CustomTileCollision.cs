@@ -27,8 +27,6 @@ namespace OvermorrowMod.Common.CustomCollision
                     if (Main.npc[collider].ModNPC is T collision)
                     {
                         collision.parentTile = Main.tile[i, j];
-                        Main.npc[collider].width = 1;
-                        Main.npc[collider].height = 1;
                     }
                 }
             }
