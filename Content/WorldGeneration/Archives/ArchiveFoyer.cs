@@ -34,6 +34,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 162, y + 273, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 170, y + 273, ModContent.TileType<HallwayPillar>());
 
+            WorldGen.PlaceObject(x + 176, y + 236, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 176, y + 273, ModContent.TileType<WoodenStairs>());
 
             WorldGen.PlaceObject(x + 194, y + 273, ModContent.TileType<HallwayPillar>());
@@ -42,11 +43,14 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             #region Center Fireplace Area
             WorldGen.PlaceObject(x + 226, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 228, y + 231, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(x + 234, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 242, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 250, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 258, y + 236, ModContent.TileType<HallwayPillar>());
 
+            WorldGen.PlaceObject(x + 249, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 251, y + 231, ModContent.TileType<WoodenArchSmall>());
+            WorldGen.PlaceObject(x + 257, y + 236, ModContent.TileType<HallwayPillar>());
+
+            WorldGen.PlaceObject(x + 263, y + 199, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 263, y + 236, ModContent.TileType<WoodenStairs>());
 
             WorldGen.PlaceObject(x + 281, y + 236, ModContent.TileType<HallwayPillar>());
@@ -64,6 +68,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceBookshelfArch(x + 339, y + 211);
             PlaceBookshelfArch(x + 365, y + 211);
 
+            WorldGen.PlaceObject(x + 385, y + 204, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 385, y + 236, ModContent.TileType<WaxCandleholder>());
 
             WorldGen.PlaceObject(x + 426, y + 231, ModContent.TileType<WaxCandleholder>());
@@ -72,9 +77,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 472, y + 231, ModContent.TileType<WaxCandleholder>());
 
+            WorldGen.PlaceObject(x + 426, y + 199, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 443, y + 174, ModContent.TileType<WoodenArch>());
             TileUtils.PlaceTileWithEntity<SanctumGate, SanctumGate_TE>(x + 443, y + 199);
+            WorldGen.PlaceObject(x + 472, y + 199, ModContent.TileType<WaxCandleholder>());
 
+            WorldGen.PlaceObject(x + 513, y + 204, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 513, y + 236, ModContent.TileType<WaxCandleholder>());
 
             PlaceBookshelfArch(x + 521, y + 211);
@@ -82,16 +90,17 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 574, y + 236, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 582, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 591, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 599, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 608, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 616, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 590, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 601, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 609, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 617, y + 236, ModContent.TileType<HallwayPillar>());
 
-            WorldGen.PlaceObject(x + 622, y + 236, ModContent.TileType<WoodenStairs>());
+            WorldGen.PlaceObject(x + 623, y + 199, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 623, y + 236, ModContent.TileType<WoodenStairs>());
 
-            WorldGen.PlaceObject(x + 640, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 648, y + 236, ModContent.TileType<HallwayPillar>());
-            WorldGen.PlaceObject(x + 656, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 641, y + 236, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 649, y + 236, ModContent.TileType<HallwayPillar>());
+
             WorldGen.PlaceObject(x + 664, y + 236, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 672, y + 236, ModContent.TileType<HallwayPillar>());
             #endregion
@@ -100,6 +109,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 696, y + 273, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 704, y + 273, ModContent.TileType<HallwayPillar>());
 
+            WorldGen.PlaceObject(x + 710, y + 236, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 710, y + 273, ModContent.TileType<WoodenStairs>());
 
             WorldGen.PlaceObject(x + 728, y + 273, ModContent.TileType<HallwayPillar>());
@@ -122,6 +132,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 77, y + 224, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 121, y + 224, ModContent.TileType<WaxCandleholder>());
 
+            WorldGen.PlaceObject(x + 226, y + 199, ModContent.TileType<WoodenArch>());
+
             WorldGen.PlaceObject(x + 240, y + 194, ModContent.TileType<Finial>());
             WorldGen.PlaceObject(x + 240, y + 224, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 243, y + 195, ModContent.TileType<ArchiveBridge>());
@@ -133,16 +145,21 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 277, y + 194, ModContent.TileType<Finial>());
 
             WorldGen.PlaceObject(x + 306, y + 138, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 360, y + 138, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 306, y + 196, ModContent.TileType<WoodenPillar2>());
 
             WorldGen.PlaceObject(x + 289, y + 150, ModContent.TileType<StairPillar>());
+            WorldGen.PlaceObject(x + 292, y + 113, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 292, y + 150, ModContent.TileType<WoodenStairs>());
 
             WorldGen.PlaceObject(x + 330, y + 167, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 333, y + 142, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 333, y + 179, ModContent.TileType<WoodenStairs>());
             WorldGen.PlaceObject(x + 347, y + 179, ModContent.TileType<StairPillar>());
             WorldGen.PlaceObject(x + 346, y + 179, ModContent.TileType<StairPillar>());
             WorldGen.PlaceObject(x + 348, y + 179, ModContent.TileType<StairPillar>());
 
+            WorldGen.PlaceObject(x + 402, y + 96, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 402, y + 133, ModContent.TileType<WoodenStairs>());
             WorldGen.PlaceObject(x + 416, y + 121, ModContent.TileType<WoodenPillar2>());
 
@@ -150,7 +167,32 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Right Stairs
+            WorldGen.PlaceObject(x + 481, y + 121, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 484, y + 96, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 484, y + 133, ModContent.TileType<WoodenStairs>());
+
+            WorldGen.PlaceObject(x + 538, y + 138, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 591, y + 138, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 594, y + 113, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 594, y + 150, ModContent.TileType<WoodenStairs>());
+
+            WorldGen.PlaceObject(x + 553, y + 142, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 553, y + 179, ModContent.TileType<WoodenStairs>());
+            WorldGen.PlaceObject(x + 567, y + 167, ModContent.TileType<WoodenPillar2>());
+
             WorldGen.PlaceObject(x + 620, y + 224, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(x + 620, y + 194, ModContent.TileType<Finial>());
+            WorldGen.PlaceObject(x + 626, y + 194, ModContent.TileType<NormalWizardStatue>());
+            WorldGen.PlaceObject(x + 637, y + 194, ModContent.TileType<Finial>());
+
+            WorldGen.PlaceObject(x + 640, y + 195, ModContent.TileType<ArchiveBridge>());
+
+            WorldGen.PlaceObject(x + 657, y + 194, ModContent.TileType<Finial>());
+            WorldGen.PlaceObject(x + 660, y + 199, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(x + 657, y + 224, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 674, y + 224, ModContent.TileType<WoodenPillar2>());
 
             WorldGen.PlaceObject(x + 777, y + 194, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 777, y + 224, ModContent.TileType<WaxCandleholder>());
@@ -160,9 +202,20 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             PlaceLoungeArea(x + 833, y + 194, RoomID.Blue);
 
-            WorldGen.PlaceObject(x + 48, y + 199, ModContent.TileType<WoodenArch>());
-            PlaceAndConfigureDoor(x + 838, y + 224, DoorID.FoyerBlueRoomDoor, DoorID.BlueShrimpRoomEntrance);
+            WorldGen.PlaceObject(x + 838, y + 199, ModContent.TileType<WoodenArch>());
+            PlaceAndConfigureDoor(x + 839, y + 224, DoorID.FoyerBlueRoomDoor, DoorID.BlueShrimpRoomEntrance);
 
+            #endregion
+
+            #region Middle Area
+            WorldGen.PlaceObject(x + 420, y + 133, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 428, y + 133, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 437, y + 133, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 445, y + 133, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 453, y + 133, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 461, y + 133, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 470, y + 133, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 478, y + 133, ModContent.TileType<HallwayPillar>());
             #endregion
             return;
             #region Center Room
