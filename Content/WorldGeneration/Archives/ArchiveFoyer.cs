@@ -126,6 +126,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 240, y + 224, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 243, y + 195, ModContent.TileType<ArchiveBridge>());
 
+            WorldGen.PlaceObject(x + 266, y + 194, ModContent.TileType<NormalWizardStatue>());
+
             WorldGen.PlaceObject(x + 260, y + 194, ModContent.TileType<Finial>());
             WorldGen.PlaceObject(x + 260, y + 224, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 277, y + 194, ModContent.TileType<Finial>());

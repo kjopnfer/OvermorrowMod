@@ -9,6 +9,7 @@ Tiles: {
 	ArchivePot.MapEntry: Archive Pot
 	BookCandleholder.MapEntry: Book Candleholder
 	WoodenStairs.MapEntry: Wooden Stairs
+	NormalWizardStatue.MapEntry: Normal Wizard Statue
 }
 
 Biomes: {

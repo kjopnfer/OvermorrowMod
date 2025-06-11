@@ -43,7 +43,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
-                SpawnCollisionHandler<BridgeCollision>(i, j, ModContent.NPCType<BridgeCollision>());
+                SpawnCollisionHandler<BridgeCollision>(i, j, 17, 10, ModContent.NPCType<BridgeCollision>());
             }
         }
     }
