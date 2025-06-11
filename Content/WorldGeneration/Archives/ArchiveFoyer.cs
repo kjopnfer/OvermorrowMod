@@ -71,11 +71,15 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 385, y + 204, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 385, y + 236, ModContent.TileType<WaxCandleholder>());
 
+            WorldGen.PlaceObject(x + 408, y + 223, ModContent.TileType<WaxSconce>());
+
             WorldGen.PlaceObject(x + 426, y + 231, ModContent.TileType<WaxCandleholder>());
 
             PlaceCozyArea(x + 436, y + 231, RoomID.Yellow);
 
             WorldGen.PlaceObject(x + 472, y + 231, ModContent.TileType<WaxCandleholder>());
+
+            WorldGen.PlaceObject(x + 489, y + 223, ModContent.TileType<WaxSconce>());
 
             WorldGen.PlaceObject(x + 426, y + 199, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 443, y + 174, ModContent.TileType<WoodenArch>());
@@ -152,6 +156,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 292, y + 113, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 292, y + 150, ModContent.TileType<WoodenStairs>());
 
+            WorldGen.PlaceObject(x + 318, y + 179, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 318, y + 150, ModContent.TileType<WaxSconce>());
+
             WorldGen.PlaceObject(x + 330, y + 167, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 333, y + 142, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 333, y + 179, ModContent.TileType<WoodenStairs>());
@@ -179,6 +186,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 553, y + 142, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 553, y + 179, ModContent.TileType<WoodenStairs>());
             WorldGen.PlaceObject(x + 567, y + 167, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(x + 579, y + 150, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 579, y + 179, ModContent.TileType<WaxSconce>());
 
             WorldGen.PlaceObject(x + 620, y + 224, ModContent.TileType<WoodenPillar2>());
 
@@ -208,6 +218,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Middle Area
+            WorldGen.PlaceObject(x + 383, y + 124, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 428, y + 104, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 469, y + 104, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 514, y + 124, ModContent.TileType<WaxSconce>());
+
             WorldGen.PlaceObject(x + 420, y + 133, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 428, y + 133, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 437, y + 133, ModContent.TileType<HallwayPillar>());
