@@ -176,6 +176,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Left Stairs
+            PlaceTableAndChairs(x + 227, y + 194, RoomID.Red);
+
             PlaceMultiBookPiles(x + 138, y + 194);
             PlaceMultiBookPiles(x + 164, y + 194);
             PlaceMultiBookPiles(x + 190, y + 194);
@@ -190,6 +192,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 48, y + 199, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(x + 49, y + 224, DoorID.RedRoomEntrance, DoorID.RedRoom);
+            WorldGen.PlaceObject(x + 41, y + 224, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 67, y + 224, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 77, y + 224, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 121, y + 224, ModContent.TileType<WaxCandleholder>());
 
@@ -265,6 +269,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 657, y + 194, ModContent.TileType<Finial>());
             WorldGen.PlaceObject(x + 660, y + 199, ModContent.TileType<WoodenArch>());
+            PlaceTableAndChairs(x + 661, y + 194, RoomID.Blue);
 
             WorldGen.PlaceObject(x + 657, y + 224, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 674, y + 224, ModContent.TileType<WoodenPillar2>());
@@ -279,7 +284,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 838, y + 199, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(x + 839, y + 224, DoorID.FoyerBlueRoomDoor, DoorID.BlueShrimpRoomEntrance);
-
+            WorldGen.PlaceObject(x + 831, y + 224, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 857, y + 224, ModContent.TileType<WaxCandleholder>());
             #endregion
 
             #region Middle Area
@@ -299,6 +305,82 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 461, y + 133, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 470, y + 133, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 478, y + 133, ModContent.TileType<HallwayPillar>());
+            #endregion
+
+            #region Top Left Bridges
+            PlaceLoungeArea(x + 176, y + 66, RoomID.Green);
+            PlaceAndConfigureDoor(x + 182, y + 96, DoorID.FoyerGreenRoomDoor, DoorID.GreenBridgeRoomEntrance);
+            WorldGen.PlaceObject(x + 174, y + 96, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 200, y + 96, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 181, y + 71, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 210, y + 96, ModContent.TileType<WaxCandleholder>());
+
+            PlaceMultiBookPiles(x + 350, y + 91);
+            PlaceMultiBookPiles(x + 350, y + 61);
+
+            WorldGen.PlaceObject(x + 226, y + 71, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 226, y + 41, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 263, y + 71, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 263, y + 41, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(x + 243, y + 67, ModContent.TileType<ArchiveBridge>());
+            WorldGen.PlaceObject(x + 243, y + 97, ModContent.TileType<ArchiveBridge>());
+
+            WorldGen.PlaceObject(x + 260, y + 66, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 260, y + 96, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(x + 210, y + 66, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 292, y + 66, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 292, y + 96, ModContent.TileType<WaxCandleholder>());
+
+            WorldGen.PlaceObject(x + 333, y + 61, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 333, y + 91, ModContent.TileType<WaxCandleholder>());
+
+            WorldGen.PlaceObject(x + 315, y + 52, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 315, y + 82, ModContent.TileType<WaxSconce>());
+
+            WorldGen.PlaceObject(x + 413, y + 61, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 413, y + 91, ModContent.TileType<WaxCandleholder>());
+
+            #endregion
+
+            #region Top Right Bridges
+            WorldGen.PlaceObject(x + 443, y + 67, ModContent.TileType<WoodenArch>());
+
+            PlaceLoungeArea(x + 700, y + 66, RoomID.Yellow);
+            PlaceAndConfigureDoor(x + 706, y + 96, DoorID.FoyerYellowRoomDoor, DoorID.YellowPitRoomDoorEntrance);
+            WorldGen.PlaceObject(x + 698, y + 96, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 724, y + 96, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 705, y + 71, ModContent.TileType<WoodenArch>());
+
+            PlaceMultiBookPiles(x + 536, y + 91);
+            PlaceMultiBookPiles(x + 536, y + 61);
+
+            WorldGen.PlaceObject(x + 660, y + 71, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 623, y + 71, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 660, y + 41, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x + 623, y + 41, ModContent.TileType<WoodenArch>());
+
+            WorldGen.PlaceObject(x + 640, y + 67, ModContent.TileType<ArchiveBridge>());
+            WorldGen.PlaceObject(x + 640, y + 97, ModContent.TileType<ArchiveBridge>());
+
+            WorldGen.PlaceObject(x + 657, y + 66, ModContent.TileType<WoodenPillar2>());
+            WorldGen.PlaceObject(x + 657, y + 96, ModContent.TileType<WoodenPillar2>());
+
+            WorldGen.PlaceObject(x + 688, y + 66, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 688, y + 96, ModContent.TileType<WaxCandleholder>());
+
+            WorldGen.PlaceObject(x + 606, y + 66, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 606, y + 96, ModContent.TileType<WaxCandleholder>());
+
+            WorldGen.PlaceObject(x + 565, y + 61, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 565, y + 91, ModContent.TileType<WaxCandleholder>());
+
+            WorldGen.PlaceObject(x + 582, y + 52, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 582, y + 82, ModContent.TileType<WaxSconce>());
+
+            WorldGen.PlaceObject(x + 485, y + 61, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 485, y + 91, ModContent.TileType<WaxCandleholder>());
             #endregion
             return;
             #region Center Room

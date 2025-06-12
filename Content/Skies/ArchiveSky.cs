@@ -24,7 +24,6 @@ namespace OvermorrowMod.Content.Skies
             Color textureColor = Color.Lerp(Color.Black, Color.White, 0.5f);
             Vector2 origin = new Vector2(0f, biomeHeight);
 
-
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Backgrounds + "ArchiveBackground", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             if (maxDepth >= 3E+38f && minDepth < 3E+38f)
             {

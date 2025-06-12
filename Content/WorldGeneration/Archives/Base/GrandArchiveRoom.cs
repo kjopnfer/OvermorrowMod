@@ -26,6 +26,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             GreenRoom,
             RedRoom,
 
+            FoyerRedRoomDoor,
+
             FoyerGreenRoomDoor,
             GreenBridgeRoomEntrance,
             GreenBridgeRoomExit,
@@ -368,6 +370,33 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
                     NetMessage.SendTileSquare(-1, x, y, 2);
                 }
             }
+        }
+
+        protected void PlaceTableAndChairs(int x, int y, RoomID room)
+        {
+            var cozyChairTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<CozyChairRed>() },
+                { RoomID.Green, ModContent.TileType<CozyChairGreen>() },
+                { RoomID.Blue, ModContent.TileType<CozyChairBlue>() }
+            };
+
+            var smallChairTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<SmallChairRed>() },
+                { RoomID.Green, ModContent.TileType<SmallChairGreen>() },
+                { RoomID.Blue, ModContent.TileType<SmallChairBlue>() }
+            };
+
+            int cozyChairType = cozyChairTypes.TryGetValue(room, out var type) ? type : ModContent.TileType<CozyChair>();
+            int smallChairType = smallChairTypes.TryGetValue(room, out var type2) ? type2 : ModContent.TileType<SmallChair>();
+
+            WorldGen.PlaceObject(x, y, smallChairType, true, 0, 0, -1, 1);
+            WorldGen.PlaceObject(x + 3, y, ModContent.TileType<BanquetTable>());
+            WorldGen.PlaceObject(x + 4, y - 2, ModContent.TileType<WaxCandelabra>());
+            WorldGen.PlaceObject(x + 7, y - 2, ModContent.TileType<BookPileTable>(), true, Main.rand.Next(0, 4));
+
+            WorldGen.PlaceObject(x + 10, y, smallChairType, true, 0, 0, -1, direction: -1);
         }
     }
 }
