@@ -4,6 +4,7 @@ using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -74,6 +75,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
         protected override Dictionary<Color, (int, int)> ObjectMapping => new()
         {
+            [new Color(237, 152, 93)] = (ModContent.TileType<WaxSconce>(), 1),
             [new Color(233, 193, 121)] = (ModContent.TileType<WoodenStairs>(), 1),
             [new Color(215, 186, 87)] = (ModContent.TileType<ArchivePot>(), 1),
             [new Color(178, 149, 52)] = (ModContent.TileType<SanctumGate>(), 1),
@@ -98,18 +100,107 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             [new Color(159, 183, 204)] = (ModContent.TileType<Bismarck>(), 1),
         };
 
-        protected void PlaceBookPile(int x, int y, int stackSize, bool withCandle = false)
+        protected bool PlaceBookPile(int x, int y, int stackSize, bool withCandle = false)
         {
-            if (stackSize < 0) stackSize = 1;
+            if (stackSize < 1)
+                stackSize = 1;
 
-            for (int i = 0; i < stackSize; i++)
+            // Place bottom tile — must succeed
+            bool success = WorldGen.PlaceObject(x, y, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+            if (!success)
+                return false;
+
+            // Place additional stack tiles (optional)
+            for (int i = 1; i < stackSize; i++)
             {
                 WorldGen.PlaceObject(x, y - i, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
             }
 
+            // Place candle if needed (optional)
             if (withCandle)
+            {
                 WorldGen.PlaceObject(x, y - stackSize, ModContent.TileType<BookCandleholder>(), true);
+            }
+
+            return true;
         }
+
+
+        protected void PlaceMultiBookPiles(int x, int y)
+        {
+            const int spaceWidth = 14;
+            const int pileWidth = 2;
+            const int maxPiles = 4;
+            const int maxAttempts = 50;
+
+            bool candlePlaced = false;
+
+            // Generate staggered possible offsets for pile placement
+            List<int> possibleOffsets = new();
+            for (int i = 0; i <= spaceWidth - pileWidth; i++)
+            {
+                if (i % 2 == 0 || Main.rand.NextBool())
+                    possibleOffsets.Add(i);
+            }
+
+            if (possibleOffsets.Count < maxPiles)
+            {
+                possibleOffsets = Enumerable.Range(0, spaceWidth / pileWidth + 1)
+                                            .Select(i => i * pileWidth)
+                                            .ToList();
+            }
+
+            for (int i = possibleOffsets.Count - 1; i > 0; i--)
+            {
+                int j = Main.rand.Next(i + 1);
+                (possibleOffsets[i], possibleOffsets[j]) = (possibleOffsets[j], possibleOffsets[i]);
+            }
+
+            int placedCount = 0;
+            int attemptIndex = 0;
+            int failCount = 0;
+
+            while (placedCount < maxPiles && attemptIndex < possibleOffsets.Count && failCount < maxAttempts)
+            {
+                int offsetX = possibleOffsets[attemptIndex];
+                int pileX = x + offsetX;
+
+                int stackSize;
+                bool withCandle = false;
+
+                // Assign a single candle pile randomly
+                if (!candlePlaced && (maxPiles - placedCount <= 1 || Main.rand.NextBool(4)))
+                {
+                    stackSize = Main.rand.Next(8, 13);
+                    withCandle = true;
+                    candlePlaced = true;
+                }
+                else
+                {
+                    // Random stack sizing logic
+                    int style = Main.rand.Next(3);
+                    stackSize = style switch
+                    {
+                        0 => Main.rand.Next(2, 4),
+                        1 => Main.rand.Next(5, 7),
+                        _ => Main.rand.Next(6, 9)
+                    };
+                }
+
+                bool success = PlaceBookPile(pileX, y, stackSize, withCandle);
+                if (success)
+                {
+                    placedCount++;
+                }
+                else
+                {
+                    failCount++;
+                }
+
+                attemptIndex++;
+            }
+        }
+
 
         protected void PlaceLoungeArea(int x, int y, RoomID room)
         {

@@ -26,6 +26,20 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         public override void PostGenerate(int x, int y)
         {
             #region Bottom Left Hallway
+            WorldGen.PlaceObject(x + 206, y + 238, ModContent.TileType<WaxSconce>());
+
+            PlaceBookPile(x + 116, y + 261, Main.rand.Next(3, 7));
+            PlaceBookPile(x + 118, y + 261, Main.rand.Next(5, 8));
+
+            PlaceBookPile(x + 128, y + 261, Main.rand.Next(5, 7));
+            PlaceBookPile(x + 131, y + 261, Main.rand.Next(2, 4));
+            PlaceBookPile(x + 136, y + 261, Main.rand.Next(5, 7));
+
+            PlaceBookPile(x + 150, y + 261, Main.rand.Next(5, 7));
+            PlaceBookPile(x + 153, y + 261, Main.rand.Next(6, 9));
+            PlaceBookPile(x + 160, y + 261, Main.rand.Next(3, 12), true);
+            PlaceBookPile(x + 163, y + 261, Main.rand.Next(3, 8));
+
             WorldGen.PlaceObject(x + 101, y + 273, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 116, y + 273, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 124, y + 273, ModContent.TileType<HallwayPillar>());
@@ -42,6 +56,15 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Center Fireplace Area
+            PlaceBookPile(x + 341, y + 236, Main.rand.Next(2, 4));
+            PlaceBookPile(x + 345, y + 236, Main.rand.Next(5, 7));
+            PlaceBookPile(x + 351, y + 236, Main.rand.Next(2, 4));
+            PlaceBookPile(x + 365, y + 236, Main.rand.Next(5, 7));
+
+            PlaceBookPile(x + 377, y + 236, Main.rand.Next(5, 8));
+            PlaceBookPile(x + 375, y + 236, Main.rand.Next(3, 6));
+            PlaceBookPile(x + 372, y + 236, Main.rand.Next(5, 8));
+
             WorldGen.PlaceObject(x + 226, y + 236, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 228, y + 231, ModContent.TileType<WoodenArchSmall>());
             WorldGen.PlaceObject(x + 234, y + 236, ModContent.TileType<HallwayPillar>());
@@ -71,7 +94,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 385, y + 204, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 385, y + 236, ModContent.TileType<WaxCandleholder>());
 
-            WorldGen.PlaceObject(x + 408, y + 223, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 408, y + 222, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 408, y + 190, ModContent.TileType<WaxSconce>());
 
             WorldGen.PlaceObject(x + 426, y + 231, ModContent.TileType<WaxCandleholder>());
 
@@ -79,7 +103,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 472, y + 231, ModContent.TileType<WaxCandleholder>());
 
-            WorldGen.PlaceObject(x + 489, y + 223, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 489, y + 190, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 489, y + 222, ModContent.TileType<WaxSconce>());
 
             WorldGen.PlaceObject(x + 426, y + 199, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 443, y + 174, ModContent.TileType<WoodenArch>());
@@ -88,6 +113,16 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 513, y + 204, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 513, y + 236, ModContent.TileType<WaxCandleholder>());
+
+            PlaceBookPile(x + 524, y + 236, Main.rand.Next(2, 4));
+            PlaceBookPile(x + 527, y + 236, Main.rand.Next(5, 7));
+            PlaceBookPile(x + 532, y + 236, Main.rand.Next(2, 4));
+            PlaceBookPile(x + 547, y + 236, Main.rand.Next(5, 7));
+
+            PlaceBookPile(x + 550, y + 236, Main.rand.Next(5, 8));
+            PlaceBookPile(x + 555, y + 236, Main.rand.Next(3, 6));
+            PlaceBookPile(x + 557, y + 236, Main.rand.Next(5, 8));
+            PlaceBookPile(x + 559, y + 236, Main.rand.Next(3, 6));
 
             PlaceBookshelfArch(x + 521, y + 211);
             PlaceBookshelfArch(x + 547, y + 211);
@@ -110,6 +145,20 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Bottom Right Hallway
+            WorldGen.PlaceObject(x + 691, y + 238, ModContent.TileType<WaxSconce>());
+
+            PlaceBookPile(x + 737, y + 261, Main.rand.Next(3, 7));
+            PlaceBookPile(x + 740, y + 261, Main.rand.Next(5, 8));
+
+            PlaceBookPile(x + 747, y + 261, Main.rand.Next(5, 7));
+            PlaceBookPile(x + 762, y + 261, Main.rand.Next(7, 9), true);
+            PlaceBookPile(x + 764, y + 261, Main.rand.Next(5, 7));
+
+            PlaceBookPile(x + 770, y + 261, Main.rand.Next(5, 7));
+            PlaceBookPile(x + 778, y + 261, Main.rand.Next(6, 9));
+            PlaceBookPile(x + 780, y + 261, Main.rand.Next(3, 12));
+            PlaceBookPile(x + 782, y + 261, Main.rand.Next(3, 8));
+
             WorldGen.PlaceObject(x + 696, y + 273, ModContent.TileType<HallwayPillar>());
             WorldGen.PlaceObject(x + 704, y + 273, ModContent.TileType<HallwayPillar>());
 
@@ -127,6 +176,14 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Left Stairs
+            PlaceMultiBookPiles(x + 138, y + 194);
+            PlaceMultiBookPiles(x + 164, y + 194);
+            PlaceMultiBookPiles(x + 190, y + 194);
+
+            PlaceMultiBookPiles(x + 138, y + 224);
+            PlaceMultiBookPiles(x + 164, y + 224);
+            PlaceMultiBookPiles(x + 190, y + 224);
+
             WorldGen.PlaceObject(x + 77, y + 194, ModContent.TileType<WaxCandleholder>());
             PlaceLoungeArea(x + 43, y + 194, RoomID.Red);
             WorldGen.PlaceObject(x + 121, y + 194, ModContent.TileType<WaxCandleholder>());
@@ -174,6 +231,14 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Right Stairs
+            PlaceMultiBookPiles(x + 696, y + 194);
+            PlaceMultiBookPiles(x + 722, y + 194);
+            PlaceMultiBookPiles(x + 748, y + 194);
+
+            PlaceMultiBookPiles(x + 696, y + 224);
+            PlaceMultiBookPiles(x + 722, y + 224);
+            PlaceMultiBookPiles(x + 748, y + 224);
+
             WorldGen.PlaceObject(x + 481, y + 121, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 484, y + 96, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 484, y + 133, ModContent.TileType<WoodenStairs>());
@@ -218,6 +283,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Middle Area
+            PlaceLoungeArea(x + 313, y + 138, RoomID.Yellow);
+            PlaceLoungeArea(x + 563, y + 138, RoomID.Yellow);
+
             WorldGen.PlaceObject(x + 383, y + 124, ModContent.TileType<WaxSconce>());
             WorldGen.PlaceObject(x + 428, y + 104, ModContent.TileType<WaxSconce>());
             WorldGen.PlaceObject(x + 469, y + 104, ModContent.TileType<WaxSconce>());
