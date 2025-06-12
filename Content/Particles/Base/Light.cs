@@ -109,8 +109,6 @@ namespace OvermorrowMod.Content.Particles
         {
             if (texture == null) return;
 
-            spriteBatch.Reload(BlendState.Additive);
-
             float progress = timeAlive / maxTime;
             Color drawColor = Color.Lerp(particle.color, endColor.Value, progress);
 
@@ -139,8 +137,6 @@ namespace OvermorrowMod.Content.Particles
                 new Vector2(texture.Width / 2, 0),
                 new Vector2(widthLerp, heightLerp), // Width, Height
                 SpriteEffects.None, 0f);
-
-            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
 }
