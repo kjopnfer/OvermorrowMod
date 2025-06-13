@@ -236,6 +236,38 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
         }
 
+        /// <summary>
+        /// Each of these tiles are 14x10
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="stack"></param>
+        protected void PlaceDiagonalStairStack(int x, int y, int stack = 3)
+        {
+            int height = stack * 10;
+            for (int i = 0; i < height; i += 10)
+            {
+                WorldGen.PlaceObject(x, y - i, ModContent.TileType<DiagonalStairs>());
+            }
+
+            WorldGen.PlaceObject(x, y - height, ModContent.TileType<StairCap>());
+        }
+
+        protected void PlaceTallStairs(int x, int y)
+        {
+            WorldGen.PlaceObject(x + 1, y - 11, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 26, y - 11, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 1, y - 40, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 26, y - 40, ModContent.TileType<WaxSconce>());
+
+            WorldGen.PlaceObject(x + 8, y - 55, ModContent.TileType<WoodenArch>());
+
+            PlaceDiagonalStairStack(x + 8, y);
+            //WorldGen.PlaceObject(x + 8, y, ModContent.TileType<DiagonalStairs>());
+            //WorldGen.PlaceObject(x + 8, y - 10, ModContent.TileType<DiagonalStairs>());
+            //WorldGen.PlaceObject(x + 8, y - 20, ModContent.TileType<DiagonalStairs>());
+        }
+
         protected void PlaceRoomBookshelfArches(int x, int y)
         {
             PlaceBookshelfArch(x, y);

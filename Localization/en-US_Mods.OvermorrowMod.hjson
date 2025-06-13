@@ -330,6 +330,7 @@ NPCs: {
 	ATestStateNPC.DisplayName: A Test State N P C
 	ClockworkSpider.DisplayName: Clockwork Spider
 	StairCollision.DisplayName: Stair Collision
+	DiagonalStairsCollision.DisplayName: Diagonal Stairs Collision
 }
 
 Bestiary: {

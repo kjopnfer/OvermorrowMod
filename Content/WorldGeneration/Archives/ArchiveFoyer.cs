@@ -220,10 +220,6 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceLoungeArea(x + 43, y + 194, RoomID.Red);
 
             PlaceTallStairs(x + 85, y + 224);
-            //WorldGen.PlaceObject(x + 93, y + 169, ModContent.TileType<WoodenArch>());
-            WorldGen.PlaceObject(x + 93, y + 224, ModContent.TileType<DiagonalStairs>());
-            WorldGen.PlaceObject(x + 93, y + 214, ModContent.TileType<DiagonalStairs>());
-            WorldGen.PlaceObject(x + 93, y + 204, ModContent.TileType<DiagonalStairs>());
 
             WorldGen.PlaceObject(x + 217, y + 186, ModContent.TileType<Chameleon>());
 
@@ -393,6 +389,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceMultiBookPiles(x + 350, y + 91);
             PlaceMultiBookPiles(x + 350, y + 61);
 
+            PlaceTallStairs(x + 376, y + 91);
+
             WorldGen.PlaceObject(x + 385, y + 36, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 226, y + 71, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 226, y + 41, ModContent.TileType<WoodenArch>());
@@ -426,6 +424,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 698, y + 96, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 724, y + 96, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 705, y + 71, ModContent.TileType<WoodenArch>());
+
+            PlaceTallStairs(x + 493, y + 91);
 
             PlaceMultiBookPiles(x + 536, y + 91);
             PlaceMultiBookPiles(x + 536, y + 61);
