@@ -10,6 +10,9 @@ Tiles: {
 	BookCandleholder.MapEntry: Book Candleholder
 	WoodenStairs.MapEntry: Wooden Stairs
 	NormalWizardStatue.MapEntry: Normal Wizard Statue
+	ArchivePotBig.MapEntry: Archive Pot Big
+	ArchivePotSmall.MapEntry: Archive Pot Small
+	FatVase.MapEntry: Fat Vase
 }
 
 Biomes: {

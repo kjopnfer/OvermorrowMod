@@ -263,9 +263,18 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 8, y - 55, ModContent.TileType<WoodenArch>());
 
             PlaceDiagonalStairStack(x + 8, y);
-            //WorldGen.PlaceObject(x + 8, y, ModContent.TileType<DiagonalStairs>());
-            //WorldGen.PlaceObject(x + 8, y - 10, ModContent.TileType<DiagonalStairs>());
-            //WorldGen.PlaceObject(x + 8, y - 20, ModContent.TileType<DiagonalStairs>());
+        }
+
+        /// <summary>
+        /// Used for those platforms.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        protected void PlaceVaseGroup(int x, int y)
+        {
+            WorldGen.PlaceObject(x, y, ModContent.TileType<ArchivePotSmall>());
+            WorldGen.PlaceObject(x + 1, y, ModContent.TileType<FatVase>());
+            WorldGen.PlaceObject(x + 4, y, ModContent.TileType<ArchivePotSmall>());
         }
 
         protected void PlaceRoomBookshelfArches(int x, int y)
