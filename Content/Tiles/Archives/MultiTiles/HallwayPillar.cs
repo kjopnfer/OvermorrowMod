@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
-            Main.tileNoAttach[Type] = false;
+            Main.tileNoAttach[Type] = true;
 
             TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 8;
