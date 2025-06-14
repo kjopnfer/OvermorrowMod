@@ -77,6 +77,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
         protected override Dictionary<Color, (int, int)> ObjectMapping => new()
         {
+            [new Color(87, 211, 104)] = (ModContent.TileType<ArchiveBanner>(), 1),
             [new Color(237, 152, 93)] = (ModContent.TileType<WaxSconce>(), 1),
             [new Color(233, 193, 121)] = (ModContent.TileType<WoodenStairs>(), 1),
             [new Color(215, 186, 87)] = (ModContent.TileType<ArchivePot>(), 1),
@@ -93,6 +94,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
             [new Color(128, 20, 95)] = (ModContent.TileType<SmallPillar>(), 1),
             [new Color(171, 107, 152)] = (ModContent.TileType<HallwayPillar>(), 1),
+            [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmallHallway>(), 1),
             [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
             [new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
             [new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
@@ -301,6 +303,13 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceBookshelfArch(x + 386, y + 35);
         }
 
+        protected void PlaceHallwayArch(int x, int y)
+        {
+            WorldGen.PlaceObject(x, y, ModContent.TileType<HallwayPillar>());
+            WorldGen.PlaceObject(x + 2, y - 7, ModContent.TileType<WoodenArchSmallHallway>());
+            WorldGen.PlaceObject(x + 8, y, ModContent.TileType<HallwayPillar>());
+        }
+
         protected void PlaceCozyArea(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>
@@ -342,7 +351,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 26, y, cozyChairType);
         }
 
-        // These are split into 7 individual pieces in order to allow for objects to be placed underneath them.
+        /// <summary>
+        /// These are split into 7 individual pieces in order to allow for objects to be placed underneath them.
+        /// These should be placed below a ceiling for the anchor point.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         protected void PlaceBookshelfArch(int x, int y)
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<WoodenArchL1>());

@@ -36,6 +36,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceVaseGroup(x + 217, y + 233);
             #endregion
 
+            PlaceTableAndChair(x + 143, y + 261, -1, RoomID.Yellow);
+
             PlaceBookshelfArch(x + 125, y + 236);
             PlaceBookshelfArch(x + 151, y + 236);
 
@@ -214,6 +216,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceVaseGroup(x + 682, y + 237);
             PlaceVaseGroup(x + 678, y + 233);
             #endregion
+
+            PlaceTableAndChair(x + 752, y + 261, 1, RoomID.Yellow);
 
             PlaceBookshelfArch(x + 735, y + 236);
             PlaceBookshelfArch(x + 761, y + 236);
