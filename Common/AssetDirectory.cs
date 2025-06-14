@@ -16,6 +16,7 @@ namespace OvermorrowMod.Common
         public const string NPCs = Assets + "Sprites/NPCs/";
         public const string Bestiary = Assets + "Sprites/Bestiary/";
         public const string BiomeIcons = Bestiary + "Biome/";
+        public const string Menu = Assets + "Sprites/Menu/";
 
         public const string Tiles = Assets + "Sprites/Tiles/";
         public const string Misc = Assets + "Sprites/Misc/";
