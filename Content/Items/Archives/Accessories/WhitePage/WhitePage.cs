@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             var line4 = Language.GetTextValue(LocalizationPath.TooltipEntities + "StellarCorona" + ".Description.Line3");
 
             return new List<TooltipEntity>() {
-                new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "Default").Value,
+                new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "StellarCorona").Value,
                     title,
                     [line, line2, line3, line4],
                     20f,

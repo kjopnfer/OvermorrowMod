@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Archives
             var line2 = Language.GetTextValue(LocalizationPath.TooltipEntities + "CandleBurst" + ".Description.Line1");
 
             return new List<TooltipEntity>() {
-                new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "Default").Value,
+                new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "CandleBurst").Value,
                     title,
                     [line, line2],
                     15f,

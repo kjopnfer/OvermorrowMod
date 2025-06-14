@@ -11,6 +11,7 @@ namespace OvermorrowMod.Common
         public const string UI = Assets + "UI/";
 
         public const string Backgrounds = Assets + "Backgrounds/";
+        public const string MapBackgrounds = Assets + "Sprites/MapBackgrounds/";
         public const string Buffs = Assets + "Sprites/Buffs/";
         public const string Items = Assets + "Sprites/Items/";
         public const string NPCs = Assets + "Sprites/NPCs/";

@@ -109,8 +109,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 207, y + 168, ModContent.TileType<WaxSconce>());
             WorldGen.PlaceObject(x + 230, y + 168, ModContent.TileType<WaxSconce>());
 
-            WorldGen.PlaceObject(x + 201, y + 142, ModContent.TileType<WaxSconce>());
-            WorldGen.PlaceObject(x + 242, y + 171, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 201, y + 142, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 242, y + 171, ModContent.TileType<WaxCandleholder>());
 
             PlaceHallwayArch(x + 215, y + 171);
             PlaceHallwayArch(x + 238, y + 171);
@@ -199,12 +199,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceTableAndChair(x + 120, y + 99, -1, RoomID.Yellow);
 
             PlaceTableAndChair(x + 261, y + 129, 1, RoomID.Yellow);
-            PlaceTableAndChair(x + 281, y + 129, 1, RoomID.Yellow);
-            PlaceTableAndChair(x + 311, y + 129, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 287, y + 129, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 313, y + 129, 1, RoomID.Yellow);
 
             PlaceTableAndChair(x + 261, y + 99, 1, RoomID.Yellow);
-            PlaceTableAndChair(x + 281, y + 99, 1, RoomID.Yellow);
-            PlaceTableAndChair(x + 311, y + 99, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 287, y + 99, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 313, y + 99, 1, RoomID.Yellow);
 
             WorldGen.PlaceObject(x + 180, y + 109, ModContent.TileType<ArchiveBanner>());
             WorldGen.PlaceObject(x + 180, y + 79, ModContent.TileType<ArchiveBanner>());
