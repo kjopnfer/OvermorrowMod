@@ -280,6 +280,57 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 4, y, ModContent.TileType<ArchivePotSmall>());
         }
 
+        /// <summary>
+        /// Places a VaseGroup with each placement being offset by (4, 4).
+        /// Direction is either 1 (up) or -1 (down). Which controls whether the vases are placed ascending or descending.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="repeat"></param>
+        protected void PlaceMultiVase(int x, int y, int direction, int repeat)
+        {
+            if (direction != 1 && direction != -1) direction = 1;
+
+            for (int i = 0; i < repeat; i++)
+            {
+                var offset = 4 * i;
+                PlaceVaseGroup(x + offset, y - (offset * direction));
+            }
+        }
+
+        /// <summary>
+        /// Placement is relative to where the stairs will be placed in the bottom left corner.
+        /// Valid directions are -1 (stair pillar on left), 1 (stair pillar on right), and 0 (no stair pillars)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="direction"></param>
+        protected void PlaceStairGroup(int x, int y, int direction)
+        {
+            WorldGen.PlaceObject(x, y, ModContent.TileType<WoodenStairs>());
+            //WorldGen.PlaceObject(x, y - 37, ModContent.TileType<WoodenArch>());
+
+            if (direction == -1) // StairPillar is on the left side
+            {
+                WorldGen.PlaceObject(x - 3, y, ModContent.TileType<StairPillar>());
+                WorldGen.PlaceObject(x + 14, y, ModContent.TileType<SmallPillar>());
+                WorldGen.PlaceObject(x + 14, y - 12, ModContent.TileType<WoodenPillar2>());
+            }
+            else if (direction == 1) // StairPillar is on the right side
+            {
+                WorldGen.PlaceObject(x - 3, y, ModContent.TileType<SmallPillar>());
+                WorldGen.PlaceObject(x + 14, y, ModContent.TileType<StairPillar>());
+                WorldGen.PlaceObject(x - 3, y - 12, ModContent.TileType<WoodenPillar2>());
+            }
+            else // No stair pillars
+            {
+                WorldGen.PlaceObject(x - 3, y, ModContent.TileType<SmallPillar>());
+                WorldGen.PlaceObject(x + 14, y, ModContent.TileType<SmallPillar>());
+                WorldGen.PlaceObject(x - 3, y - 12, ModContent.TileType<WoodenPillar2>());
+                WorldGen.PlaceObject(x + 14, y - 12, ModContent.TileType<WoodenPillar2>());
+            }
+        }
+
         protected void PlaceRoomBookshelfArches(int x, int y)
         {
             PlaceBookshelfArch(x, y);

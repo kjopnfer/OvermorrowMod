@@ -68,8 +68,12 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             //ArchiveYellowRoom yellowRoom = new();
             //yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
 
-            Main.spawnTileX = (int)foyer.Position.X + 450;
-            Main.spawnTileY = (int)foyer.Position.Y + 231;
+            //Main.spawnTileX = (int)foyer.Position.X + 450;
+            //Main.spawnTileY = (int)foyer.Position.Y + 231;
+
+            // For debugging:
+            Main.spawnTileX = (int)stairsRoom.Position.X + 136;
+            Main.spawnTileY = (int)stairsRoom.Position.Y + 252;
 
             var surfaceLocation = ArchiveSubworld.GetHeight() / 2 - 300;
             Main.worldSurface = ArchiveSubworld.GetHeight() - 300;
