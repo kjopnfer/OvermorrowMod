@@ -37,8 +37,10 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             PlaceTableAndChair(x + 157, y + 262, 1, RoomID.Yellow);
             PlaceTableAndChair(x + 183, y + 262, 1, RoomID.Yellow);
-            
+
             #region Stairs
+            WorldGen.PlaceObject(x + 282, y + 237, ModContent.TileType<WaxCandleholder>());
+
             WorldGen.PlaceObject(x + 257, y + 237, ModContent.TileType<StairPillar>());
             WorldGen.PlaceObject(x + 260, y + 200, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 260, y + 237, ModContent.TileType<WoodenStairs>());
@@ -103,7 +105,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceHallwayArch(x + 170, y + 171);
             PlaceHallwayArch(x + 193, y + 171);
 
+            WorldGen.PlaceObject(x + 185, y + 168, ModContent.TileType<WaxSconceEven>());
             WorldGen.PlaceObject(x + 207, y + 168, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 230, y + 168, ModContent.TileType<WaxSconce>());
+
+            WorldGen.PlaceObject(x + 201, y + 142, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 242, y + 171, ModContent.TileType<WaxSconce>());
 
             PlaceHallwayArch(x + 215, y + 171);
             PlaceHallwayArch(x + 238, y + 171);
@@ -120,6 +127,21 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Third Floor
+            #region Vases
+            PlaceVaseGroup(x + 343, y + 125);
+            PlaceVaseGroup(x + 347, y + 121);
+            PlaceVaseGroup(x + 351, y + 117);
+            PlaceVaseGroup(x + 355, y + 113);
+            PlaceVaseGroup(x + 359, y + 109);
+
+            PlaceVaseGroup(x + 333, y + 95);
+            PlaceVaseGroup(x + 337, y + 91);
+            PlaceVaseGroup(x + 341, y + 87);
+            PlaceVaseGroup(x + 345, y + 83);
+            PlaceVaseGroup(x + 349, y + 79);
+            #endregion
+
+            #region Bookshelves
             PlaceBookshelfArch(x + 76, y + 104);
             PlaceBookshelfArch(x + 102, y + 104);
             PlaceBookshelfArch(x + 128, y + 104);
@@ -135,15 +157,93 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceMultiBookPiles(x + 75, y + 99);
             PlaceMultiBookPiles(x + 101, y + 99);
 
+            PlaceMultiBookPiles(x + 211, y + 99);
+            PlaceBookshelfArch(x + 211, y + 74);
+
+            PlaceBookshelfArch(x + 270, y + 104);
+            PlaceMultiBookPiles(x + 269, y + 129);
+
+            PlaceBookshelfArch(x + 296, y + 109);
+            PlaceMultiBookPiles(x + 295, y + 129);
+
+            PlaceBookshelfArch(x + 270, y + 74);
+            PlaceMultiBookPiles(x + 269, y + 99);
+
+            PlaceBookshelfArch(x + 296, y + 74);
+            PlaceMultiBookPiles(x + 295, y + 99);
+
+            PlaceBookShelfObjects(x + 386, y + 112);
+            PlaceBookShelfObjects(x + 386, y + 82);
+
+            PlaceBookShelfObjects(x + 412, y + 82);
+            PlaceBookShelfObjects(x + 412, y + 112);
+
+            PlaceBookShelfObjects(x + 438, y + 82, false);
+            PlaceBookShelfObjects(x + 438, y + 112);
+
+            PlaceBookShelfObjects(x + 464, y + 82);
+            PlaceBookShelfObjects(x + 464, y + 112);
+
+            PlaceBookShelfObjects(x + 490, y + 82);
+            PlaceBookShelfObjects(x + 490, y + 112);
+            #endregion
+
             WorldGen.PlaceObject(x + 211, y + 105, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 211, y + 105, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 211, y + 105, ModContent.TileType<WoodenArch>());
+
+            PlaceTableAndChair(x + 94, y + 129, -1, RoomID.Yellow);
+            PlaceTableAndChair(x + 120, y + 129, -1, RoomID.Yellow);
+
+            PlaceTableAndChair(x + 94, y + 99, -1, RoomID.Yellow);
+            PlaceTableAndChair(x + 120, y + 99, -1, RoomID.Yellow);
+
+            PlaceTableAndChair(x + 261, y + 129, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 281, y + 129, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 311, y + 129, 1, RoomID.Yellow);
+
+            PlaceTableAndChair(x + 261, y + 99, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 281, y + 99, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 311, y + 99, 1, RoomID.Yellow);
+
+            WorldGen.PlaceObject(x + 180, y + 109, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 180, y + 79, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 252, y + 109, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 252, y + 79, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 324, y + 109, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 324, y + 79, ModContent.TileType<ArchiveBanner>());
+
+            WorldGen.PlaceObject(x + 369, y + 62, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 369, y + 62, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 543, y + 92, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 543, y + 62, ModContent.TileType<ArchiveBanner>());
+
+            WorldGen.PlaceObject(x + 335, y + 122, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 352, y + 112, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 342, y + 82, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 359, y + 75, ModContent.TileType<WaxSconce>());
 
             PlaceLongTableAndChairs(x + 191, y + 129, RoomID.Yellow);
             PlaceLongTableAndChairs(x + 234, y + 129, RoomID.Yellow);
 
-            PlaceTallStairs(x + 145, y + 129);
+            PlaceTableAndChair(x + 378, y + 112, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 378, y + 82, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 404, y + 112, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 404, y + 82, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 430, y + 112, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 430, y + 82, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 456, y + 112, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 456, y + 82, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 482, y + 112, 1, RoomID.Yellow);
+            PlaceTableAndChair(x + 482, y + 82, 1, RoomID.Yellow);
 
+            PlaceTallStairs(x + 145, y + 129);
+            PlaceTallStairs(x + 508, y + 112);
+
+            PlaceLoungeArea(x + 556, y + 112, RoomID.Yellow);
+            WorldGen.PlaceObject(x + 554, y + 82, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 580, y + 82, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 561, y + 57, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(x + 562, y + 82, DoorID.YellowPitRoomDoorExit, DoorID.YellowStairsRoomEntrance);
             #endregion
         }

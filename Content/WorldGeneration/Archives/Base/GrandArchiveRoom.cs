@@ -130,6 +130,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         }
 
 
+
         protected void PlaceMultiBookPiles(int x, int y)
         {
             const int spaceWidth = 14;
@@ -303,6 +304,17 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceBookshelfArch(x + 386, y + 35);
         }
 
+        /// <summary>
+        /// Places the book piles onto the ground and the archways with objects.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        protected void PlaceBookShelfObjects(int x, int y, bool placeBookPiles = true)
+        {
+            if (placeBookPiles) PlaceMultiBookPiles(x, y);
+            PlaceBookshelfArch(x + 1, y - 25);
+        }
+
         protected void PlaceHallwayArch(int x, int y)
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<HallwayPillar>());
@@ -373,12 +385,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             if (Main.rand.NextBool())
                 WorldGen.PlaceObject(x + 10, y + 5, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
 
-            PlaceBookshelfObjects(x + 3, y + 5);
-            PlaceBookshelfObjects(x + 5, y + 5);
-            PlaceBookshelfObjects(x + 8, y + 5);
+            PlaceShelfArchObjects(x + 3, y + 5);
+            PlaceShelfArchObjects(x + 5, y + 5);
+            PlaceShelfArchObjects(x + 8, y + 5);
         }
 
-        protected void PlaceBookshelfObjects(int x, int y)
+        protected void PlaceShelfArchObjects(int x, int y)
         {
             switch (Main.rand.Next(0, 4))
             {
@@ -510,7 +522,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             {
                 WorldGen.PlaceObject(x, y, tableType, true, 0, 0, 0, 1);
                 WorldGen.PlaceObject(x + 3, y, smallChairType, true, 0, 0, -1, -1);
-            } else
+            }
+            else
             {
                 WorldGen.PlaceObject(x, y, smallChairType, true, 0, 0, -1, 1);
                 WorldGen.PlaceObject(x + 2, y, tableType, true, 0, 0, 0, -1);
