@@ -118,4 +118,25 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override int Height => 4;
         public override Color MapColor => new Color(85, 42, 18);
     }
+
+    public class TheGleeks : Painting
+    {
+        public override int Width => 4;
+        public override int Height => 6;
+        public override Color MapColor => new Color(85, 42, 18);
+    }
+
+    public class TheDayIMetHer : Painting
+    {
+        public override int Width => 8;
+        public override int Height => 6;
+        public override Color MapColor => new Color(85, 42, 18);
+    }
+    public class QinTheGreat : Painting
+    {
+        public override int Width => 6;
+        public override int Height => 6;
+        public override Color MapColor => new Color(85, 42, 18);
+    }
+
 }

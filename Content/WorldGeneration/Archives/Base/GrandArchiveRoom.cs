@@ -413,6 +413,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             }
         }
 
+
         protected void PlaceLongTableAndChairs(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>

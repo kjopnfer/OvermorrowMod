@@ -389,6 +389,10 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceVaseGroup(x + 586, y + 147);
             #endregion
 
+            //WorldGen.PlaceObject(x + 565, y + 122, TileID.Painting3X3, true, Main.rand.Next(1, 3));
+            //WorldGen.PlaceObject(x + 565, y + 125, TileID.Painting3X3, true, Main.rand.Next(1, 3));
+            WorldGen.PlaceObject(x + 564, y + 132, ModContent.TileType<TheGleeks>());
+
             PlaceTableAndChair(x + 713, y + 224, 1, RoomID.Blue);
             PlaceTableAndChair(x + 739, y + 224, 1, RoomID.Blue);
             PlaceTableAndChair(x + 765, y + 224, 1, RoomID.Blue);
@@ -495,8 +499,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 449, y + 67, ModContent.TileType<WaxChandelier>());
             WorldGen.PlaceObject(x + 322, y + 132, ModContent.TileType<Selfie>());
-            WorldGen.PlaceObject(x + 527, y + 129, ModContent.TileType<ABriefRespite>());
-            WorldGen.PlaceObject(x + 425, y + 83, ModContent.TileType<GodsIris>());
+            WorldGen.PlaceObject(x + 572, y + 132, ModContent.TileType<ABriefRespite>());
+
+            WorldGen.PlaceObject(x + 446, y + 86, ModContent.TileType<TheDayIMetHer>());
 
             PlaceBookshelfArch(x + 350, y + 36);
             PlaceBookshelfArch(x + 350, y + 66);
@@ -550,6 +555,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceVaseGroup(x + 302, y + 61);
             #endregion
 
+            WorldGen.PlaceObject(x + 184, y + 60, ModContent.TileType<GodsIris>());
             PlaceLoungeArea(x + 176, y + 66, RoomID.Green);
             PlaceAndConfigureDoor(x + 182, y + 96, DoorID.FoyerGreenRoomDoor, DoorID.GreenBridgeRoomEntrance);
             WorldGen.PlaceObject(x + 174, y + 96, ModContent.TileType<WaxCandleholder>());
