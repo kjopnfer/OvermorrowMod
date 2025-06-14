@@ -37,6 +37,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
         }
     }
 
+    /// <summary>
+    /// Special version that allows these to be placed on tables.
+    /// </summary>
     public class BookPileTable : ModTile
     {
         public override string Texture => AssetDirectory.ArchiveTiles + "BookPile";

@@ -413,7 +413,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             }
         }
 
-        protected void PlaceTableAndChairs(int x, int y, RoomID room)
+        protected void PlaceLongTableAndChairs(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>
             {
@@ -438,6 +438,78 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 7, y - 2, ModContent.TileType<BookPileTable>(), true, Main.rand.Next(0, 4));
 
             WorldGen.PlaceObject(x + 10, y, smallChairType, true, 0, 0, -1, direction: -1);
+        }
+
+
+        /// <summary>
+        /// Places the small table. Has an 80% chance to place the cloth or the empty version.
+        /// 20% chance to place one of the special variants which are shared between all room types.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="room"></param>
+        protected void PlaceTableAndChair(int x, int y, int direction, RoomID room)
+        {
+            var tableTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<ArchiveTableRed>() },
+                { RoomID.Green, ModContent.TileType<ArchiveTableGreen>() },
+                { RoomID.Blue, ModContent.TileType<ArchiveTableBlue>() }
+            };
+
+            int[] specialTableTypes = [
+                ModContent.TileType<ArchiveTable2>(),
+                ModContent.TileType<ArchiveTable3>(),
+                ModContent.TileType<ArchiveTable4>(),
+                ModContent.TileType<ArchiveTable5>(),
+                ModContent.TileType<ArchiveTable6>(),
+            ];
+
+            var smallChairTypes = new Dictionary<RoomID, int>
+            {
+                { RoomID.Red, ModContent.TileType<SmallChairRed>() },
+                { RoomID.Green, ModContent.TileType<SmallChairGreen>() },
+                { RoomID.Blue, ModContent.TileType<SmallChairBlue>() }
+            };
+
+            int tableType = tableTypes.TryGetValue(room, out var type) ? type : ModContent.TileType<ArchiveTablePink>();
+            int smallChairType = smallChairTypes.TryGetValue(room, out var type2) ? type2 : ModContent.TileType<SmallChair>();
+
+            // The table starts off as either be the empty version or the cloth version, depending on the room.
+            // This gives a chance to choose the empty version.
+            if (Main.rand.NextBool())
+            {
+                tableType = ModContent.TileType<ArchiveTable1>();
+            }
+
+            // Afterwards, randomly decide again whether to choose one of the special variants.
+            // 20% chance to override with a special variant
+            bool specialType = false;
+            if (Main.rand.NextBool(5)) // 1 in 5 = 20%
+            {
+                tableType = Main.rand.Next(specialTableTypes);
+                specialType = true;
+            }
+
+            if (direction == -1)
+            {
+                WorldGen.PlaceObject(x, y, tableType, true, 0, 0, 0, 1);
+                WorldGen.PlaceObject(x + 3, y, smallChairType, true, 0, 0, -1, -1);
+            } else
+            {
+                WorldGen.PlaceObject(x, y, smallChairType, true, 0, 0, -1, 1);
+                WorldGen.PlaceObject(x + 2, y, tableType, true, 0, 0, 0, -1);
+            }
+
+            // If the table isn't the special type put books or the inkwell ontop
+            if (!specialType)
+            {
+                if (Main.rand.NextBool())
+                    WorldGen.PlaceObject(x, y - 2, ModContent.TileType<BookPileTable>(), true);
+
+                if (Main.rand.NextBool())
+                    WorldGen.PlaceObject(x + 2, y - 2, ModContent.TileType<Inkwell>(), true);
+            }
         }
     }
 }
