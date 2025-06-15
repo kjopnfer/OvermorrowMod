@@ -72,8 +72,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             //Main.spawnTileY = (int)foyer.Position.Y + 231;
 
             // For debugging:
-            Main.spawnTileX = (int)stairsRoom.Position.X + 136;
-            Main.spawnTileY = (int)stairsRoom.Position.Y + 252;
+            Main.spawnTileX = (int)bridgeRoom.Position.X + 952;
+            Main.spawnTileY = (int)bridgeRoom.Position.Y + 131;
 
             var surfaceLocation = ArchiveSubworld.GetHeight() / 2 - 300;
             Main.worldSurface = ArchiveSubworld.GetHeight() - 300;

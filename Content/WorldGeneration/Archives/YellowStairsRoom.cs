@@ -141,6 +141,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             #endregion
 
             #region Third Floor
+            PlaceLongTableAndChairs(x + 142, y + 80, RoomID.Yellow);
+            PlaceLongTableAndChairs(x + 179, y + 80, RoomID.Yellow);
+
             PlaceLongTableAndChairs(x + 240, y + 110, RoomID.Yellow);
             PlaceLongTableAndChairs(x + 376, y + 110, RoomID.Yellow);
             PlaceLongTableAndChairs(x + 240, y + 80, RoomID.Yellow);
@@ -214,7 +217,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 175, y + 110, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 175, y + 80, ModContent.TileType<WoodenPillar2>());
 
-            //PlaceAndConfigureDoor(x + 309, y + 75, DoorID.YellowPitRoomDoorEntrance, DoorID.FoyerRedRoomDoor);
+            PlaceAndConfigureDoor(x + 309, y + 75, DoorID.YellowPitRoomDoorEntrance, DoorID.FoyerRedRoomDoor);
             PlaceBookShelfObjects(x + 397, y + 80);
 
             PlaceBookShelfObjects(x + 38, y + 110);

@@ -17,58 +17,126 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         protected override Texture2D Objects => ModContent.Request<Texture2D>(AssetDirectory.TexGen + "GrandArchives/GreenBridgeRoomObjects", AssetRequestMode.ImmediateLoad).Value;
         protected override Texture2D Liquids => null;
 
-        protected override Dictionary<Color, int> TileMapping => new()
-        {
-            [new Color(105, 106, 106)] = ModContent.TileType<CastleBrick>(),
-            [new Color(89, 86, 82)] = ModContent.TileType<DarkCastleBrick>(),
-            [new Color(138, 111, 48)] = ModContent.TileType<CastlePlatform>(),
-            [new Color(74, 47, 33)] = ModContent.TileType<ArchiveWood>(),
-            [new Color(150, 150, 150)] = -2,
-            [Color.Black] = -1
-        };
-
-        protected override Dictionary<Color, int> WallMapping => new()
-        {
-            [Color.Black] = -1,
-            [new Color(66, 64, 61)] = ModContent.WallType<CastleWall>(),
-            [new Color(54, 36, 11)] = ModContent.WallType<ArchiveBookWallFrame>(),
-            [new Color(118, 66, 138)] = ModContent.WallType<ArchiveBookWall>(),
-            [new Color(100, 61, 41)] = ModContent.WallType<ArchiveWoodWall>(),
-            [new Color(107, 50, 45)] = ModContent.WallType<ArchiveWoodWallRed>(),
-            [new Color(67, 84, 50)] = ModContent.WallType<ArchiveWoodWallGreen>(),
-            [new Color(70, 67, 117)] = ModContent.WallType<ArchiveWoodWallBlue>(),
-            [new Color(121, 80, 22)] = ModContent.WallType<ArchiveWoodWallYellow>(),
-            [new Color(66, 57, 46)] = ModContent.WallType<CastleWall>(),
-            [new Color(101, 66, 14)] = ModContent.WallType<ArchiveWoodWall>(),
-        };
-
-        protected override Dictionary<Color, (int, int)> ObjectMapping => new()
-        {
-            [new Color(215, 186, 87)] = (ModContent.TileType<ArchivePot>(), 1),
-            [new Color(178, 149, 52)] = (ModContent.TileType<SanctumGate>(), 1),
-            [new Color(75, 105, 47)] = (ModContent.TileType<BookPileTable>(), 1),
-            [new Color(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
-            [new Color(88, 27, 69)] = (ModContent.TileType<CastleChair>(), 1),
-            //[new Color(208, 61, 125)] = (ModContent.TileType<CozyChair>(), 1),
-            [new Color(180, 58, 0)] = (ModContent.TileType<Fireplace>(), 1),
-            [new Color(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
-            [new Color(223, 113, 38)] = (ModContent.TileType<FloorCandles>(), 6),
-            [new Color(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
-            [new Color(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 1),
-            [new Color(115, 72, 34)] = (ModContent.TileType<ArchiveBridge>(), 1),
-            //[new Color(135, 28, 66)] = (ModContent.TileType<WoodenArch>(), 1),
-            //[new Color(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
-            [new Color(159, 131, 65)] = (ModContent.TileType<WaxCandelabra>(), 1),
-            //[new Color(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
-            [new Color(148, 109, 65)] = (ModContent.TileType<WaxCandleholder>(), 1),
-            //[new Color(159, 183, 204)] = (ModContent.TileType<Bismarck>(), 1),
-        };
-
         public override void PostGenerate(int x, int y)
         {
-            PlaceAndConfigureDoor(x + 956, y + 135, DoorID.GreenBridgeRoomEntrance, DoorID.FoyerGreenRoomDoor);
+            #region Upper Right Side
+            WorldGen.PlaceObject(x + 944, y + 131, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 970, y + 131, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 951, y + 106, ModContent.TileType<WoodenArch>());
 
-            PlaceAndConfigureDoor(x + 219, y + 86, DoorID.GreenBridgeRoomExit, DoorID.WaxheadRoomEntrance);
+            PlaceAndConfigureDoor(x + 952, y + 131, DoorID.GreenBridgeRoomEntrance, DoorID.FoyerGreenRoomDoor);
+
+            WorldGen.PlaceObject(x + 921, y + 117, ModContent.TileType<WaxSconce>());
+            PlaceVaseGroup(x + 908, y + 122);
+            PlaceVaseGroup(x + 920, y + 124);
+            PlaceVaseGroup(x + 932, y + 126);
+
+            PlaceBookShelfObjects(x + 848, y + 126);
+            PlaceTableAndChair(x + 841, y + 126, -1, RoomID.Green);
+            PlaceBookShelfObjects(x + 874, y + 126);
+            PlaceTableAndChair(x + 867, y + 126, -1, RoomID.Green);
+            PlaceBookShelfObjects(x + 848, y + 96);
+            PlaceTableAndChair(x + 893, y + 126, -1, RoomID.Green);
+            PlaceBookShelfObjects(x + 874, y + 96);
+
+            WorldGen.PlaceObject(x + 785, y + 106, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 831, y + 106, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 903, y + 106, ModContent.TileType<ArchiveBanner>());
+
+            PlaceCozyArea(x + 796, y + 126, RoomID.Green);
+
+            #region Second Floor
+            WorldGen.PlaceObject(x + 785, y + 76, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 831, y + 76, ModContent.TileType<ArchiveBanner>());
+
+            PlaceLoungeArea(x + 798, y + 96, RoomID.Green);
+            PlaceBookShelfObjects(x + 848, y + 96);
+            PlaceTableAndChair(x + 840, y + 96, 1, RoomID.Green);
+            PlaceBookShelfObjects(x + 876, y + 96);
+            PlaceTableAndChair(x + 866, y + 96, 1, RoomID.Green);
+            PlaceTableAndChair(x + 892, y + 96, 1, RoomID.Green);
+
+            WorldGen.PlaceObject(x + 921, y + 87, ModContent.TileType<WaxSconce>());
+            PlaceVaseGroup(x + 908, y + 92);
+            PlaceVaseGroup(x + 920, y + 94);
+            PlaceVaseGroup(x + 932, y + 96);
+
+            PlaceLoungeArea(x + 946, y + 101, RoomID.Green);
+            #endregion
+
+            #region Third Floor
+            WorldGen.PlaceObject(x + 785, y + 46, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 831, y + 46, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 796, y + 66, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 822, y + 66, ModContent.TileType<WaxCandleholder>());
+
+            PlaceAndConfigureDoor(x + 804, y + 66, DoorID.GreenBridgeRoomEntrance, DoorID.FoyerGreenRoomDoor);
+            PlaceLoungeArea(x + 844, y + 66, RoomID.Green);
+            #endregion
+            #region Stairs
+            WorldGen.PlaceObject(x + 751, y + 116, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 776, y + 116, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 751, y + 86, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 776, y + 86, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 751, y + 56, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 776, y + 56, ModContent.TileType<WaxSconce>());
+
+            WorldGen.PlaceObject(x + 758, y + 41, ModContent.TileType<WoodenArch>());
+            PlaceDiagonalStairStack(x + 758, y + 126, 6);
+            #endregion
+
+            #endregion
+
+            #region Middle Side
+            WorldGen.PlaceObject(x + 741, y + 106, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 741, y + 76, ModContent.TileType<ArchiveBanner>());
+
+            WorldGen.PlaceObject(x + 731, y + 119, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 714, y + 109, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 724, y + 79, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 707, y + 72, ModContent.TileType<WaxSconce>());
+
+            PlaceMultiVase(x + 705, y + 106, -1, 5);
+            PlaceMultiVase(x + 715, y + 76, -1, 5);
+
+            WorldGen.PlaceObject(x + 696, y + 59, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 696, y + 89, ModContent.TileType<ArchiveBanner>());
+
+            for (int i = 0; i < 4; i++)
+            {
+                var offset = 26 * i;
+                PlaceBookShelfObjects(x + 589 + offset, y + 79);
+                PlaceBookShelfObjects(x + 589 + offset, y + 109);
+
+                PlaceTableAndChair(x + 582 + offset, y + 109, -1, RoomID.Green);
+            }
+
+            WorldGen.PlaceObject(x + 572, y + 59, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 572, y + 89, ModContent.TileType<ArchiveBanner>());
+
+            WorldGen.PlaceObject(x + 562, y + 102, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 545, y + 92, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 555, y + 62, ModContent.TileType<WaxSconce>());
+            WorldGen.PlaceObject(x + 538, y + 55, ModContent.TileType<WaxSconce>());
+
+            PlaceMultiVase(x + 536, y + 89, -1, 5);
+            PlaceMultiVase(x + 546, y + 59, -1, 5);
+
+            WorldGen.PlaceObject(x + 527, y + 72, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 527, y + 42, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 455, y + 72, ModContent.TileType<ArchiveBanner>());
+            WorldGen.PlaceObject(x + 455, y + 42, ModContent.TileType<ArchiveBanner>());
+
+            for (int i = 0; i < 2; i++)
+            {
+                var offset = 26 * i;
+                PlaceBookShelfObjects(x + 472 + offset, y + 92);
+                PlaceBookShelfObjects(x + 472 + offset, y + 62);
+
+                PlaceTableAndChair(x + 465 + offset, y + 92, -1, RoomID.Green);
+            }
+            #endregion
+            PlaceAndConfigureDoor(x + 215, y + 92, DoorID.GreenBridgeRoomExit, DoorID.WaxheadRoomEntrance);
         }
     }
 }
