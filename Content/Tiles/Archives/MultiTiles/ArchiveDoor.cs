@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.CustomCollision;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items;
+using OvermorrowMod.Content.Misc;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -50,6 +52,39 @@ namespace OvermorrowMod.Content.Tiles.Archives
             base.MouseOver(i, j);
         }
 
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            Tile tile = Framing.GetTileSafely(i, j);
+
+            ArchiveDoor_TE door;
+            Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            TileUtils.TryFindModTileEntity<ArchiveDoor_TE>(bottomLeft.X, bottomLeft.Y, out door);
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
+            {
+
+                if (door != null && door.IsLocked)
+                {
+                    Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                    Vector2 pos = new Vector2(i * 16, j * 16);
+                    var npcType = ModContent.NPCType<DoorLock>();
+
+                    Vector2 offset = new Vector2(ModUtils.TilesToPixels(6), ModUtils.TilesToPixels(11));
+                    if (!Main.npc.Any(NPC =>
+                        NPC.type == npcType &&
+                        NPC.active &&
+                        NPC.ModNPC is DoorLock doorLock &&
+                        doorLock.tileEntity == door))
+                    {
+                        int lockNPC = NPC.NewNPC(new EntitySource_WorldEvent(), (int)(pos.X + offset.X), (int)(pos.Y + offset.Y), npcType);
+                        if (Main.npc[lockNPC].ModNPC is DoorLock doorLock)
+                        {
+                            doorLock.tileEntity = door;
+                        }
+                    }
+                }
+            }
+        }
+
         public override bool RightClick(int i, int j)
         {
             Tile tile = Framing.GetTileSafely(i, j);
@@ -68,6 +103,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+
             Tile tile = Framing.GetTileSafely(i, j);
             ArchiveDoor_TE door;
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
@@ -105,6 +141,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public int DoorID;
         public int PairedDoor;
 
+        public bool IsLocked = false;
+
         // Face sprite
         private int FrameCounter = 0;
         public int DoorFrame = 1; // Goes from frame 0 to 6
@@ -114,6 +152,13 @@ namespace OvermorrowMod.Content.Tiles.Archives
             tag["DoorID"] = DoorID;
             tag["PairedDoor"] = PairedDoor;
         }
+
+        public override void LoadData(TagCompound tag)
+        {
+            DoorID = tag.Get<int>("DoorID");
+            PairedDoor = tag.Get<int>("PairedDoor");
+        }
+
 
         public void Interact()
         {
@@ -125,14 +170,23 @@ namespace OvermorrowMod.Content.Tiles.Archives
             // If a matching door is found, teleport the player to it
             if (matchingDoor != null)
             {
+                if (IsLocked)
+                {
+                    Main.NewText("The door is locked!", Color.Red);
+                    return;
+                }
+
                 Vector2 teleportOffset = new Vector2(64, -32);
                 Main.LocalPlayer.Teleport(matchingDoor.Position.ToWorldCoordinates(16, 16) + teleportOffset, -1);
                 matchingDoor.DoorFrame = 6;
+
             }
         }
 
         public override void Update()
         {
+            if (IsLocked) return;
+
             Vector2 playerPosition = Main.LocalPlayer.Center;
             float distance = Vector2.Distance(playerPosition, DoorPosition + new Vector2(75, 0));
 
@@ -160,12 +214,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     }
                 }
             }
-        }
-
-        public override void LoadData(TagCompound tag)
-        {
-            DoorID = tag.Get<int>("DoorID");
-            PairedDoor = tag.Get<int>("PairedDoor");
         }
 
         public override bool IsTileValidForEntity(int x, int y)

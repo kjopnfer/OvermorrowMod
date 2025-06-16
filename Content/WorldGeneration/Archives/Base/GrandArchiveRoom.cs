@@ -30,6 +30,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             FoyerGreenRoomDoor,
             GreenBridgeRoomEntrance,
+            GreenBridgeTreasureEntrance,
+            GreenBridgeTreasureExit,
             GreenBridgeRoomExit,
 
             RedRoomEntrance,
@@ -470,7 +472,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         /// <param name="y"></param>
         /// <param name="doorID">The ID of this door.</param>
         /// <param name="pairedDoor">The ID of the other door that this will teleport to.</param>
-        protected void PlaceAndConfigureDoor(int x, int y, DoorID doorID, DoorID pairedDoor)
+        protected void PlaceAndConfigureDoor(int x, int y, DoorID doorID, DoorID pairedDoor, bool isLocked = false)
         {
             // Place the door and get the placed entity
             var doorEntity = TileUtils.PlaceTileWithEntity<ArchiveDoor, ArchiveDoor_TE>(x, y);
@@ -480,6 +482,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             {
                 doorEntity.DoorID = (int)doorID;
                 doorEntity.PairedDoor = (int)pairedDoor;
+                doorEntity.IsLocked = isLocked;
 
                 // Send the necessary network data for multiplayer
                 if (Main.netMode == NetmodeID.Server)

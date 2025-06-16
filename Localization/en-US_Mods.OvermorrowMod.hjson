@@ -334,6 +334,7 @@ NPCs: {
 	ClockworkSpider.DisplayName: Clockwork Spider
 	StairCollision.DisplayName: Stair Collision
 	DiagonalStairsCollision.DisplayName: Diagonal Stairs Collision
+	DoorLock.DisplayName: Door Lock
 }
 
 Bestiary: {

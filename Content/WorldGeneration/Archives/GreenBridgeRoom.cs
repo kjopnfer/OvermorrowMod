@@ -72,7 +72,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 822, y + 66, ModContent.TileType<WaxCandleholder>());
 
             WorldGen.PlaceObject(x + 803, y + 41, ModContent.TileType<WoodenArch>());
-            PlaceAndConfigureDoor(x + 804, y + 66, DoorID.GreenBridgeRoomEntrance, DoorID.FoyerGreenRoomDoor);
+            PlaceAndConfigureDoor(x + 804, y + 66, DoorID.GreenBridgeTreasureEntrance, DoorID.GreenBridgeRoomExit, isLocked: true);
             PlaceLoungeArea(x + 844, y + 66, RoomID.Green);
             #endregion
             #region Stairs
