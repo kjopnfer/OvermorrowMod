@@ -74,55 +74,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileUtils.TryFindModTileEntity<ArchiveDoor_TE>(bottomLeft.X, bottomLeft.Y, out door);
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name + "Animated").Value;
-
-            /*if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
-            {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name + "Animated").Value;
-                var textureHeight = texture.Height / 7;
-                //Rectangle drawRectangle = new Rectangle(0, textureHeight * door.DoorFrame, texture.Width, texture.Height / 7);
-                Rectangle drawRectangle = new Rectangle(0, 0 * door.DoorFrame, 16, 16);
-                Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-
-                spriteBatch.Draw(texture, drawPos, drawRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
-
-            }
-
-            if (tile.TileFrameX == 0 && tile.TileFrameY == 18)
-            {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name + "Animated").Value;
-                var textureHeight = texture.Height / 7;
-                //Rectangle drawRectangle = new Rectangle(0, textureHeight * door.DoorFrame, texture.Width, texture.Height / 7);
-                Rectangle drawRectangle = new Rectangle(0, 18 * door.DoorFrame, 16, 16);
-                Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-
-                spriteBatch.Draw(texture, drawPos, drawRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
-            }
-
-            if (tile.TileFrameX == 18 && tile.TileFrameY == 18)
-            {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name + "Animated").Value;
-                var textureHeight = texture.Height / 7;
-                //Rectangle drawRectangle = new Rectangle(0, textureHeight * door.DoorFrame, texture.Width, texture.Height / 7);
-                Rectangle drawRectangle = new Rectangle(18, 18 * door.DoorFrame, 16, 16);
-                Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-
-                spriteBatch.Draw(texture, drawPos, drawRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
-            }
-
-            if (tile.TileFrameX == 198 && tile.TileFrameY == 18)
-            {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name + "Animated").Value;
-                var textureHeight = texture.Height / 7;
-                //Rectangle drawRectangle = new Rectangle(0, textureHeight * door.DoorFrame, texture.Width, texture.Height / 7);
-                Rectangle drawRectangle = new Rectangle(198, 18 * door.DoorFrame, 16, 16);
-                Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-
-                spriteBatch.Draw(texture, drawPos, drawRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
-            }*/
             var offset = 270 * (door.DoorFrame - 1);
             for (int xFrame = 0; xFrame <= 198; xFrame += 18)
             {
