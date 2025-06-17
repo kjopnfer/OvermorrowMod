@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using Steamworks;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -30,14 +31,19 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             FoyerGreenRoomDoor,
             GreenBridgeRoomEntrance,
+            GreenBridgeRoomExit,
             GreenBridgeTreasureEntrance,
             GreenBridgeTreasureExit,
-            GreenBridgeRoomExit,
+            FlyingBookRoomEntrance,
 
             RedRoomEntrance,
 
             FoyerBlueRoomDoor,
             BlueShrimpRoomEntrance,
+            BlueShrimpTreasureEntrance,
+            BlueShrimpTreasureExit,
+            BlueShrimpSecondTreasureEntrance,
+            BlueShrimpSecondTreasureExit,
             BlueShrimpRoomExit,
 
             BlueRoom,
@@ -131,7 +137,13 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             return true;
         }
 
+        protected void PlaceDoorObjects(int x, int y)
+        {
+            WorldGen.PlaceObject(x - 8, y, ModContent.TileType<WaxCandleholder>(), true);
+            WorldGen.PlaceObject(x + 18, y, ModContent.TileType<WaxCandleholder>(), true);
+            WorldGen.PlaceObject(x - 1, y - 25, ModContent.TileType<WoodenArch>());
 
+        }
 
         protected void PlaceMultiBookPiles(int x, int y)
         {
@@ -310,7 +322,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         protected void PlaceStairGroup(int x, int y, int direction)
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<WoodenStairs>());
-            //WorldGen.PlaceObject(x, y - 37, ModContent.TileType<WoodenArch>());
+            WorldGen.PlaceObject(x, y - 37, ModContent.TileType<WoodenArch>());
 
             if (direction == -1) // StairPillar is on the left side
             {
