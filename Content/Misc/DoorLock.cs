@@ -76,7 +76,7 @@ namespace OvermorrowMod.Content.Misc
 
                     // Calculate fade-out alpha based on distance from center
                     float fadeProgress = (float)i / max; // 3 is the max chain links
-                    float alpha = MathHelper.Lerp(1f, 0.2f, fadeProgress); // Fade from 1.0 to 0.0
+                    float alpha = MathHelper.Lerp(1f, 0.15f, fadeProgress); // Fade from 1.0 to 0.0
 
                     // Calculate pulsing shader progress
                     float timeOffset = (float)i * 25f; // Very fast chain-to-chain travel
