@@ -52,7 +52,7 @@ Buffs: {
 		DisplayName: Warriors Resolve
 		Description:
 			'''
-			Gain 10% increased movement speed
+			Gain 25% increased movement speed
 			Your next melee strike gains 100% crit chance
 			The first enemy you kill restore 40 health
 			'Like a story refusing to end too soon, you gain one last surge to keep fighting.'

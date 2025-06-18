@@ -23,15 +23,19 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         }
 
         public enum DoorID
-        {
-            GreenRoom,
-            
-            RedRoom,
+        {            
             FoyerRedRoomDoor,
             RedLongRoomEntrance,
             RedLongRoomExit,
             RedLongTreasureEntrance,
             RedLongTreasureExit,
+            RedDiagonalRoomEntrance,
+            RedDiagonalRoomExit,
+            RedDiagonalTreasureEntrance,
+            RedDiagonalTreasureExit,
+            RedDiagonalSecondTreasureEntrance,
+            RedDiagonalSecondTreasureExit,
+            RedGhostRoom,
 
             FoyerTreasureEntrance,
             FoyerTreasureExit,
@@ -41,7 +45,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             GreenBridgeRoomExit,
             GreenBridgeTreasureEntrance,
             GreenBridgeTreasureExit,
-            FlyingBookRoomEntrance,
+            GreenFlyingBookRoomEntrance,
 
             RedRoomEntrance,
 
@@ -60,7 +64,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             YellowPitRoomDoorExit,
             YellowStairsRoomEntrance,
             YellowStairsRoomExit,
-            WaxheadRoomEntrance,
+            YellowWaxheadRoomEntrance,
 
         }
 

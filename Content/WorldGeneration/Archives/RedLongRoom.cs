@@ -239,7 +239,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceLoungeArea(x + 52, y + 77, RoomID.Red);
 
             PlaceDoorObjects(x + 58, y + 107);
-            PlaceAndConfigureDoor(x + 58, y + 107, DoorID.RedLongRoomExit, DoorID.FoyerRedRoomDoor);
+            PlaceAndConfigureDoor(x + 58, y + 107, DoorID.RedLongRoomExit, DoorID.RedDiagonalRoomEntrance);
             #endregion
         }
     }

@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 491, y + 85, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 484, y + 110, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 510, y + 110, ModContent.TileType<WaxCandleholder>());
-            PlaceAndConfigureDoor(x + 492, y + 110, DoorID.FlyingBookRoomEntrance, DoorID.GreenBridgeRoomExit);
+            PlaceAndConfigureDoor(x + 492, y + 110, DoorID.GreenFlyingBookRoomEntrance, DoorID.GreenBridgeRoomExit);
 
             PlaceBookshelfArch(x + 27, y + 55);
             PlaceBookshelfArch(x + 53, y + 55);

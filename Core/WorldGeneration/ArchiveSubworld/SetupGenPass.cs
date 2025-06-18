@@ -42,11 +42,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             ArchiveFoyer foyer = new();
             foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2 - 15, ArchiveSubworld.GetHeight() / 2 - foyer.Height / 2 - 200));
 
+
+
             
-
-            //ArchiveRedRoom redRoom = new();
-            //redRoom.Generate(new Vector2(0, greenRoom.Height + 25));
-
             GreenBridgeRoom bridgeRoom = new();
             bridgeRoom.Generate(new Vector2(foyer.Position.X - bridgeRoom.Width, foyer.Position.Y - bridgeRoom.Height / 2));
 
@@ -54,7 +52,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             greenRoom.Generate(new Vector2(bridgeRoom.Position.X - greenRoom.Width, bridgeRoom.Position.Y));
 
             YellowPitRoom pitRoom = new();
-            pitRoom.Generate(new Vector2(foyer.Position.X + foyer.Width, foyer.Position.Y -pitRoom.Height / 2));
+            pitRoom.Generate(new Vector2(foyer.Position.X + foyer.Width, foyer.Position.Y - pitRoom.Height / 2));
 
             YellowStairsRoom stairsRoom = new();
             stairsRoom.Generate(new Vector2(pitRoom.Position.X + pitRoom.Width, pitRoom.Position.Y - pitRoom.Height / 2));
@@ -69,14 +67,29 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             blueRoom.Generate(new Vector2(shrimpRoom.Position.X + shrimpRoom.Width, shrimpRoom.Position.Y + shrimpRoom.Height - blueRoom.Height));
 
             RedLongRoom longRoom = new();
-            longRoom.Generate(new Vector2(foyer.Position.X - longRoom.Width, foyer.Position.Y + bridgeRoom.Height));
-            
+            longRoom.Generate(new Vector2(foyer.Position.X - longRoom.Width, foyer.Position.Y + bridgeRoom.Height - 100));
+
+            RedDiagonalRoom diagonalRoom = new();
+            diagonalRoom.Generate(new Vector2(longRoom.Position.X - diagonalRoom.Width, longRoom.Position.Y - (diagonalRoom.Height / 2)));
+
+            ArchiveRedRoom redRoom = new();
+            redRoom.Generate(new Vector2(diagonalRoom.Position.X - redRoom.Width, diagonalRoom.Position.Y));
+
+            // Extra padding because the texture doesn't extend far enough
+            for (int xOffset = 0; xOffset < 100; xOffset++)
+            {
+                for (int yOffset = 0; yOffset < foyer.Height; yOffset++)
+                {
+                    WorldGen.PlaceTile((int)(foyer.Position.X - xOffset), (int)(foyer.Position.Y + yOffset), ModContent.TileType<CastleBrick>(), true);
+                }
+            }
+
             //Main.spawnTileX = (int)foyer.Position.X + 450;
             //Main.spawnTileY = (int)foyer.Position.Y + 231;
 
             // For debugging:
-            Main.spawnTileX = (int)longRoom.Position.X + 846;
-            Main.spawnTileY = (int)longRoom.Position.Y + 73;
+            Main.spawnTileX = (int)diagonalRoom.Position.X + 723;
+            Main.spawnTileY = (int)diagonalRoom.Position.Y + 269;
 
             var surfaceLocation = ArchiveSubworld.GetHeight() / 2 - 300;
             Main.worldSurface = ArchiveSubworld.GetHeight() - 300;

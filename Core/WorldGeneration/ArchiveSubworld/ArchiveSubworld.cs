@@ -18,7 +18,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
     public class ArchiveSubworld : Subworld
     {
 
-        public override int Width => 5000;
+        public override int Width => 5600;
         public override int Height => 2000;
 
         public static int GetWidth() => new ArchiveSubworld().Width;
