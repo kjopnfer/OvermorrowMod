@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Accessories.GuideLantern
             var line3 = Language.GetTextValue(LocalizationPath.TooltipEntities + "WarriorsResolve" + ".Description.Line2");
 
             return new List<TooltipEntity>() {
-                new BuffTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "Default").Value,
+                new BuffTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "WarriorsResolve").Value,
                     title,
                     [line, line2, line3],
                     10,
