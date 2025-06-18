@@ -171,6 +171,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceVaseGroup(x + 272, y + 73);
             PlaceVaseGroup(x + 284, y + 71);
 
+            WorldGen.PlaceObject(x + 249, y + 152, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 298, y + 189, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 330, y + 189, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 399, y + 189, ModContent.TileType<WaxCandleholder>());
+            WorldGen.PlaceObject(x + 444, y + 214, ModContent.TileType<WaxCandleholder>());
+
             WorldGen.PlaceObject(x + 354, y + 96, ModContent.TileType<WaxSconce>());
             WorldGen.PlaceObject(x + 354, y + 66, ModContent.TileType<WaxSconce>());
             PlaceVaseGroup(x + 365, y + 105);

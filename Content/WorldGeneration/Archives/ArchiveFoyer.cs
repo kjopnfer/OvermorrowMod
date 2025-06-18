@@ -318,7 +318,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 217, y + 186, ModContent.TileType<Chameleon>());
 
             WorldGen.PlaceObject(x + 48, y + 199, ModContent.TileType<WoodenArch>());
-            PlaceAndConfigureDoor(x + 49, y + 224, DoorID.RedRoomEntrance, DoorID.RedRoom);
+            PlaceAndConfigureDoor(x + 49, y + 224, DoorID.FoyerRedRoomDoor, DoorID.RedLongRoomEntrance);
             WorldGen.PlaceObject(x + 41, y + 224, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 67, y + 224, ModContent.TileType<WaxCandleholder>());
 
@@ -506,6 +506,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 572, y + 132, ModContent.TileType<ABriefRespite>());
 
             WorldGen.PlaceObject(x + 446, y + 86, ModContent.TileType<TheDayIMetHer>());
+
+            PlaceAndConfigureDoor(x + 444, y + 61, DoorID.FoyerTreasureEntrance, DoorID.FoyerTreasureExit, isLocked: true);
 
             PlaceBookshelfArch(x + 350, y + 36);
             PlaceBookshelfArch(x + 350, y + 66);

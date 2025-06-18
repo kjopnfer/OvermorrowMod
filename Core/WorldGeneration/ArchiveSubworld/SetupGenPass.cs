@@ -67,15 +67,16 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             ArchiveBlueRoom blueRoom = new();
             blueRoom.Generate(new Vector2(shrimpRoom.Position.X + shrimpRoom.Width, shrimpRoom.Position.Y + shrimpRoom.Height - blueRoom.Height));
-            //ArchiveYellowRoom yellowRoom = new();
-            //yellowRoom.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 + foyer.Width / 2 - 15, 25));
 
+            RedLongRoom longRoom = new();
+            longRoom.Generate(new Vector2(foyer.Position.X - longRoom.Width, foyer.Position.Y + bridgeRoom.Height));
+            
             //Main.spawnTileX = (int)foyer.Position.X + 450;
             //Main.spawnTileY = (int)foyer.Position.Y + 231;
 
             // For debugging:
-            Main.spawnTileX = (int)shrimpRoom.Position.X + 166;
-            Main.spawnTileY = (int)shrimpRoom.Position.Y + 60;
+            Main.spawnTileX = (int)longRoom.Position.X + 846;
+            Main.spawnTileY = (int)longRoom.Position.Y + 73;
 
             var surfaceLocation = ArchiveSubworld.GetHeight() / 2 - 300;
             Main.worldSurface = ArchiveSubworld.GetHeight() - 300;

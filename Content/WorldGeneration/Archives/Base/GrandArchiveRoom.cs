@@ -25,9 +25,16 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         public enum DoorID
         {
             GreenRoom,
+            
             RedRoom,
-
             FoyerRedRoomDoor,
+            RedLongRoomEntrance,
+            RedLongRoomExit,
+            RedLongTreasureEntrance,
+            RedLongTreasureExit,
+
+            FoyerTreasureEntrance,
+            FoyerTreasureExit,
 
             FoyerGreenRoomDoor,
             GreenBridgeRoomEntrance,
