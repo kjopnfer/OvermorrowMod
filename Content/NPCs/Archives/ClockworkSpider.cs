@@ -77,8 +77,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
             new ClockworkSpiderPinball(this),
-            new ClockworkSpiderRoll(this),
-            new ClockworkSpiderSwap(this)
+            //new ClockworkSpiderRoll(this),
+            //new ClockworkSpiderSwap(this)
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
@@ -101,12 +101,19 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.knockBackResist = 0.2f;
             if (currentState is not ClockworkSpiderRoll)
             {
-                if (currentState is ClockworkSpiderSwap || currentState is ClockworkSpiderPinball)
+                if (currentState is ClockworkSpiderPinball)
                 {
                     NPC.knockBackResist = 0f;
 
                     if (AICounter > 10)
-                        NPC.rotation += 0.6f;
+                        NPC.rotation += 0.6f * NPC.direction;
+                }
+                else if (currentState is ClockworkSpiderSwap)
+                {
+                    if (AICounter > 50)
+                        NPC.rotation += 0.6f * NPC.direction;
+
+                    NPC.knockBackResist = 0f;
                 }
                 else
                 {
@@ -143,8 +150,42 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AttackState attackState:
                     switch (attackState.currentSubstate)
                     {
-                        case ClockworkSpiderPinball:
                         case ClockworkSpiderSwap:
+                            //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter + " AI " + AICounter);
+                            xFrame = 2;
+
+                            int fuckthis = 30;
+                            if (AICounter < fuckthis)
+                            {
+                                yFrame = 0;
+                            }
+
+                            if (AICounter > fuckthis)
+                            {
+                                if (yFrame < 4)
+                                {
+                                    NPC.frameCounter++;
+                                }
+
+                                if (NPC.frameCounter % 6 == 0)
+                                {
+                                    yFrame++;
+                                }
+
+                                // Don't know why this keeps going
+                                if (yFrame > 4)
+                                {
+                                    yFrame = 4;
+                                }
+                            }
+
+                            if (AICounter > fuckthis + 40)
+                            {
+                                yFrame = 4;
+                            }
+                            break;
+                            break;
+                        case ClockworkSpiderPinball:
                         case ClockworkSpiderRoll:
                             //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter + " AI " + AICounter);
                             xFrame = 2;

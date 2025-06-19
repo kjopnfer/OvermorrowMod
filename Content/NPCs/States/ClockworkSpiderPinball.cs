@@ -29,6 +29,8 @@ namespace OvermorrowMod.Content.NPCs
             return OvermorrowNPC is ClockworkSpider && NPC.collideY;
         }
 
+        private int verticalDirection = -1; // -1 = up, 1 = down
+        private int horizontalDirection = -1; // -1 = left, 1 = right
         public override void Enter()
         {
             OvermorrowNPC.AICounter = 0;
@@ -37,6 +39,9 @@ namespace OvermorrowMod.Content.NPCs
             startedPinball = false;
 
             NPC.velocity.X = 0;
+
+            horizontalDirection = NPC.direction; // 1 = right, -1 = left
+            verticalDirection = -1; // Start going upward
 
             // Start with a leap (either up or down based on gravity)
             if (NPC.noGravity)
@@ -51,13 +56,16 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit()
         {
-            pinballCooldown = ModUtils.SecondsToTicks(5);
+            //pinballCooldown = ModUtils.SecondsToTicks(5);
+            pinballCooldown = ModUtils.SecondsToTicks(2);
             OvermorrowNPC.AICounter = 0;
         }
 
         public override void Update()
         {
             OvermorrowNPC.AICounter++;
+
+            var tempMaxBounces = 6;
 
             int delay = 18;
             if (!startedPinball)
@@ -81,7 +89,7 @@ namespace OvermorrowMod.Content.NPCs
             {
                 numBounces++;
 
-                if (numBounces >= maxBounces)
+                if (numBounces >= tempMaxBounces)
                 {
                     // Final bounce: go straight down and re-enable gravity on floor impact
                     currentDirection = Vector2.UnitY;
@@ -102,35 +110,15 @@ namespace OvermorrowMod.Content.NPCs
 
         private void TryGetPinballDirection(Vector2 previousDirection)
         {
-            float maxRayDistance = ModUtils.TilesToPixels(30);
-            const float minAngleDifference = 0.5f;
-            const float minTargetDot = 0.25f; // Try to bias towards target
+            const float angleDegrees = 80f;
+            float angleRadians = MathF.PI * angleDegrees / 180f;
 
-            Vector2 targetDirection = OvermorrowNPC.TargetingModule?.Target != null
-                    ? Vector2.Normalize(OvermorrowNPC.TargetingModule.Target.Center - NPC.Center)
-                    : Vector2.Zero;
-            for (int i = 0; i < 30; i++)
-            {
-                Vector2 dir = Vector2.Normalize(Main.rand.NextVector2CircularEdge(1f, 1f));
-                if (previousDirection != Vector2.Zero && Vector2.Dot(dir, previousDirection) > MathF.Cos(minAngleDifference))
-                    continue;
-                if (targetDirection != Vector2.Zero && Vector2.Dot(dir, targetDirection) < minTargetDot)
-                    continue;
+            float x = MathF.Cos(angleRadians) * horizontalDirection;
+            float y = MathF.Sin(angleRadians) * verticalDirection;
 
-                float distance = RayTracing.CastTileCollisionLength(NPC.Center, dir, maxRayDistance);
-                if (distance >= maxRayDistance * 0.95f)
-                {
-                    currentDirection = dir;
-                    return;
-                }
-            }
+            currentDirection = new Vector2(x, y).SafeNormalize(Vector2.UnitY);
 
-            do
-            {
-                currentDirection = Vector2.Normalize(Main.rand.NextVector2CircularEdge(1f, 1f));
-            }
-            while ((previousDirection != Vector2.Zero && Vector2.Dot(currentDirection, previousDirection) > MathF.Cos(minAngleDifference)) ||
-                   (targetDirection != Vector2.Zero && Vector2.Dot(currentDirection, targetDirection) < minTargetDot));
+            verticalDirection *= -1; // Alternate up/down each bounce
         }
     }
 }
