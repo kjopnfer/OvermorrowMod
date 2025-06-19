@@ -70,7 +70,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 492, y + 81, ModContent.TileType<WoodenArch>());
             WorldGen.PlaceObject(x + 485, y + 106, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 511, y + 106, ModContent.TileType<WaxCandleholder>());
-            PlaceAndConfigureDoor(x + 493, y + 106, DoorID.RedGhostRoom, DoorID.RedDiagonalRoomExit);
+            PlaceAndConfigureDoor(x + 493, y + 106, DoorID.RedGhostRoom, DoorID.RedLongRoomExit);
 
             PlaceRoomBookshelfArches(x + 28, y + 51);
 

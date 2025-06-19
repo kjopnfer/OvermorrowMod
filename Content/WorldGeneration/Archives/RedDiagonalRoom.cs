@@ -131,7 +131,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             PlaceLoungeArea(x + 504, y + 82, RoomID.Red);
             PlaceDoorObjects(x + 510, y + 112);
-            PlaceAndConfigureDoor(x + 510, y + 112, DoorID.RedDiagonalSecondTreasureEntrance, DoorID.RedDiagonalSecondTreasureExit, isLocked: true);
+            //PlaceAndConfigureDoor(x + 510, y + 112, DoorID.RedDiagonalSecondTreasureEntrance, DoorID.RedDiagonalSecondTreasureExit, isLocked: true);
+            PlaceAndConfigureDoor(x + 510, y + 112, DoorID.REDGOESTOBLUEDOOR, DoorID.BLUEGOESTOREDFUCKINGDOOR);
 
             for (int i = 0; i < 3; i++)
             {
@@ -192,7 +193,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceBanner(x + 107, y + 65);
 
             PlaceDoorObjects(x + 80, y + 65);
-            PlaceAndConfigureDoor(x + 80, y + 65, DoorID.RedDiagonalRoomExit, DoorID.RedGhostRoom);
+            //PlaceAndConfigureDoor(x + 80, y + 65, DoorID.RedDiagonalRoomEntrance, DoorID.RedLongRoomSecondExit);
+            PlaceAndConfigureDoor(x + 80, y + 65, DoorID.OTHERFUCKINGREDDOORTOREDDOOR, DoorID.REDDOORTOREDDOOR);
             #endregion
         }
     }

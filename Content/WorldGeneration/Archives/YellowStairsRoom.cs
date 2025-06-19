@@ -223,7 +223,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 175, y + 110, ModContent.TileType<WoodenPillar2>());
             WorldGen.PlaceObject(x + 175, y + 80, ModContent.TileType<WoodenPillar2>());
 
-            PlaceAndConfigureDoor(x + 309, y + 75, DoorID.YellowPitRoomDoorEntrance, DoorID.FoyerRedRoomDoor, isLocked: true);
+            PlaceAndConfigureDoor(x + 309, y + 75, DoorID.YellowStairsTreasureEntrance, DoorID.YellowStairsTreasureExit, isLocked: true);
             PlaceBookShelfObjects(x + 397, y + 80);
 
             PlaceBookShelfObjects(x + 38, y + 110);

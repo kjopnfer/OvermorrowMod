@@ -22,50 +22,66 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             Blue
         }
 
+        // I CANT KEEP TRACK OF THESE HOLY FUCK
         public enum DoorID
         {            
             FoyerRedRoomDoor,
+
             RedLongRoomEntrance,
             RedLongRoomExit,
+
             RedLongTreasureEntrance,
             RedLongTreasureExit,
+
             RedDiagonalRoomEntrance,
             RedDiagonalRoomExit,
+
             RedDiagonalTreasureEntrance,
             RedDiagonalTreasureExit,
-            RedDiagonalSecondTreasureEntrance,
-            RedDiagonalSecondTreasureExit,
+
             RedGhostRoom,
+
+            BLUEGOESTOREDFUCKINGDOOR,
+            REDGOESTOBLUEDOOR,
+
+            REDDOORTOREDDOOR,
+            OTHERFUCKINGREDDOORTOREDDOOR,
 
             FoyerTreasureEntrance,
             FoyerTreasureExit,
 
             FoyerGreenRoomDoor,
+
             GreenBridgeRoomEntrance,
             GreenBridgeRoomExit,
+
             GreenBridgeTreasureEntrance,
             GreenBridgeTreasureExit,
+
             GreenFlyingBookRoomEntrance,
 
-            RedRoomEntrance,
-
             FoyerBlueRoomDoor,
+
             BlueShrimpRoomEntrance,
+            BlueShrimpRoomExit,
+
             BlueShrimpTreasureEntrance,
             BlueShrimpTreasureExit,
-            BlueShrimpSecondTreasureEntrance,
-            BlueShrimpSecondTreasureExit,
-            BlueShrimpRoomExit,
 
             BlueRoom,
 
             FoyerYellowRoomDoor,
+
             YellowPitRoomDoorEntrance,
             YellowPitRoomDoorExit,
+
             YellowStairsRoomEntrance,
             YellowStairsRoomExit,
-            YellowWaxheadRoomEntrance,
 
+            YellowStairsTreasureEntrance,
+            YellowStairsTreasureExit,
+
+            YellowWaxheadRoomEntrance,
         }
 
         protected override Dictionary<Color, int> TileMapping => new()

@@ -158,7 +158,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceMultiVase(x + 192, y + 202, -1, 7);
 
             PlaceDoorObjects(x + 115, y + 296);
-            PlaceAndConfigureDoor(x + 115, y + 296, DoorID.BlueShrimpTreasureEntrance, DoorID.BlueShrimpTreasureExit, isLocked: true);
+            //PlaceAndConfigureDoor(x + 115, y + 296, DoorID.BlueShrimpTreasureEntrance, DoorID.BlueShrimpTreasureExit, isLocked: true);
+            PlaceAndConfigureDoor(x + 115, y + 296, DoorID.BLUEGOESTOREDFUCKINGDOOR, DoorID.REDGOESTOBLUEDOOR);
 
             PlaceStairGroup(x + 224, y + 242, 1);
             PlaceMultiVase(x + 200, y + 255, 1, 5);
@@ -283,7 +284,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceTallStairs(x + 670, y + 362);
 
             PlaceDoorObjects(x + 495, y + 258);
-            PlaceAndConfigureDoor(x + 495, y + 258, DoorID.BlueShrimpSecondTreasureEntrance, DoorID.BlueShrimpSecondTreasureExit, isLocked: true);
+            PlaceAndConfigureDoor(x + 495, y + 258, DoorID.BlueShrimpTreasureEntrance, DoorID.BlueShrimpTreasureExit, isLocked: true);
             PlaceTallStairs(x + 531, y + 288);
             for (int i = 0; i < 2; i++)
             {

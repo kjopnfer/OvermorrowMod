@@ -70,10 +70,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             longRoom.Generate(new Vector2(foyer.Position.X - longRoom.Width, foyer.Position.Y + bridgeRoom.Height - 100));
 
             RedDiagonalRoom diagonalRoom = new();
-            diagonalRoom.Generate(new Vector2(longRoom.Position.X - diagonalRoom.Width, longRoom.Position.Y - (diagonalRoom.Height / 2)));
+            diagonalRoom.Generate(new Vector2(foyer.Position.X - (diagonalRoom.Width / 2), longRoom.Position.Y + longRoom.Height));
 
             ArchiveRedRoom redRoom = new();
-            redRoom.Generate(new Vector2(diagonalRoom.Position.X - redRoom.Width, diagonalRoom.Position.Y));
+            redRoom.Generate(new Vector2(longRoom.Position.X - redRoom.Width, longRoom.Position.Y));
 
             // Extra padding because the texture doesn't extend far enough
             for (int xOffset = 0; xOffset < 100; xOffset++)
@@ -84,12 +84,12 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 }
             }
 
-            //Main.spawnTileX = (int)foyer.Position.X + 450;
-            //Main.spawnTileY = (int)foyer.Position.Y + 231;
+            Main.spawnTileX = (int)foyer.Position.X + 450;
+            Main.spawnTileY = (int)foyer.Position.Y + 231;
 
             // For debugging:
-            Main.spawnTileX = (int)diagonalRoom.Position.X + 723;
-            Main.spawnTileY = (int)diagonalRoom.Position.Y + 269;
+            //Main.spawnTileX = (int)diagonalRoom.Position.X + 723;
+            //Main.spawnTileY = (int)diagonalRoom.Position.Y + 269;
 
             var surfaceLocation = ArchiveSubworld.GetHeight() / 2 - 300;
             Main.worldSurface = ArchiveSubworld.GetHeight() - 300;

@@ -144,7 +144,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceBannersBothFloors(x + 416, y + 102);
             PlaceBannersBothFloors(x + 462, y + 102);
             PlaceDoorObjects(x + 435, y + 72);
-            PlaceAndConfigureDoor(x + 435, y + 72, DoorID.RedLongTreasureEntrance, DoorID.RedLongTreasureExit, isLocked: true);
+            //PlaceAndConfigureDoor(x + 435, y + 72, DoorID.RedLongRoomSecondExit, DoorID.RedDiagonalRoomEntrance, isLocked: true);
+            PlaceAndConfigureDoor(x + 435, y + 72, DoorID.REDDOORTOREDDOOR, DoorID.OTHERFUCKINGREDDOORTOREDDOOR);
             PlaceCozyArea(x + 427, y + 102, RoomID.Red);
 
             WorldGen.PlaceObject(x + 399, y + 63, ModContent.TileType<WaxSconce>(), true);
@@ -239,7 +240,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceLoungeArea(x + 52, y + 77, RoomID.Red);
 
             PlaceDoorObjects(x + 58, y + 107);
-            PlaceAndConfigureDoor(x + 58, y + 107, DoorID.RedLongRoomExit, DoorID.RedDiagonalRoomEntrance);
+            PlaceAndConfigureDoor(x + 58, y + 107, DoorID.RedLongRoomExit, DoorID.RedGhostRoom);
             #endregion
         }
     }
