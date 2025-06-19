@@ -51,7 +51,7 @@ namespace OvermorrowMod.Content.NPCs
                 NPC.velocity.Y = -6f;
             }
 
-            NPC.noGravity = true;
+            //NPC.noGravity = true;
         }
 
         public override void Exit()
@@ -66,20 +66,27 @@ namespace OvermorrowMod.Content.NPCs
             OvermorrowNPC.AICounter++;
 
             var tempMaxBounces = 6;
+            var tempBounceSpeed = !Main.expertMode ? 15 : 10;
 
             int delay = 18;
             if (!startedPinball)
             {
                 // Decelerate after leap
                 //NPC.velocity.Y *= 0.9f;
-                if (OvermorrowNPC.AICounter > 16) NPC.velocity.Y = 0;
-                //Main.NewText(Math.Abs(NPC.velocity.Y));
-                //if (Math.Abs(NPC.velocity.Y) < 1f /*|| (NPC.collideY || NPC.collideX*/)
-                if (OvermorrowNPC.AICounter > delay)
+                //if (OvermorrowNPC.AICounter > 16) NPC.velocity.Y = 0;
+
+                if (OvermorrowNPC.AICounter == 16)
+                {
+                    NPC.velocity.X = 1.5f * NPC.direction;
+                    NPC.velocity.Y = -6;
+                }
+
+
+                if (OvermorrowNPC.AICounter > delay && NPC.collideY)
                 {
                     TryGetPinballDirection(Vector2.Zero);
                     NPC.noGravity = true;
-                    NPC.velocity = currentDirection * 10;
+                    NPC.velocity = currentDirection * tempBounceSpeed;
                     startedPinball = true;
                 }
                 return;
@@ -93,7 +100,7 @@ namespace OvermorrowMod.Content.NPCs
                 {
                     // Final bounce: go straight down and re-enable gravity on floor impact
                     currentDirection = Vector2.UnitY;
-                    NPC.velocity = currentDirection * 10;
+                    NPC.velocity = currentDirection * tempBounceSpeed;
 
                     if (NPC.collideY)
                     {
@@ -104,7 +111,7 @@ namespace OvermorrowMod.Content.NPCs
                 }
 
                 TryGetPinballDirection(currentDirection);
-                NPC.velocity = currentDirection * 10;
+                NPC.velocity = currentDirection * tempBounceSpeed;
             }
         }
 

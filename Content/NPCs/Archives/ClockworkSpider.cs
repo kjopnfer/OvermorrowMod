@@ -37,8 +37,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SafeSetDefaults()
         {
-            NPCID.Sets.TrailCacheLength[NPC.type] = 7;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailCacheLength[NPC.type] = 10;
+            NPCID.Sets.TrailingMode[NPC.type] = 3;
 
             NPC.width = 44;
             NPC.height = 44;
@@ -78,7 +78,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
             new ClockworkSpiderPinball(this),
             //new ClockworkSpiderRoll(this),
-            //new ClockworkSpiderSwap(this)
+            new ClockworkSpiderSwap(this)
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
@@ -268,6 +268,33 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             if (currentState is ClockworkSpiderRoll && AICounter > 30)
                 drawOffset = new Vector2(0, 2);
+
+            if (AICounter > 30)
+            {
+                for (int k = 0; k < NPC.oldPos.Length; k++)
+                {
+                    Vector2 origin = NPC.frame.Size() / 2f;
+                    SpriteEffects effects = NPC.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                    Vector2 offset = new Vector2(-42, -12);
+                    Vector2 drawPos = NPC.oldPos[k] + origin - screenPos + new Vector2(0f, NPC.gfxOffY);
+                    float opacity = (NPC.oldPos.Length - k) / (float)NPC.oldPos.Length;
+                    Color afterImageColor = drawColor * 0.25f * opacity;
+                    //Color afterImageColor = Color.Purple * 0.25f * opacity;
+
+                    spriteBatch.Draw(
+                        texture,
+                        drawPos + offset,
+                        NPC.frame,
+                        afterImageColor,
+                        NPC.oldRot[k],
+                        origin,
+                        NPC.scale,
+                        effects,
+                        0f
+                    );
+                }
+            }
 
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
