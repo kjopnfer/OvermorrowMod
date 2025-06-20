@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter()
         {
-            NPC.velocity.X = 0;
+            //NPC.velocity.X = 0;
 
             OvermorrowNPC.AICounter = 0;
             IsFinished = false;
@@ -66,17 +66,19 @@ namespace OvermorrowMod.Content.NPCs
             if (NPC.noGravity)
             {
                 NPC.velocity.Y -= 0.12f;
-            } else
+            }
+            else
             {
                 NPC.velocity.Y += 0.02f;
             }
 
             OvermorrowNPC.AICounter++;
 
-            if (OvermorrowNPC.AICounter == 30)
+            var waitTime = 16;
+            if (OvermorrowNPC.AICounter == waitTime)
             {
                 //Main.NewText("do first bounce");
-                NPC.velocity.X = 1.5f * NPC.direction;
+                if (NPC.velocity.X == 0) NPC.velocity.X = 1.5f * NPC.direction;
                 if (NPC.noGravity)
                 {
                     NPC.velocity.Y = 3;
@@ -87,17 +89,14 @@ namespace OvermorrowMod.Content.NPCs
                 }
             }
 
-            if (OvermorrowNPC.AICounter > 30 && NPC.collideY && numBounces == 0)
+            if (OvermorrowNPC.AICounter > waitTime && NPC.collideY && numBounces == 0)
             {
                 //Main.NewText("I DID THE FIRS BOUNCEdo second bounce");
                 numBounces++;
 
                 if (NPC.noGravity)
                 {
-                    // hahahahah velocity y canot go past 10 for some reason???
-                    // why did they feel the need to cap this
-                    //NPC.velocity.Y = 99999999;
-                    NPC.velocity.Y = 8; // its always 10 its always 10?? huh??
+                    NPC.velocity.Y = 8;
                     //Main.NewText("HOLY SHIT FREDDIE MERCURY MAMA OOOOOOO", Color.Red);
                     NPC.noGravity = false;
                 }
@@ -109,8 +108,9 @@ namespace OvermorrowMod.Content.NPCs
                 }
             }
 
-            var DUMBASSDELAY = !NPC.noGravity ? 110 : 40;
-            if (OvermorrowNPC.AICounter > DUMBASSDELAY && NPC.collideY && numBounces == 1)
+            //var secondBounceDelay = !NPC.noGravity ? 110 : 40;
+            var secondBounceDelay = !NPC.noGravity ? waitTime + 80 : waitTime + 10;
+            if (OvermorrowNPC.AICounter > secondBounceDelay && NPC.collideY && numBounces == 1)
             {
                 if (NPC.noGravity)
                 {
@@ -129,15 +129,17 @@ namespace OvermorrowMod.Content.NPCs
                 }
             }
 
-            if (numBounces == 2 && NPC.collideY && OvermorrowNPC.AICounter > 70)
+            //if (numBounces == 2 && NPC.collideY && OvermorrowNPC.AICounter > 70)
+            if (numBounces == 2 && NPC.collideY && OvermorrowNPC.AICounter > waitTime + 40)
             {
-                
+
                 //Main.NewText("do third again " + OvermorrowNPC.AICounter + " no gravity is: " + NPC.noGravity);
                 if (NPC.noGravity)
                 {
                     NPC.velocity.Y = 2;
                     numBounces++;
-                } else
+                }
+                else
                 {
                     NPC.velocity.Y = -3;
                     numBounces++;

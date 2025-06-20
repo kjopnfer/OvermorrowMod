@@ -62,7 +62,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override NPCTargetingConfig TargetingConfig()
         {
             return new NPCTargetingConfig(
-                maxAggroTime: 300f,
+                maxAggroTime: ModUtils.SecondsToTicks(6.5f),
                 aggroLossRate: 1f,
                 aggroCooldownTime: 180f,
                 maxTargetRange: ModUtils.TilesToPixels(35),
@@ -102,24 +102,28 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.knockBackResist = 0.2f;
             if (currentState is not ClockworkSpiderRoll)
             {
-                if (currentState is ClockworkSpiderPinball)
+                if (currentState is ClockworkSpiderPinball || currentState is ClockworkSpiderSwap)
                 {
                     NPC.knockBackResist = 0f;
 
                     if (AICounter > 10)
                         NPC.rotation += 0.6f * NPC.direction;
                 }
-                else if (currentState is ClockworkSpiderSwap)
-                {
-                    if (AICounter > 50)
-                        NPC.rotation += 0.6f * NPC.direction;
-
-                    NPC.knockBackResist = 0f;
-                }
                 else
                 {
                     NPC.rotation = 0;
                 }
+                //else if (currentState is ClockworkSpiderSwap)
+                //{
+                //    if (AICounter > 50)
+                //        NPC.rotation += 0.6f * NPC.direction;
+
+                //    NPC.knockBackResist = 0f;
+                //}
+                //else
+                //{
+                //    NPC.rotation = 0;
+                //}
             }
         }
 
@@ -163,7 +167,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
                             //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter + " AI " + AICounter);
                             xFrame = 2;
 
-                            int delay = attackState.currentSubstate is ClockworkSpiderSwap ? 30 : 0;
+                            //int delay = attackState.currentSubstate is ClockworkSpiderSwap ? 30 : 0;
+                            int delay = 0;
                             if (AICounter < delay)
                             {
                                 yFrame = 0;
