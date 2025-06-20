@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.NPCs;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -32,60 +33,118 @@ namespace OvermorrowMod.Content.Misc
 
         /// <summary>
         /// Gets the effective alert buffer for the current target, accounting for AlertBonus.
+        /// Now uses the new AggroRadius system.
         /// </summary>
         private float GetEffectiveAlertBuffer(OvermorrowNPC overmorrowNPC, Entity target)
         {
-            var config = overmorrowNPC.TargetingConfig();
-
-            if (!config.AlertRange.HasValue)
-                return 0f;
-
-            // Use the targeting module's GetAlertBuffer method which accounts for player bonuses
+            // Use the targeting module's GetAlertBuffer method which now works with AggroRadius
             float? alertBuffer = overmorrowNPC.TargetingModule.GetAlertBuffer(target);
 
             if (alertBuffer.HasValue)
                 return alertBuffer.Value;
 
-            // Fallback to base calculation if targeting module method fails
-            return config.AlertRange.Value - config.MaxTargetRange;
+            // Fallback calculation using the new system if targeting module method fails
+            var config = overmorrowNPC.TargetingConfig();
+            if (config.AlertRadius == null || config.TargetRadius == null)
+                return 0f;
+
+            // Get the effective radii for this specific target and NPC direction
+            AggroRadius effectiveAlertRadius = GetEffectiveAlertRadius(overmorrowNPC, target);
+            AggroRadius effectiveTargetRadius = GetEffectiveTargetRadius(overmorrowNPC, target);
+
+            // Calculate the buffer in the direction of the target
+            Vector2 directionToTarget = (target.Center - overmorrowNPC.NPC.Center);
+            if (directionToTarget != Vector2.Zero)
+            {
+                directionToTarget.Normalize();
+
+                float alertRadiusInDirection = effectiveAlertRadius.GetRadiusInDirection(directionToTarget, overmorrowNPC.NPC.direction);
+                float targetRadiusInDirection = effectiveTargetRadius.GetRadiusInDirection(directionToTarget, overmorrowNPC.NPC.direction);
+
+                return alertRadiusInDirection - targetRadiusInDirection;
+            }
+
+            // Fallback to max radius difference
+            return effectiveAlertRadius.GetMaxRadius() - effectiveTargetRadius.GetMaxRadius();
         }
 
         /// <summary>
-        /// Gets the effective aggro range for the current target, accounting for AlertBonus.
+        /// Gets the effective aggro radius for the current target, accounting for AlertBonus.
+        /// Updated to work with AggroRadius system.
         /// </summary>
-        private float GetEffectiveAggroRange(OvermorrowNPC overmorrowNPC, Entity target)
+        private AggroRadius GetEffectiveTargetRadius(OvermorrowNPC overmorrowNPC, Entity target)
         {
             var config = overmorrowNPC.TargetingConfig();
-            float baseAggroRange = config.MaxTargetRange;
+            AggroRadius baseRadius = config.TargetRadius?.Clone() ?? AggroRadius.Circle(160f);
 
             if (target is Player player)
             {
                 int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
-                return Math.Max(0, baseAggroRange - alertBonus);
+
+                // AlertBonus reduces all radius values proportionally
+                float reductionFactor = Math.Max(0.1f, 1f - (alertBonus / baseRadius.GetMaxRadius()));
+
+                return new AggroRadius(
+                    right: Math.Max(0, baseRadius.Right * reductionFactor),
+                    left: Math.Max(0, baseRadius.Left * reductionFactor),
+                    up: Math.Max(0, baseRadius.Up * reductionFactor),
+                    down: Math.Max(0, baseRadius.Down * reductionFactor),
+                    flipWithDirection: baseRadius.FlipWithDirection
+                );
             }
 
-            return baseAggroRange;
+            return baseRadius;
         }
 
         /// <summary>
-        /// Gets the effective alert range for the current target, accounting for AlertBonus.
+        /// Gets the effective alert radius for the current target, accounting for AlertBonus.
+        /// Updated to work with AggroRadius system.
         /// </summary>
-        private float GetEffectiveAlertRange(OvermorrowNPC overmorrowNPC, Entity target)
+        private AggroRadius GetEffectiveAlertRadius(OvermorrowNPC overmorrowNPC, Entity target)
         {
             var config = overmorrowNPC.TargetingConfig();
 
-            if (!config.AlertRange.HasValue)
-                return config.MaxTargetRange;
+            if (config.AlertRadius == null)
+                return config.TargetRadius ?? AggroRadius.Circle(160f);
 
-            float baseAlertRange = config.AlertRange.Value;
+            AggroRadius baseRadius = config.AlertRadius.Clone();
 
             if (target is Player player)
             {
                 int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
-                return baseAlertRange + alertBonus;
+
+                // AlertBonus increases alert radius
+                return new AggroRadius(
+                    right: baseRadius.Right + alertBonus,
+                    left: baseRadius.Left + alertBonus,
+                    up: baseRadius.Up + alertBonus,
+                    down: baseRadius.Down + alertBonus,
+                    flipWithDirection: baseRadius.FlipWithDirection
+                );
             }
 
-            return baseAlertRange;
+            return baseRadius;
+        }
+
+        /// <summary>
+        /// Gets the distance from NPC to target in the specific direction of the target.
+        /// This accounts for the custom shape of the aggro radius.
+        /// </summary>
+        private float GetDirectionalDistance(OvermorrowNPC overmorrowNPC, Entity target, AggroRadius radius)
+        {
+            Vector2 directionToTarget = target.Center - overmorrowNPC.NPC.Center;
+            float actualDistance = directionToTarget.Length();
+
+            if (directionToTarget != Vector2.Zero)
+            {
+                directionToTarget.Normalize();
+                float radiusInDirection = radius.GetRadiusInDirection(directionToTarget, overmorrowNPC.NPC.direction);
+
+                // Return the "normalized" distance - how far along the radius the target is
+                return actualDistance;
+            }
+
+            return actualDistance;
         }
 
         public override void AI()
@@ -98,30 +157,42 @@ namespace OvermorrowMod.Content.Misc
             {
                 Projectile.timeLeft = 10;
 
-                // Get the target entity (should already exist in alert state)
                 Entity target = overmorrowNPC.TargetingModule.GetAlertTarget();
                 if (target != null)
                 {
-                    float distance = Vector2.Distance(npc.Center, target.Center);
+                    AggroRadius effectiveTargetRadius = GetEffectiveTargetRadius(overmorrowNPC, target);
+                    AggroRadius effectiveAlertRadius = GetEffectiveAlertRadius(overmorrowNPC, target);
 
-                    // Get effective ranges accounting for player AlertBonus
-                    float effectiveAggroRange = GetEffectiveAggroRange(overmorrowNPC, target);
-                    float effectiveAlertRange = GetEffectiveAlertRange(overmorrowNPC, target);
-                    float effectiveAlertBuffer = effectiveAlertRange - effectiveAggroRange;
+                    Vector2 directionToTarget = target.Center - npc.Center;
+                    float actualDistance = directionToTarget.Length();
 
-                    if (effectiveAlertBuffer > 0)
+                    if (directionToTarget != Vector2.Zero)
                     {
-                        // Compute progress: 0 at effectiveAggroRange, 1 at effectiveAlertRange
-                        float flashProgress = MathHelper.Clamp((distance - effectiveAggroRange) / effectiveAlertBuffer, 0f, 1f);
+                        directionToTarget.Normalize();
 
-                        // Flash speed increases as the target gets closer to aggro range
-                        // At max alert distance (flashProgress = 1): slow flash (30f)
-                        // At aggro threshold (flashProgress = 0): fast flash (5f)
-                        flashSpeed = MathHelper.Lerp(5f, 30f, flashProgress);
+                        // Get the radius values in the specific direction of the target
+                        float targetRadiusInDirection = effectiveTargetRadius.GetRadiusInDirection(directionToTarget, npc.direction);
+                        float alertRadiusInDirection = effectiveAlertRadius.GetRadiusInDirection(directionToTarget, npc.direction);
+                        float effectiveAlertBuffer = alertRadiusInDirection - targetRadiusInDirection;
+
+                        if (effectiveAlertBuffer > 0)
+                        {
+                            float flashProgress = MathHelper.Clamp(
+                                (actualDistance - targetRadiusInDirection) / effectiveAlertBuffer, 0f, 1f);
+
+                            // Flash speed increases as the target gets closer to aggro range
+                            // At max alert distance (flashProgress = 1): slow flash (30f)
+                            // At aggro threshold (flashProgress = 0): fast flash (5f)
+                            flashSpeed = MathHelper.Lerp(5f, 30f, flashProgress);
+                        }
+                        else
+                        {
+                            // If buffer is 0 or negative, use fast flashing
+                            flashSpeed = 5f;
+                        }
                     }
                     else
                     {
-                        // If buffer is 0 or negative, use fast flashing
                         flashSpeed = 5f;
                     }
                 }

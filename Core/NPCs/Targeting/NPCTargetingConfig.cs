@@ -29,22 +29,53 @@ namespace OvermorrowMod.Core.NPCs
         public int MaxMissedAttacks { get; set; } = 5;
 
         /// <summary>
-        /// The maximum distance (in pixels) an NPC can detect and target an entity.
-        /// Defaults to 10 tiles (16 pixels per tile).
+        /// The aggro radius shape for detecting and targeting entities.
+        /// Defaults to a circular range of 10 tiles.
         /// </summary>
-        public float MaxTargetRange { get; set; } = ModUtils.TilesToPixels(10);
+        public AggroRadius TargetRadius { get; set; } = AggroRadius.Circle(ModUtils.TilesToPixels(10));
 
         /// <summary>
-        /// The maximum distance (in pixels) for an NPC to attack.
-        /// Defaults to 10 tiles (16 pixels per tile).
+        /// The attack radius shape for determining attack range.
+        /// Defaults to a circular range of 10 tiles.
         /// </summary>
-        public float MaxAttackRange { get; set; } = ModUtils.TilesToPixels(10);
+        public AggroRadius AttackRadius { get; set; } = AggroRadius.Circle(ModUtils.TilesToPixels(10));
 
         /// <summary>
-        /// The distance at which the NPC enters an alert state (greater than aggro range).
+        /// The alert radius shape for early detection (greater than aggro range).
         /// Leave null to have no alert range.
         /// </summary>
-        public float? AlertRange { get; set; } = ModUtils.TilesToPixels(10 + 2.5f); // Example: 160px if aggro is 120px
+        public AggroRadius? AlertRadius { get; set; } = AggroRadius.Circle(ModUtils.TilesToPixels(12.5f));
+
+        // Legacy properties for backward compatibility
+        /// <summary>
+        /// Legacy property. Use TargetRadius instead for more control.
+        /// </summary>
+        [System.Obsolete("Use TargetRadius instead for more flexible range shapes.")]
+        public float MaxTargetRange
+        {
+            get => TargetRadius?.GetMaxRadius() ?? 0f;
+            set => TargetRadius = AggroRadius.Circle(value);
+        }
+
+        /// <summary>
+        /// Legacy property. Use AttackRadius instead for more control.
+        /// </summary>
+        [System.Obsolete("Use AttackRadius instead for more flexible range shapes.")]
+        public float MaxAttackRange
+        {
+            get => AttackRadius?.GetMaxRadius() ?? 0f;
+            set => AttackRadius = AggroRadius.Circle(value);
+        }
+
+        /// <summary>
+        /// Legacy property. Use AlertRadius instead for more control.
+        /// </summary>
+        [System.Obsolete("Use AlertRadius instead for more flexible range shapes.")]
+        public float? AlertRange
+        {
+            get => AlertRadius?.GetMaxRadius();
+            set => AlertRadius = value.HasValue ? AggroRadius.Circle(value.Value) : null;
+        }
 
         /// <summary>
         /// Determines whether the NPC should prioritize targets based on player aggro values.
@@ -58,28 +89,51 @@ namespace OvermorrowMod.Core.NPCs
         public bool DisplayAggroIndicator { get; set; } = true;
 
         /// <summary>
+        /// Determines whether to show debug visualization of the aggro ranges.
+        /// Only works in debug builds or when debug mode is enabled.
+        /// </summary>
+        public bool ShowDebugVisualization { get; set; } = false;
+
+        /// <summary>
         /// Initializes a new instance of <see cref="NPCTargetingConfig"/> with default values.
         /// </summary>
         public NPCTargetingConfig() { }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="NPCTargetingConfig"/> with custom values.
+        /// Initializes a new instance of <see cref="NPCTargetingConfig"/> with custom aggro radius shapes.
         /// </summary>
         /// <param name="maxAggroTime">The maximum duration (in frames) the NPC remains aggroed.</param>
         /// <param name="aggroLossRate">The rate at which aggro decreases per frame.</param>
         /// <param name="aggroCooldownTime">The cooldown time before re-targeting a lost target.</param>
-        /// <param name="maxTargetRange">The maximum detection range (in pixels) for acquiring a target.</param>
-        /// <param name="maxAttackRange">The maximum attack range after acquiring a target, not the same as the aggro range which is used for finding a target.</param>
-        /// <param name="alertRange">The maximum detection range (in pixels) to be within alert. Set null to have no alert range.</param>
+        /// <param name="targetRadius">The aggro radius shape for detecting targets.</param>
+        /// <param name="attackRadius">The attack radius shape for combat range.</param>
+        /// <param name="alertRadius">The alert radius shape for early detection. Set null to disable.</param>
         /// <param name="prioritizeAggro">Whether the NPC should prioritize targets with higher aggro values.</param>
-        public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime, float maxTargetRange, float maxAttackRange, float? alertRange, bool prioritizeAggro)
+        public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime,
+            AggroRadius targetRadius, AggroRadius attackRadius, AggroRadius? alertRadius, bool prioritizeAggro)
         {
             MaxAggroTime = maxAggroTime;
             AggroLossRate = aggroLossRate;
             AggroCooldownTime = aggroCooldownTime;
-            MaxTargetRange = maxTargetRange;
-            MaxAttackRange = maxAttackRange;
-            AlertRange = alertRange;
+            TargetRadius = targetRadius;
+            AttackRadius = attackRadius;
+            AlertRadius = alertRadius;
+            PrioritizeAggro = prioritizeAggro;
+        }
+
+        /// <summary>
+        /// Legacy constructor for backward compatibility.
+        /// </summary>
+        [System.Obsolete("Use the constructor with AggroRadius parameters for more flexible range shapes.")]
+        public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime,
+            float maxTargetRange, float maxAttackRange, float? alertRange, bool prioritizeAggro)
+        {
+            MaxAggroTime = maxAggroTime;
+            AggroLossRate = aggroLossRate;
+            AggroCooldownTime = aggroCooldownTime;
+            TargetRadius = AggroRadius.Circle(maxTargetRange);
+            AttackRadius = AggroRadius.Circle(maxAttackRange);
+            AlertRadius = alertRange.HasValue ? AggroRadius.Circle(alertRange.Value) : null;
             PrioritizeAggro = prioritizeAggro;
         }
     }

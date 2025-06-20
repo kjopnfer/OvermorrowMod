@@ -61,15 +61,39 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool CheckActive() => false;
         public override NPCTargetingConfig TargetingConfig()
         {
+            //return new NPCTargetingConfig(
+            //    maxAggroTime: ModUtils.SecondsToTicks(6.5f),
+            //    aggroLossRate: 1f,
+            //    aggroCooldownTime: 180f,
+            //    maxTargetRange: ModUtils.TilesToPixels(35),
+            //    maxAttackRange: ModUtils.TilesToPixels(35),
+            //    alertRange: ModUtils.TilesToPixels(40),
+            //    prioritizeAggro: true
+            //);
             return new NPCTargetingConfig(
-                maxAggroTime: ModUtils.SecondsToTicks(6.5f),
+                maxAggroTime: ModUtils.SecondsToTicks(7f),
                 aggroLossRate: 1f,
-                aggroCooldownTime: 180f,
-                maxTargetRange: ModUtils.TilesToPixels(35),
-                maxAttackRange: ModUtils.TilesToPixels(35),
-                alertRange: ModUtils.TilesToPixels(40),
+                aggroCooldownTime: ModUtils.SecondsToTicks(4f),
+                targetRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(25),            // Far right detection
+                    left: ModUtils.TilesToPixels(25),             // Close left detection
+                    up: ModUtils.TilesToPixels(15),               // Medium up detection
+                    down: ModUtils.TilesToPixels(15),             // Far down detection
+                    flipWithDirection: true                       // Flip based on NPC direction
+                ),
+                attackRadius: AggroRadius.Circle(ModUtils.TilesToPixels(35)),
+                alertRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(35),
+                    left: ModUtils.TilesToPixels(35),
+                    up: ModUtils.TilesToPixels(25),
+                    down: ModUtils.TilesToPixels(25),
+                    flipWithDirection: true
+                ),
                 prioritizeAggro: true
-            );
+            )
+            {
+                ShowDebugVisualization = true
+            };
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
@@ -231,6 +255,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            TargetingModule?.DrawDebugVisualization(spriteBatch);
+
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
 
             State currentState = AIStateMachine.GetCurrentSubstate();
