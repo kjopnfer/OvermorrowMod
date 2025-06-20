@@ -32,31 +32,55 @@ namespace OvermorrowMod.Content.NPCs
         {
             OvermorrowNPC.AICounter = 0;
             IsFinished = false;
+            NPC.noGravity = false;
+
+            NPC.velocity.Y = -6f;
+            //NPC.velocity.X *= 0.25f;
         }
 
         public override void Exit()
         {
             OvermorrowNPC.AICounter = 0;
-            rollCooldown = ModUtils.SecondsToTicks(2);
+            rollCooldown = ModUtils.SecondsToTicks(Main.rand.Next(3, 5));
         }
 
         public override void Update()
         {
             OvermorrowNPC.AICounter++;
 
-            if (OvermorrowNPC.AICounter >= 30 && OvermorrowNPC.AICounter <= ModUtils.SecondsToTicks(3))
+            float acceleration = 0.15f; // how quickly it speeds up
+            float maxSpeed = 12f;
+
+
+            if (OvermorrowNPC.AICounter >= ModUtils.SecondsToTicks(2.5f) || NPC.velocity.X == 0)
+            {
+                IsFinished = true;
+                NPC.velocity.X = 0;
+                NPC.noGravity = false;
+            }
+
+            //if (OvermorrowNPC.AICounter >= ModUtils.SecondsToTicks(0.5f) && OvermorrowNPC.AICounter <= ModUtils.SecondsToTicks(1.5f))
+            if (OvermorrowNPC.AICounter >= ModUtils.SecondsToTicks(0.25f))
+            {
+                // Clamp to max speed
+                if (MathF.Abs(NPC.velocity.X) > maxSpeed)
+                    NPC.velocity.X = NPC.direction * maxSpeed;
+
+                float rotationSpeedFactor = 0.05f; // Adjust as needed
+                NPC.rotation += NPC.direction * MathF.Abs(NPC.velocity.X) * rotationSpeedFactor;
+            }
+
+            if (NPC.collideY)
             {
                 // Roll for 30 frames
-                NPC.velocity.X = NPC.direction * 12f; // Adjust speed as needed
-                NPC.velocity.Y = 0; // Keep it horizontal
+                //NPC.velocity.X = NPC.direction * 12f; // Adjust speed as neededif (NPC.collideX)
+                
 
-                NPC.rotation += NPC.direction * 0.6f; // Rotate while rolling
-            }
-            else if (OvermorrowNPC.AICounter >= ModUtils.SecondsToTicks(3))
-            {
-                IsFinished = true; // End the roll after 30 frames
-                NPC.velocity.X = 0; // Stop movement
-                NPC.noGravity = false;
+                NPC.velocity.X += NPC.direction * acceleration;
+                Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
+
+                //NPC.rotation += NPC.direction * 0.6f;
+                
             }
         }
     }

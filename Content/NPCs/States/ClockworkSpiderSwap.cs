@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Exit()
         {
-            swapCooldown = ModUtils.SecondsToTicks(4);
+            swapCooldown = ModUtils.SecondsToTicks(2);
             OvermorrowNPC.AICounter = 0;
         }
 

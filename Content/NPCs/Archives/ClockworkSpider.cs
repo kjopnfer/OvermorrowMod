@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using OvermorrowMod.Content.Biomes;
 using System.Collections.Generic;
 using OvermorrowMod.Core.NPCs;
+using System;
 
 
 namespace OvermorrowMod.Content.NPCs.Archives
@@ -76,14 +77,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
-            new ClockworkSpiderPinball(this),
-            //new ClockworkSpiderRoll(this),
+            new ClockworkSpiderPinball(this, Main.rand.Next(14, 17)),
+            new ClockworkSpiderRoll(this),
             new ClockworkSpiderSwap(this)
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
-            new CeilingWalk(this),
-            new MeleeWalk(this),
+            new CeilingWalk(this, 0.05f, 4.25f),
+            new MeleeWalk(this, 0.05f, 4.25f),
         };
 
 
@@ -146,45 +147,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     {
                         yFrame = (yFrame + 1) % 8;
                     }
+
+                    if (Math.Abs(NPC.velocity.X) > 3)
+                    {
+                        xFrame = 1;
+
+                    }
                     break;
                 case AttackState attackState:
                     switch (attackState.currentSubstate)
                     {
                         case ClockworkSpiderSwap:
-                            //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter + " AI " + AICounter);
-                            xFrame = 2;
-
-                            int fuckthis = 30;
-                            if (AICounter < fuckthis)
-                            {
-                                yFrame = 0;
-                            }
-
-                            if (AICounter > fuckthis)
-                            {
-                                if (yFrame < 4)
-                                {
-                                    NPC.frameCounter++;
-                                }
-
-                                if (NPC.frameCounter % 6 == 0)
-                                {
-                                    yFrame++;
-                                }
-
-                                // Don't know why this keeps going
-                                if (yFrame > 4)
-                                {
-                                    yFrame = 4;
-                                }
-                            }
-
-                            if (AICounter > fuckthis + 40)
-                            {
-                                yFrame = 4;
-                            }
-                            break;
-                            break;
                         case ClockworkSpiderPinball:
                         case ClockworkSpiderRoll:
                             //Main.NewText("xFrame: " + xFrame + " yFrame: " + yFrame + " COUNTER: " + NPC.frameCounter + " AI " + AICounter);
@@ -214,7 +187,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                                     yFrame = 4;
                                 }
                             }
-                            
+
                             if (AICounter > delay + 40)
                             {
                                 yFrame = 4;
@@ -256,6 +229,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
 
             State currentState = AIStateMachine.GetCurrentSubstate();
+            State currentSuperState = AIStateMachine.GetCurrentState();
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Vector2 drawOffset = new Vector2(0, -4);
 
@@ -269,7 +243,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (currentState is ClockworkSpiderRoll && AICounter > 30)
                 drawOffset = new Vector2(0, 2);
 
-            if (AICounter > 30)
+            if (AICounter > 30 && currentSuperState is AttackState)
             {
                 for (int k = 0; k < NPC.oldPos.Length; k++)
                 {

@@ -15,11 +15,14 @@ namespace OvermorrowMod.Content.NPCs
 
         private int numBounces = 0;
         private Vector2 currentDirection;
-        private const int maxBounces = 5;
-        private const float pinballSpeed = 8f;
+        private int maxBounces = 6;
+        private float pinballSpeed = 8f;
         private bool startedPinball = false;
-        private int pinballCooldown = 0;
-        public ClockworkSpiderPinball(OvermorrowNPC npc) : base(npc) { }
+        private int pinballCooldown = ModUtils.SecondsToTicks(Main.rand.Next(5, 7));
+
+        public ClockworkSpiderPinball(OvermorrowNPC npc, float pinballSpeed = 15) : base(npc) {
+            this.pinballSpeed = pinballSpeed;
+        }
 
         public override bool CanExecute()
         {
@@ -57,16 +60,14 @@ namespace OvermorrowMod.Content.NPCs
         public override void Exit()
         {
             //pinballCooldown = ModUtils.SecondsToTicks(5);
-            pinballCooldown = ModUtils.SecondsToTicks(2);
+            pinballCooldown = ModUtils.SecondsToTicks(Main.rand.Next(5, 7));
+            //pinballCooldown = ModUtils.SecondsToTicks(2);
             OvermorrowNPC.AICounter = 0;
         }
 
         public override void Update()
         {
             OvermorrowNPC.AICounter++;
-
-            var tempMaxBounces = 6;
-            var tempBounceSpeed = !Main.expertMode ? 15 : 10;
 
             int delay = 18;
             if (!startedPinball)
@@ -86,7 +87,7 @@ namespace OvermorrowMod.Content.NPCs
                 {
                     TryGetPinballDirection(Vector2.Zero);
                     NPC.noGravity = true;
-                    NPC.velocity = currentDirection * tempBounceSpeed;
+                    NPC.velocity = currentDirection * pinballSpeed;
                     startedPinball = true;
                 }
                 return;
@@ -96,11 +97,11 @@ namespace OvermorrowMod.Content.NPCs
             {
                 numBounces++;
 
-                if (numBounces >= tempMaxBounces)
+                if (numBounces >= maxBounces)
                 {
-                    // Final bounce: go straight down and re-enable gravity on floor impact
+                    // go straight down and re-enable gravity on floor impact
                     currentDirection = Vector2.UnitY;
-                    NPC.velocity = currentDirection * tempBounceSpeed;
+                    NPC.velocity = currentDirection * pinballSpeed;
 
                     if (NPC.collideY)
                     {
@@ -111,7 +112,7 @@ namespace OvermorrowMod.Content.NPCs
                 }
 
                 TryGetPinballDirection(currentDirection);
-                NPC.velocity = currentDirection * tempBounceSpeed;
+                NPC.velocity = currentDirection * pinballSpeed;
             }
         }
 
