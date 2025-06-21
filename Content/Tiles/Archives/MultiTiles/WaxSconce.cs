@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !Main.gamePaused)
             {
                 float scale = 0.1f;
-                Vector2 velocity = -Vector2.UnitY * 0.3f;
+                Vector2 velocity = -Vector2.UnitY * 0.5f;
 
                 WaxCandleholder.CreateEmberParticle(new Vector2(i + 0.95f, j + 0.4f) * 16, velocity, scale);
                 WaxCandleholder.CreateEmberParticle(new Vector2(i + 2.05f, j + 0.4f) * 16, velocity, scale);

@@ -58,6 +58,7 @@ namespace OvermorrowMod.Content.Particles
 
         public Vector2 AnchorOffset { get; set; } = Vector2.Zero;
         public bool fadeIn = true;
+        public bool floatUp = true;
         public Circle(Texture2D texture, float maxTime = 0f, bool canGrow = false, bool useSineFade = true)
         {
             this.texture = texture;
@@ -112,7 +113,7 @@ namespace OvermorrowMod.Content.Particles
             }
             else
             {
-                particle.position += particle.velocity;
+                if (floatUp) particle.position += particle.velocity;
             }
 
             // Sine wiggle motion

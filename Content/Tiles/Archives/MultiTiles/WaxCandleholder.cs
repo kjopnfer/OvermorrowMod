@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
+using SteelSeries.GameSense;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -53,11 +54,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
 
             var emberParticle = new Circle(texture, 0f, useSineFade: true);
+            emberParticle.endColor = Color.DarkRed;
             velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
             //velocity = velocity.RotatedBy(MathHelper.ToRadians(-5));
 
             ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.75f, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.45f, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
@@ -66,7 +68,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !Main.gamePaused)
             {
                 float scale = 0.15f;
-                Vector2 velocity = -Vector2.UnitY * 0.5f;
+                Vector2 velocity = -Vector2.UnitY * 0.55f;
 
                 // Create particles at different positions
                 CreateEmberParticle(new Vector2(i + 1, j + 0.5f) * 16, velocity, scale);

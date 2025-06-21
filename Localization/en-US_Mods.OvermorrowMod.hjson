@@ -383,4 +383,6 @@ Projectiles: {
 	StellarProminence.DisplayName: Stellar Prominence
 	Flame.DisplayName: Flame
 	FlameRing.DisplayName: Flame Ring
+	HomingFlame.DisplayName: Spirit Flame
+	FlameOrbiter.DisplayName: Flame Orbiter
 }
