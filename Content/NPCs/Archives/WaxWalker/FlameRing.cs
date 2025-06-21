@@ -19,56 +19,57 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             Projectile.friendly = false;
             Projectile.hostile = true;
+            Projectile.width = Projectile.height = 16;
             Projectile.damage = 5;
-            Projectile.timeLeft = 300;
-            Projectile.tileCollide = false;
+            Projectile.timeLeft = ModUtils.SecondsToTicks(4);
+            Projectile.tileCollide = true;
         }
 
         public override void AI()
         {
-            Projectile.damage = 5;
+            // Apply gravity
+            float gravity = 0.15f; // Adjust this value to change fall speed
+            Projectile.velocity.Y += gravity;
 
-            Lighting.AddLight(Projectile.Center, 0.7f, 0.25f, 0.1f);
+            // Optional: apply slight horizontal damping to make it feel heavier
+            Projectile.velocity.X *= 0.995f;
 
-            int index = (int)Projectile.ai[0]; // Ring index
-            int parentID = (int)Projectile.ai[1];
-
-            Projectile parent = Main.projectile[parentID];
-            if (!parent.active || parent.type != ModContent.ProjectileType<FlameRing>())
-            {
-                Projectile.Kill();
-                return;
-            }
-
-            float orbitAngle = MathHelper.TwoPi * index / 3f + parent.ai[0]; // sync with parent spin
-            Vector2 offset = new Vector2(24f, 0f).RotatedBy(orbitAngle);     // same OrbitRadius as parent
-            Projectile.Center = parent.Center + offset;
-
-            // Optional: rotate to face outward
-            Projectile.rotation = offset.ToRotation() + MathHelper.PiOver2;
-
-            // Particles
+            // Spawn particle effects
             int version = Main.rand.Next(1, 4);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
             float scale = 0.1f;
 
-            float angleOffset = MathHelper.ToRadians(45f);
-            // or -45f to rotate the other way
-            //Vector2 velocity = -offset.SafeNormalize(Vector2.UnitY * 5)
-            //                          .RotatedBy(angleOffset) * 1.5f;
+            Vector2 velocity = -Projectile.velocity.SafeNormalize(Vector2.UnitY) * 2f;
             //velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
 
-            // Rotate the emission angle by 45 degrees
-            Vector2 velocity = offset.SafeNormalize(new Vector2(25, 25)) // or -offset if you want inward
-                .RotatedBy(MathHelper.ToRadians(45)) * 2f;
-
-            // Add some slight randomization (optional)
-            velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
-
-            var flameParticle = new Circle(texture, 0f, useSineFade: true);
+            var flameParticle = new Circle(texture, 0f, useSineFade: false);
+            //flameParticle.fadeIn = false;
             //flameParticle.AnchorEntity = Projectile;
 
-            ParticleManager.CreateParticleDirect(flameParticle, Projectile.Center, Vector2.Zero, Color.DarkOrange, 1f, scale, Main.rand.NextFloat(0f, MathHelper.TwoPi), ParticleDrawLayer.BehindNPCs);
+            if (Projectile.timeLeft % 2 == 0)
+                ParticleManager.CreateParticleDirect(
+                    flameParticle,
+                    Projectile.Center,
+                    -Vector2.UnitY,
+                    Color.DarkOrange,
+                    1f,
+                    scale,
+                    Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                    ParticleDrawLayer.BehindNPCs
+                );
+
+            flameParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
+            //flameParticle.fadeIn = false;
+            ParticleManager.CreateParticleDirect(
+                flameParticle,
+                Projectile.Center,
+                -Vector2.UnitY,
+                Color.Gold * 0.1f,
+                1f,
+                scale: 0.45f,
+                Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                ParticleDrawLayer.BehindNPCs
+            );
             return;
             /*Lighting.AddLight(Projectile.Center, 0.7f, 0.25f, 0.1f);
 
@@ -115,9 +116,40 @@ namespace OvermorrowMod.Content.NPCs.Archives
             base.AI();*/
         }
 
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            Projectile.velocity.X = 0;
+            return false;
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
-           
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D circle = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
+
+            Vector2 center = Projectile.Center - Main.screenPosition;
+            Vector2 origin = circle.Size() / 2f;
+
+            // Define glow layers: (scale, alpha)
+            (float scale, float alpha, Color color)[] glowLayers = new (float, float, Color)[]
+    {
+        (0.75f, 0.15f, new Color(255, 80, 0)),      // outer - deep orange
+        (0.55f, 0.25f, new Color(255, 120, 20)),    // orange
+        (0.4f,  0.35f, new Color(255, 170, 40)),    // orange-yellow
+        (0.25f, 0.45f, new Color(255, 220, 60)),    // bright gold
+        (0.15f, 0.6f,  new Color(255, 255, 120)),   // light yellow
+        (0.08f, 0.9f,  new Color(255, 255, 200))    // center - bright white-yellow
+    };
+
+            foreach (var (scale, alpha, color) in glowLayers)
+            {
+                Main.spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
+            }
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+
             return base.PreDraw(ref lightColor);
         }
     }
@@ -142,16 +174,47 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
-            if (Projectile.localAI[0] == 0f)
+            Projectile.ai[0]++; // Increment internal timer
+            Lighting.AddLight(Projectile.Center, 1f, 0.4f, 0.1f);
+
+            Player nearestPlayer = null;
+            float closestDist = float.MaxValue;
+
+            foreach (Player player in Main.player)
             {
-                SpawnOrbitingFlames();
-                Projectile.localAI[0] = 1f;
+                if (!player.active || player.dead)
+                    continue;
+
+                float dist = Vector2.Distance(Projectile.Center, player.Center);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    nearestPlayer = player;
+                }
             }
 
-            // Spin around
-            Projectile.ai[0] += RotationSpeed;
+            if (nearestPlayer == null)
+                return;
 
-            Lighting.AddLight(Projectile.Center, 0.7f, 0.25f, 0.1f);
+            Vector2 shootDirection = (nearestPlayer.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+            Projectile.rotation = shootDirection.ToRotation();
+
+            if ((int)Projectile.ai[0] % 6 == 0)
+            {
+                float spread = MathHelper.ToRadians(5f);
+                float randomAngle = Main.rand.NextFloat(-spread, spread);
+                Vector2 flameVelocity = shootDirection.RotatedBy(randomAngle - MathHelper.PiOver4) * 3f;
+
+                Projectile.NewProjectileDirect(
+                    Projectile.GetSource_FromThis(),
+                    Projectile.Center,
+                    flameVelocity,
+                    ModContent.ProjectileType<Flame>(),
+                    5,
+                    0f,
+                    Projectile.owner
+                );
+            }
         }
 
         private void SpawnOrbitingFlames()
