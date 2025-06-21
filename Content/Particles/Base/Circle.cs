@@ -5,9 +5,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using static tModPorter.ProgressUpdate;
 
 namespace OvermorrowMod.Content.Particles
 {
@@ -15,101 +13,143 @@ namespace OvermorrowMod.Content.Particles
     {
         public override string Texture => AssetDirectory.Empty;
 
-        // Convert customData to proper fields
         private float timeAlive = 0f;
         private float maxTime;
         private float positionOffset;
         private bool useSineFade;
-
-        /// <summary>
-        /// The color the spark will fade to at the end of its lifetime.
-        /// </summary>
-        public Color? endColor = null;
-
-        /// <summary>
-        /// false = shrink (default), true = grow
-        /// </summary>
         private bool canGrow;
-
-        /// <summary>
-        /// Stores the initial scale of the particle, used for scaling calculations.
-        /// If canGrow is true, this is the maximum scale the particle will reach.
-        /// Otherwise, it is the initial scale from which the particle shrinks to 0.
-        /// </summary>
         private float initialScale;
-
         private float initialAlpha;
 
         private readonly Texture2D texture;
+        public Color? endColor = null;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="maxTime">The max life of the particle measured in ticks. If zero, defaults to 1 second.</param>
-        /// <param name="canGrow">Whether the particle grows or shrinks</param>
-        /// <param name="useSineFade"></param>
+        // Anchor system
+        private Entity anchorEntity = null;
+        private Vector2 lastAnchorPosition;
+        private Vector2 relativeOffset;
+        private bool hasAnchor = false;
+
+        public Entity AnchorEntity
+        {
+            get => anchorEntity;
+            set
+            {
+                if (value != null && value.active)
+                {
+                    anchorEntity = value;
+                    if (particle != null)
+                    {
+                        if (!hasAnchor)
+                        {
+                            relativeOffset = particle.position - (value.Center + AnchorOffset);
+                            hasAnchor = true;
+                        }
+                        lastAnchorPosition = value.Center + AnchorOffset;
+                    }
+                }
+                else
+                {
+                    anchorEntity = null;
+                    hasAnchor = false;
+                }
+            }
+        }
+
+        public Vector2 AnchorOffset { get; set; } = Vector2.Zero;
+        public bool fadeIn = true;
         public Circle(Texture2D texture, float maxTime = 0f, bool canGrow = false, bool useSineFade = true)
         {
             this.texture = texture;
             this.maxTime = maxTime > 0 ? maxTime : ModUtils.SecondsToTicks(1);
             this.canGrow = canGrow;
+            this.useSineFade = useSineFade;
 
             positionOffset = Main.rand.NextFloat(0.1f, 0.2f) * (Main.rand.NextBool() ? 1 : -1);
-            
-            this.useSineFade = useSineFade;
         }
 
         public override void OnSpawn()
         {
-            this.initialScale = particle.scale;
-            this.initialAlpha = particle.alpha;
+            initialScale = particle.scale;
+            initialAlpha = particle.alpha;
+            if (fadeIn) particle.alpha = 0f;
 
-            // This is needed so that particles spawning in don't start flickering
-            particle.alpha = 0f;
-            
-            if (canGrow) particle.scale = 0;
+            if (canGrow) particle.scale = 0f;
             if (!endColor.HasValue) endColor = particle.color;
+
+            // Setup anchor if already assigned
+            if (anchorEntity != null && anchorEntity.active)
+            {
+                Vector2 anchorPos = anchorEntity.Center + AnchorOffset;
+                relativeOffset = particle.position - anchorPos;
+                lastAnchorPosition = anchorPos;
+                hasAnchor = true;
+            }
         }
 
         public override void Update()
         {
-            Lighting.AddLight(particle.position, particle.color.ToVector3() / 255f);
-
             timeAlive++;
-            particle.position += particle.velocity;
-            particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * positionOffset;
 
-            float lifeProgress = timeAlive / maxTime;
-
-            // Alpha behavior
-            float fadeProgress = 1f - lifeProgress;
-            particle.alpha = useSineFade ? initialAlpha * (float)(Math.Sin(fadeProgress * Math.PI)) : initialAlpha * fadeProgress;
-
-            // Scale behavior
-            if (canGrow)
+            // Anchor tracking logic
+            if (hasAnchor && anchorEntity != null)
             {
-                // Grows from 0 to initialScale over lifetime
-                particle.scale = lifeProgress * initialScale;
+                if (!anchorEntity.active)
+                {
+                    anchorEntity = null;
+                    hasAnchor = false;
+                }
+                else
+                {
+                    Vector2 currentAnchorPos = anchorEntity.Center + AnchorOffset;
+                    Vector2 anchorDelta = currentAnchorPos - lastAnchorPosition;
+
+                    particle.position += anchorDelta;
+                    relativeOffset += particle.velocity;
+                    particle.position = currentAnchorPos + relativeOffset;
+                    lastAnchorPosition = currentAnchorPos;
+                }
             }
             else
             {
-                // Shrinks from initialScale to 0 over lifetime (original behavior)
-                particle.scale = fadeProgress * initialScale;
+                particle.position += particle.velocity;
             }
+
+            // Sine wiggle motion
+            particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * positionOffset;
+
+            float lifeProgress = timeAlive / maxTime;
+            float fadeProgress = 1f - lifeProgress;
+
+            particle.alpha = useSineFade ? initialAlpha * (float)(Math.Sin(fadeProgress * Math.PI)) : initialAlpha * fadeProgress;
+
+            if (canGrow)
+                particle.scale = lifeProgress * initialScale;
+            else
+                particle.scale = fadeProgress * initialScale;
 
             particle.rotation += rotationAmount;
 
-            if (timeAlive > maxTime) particle.Kill();
+            Lighting.AddLight(particle.position, particle.color.ToVector3() / 255f);
+
+            if (timeAlive > maxTime)
+                particle.Kill();
         }
+
+        public override bool ShouldUpdatePosition() => false;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            //Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
             float progress = particle.activeTime / maxTime;
             Color drawColor = Color.Lerp(particle.color, endColor.Value, progress);
 
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, drawColor * particle.alpha, particle.rotation, texture.Size() / 2, particle.scale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, drawColor * particle.alpha * 0.7f, 0f, texture.Size() / 2, particle.scale * 1.5f, SpriteEffects.None, 0f);
+            Vector2 origin = texture.Size() / 2f;
+
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
+                drawColor * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
+
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
+                drawColor * particle.alpha * 0.7f, 0f, origin, particle.scale * 1.5f, SpriteEffects.None, 0f);
         }
     }
 }

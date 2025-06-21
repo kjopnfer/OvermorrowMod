@@ -123,8 +123,8 @@ namespace OvermorrowMod.Content.Particles
             {
                 // Complex drawing with additive layers
                 // Base layer
-                spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                    particle.color * finalAlpha, 0f, origin, particle.scale * 0.125f, SpriteEffects.None, 0f);
+                //spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
+                //    particle.color * finalAlpha, 0f, origin, particle.scale * 0.125f, SpriteEffects.None, 0f);
 
                 spriteBatch.Reload(BlendState.Additive);
 
