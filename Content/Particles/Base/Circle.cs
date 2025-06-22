@@ -24,41 +24,12 @@ namespace OvermorrowMod.Content.Particles
         private readonly Texture2D texture;
         public Color? endColor = null;
 
-        // Anchor system
-        private Entity anchorEntity = null;
-        private Vector2 lastAnchorPosition;
-        private Vector2 relativeOffset;
-        private bool hasAnchor = false;
-
-        public Entity AnchorEntity
-        {
-            get => anchorEntity;
-            set
-            {
-                if (value != null && value.active)
-                {
-                    anchorEntity = value;
-                    if (particle != null)
-                    {
-                        if (!hasAnchor)
-                        {
-                            relativeOffset = particle.position - (value.Center + AnchorOffset);
-                            hasAnchor = true;
-                        }
-                        lastAnchorPosition = value.Center + AnchorOffset;
-                    }
-                }
-                else
-                {
-                    anchorEntity = null;
-                    hasAnchor = false;
-                }
-            }
-        }
-
+        // Anchor system - SIMPLE VERSION
+        public Entity AnchorEntity { get; set; } = null;
         public Vector2 AnchorOffset { get; set; } = Vector2.Zero;
         public bool fadeIn = true;
         public bool floatUp = true;
+
         public Circle(Texture2D texture, float maxTime = 0f, bool canGrow = false, bool useSineFade = true)
         {
             this.texture = texture;
@@ -78,13 +49,9 @@ namespace OvermorrowMod.Content.Particles
             if (canGrow) particle.scale = 0f;
             if (!endColor.HasValue) endColor = particle.color;
 
-            // Setup anchor if already assigned
-            if (anchorEntity != null && anchorEntity.active)
+            if (AnchorEntity != null && AnchorEntity.active)
             {
-                Vector2 anchorPos = anchorEntity.Center + AnchorOffset;
-                relativeOffset = particle.position - anchorPos;
-                lastAnchorPosition = anchorPos;
-                hasAnchor = true;
+                particle.position = AnchorEntity.Center + AnchorOffset;
             }
         }
 
@@ -92,33 +59,26 @@ namespace OvermorrowMod.Content.Particles
         {
             timeAlive++;
 
-            // Anchor tracking logic
-            if (hasAnchor && anchorEntity != null)
+            // SIMPLE: If we have an anchor, just stick to it with offset
+            if (AnchorEntity != null && AnchorEntity.active)
             {
-                if (!anchorEntity.active)
-                {
-                    anchorEntity = null;
-                    hasAnchor = false;
-                }
-                else
-                {
-                    Vector2 currentAnchorPos = anchorEntity.Center + AnchorOffset;
-                    Vector2 anchorDelta = currentAnchorPos - lastAnchorPosition;
+                // Set position to anchor + offset, that's it!
+                particle.position = AnchorEntity.Center + AnchorOffset;
 
-                    particle.position += anchorDelta;
-                    relativeOffset += particle.velocity;
-                    particle.position = currentAnchorPos + relativeOffset;
-                    lastAnchorPosition = currentAnchorPos;
-                }
+                // Add upward float if enabled
+                if (floatUp)
+                    particle.position += -Vector2.UnitY * timeAlive * 0.5f;
             }
             else
             {
+                // No anchor - move normally
                 if (floatUp) particle.position += particle.velocity;
             }
 
-            // Sine wiggle motion
+            // Add sine wiggle
             particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * positionOffset;
 
+            // Handle fading and scaling
             float lifeProgress = timeAlive / maxTime;
             float fadeProgress = 1f - lifeProgress;
 

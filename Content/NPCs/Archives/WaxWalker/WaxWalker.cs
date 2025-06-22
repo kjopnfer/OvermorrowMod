@@ -1,18 +1,20 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.InverseKinematics;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.NPCs;
-using System;
+using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using System.Collections.Generic;
-using System.IO.Pipelines;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -87,18 +89,218 @@ namespace OvermorrowMod.Content.NPCs.Archives
             new Wander(this)
         };
 
-        public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
-            new GroundDashAttack(this),
+        public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState>
+        {
+            //new GroundDashAttack(this),
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
             new MeleeWalk(this, 0.2f, 1.4f),
         };
 
+
+        public enum WalkerMode
+        {
+            Red,
+            Blue
+        }
+        public WalkerMode Mode { get; private set; } = WalkerMode.Red;
+
+        public enum AttackType
+        {
+            FlameLob,
+            FlameRing,
+            HomingFlame
+        }
+        public AttackType CurrentAttack { get; private set; } = AttackType.FlameLob;
+
+        public ref float FlameCounter => ref NPC.ai[1];
         public override void AI()
         {
             State currentState = AIStateMachine.GetCurrentSubstate();
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
+
+            /*int version = Main.rand.Next(1, 4);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
+            float scale = 0.025f;
+
+            Vector2 velocity = -Vector2.UnitY * 2;
+            //velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
+            var flameParticle = new Circle(texture, 0f, useSineFade: false)
+            {
+                endColor = Color.Red,
+                AnchorOffset = new Vector2(NPC.direction == 1 ? -4 : 4, -60),
+                AnchorEntity = NPC,
+                fadeIn = false
+            };
+
+            Lighting.AddLight(NPC.Center + flameParticle.AnchorOffset, 0.7f, 0.4f, 0.1f);
+
+
+            ParticleManager.CreateParticleDirect(
+                flameParticle,
+                NPC.Center,
+                velocity,
+                Color.DarkOrange,
+                1f,
+                scale,
+                Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                ParticleDrawLayer.AboveAll
+            );*/
+
+            Vector2 flamePosition = NPC.Center + new Vector2(-4 * NPC.direction, -64);
+
+            if (TargetingModule.HasTarget())
+            {
+                FlameCounter++;
+
+                // Choose new attack every 3 seconds
+                if (FlameCounter % ModUtils.SecondsToTicks(6) == 0)
+                {
+                    ChooseNewAttack();
+                }
+
+                // Execute current attack
+                ExecuteAttack(flamePosition);
+            }
+
+            // Spawn particles (existing code)
+            SpawnFlameParticles(flamePosition);
+        }
+
+        private void ChooseNewAttack()
+        {
+            // Switch mode 70% of the time
+            if (Main.rand.NextFloat() < 0.7f)
+            {
+                Mode = Mode == WalkerMode.Red ? WalkerMode.Blue : WalkerMode.Red;
+            }
+
+            // Choose attack based on mode
+            if (Mode == WalkerMode.Red)
+            {
+                CurrentAttack = Main.rand.NextBool() ? AttackType.FlameLob : AttackType.FlameRing;
+            }
+            else
+            {
+                CurrentAttack = AttackType.HomingFlame;
+            }
+
+            FlameCounter = 0;
+        }
+
+        private void ExecuteAttack(Vector2 flamePosition)
+        {
+            switch (CurrentAttack)
+            {
+                case AttackType.FlameLob:
+                    if (FlameCounter % 60 == 0 && FlameCounter < ModUtils.SecondsToTicks(6) + ModUtils.SecondsToTicks(3))
+                    {
+                        int randomSpeed = Main.rand.Next(6, 13);
+                        Projectile.NewProjectile(
+                            NPC.GetSource_FromThis(),
+                            flamePosition,
+                            new Vector2(randomSpeed * NPC.direction, -randomSpeed),
+                            ModContent.ProjectileType<Flame>(),
+                            NPC.damage,
+                            1f,
+                            Main.myPlayer
+                        );
+                    }
+                    break;
+
+                case AttackType.FlameRing:
+                    // Fire once per attack cycle (every 3 seconds)
+                    if (FlameCounter % ModUtils.SecondsToTicks(6) == 30)
+                    {
+                        Vector2 directionToTarget = (TargetingModule.Target.Center - flamePosition).SafeNormalize(Vector2.UnitY);
+                        int randomSpeed = Main.rand.Next(3, 5);
+                        Vector2 shootVelocity = directionToTarget * randomSpeed;
+
+                        Projectile.NewProjectile(
+                            NPC.GetSource_FromThis(),
+                            flamePosition,
+                            shootVelocity,
+                            ModContent.ProjectileType<FlameRing>(),
+                            NPC.damage,
+                            1f,
+                            Main.myPlayer
+                        );
+                    }
+                    break;
+
+                case AttackType.HomingFlame:
+                    // Fire once per attack cycle (every 3 seconds)
+                    if (FlameCounter % ModUtils.SecondsToTicks(6) == 60)
+                    {
+                        Vector2 directionToTarget = (TargetingModule.Target.Center - flamePosition).SafeNormalize(Vector2.UnitY);
+                        int randomSpeed = Main.rand.Next(6, 13);
+                        Vector2 shootVelocity = directionToTarget * randomSpeed;
+
+                        Projectile.NewProjectile(
+                            NPC.GetSource_FromThis(),
+                            flamePosition,
+                            shootVelocity,
+                            ModContent.ProjectileType<HomingFlame>(),
+                            NPC.damage,
+                            1f,
+                            Main.myPlayer
+                        );
+                    }
+                    break;
+            }
+        }
+
+        private void SpawnFlameParticles(Vector2 flamePosition)
+        {
+            var (particleColor, endColor, lightColor) = GetModeColors();
+
+            // Particle spawning
+            int version = Main.rand.Next(1, 4);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
+            float scale = MathHelper.Lerp(0.035f, 0.075f, MathHelper.Clamp(FlameCounter / ModUtils.SecondsToTicks(6), 0, 1f));
+
+            var flameParticle = new Circle(texture, 0f, useSineFade: false);
+            flameParticle.endColor = endColor;
+
+            // Add lighting based on mode
+            Lighting.AddLight(NPC.Center + new Vector2(-4 * NPC.direction, -72), lightColor);
+
+            ParticleManager.CreateParticleDirect(
+                flameParticle,
+                flamePosition,
+                -Vector2.UnitY,
+                particleColor,
+                1f,
+                scale,
+                Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                ParticleDrawLayer.BehindProjectiles
+            );
+
+            var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
+            ParticleManager.CreateParticleDirect(
+                glowParticle,
+                flamePosition,
+                -Vector2.UnitY,
+                particleColor * 0.2f,
+                1f,
+                scale: scale + 0.15f,
+                Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                ParticleDrawLayer.BehindNPCs
+            );
+        }
+
+        private (Color particleColor, Color endColor, Vector3 lightColor) GetModeColors()
+        {
+            switch (Mode)
+            {
+                case WalkerMode.Red:
+                    return (Color.DarkOrange, Color.Red, new Vector3(0.7f, 0.4f, 0.1f));
+                case WalkerMode.Blue:
+                    return (new Color(108, 108, 224), new Color(202, 188, 255), new Vector3(0.1f, 0.4f, 0.7f));
+                default:
+                    return (Color.DarkOrange, Color.Red, new Vector3(0.7f, 0.4f, 0.1f));
+            }
         }
 
         private void SetFrame()

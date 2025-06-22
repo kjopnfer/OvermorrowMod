@@ -20,7 +20,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Projectile.friendly = false;
             Projectile.hostile = true;
             Projectile.width = Projectile.height = 16;
-            Projectile.damage = 5;
             Projectile.timeLeft = ModUtils.SecondsToTicks(10);
             Projectile.tileCollide = true;
         }
@@ -30,13 +29,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Lighting.AddLight(Projectile.Center, 1f, 0.4f, 0.1f);
 
             // Apply gravity
-            float gravity = 0.15f; // Adjust this value to change fall speed
+            float gravity = 0.15f;
             Projectile.velocity.Y += gravity;
-
-            // Optional: apply slight horizontal damping to make it feel heavier
             Projectile.velocity.X *= 0.995f;
 
-            // Spawn particle effects
             int version = Main.rand.Next(1, 4);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
             float scale = 0.1f;
@@ -99,16 +95,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Vector2 center = Projectile.Center - Main.screenPosition;
             Vector2 origin = circle.Size() / 2f;
 
-            // Define glow layers: (scale, alpha)
             (float scale, float alpha, Color color)[] glowLayers = new (float, float, Color)[]
-    {
-        (0.75f, 0.15f, new Color(255, 80, 0)),      // outer - deep orange
-        (0.55f, 0.25f, new Color(255, 120, 20)),    // orange
-        (0.4f,  0.35f, new Color(255, 170, 40)),    // orange-yellow
-        (0.25f, 0.45f, new Color(255, 220, 60)),    // bright gold
-        (0.15f, 0.6f,  new Color(255, 255, 120)),   // light yellow
-        (0.08f, 0.9f,  new Color(255, 255, 200))    // center - bright white-yellow
-    };
+            {
+                (0.75f, 0.15f, new Color(255, 80, 0)),      // outer - deep orange
+                (0.55f, 0.25f, new Color(255, 120, 20)),    // orange
+                (0.4f,  0.35f, new Color(255, 170, 40)),    // orange-yellow
+                (0.25f, 0.45f, new Color(255, 220, 60)),    // bright gold
+                (0.15f, 0.6f,  new Color(255, 255, 120)),   // light yellow
+                (0.08f, 0.9f,  new Color(255, 255, 200))    // center - bright white-yellow
+            };
 
             foreach (var (scale, alpha, color) in glowLayers)
             {
@@ -129,14 +124,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Projectile.friendly = false;
             Projectile.hostile = true;
             Projectile.width = Projectile.height = 16;
-            Projectile.damage = 5;
-            Projectile.timeLeft = ModUtils.SecondsToTicks(12);
+            Projectile.timeLeft = ModUtils.SecondsToTicks(8);
             Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            // Spawn particle effects
             int version = Main.rand.Next(1, 4);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
             float scale = 0.1f;
@@ -176,8 +169,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 ParticleDrawLayer.BehindNPCs
             );
 
-            float homingSpeed = 0.15f;      // How sharply it turns
-            float maxSpeed = 3.5f;            // Max velocity magnitude
+            float homingSpeed = 0.05f;
+            float maxSpeed = 2.5f;
+            float separationRadius = 120f;
+            float separationStrength = 0.08f;
 
             Player nearestPlayer = null;
             float closestDist = float.MaxValue;
@@ -195,10 +190,36 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }
 
+            Vector2 separationForce = Vector2.Zero;
+
+            foreach (Projectile other in Main.projectile)
+            {
+                if (other == Projectile || !other.active || other.type != Projectile.type)
+                    continue;
+
+                float distance = Vector2.Distance(Projectile.Center, other.Center);
+                if (distance < separationRadius && distance > 0)
+                {
+                    Vector2 awayFromOther = (Projectile.Center - other.Center).SafeNormalize(Vector2.Zero);
+                    float strength = (separationRadius - distance) / separationRadius;
+                    separationForce += awayFromOther * strength * separationStrength;
+                }
+            }
+
             if (nearestPlayer != null)
             {
                 Vector2 desiredVelocity = (nearestPlayer.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * maxSpeed;
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, desiredVelocity, homingSpeed);
+
+                // Combine homing and separation
+                Vector2 combinedForce = Vector2.Lerp(Projectile.velocity, desiredVelocity, homingSpeed) + separationForce;
+
+                // Manual magnitude clamping since ClampMagnitude doesn't exist
+                if (combinedForce.Length() > maxSpeed)
+                {
+                    combinedForce = combinedForce.SafeNormalize(Vector2.Zero) * maxSpeed;
+                }
+
+                Projectile.velocity = combinedForce;
             }
         }
 
@@ -263,8 +284,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
-            Projectile.damage = 5;
-
             if (!Main.projectile.IndexInRange((int)Projectile.ai[1]))
             {
                 Projectile.Kill();
@@ -287,7 +306,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (Projectile.ai[2] > delay)
                 orbitRadius = MathHelper.Lerp(2f, 72f, progress);
 
-            float orbitSpeed = 0.03f;
+            float orbitSpeed = 0.0125f;
             float angle = Main.GameUpdateCount * orbitSpeed + index * MathHelper.TwoPi / 3f;
 
             Vector2 offset = orbitRadius * angle.ToRotationVector2();
@@ -295,7 +314,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Lighting.AddLight(Projectile.Center, 1f, 0.4f, 0.1f);
 
-            // Particle effect
             int version = Main.rand.Next(1, 4);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
             float scale = 0.1f;
@@ -376,7 +394,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
     {
         public override string Texture => AssetDirectory.Empty;
         private const int FlameCount = 6;
-
+        public override bool? CanDamage() => false;
         public override void SetDefaults()
         {
             Projectile.width = 2;
