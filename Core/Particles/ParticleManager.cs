@@ -25,6 +25,25 @@ namespace OvermorrowMod.Core.Particles
 
         protected Vector2 DirectionTo(Vector2 pos) => Vector2.Normalize(pos - position);
         public void Kill() => ParticleManager.RemoveAtIndex(id);
+
+        // Gravity-aware position for drawing
+        public Vector2 DrawPosition
+        {
+            get
+            {
+                Vector2 drawPos = position;
+
+                // If gravity is flipped, adjust the position
+                if (Main.LocalPlayer.gravDir == -1f)
+                {
+                    // Flip Y position relative to screen center
+                    Vector2 screenCenter = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) / 2f;
+                    drawPos.Y = screenCenter.Y - (position.Y - screenCenter.Y);
+                }
+
+                return drawPos;
+            }
+        }
     }
 
     public static class ParticleManager
@@ -53,18 +72,29 @@ namespace OvermorrowMod.Core.Particles
             foreach (ParticleInstance particle in particles)
             {
                 if (particle == null) continue;
-
                 particle.activeTime++;
+
                 if (particle.cParticle.ShouldUpdatePosition())
-                    particle.position += particle.velocity;
+                {
+                    // Apply gravity-aware velocity
+                    Vector2 adjustedVelocity = particle.velocity;
+
+                    // If gravity is flipped, flip the Y component of velocity
+                    if (Main.LocalPlayer.gravDir == -1f)
+                    {
+                        adjustedVelocity.Y = -adjustedVelocity.Y;
+                    }
+
+                    particle.position += adjustedVelocity;
+                }
 
                 particle.cParticle.particle = particle;
                 particle.cParticle.Update();
 
-                // Update old positions for trails
+                // Update old positions for trails (using gravity-aware positions)
                 for (int j = (particle.oldPos.Length - 1); j > 0; j--)
                     particle.oldPos[j] = particle.oldPos[j - 1];
-                particle.oldPos[0] = particle.position;
+                particle.oldPos[0] = particle.DrawPosition; // Use gravity-aware position for trails
             }
         }
 
@@ -73,6 +103,10 @@ namespace OvermorrowMod.Core.Particles
             foreach (ParticleInstance particle in particles)
             {
                 if (particle == null || particle.drawLayer != layer) continue;
+
+                // Temporarily set the particle's position to the gravity-aware position for drawing
+                Vector2 originalPosition = particle.position;
+                particle.position = particle.DrawPosition;
 
                 particle.cParticle.particle = particle;
                 try
@@ -85,6 +119,9 @@ namespace OvermorrowMod.Core.Particles
                     Main.NewText($"Error drawing particle: {particle.cParticle.GetType().Name}", Color.Red);
                     particle.Kill();
                 }
+
+                // Restore original position
+                particle.position = originalPosition;
             }
         }
 
@@ -120,10 +157,17 @@ namespace OvermorrowMod.Core.Particles
             while (NextIndex < particles.Length && particles[NextIndex] != null) NextIndex++;
             if (NextIndex >= particles.Length) return null;
 
+            // Adjust initial velocity for gravity if needed
+            Vector2 adjustedVelocity = velocity;
+            //if (Main.LocalPlayer.gravDir == -1f)
+            //{
+            //    adjustedVelocity.Y = -adjustedVelocity.Y;
+            //}
+
             ParticleInstance particle = new ParticleInstance
             {
                 position = position,
-                velocity = velocity,
+                velocity = adjustedVelocity, // Use gravity-adjusted velocity
                 color = color,
                 alpha = alpha,
                 scale = scale,
