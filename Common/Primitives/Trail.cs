@@ -43,16 +43,33 @@ namespace OvermorrowMod.Common.Primitives
 
         public void AddVertex(Vector2 pos, Color color, Vector2 texCoord)
         {
+            Vector2 drawPos = GetGravityAwarePosition(pos);
+
             if (!Pixelated)
             {
-                pos -= Main.screenPosition;
+                drawPos -= Main.screenPosition;
             }
             else
             {
-                pos = (pos - Main.screenPosition) / 2;
+                drawPos = (drawPos - Main.screenPosition) / 2;
             }
 
-            Vertices.Add(new VertexPositionColorTexture(new Vector3(pos.X, pos.Y, 0), color, texCoord));
+            Vertices.Add(new VertexPositionColorTexture(new Vector3(drawPos.X, drawPos.Y, 0), color, texCoord));
+        }
+
+        private Vector2 GetGravityAwarePosition(Vector2 worldPosition)
+        {
+            if (Main.LocalPlayer.gravDir == -1f)
+            {
+                // Flip Y position relative to world center or screen center
+                Vector2 screenCenter = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) / 2f;
+                return new Vector2(
+                    worldPosition.X,
+                    screenCenter.Y - (worldPosition.Y - screenCenter.Y)
+                );
+            }
+
+            return worldPosition;
         }
 
         public abstract void Update();
