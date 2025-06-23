@@ -23,6 +23,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
 
+            Main.tileTable[Type] = true;
+            Main.tileSolidTop[Type] = true;
+
             TileObjectData.newTile.Width = 14;
             TileObjectData.newTile.Height = Height;
             TileObjectData.newTile.CoordinateHeights = Enumerable.Repeat(16, TileObjectData.newTile.Height).ToArray();

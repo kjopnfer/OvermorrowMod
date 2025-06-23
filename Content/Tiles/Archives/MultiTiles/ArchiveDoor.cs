@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.CustomCollision;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items;
+using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
 using System.Linq;
 using Terraria;
@@ -47,7 +48,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Player player = Main.player[Main.myPlayer];
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ModContent.ItemType<TowerKey>();
+            player.cursorItemIconID = ModContent.ItemType<ArchiveKey>();
 
             base.MouseOver(i, j);
         }
