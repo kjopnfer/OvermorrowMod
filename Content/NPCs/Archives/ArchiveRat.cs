@@ -158,15 +158,45 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool CheckActive() => false;
         public override NPCTargetingConfig TargetingConfig()
         {
+            //return new NPCTargetingConfig(
+            //    maxAggroTime: 300f,
+            //    aggroLossRate: 1f,
+            //    aggroCooldownTime: 180f,
+            //    maxTargetRange: ModUtils.TilesToPixels(35),
+            //    maxAttackRange: ModUtils.TilesToPixels(35),
+            //    alertRange: ModUtils.TilesToPixels(40),
+            //    prioritizeAggro: true
+            //);
             return new NPCTargetingConfig(
-                maxAggroTime: 300f,
+                maxAggroTime: ModUtils.SecondsToTicks(7f),
                 aggroLossRate: 1f,
-                aggroCooldownTime: 180f,
-                maxTargetRange: ModUtils.TilesToPixels(35),
-                maxAttackRange: ModUtils.TilesToPixels(35),
-                alertRange: ModUtils.TilesToPixels(40),
+                aggroCooldownTime: ModUtils.SecondsToTicks(4f),
+                targetRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(25),            // Far right detection
+                    left: ModUtils.TilesToPixels(0),             // Close left detection
+                    up: ModUtils.TilesToPixels(5),               // Medium up detection
+                    down: ModUtils.TilesToPixels(5),             // Far down detection
+                    flipWithDirection: true                       // Flip based on NPC direction
+                ),
+                attackRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(35),
+                    left: ModUtils.TilesToPixels(0),
+                    up: ModUtils.TilesToPixels(15),
+                    down: ModUtils.TilesToPixels(10),
+                    flipWithDirection: true
+                ),
+                alertRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(35),
+                    left: ModUtils.TilesToPixels(0),
+                    up: ModUtils.TilesToPixels(10),
+                    down: ModUtils.TilesToPixels(10),
+                    flipWithDirection: true
+                ),
                 prioritizeAggro: true
-            );
+            )
+            {
+                ShowDebugVisualization = true
+            };
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
@@ -221,7 +251,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     if (IsRectangleIntersectingSlope(start, end, colliderWidth, npcBottomHitbox))
                     {
                         // Perform desired action for the collision
-                        Main.NewText($"Collision detected with {tileCollisionNPC}");
+                        //Main.NewText($"Collision detected with {tileCollisionNPC}");
                         NPC.collideY = true;
                         NPC.velocity.Y = 0;
                         NPC.noGravity = true;
@@ -356,6 +386,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            //TargetingModule?.DrawDebugVisualization(spriteBatch);
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

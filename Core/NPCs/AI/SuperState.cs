@@ -23,7 +23,7 @@ namespace OvermorrowMod.Core.NPCs
         public bool ContainsSubstate(State substate)
         {
             string listContents = string.Join(", ", substates.Select(s => s.GetType().Name));
-            Main.NewText("Checking for substates: [" + listContents + "]");
+            //Main.NewText("Checking for substates: [" + listContents + "]");
 
             return substates.Contains((T)substate);
         }

@@ -44,6 +44,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         {
             ("Combat Targeting", "NPCs prioritize players with higher aggro. Taunts increase it; stealth or invisibility can reduce it."),
             ("Hidden Items", "Certain items can be obtained by clearing rooms or interacting with objects in the environment."),
+            ("Elite Enemies", "Some enemies are much stronger than others. Avoiding fighting them if you cannot defeat one."),
             //("Companions", "The Adventurer's Guild hosts a variety of companions. Hire them to make full use of their abilities to help you in combat."),
             ("Enemy Perception", "Enemies start passive and become alert when a player is nearby. Staying out of range or using stealth can avoid combat."),
             ("Scouting", "Use items that increase your range to help spot threats early and plan your approach."),
@@ -109,7 +110,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 {
                     if (spawnPoint.ChildNPC == null && spawnPoint.SpawnerCooldown <= 0)
                     {
-                        Main.NewText("subworld spawning", Color.Red);
+                        //Main.NewText("subworld spawning", Color.Red);
                         spawnPoint.SpawnNPC();
                     }
                 }

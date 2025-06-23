@@ -202,7 +202,8 @@ namespace OvermorrowMod.Common.Utilities
         public static void AddBarrier(this NPC npc, int amount, int duration)
         {
             BarrierNPC barrierNPC = npc.GetGlobalNPC<BarrierNPC>();
-            barrierNPC.SetBarrier(amount, duration);
+            if (barrierNPC.CanGainBarrier)
+                barrierNPC.SetBarrier(amount, duration);
         }
     }
 }

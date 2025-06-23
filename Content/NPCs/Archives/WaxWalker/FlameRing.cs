@@ -45,7 +45,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             //flameParticle.fadeIn = false;
             //flameParticle.AnchorEntity = Projectile;
 
-            if (Projectile.timeLeft % 2 == 0)
+            if (Projectile.timeLeft % 3 == 0)
                 ParticleManager.CreateParticleDirect(
                     flameParticle,
                     Projectile.Center,
@@ -59,7 +59,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
             //flameParticle.fadeIn = false;
-            ParticleManager.CreateParticleDirect(
+            if (Projectile.timeLeft % 3 == 0)
+                ParticleManager.CreateParticleDirect(
                 glowParticle,
                 Projectile.Center,
                 -Vector2.UnitY,
@@ -158,7 +159,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
             //flameParticle.fadeIn = false;
             glowParticle.floatUp = false;
-            ParticleManager.CreateParticleDirect(
+            if (Projectile.timeLeft % 3 == 0)
+                ParticleManager.CreateParticleDirect(
                 glowParticle,
                 Projectile.Center,
                 -Vector2.UnitY,
@@ -340,7 +342,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
             glowParticle.floatUp = false;
-            ParticleManager.CreateParticleDirect(
+
+            if (Projectile.timeLeft % 3 == 0)
+                ParticleManager.CreateParticleDirect(
                 glowParticle,
                 Projectile.Center,
                 -Vector2.UnitY,

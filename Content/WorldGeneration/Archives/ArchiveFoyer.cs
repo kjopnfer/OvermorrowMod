@@ -1,17 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.RoomManager;
-using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
-using System.Collections.Generic;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using static OvermorrowMod.Core.WorldGeneration.ArchiveSubworld.SetupGenPass;
 
 namespace OvermorrowMod.Content.WorldGeneration.Archives
 {
@@ -662,37 +657,64 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 485, y + 61, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 485, y + 91, ModContent.TileType<WaxCandleholder>());
             #endregion
-            return;
+
+            SetupSpawners(x, y);
         }
 
         private void SetupSpawners(int x, int y)
         {
-            AddSpawnPoint(new Vector2(x + 128, y + 110), ModContent.NPCType<InkWormBody>());
-            AddSpawnPoint(new Vector2(x + 166, y + 108), ModContent.NPCType<ChairBook>());
+            #region Bottom Left Side
+            AddSpawnPoint(new Vector2(x + 156, y + 250), ModContent.NPCType<BlasterBook>());
+            #endregion
 
-            AddSpawnPoint(new Vector2(x + 248, y + 114), ModContent.NPCType<ArchiveRat>());
+            #region Red Door
+            AddSpawnPoint(new Vector2(x + 138, y + 219), ModContent.NPCType<InkWormBody>());
+            AddSpawnPoint(new Vector2(x + 172, y + 211), ModContent.NPCType<ChairBook>());
 
-            AddSpawnPoint(new Vector2(x + 326, y + 106), ModContent.NPCType<BlasterBook>());
-            AddSpawnPoint(new Vector2(x + 321, y + 114), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 63, y + 192), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 148, y + 180), ModContent.NPCType<PlantBook>());
+            #endregion
 
-            AddSpawnPoint(new Vector2(x + 350, y + 76), ModContent.NPCType<PlantBook>());
+            #region Middle Area
+            AddSpawnPoint(new Vector2(x + 234, y + 221), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 653, y + 221), ModContent.NPCType<ArchiveRat>());
 
-            AddSpawnPoint(new Vector2(x + 186, y + 82), ModContent.NPCType<InkWormBody>());
-            AddSpawnPoint(new Vector2(x + 156, y + 84), ModContent.NPCType<ArchiveRat>());
-            AddSpawnPoint(new Vector2(x + 134, y + 84), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 385, y + 202), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 489, y + 200), ModContent.NPCType<ArchiveRat>());
 
-            AddSpawnPoint(new Vector2(x + 532, y + 84), ModContent.NPCType<ArchiveRat>());
-            AddSpawnPoint(new Vector2(x + 513, y + 108), ModContent.NPCType<PlantBook>());
-            AddSpawnPoint(new Vector2(x + 538, y + 112), ModContent.NPCType<InkWormBody>());
+            AddSpawnPoint(new Vector2(x + 562, y + 137), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 444, y + 132), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 357, y + 136), ModContent.NPCType<ArchiveRat>());
 
-            AddSpawnPoint(new Vector2(x + 677, y + 84), ModContent.NPCType<ArchiveRat>());
-            AddSpawnPoint(new Vector2(x + 697, y + 78), ModContent.NPCType<BarrierBook>());
-            AddSpawnPoint(new Vector2(x + 728, y + 75), ModContent.NPCType<ChairBook>());
+            AddSpawnPoint(new Vector2(x + 485, y + 90), ModContent.NPCType<ClockworkSpider>());
+            #endregion
 
-            AddSpawnPoint(new Vector2(x + 678, y + 106), ModContent.NPCType<BlasterBook>());
-            AddSpawnPoint(new Vector2(x + 606, y + 114), ModContent.NPCType<ArchiveRat>());
+            #region Green Door
+            AddSpawnPoint(new Vector2(x + 333, y + 89), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 379, y + 95), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 356, y + 47), ModContent.NPCType<ChairBook>());
+            #endregion
 
-            AddSpawnPoint(new Vector2(x + 725, y + 110), ModContent.NPCType<InkWormBody>());
+            #region Yellow Door
+            AddSpawnPoint(new Vector2(x + 538, y + 77), ModContent.NPCType<PlantBook>());
+            AddSpawnPoint(new Vector2(x + 665, y + 95), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 529, y + 60), ModContent.NPCType<ArchiveRat>());
+            #endregion
+
+            #region Blue Door
+            AddSpawnPoint(new Vector2(x + 727, y + 176), ModContent.NPCType<InkWormBody>());
+
+            AddSpawnPoint(new Vector2(x + 727, y + 214), ModContent.NPCType<BarrierBook>());
+            AddSpawnPoint(new Vector2(x + 722, y + 223), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 768, y + 193), ModContent.NPCType<ArchiveRat>());
+            #endregion
+
+            #region Bottom Right Side
+            AddSpawnPoint(new Vector2(x + 747, y + 248), ModContent.NPCType<BlasterBook>());
+            AddSpawnPoint(new Vector2(x + 761, y + 246), ModContent.NPCType<BlasterBook>()); 
+            #endregion
         }
     }
 }

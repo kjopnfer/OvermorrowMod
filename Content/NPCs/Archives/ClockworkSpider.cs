@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             //    prioritizeAggro: true
             //);
             return new NPCTargetingConfig(
-                maxAggroTime: ModUtils.SecondsToTicks(7f),
+                maxAggroTime: ModUtils.SecondsToTicks(10f),
                 aggroLossRate: 1f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
                 targetRadius: new AggroRadius(
@@ -111,10 +111,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             new MeleeWalk(this, 0.05f, 4.25f),
         };
 
-
         public override bool? CanFallThroughPlatforms()
         {
-            return true;
+            State currentState = AIStateMachine.GetCurrentSubstate();
+
+            return currentState is ClockworkSpiderPinball;
         }
 
         public bool IsOnCeiling => NPC.noGravity;
@@ -169,6 +170,24 @@ namespace OvermorrowMod.Content.NPCs.Archives
             State currentState = AIStateMachine.GetCurrentState();
             switch (currentState)
             {
+                case IdleState:
+                    xFrame = 0;
+                    if (Math.Abs(NPC.velocity.X) > 0)
+                    {
+                        NPC.frameCounter++;
+                        if (NPC.frameCounter % 6 == 0)
+                        {
+                            yFrame = (yFrame + 1) % 8;
+                        }
+                    }
+                    else
+                    {
+                        NPC.frameCounter = 0;
+
+                        xFrame = 2;
+                        yFrame = 0;
+                    }
+                    break;
                 case MovementState:
                     xFrame = 0;
                     if (NPC.frameCounter++ % 6 == 0)
@@ -255,7 +274,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            TargetingModule?.DrawDebugVisualization(spriteBatch);
+            //TargetingModule?.DrawDebugVisualization(spriteBatch);
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
 

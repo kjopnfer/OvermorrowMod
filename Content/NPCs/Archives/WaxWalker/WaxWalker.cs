@@ -8,6 +8,7 @@ using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -60,22 +61,28 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override NPCTargetingConfig TargetingConfig()
         {
             return new NPCTargetingConfig(
-                maxAggroTime: ModUtils.SecondsToTicks(7f),
-                aggroLossRate: 1f,
+                maxAggroTime: ModUtils.SecondsToTicks(10f),
+                aggroLossRate: 0.5f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
                 targetRadius: new AggroRadius(
                     right: ModUtils.TilesToPixels(25),            // Far right detection
                     left: ModUtils.TilesToPixels(25),             // Close left detection
                     up: ModUtils.TilesToPixels(15),               // Medium up detection
-                    down: ModUtils.TilesToPixels(15),             // Far down detection
+                    down: ModUtils.TilesToPixels(5),             // Far down detection
                     flipWithDirection: true                       // Flip based on NPC direction
                 ),
-                attackRadius: AggroRadius.Circle(ModUtils.TilesToPixels(35)),
+                attackRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(50),
+                    left: ModUtils.TilesToPixels(50),
+                    up: ModUtils.TilesToPixels(25),
+                    down: ModUtils.TilesToPixels(10),
+                    flipWithDirection: true
+                ),
                 alertRadius: new AggroRadius(
                     right: ModUtils.TilesToPixels(35),
                     left: ModUtils.TilesToPixels(35),
                     up: ModUtils.TilesToPixels(25),
-                    down: ModUtils.TilesToPixels(25),
+                    down: ModUtils.TilesToPixels(5),
                     flipWithDirection: true
                 ),
                 prioritizeAggro: true
@@ -253,6 +260,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void SpawnFlameParticles(Vector2 flamePosition)
         {
+            if (NPC.localAI[0]++ % 2 != 0) return;
+
             var (particleColor, endColor, lightColor) = GetModeColors();
 
             // Particle spawning
@@ -321,6 +330,24 @@ namespace OvermorrowMod.Content.NPCs.Archives
             State currentState = AIStateMachine.GetCurrentState();
             switch (currentState)
             {
+                case IdleState:
+                    xFrame = 1;
+                    if (Math.Abs(NPC.velocity.X) > 0)
+                    {
+                        NPC.frameCounter++;
+                        if (NPC.frameCounter % 6 == 0)
+                        {
+                            yFrame = (yFrame + 1) % 18;
+                        }
+                    }
+                    else
+                    {
+                        NPC.frameCounter = 0;
+
+                        xFrame = 0;
+                        yFrame = 0;
+                    }
+                    break;
                 case MovementState:
                     xFrame = 1;
                     if (NPC.frameCounter++ % 6 == 0)
@@ -359,7 +386,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            TargetingModule?.DrawDebugVisualization(spriteBatch);
+            //TargetingModule?.DrawDebugVisualization(spriteBatch);
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
 

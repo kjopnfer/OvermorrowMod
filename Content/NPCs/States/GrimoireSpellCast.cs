@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
+using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.NPCs;
 using System;
 using System.Diagnostics.Metrics;
@@ -23,12 +24,12 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExecute()
         {
             if (OvermorrowNPC is not LivingGrimoire)
-                 return false;
-         
+                return false;
+
 
             if (OvermorrowNPC.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
             {
-                Main.NewText("have not flown yet, preventin early attack", Color.Red);
+                //Main.NewText("have not flown yet, preventin early attack", Color.Red);
                 return false;
             }
 
@@ -45,14 +46,14 @@ namespace OvermorrowMod.Content.NPCs
         {
             OvermorrowNPC.AICounter = 0;
             IsFinished = false;
-            Main.NewText("entering cast spell");
+            //Main.NewText("entering cast spell");
         }
 
         public override void Exit()
         {
             OvermorrowNPC.AICounter = 0;
             attackDelay = 60;
-            Main.NewText("exiting spell", Color.Red);
+            //Main.NewText("exiting spell", Color.Red);
         }
 
         private int castTime = 120;
@@ -87,8 +88,12 @@ namespace OvermorrowMod.Content.NPCs
                     {
                         float radius = 500f;
                         var nearbyHostileEnemies = Main.npc
-                            .Where(enemy => enemy.active && !enemy.friendly && Vector2.Distance(NPC.Center, enemy.Center) <= radius && enemy.whoAmI != NPC.whoAmI)
-                            .ToList();
+                       .Where(enemy => enemy.active &&
+                              !enemy.friendly &&
+                              Vector2.Distance(NPC.Center, enemy.Center) <= radius &&
+                              enemy.whoAmI != NPC.whoAmI &&
+                              enemy.GetGlobalNPC<BarrierNPC>().CanGainBarrier) // Add this filter
+                       .ToList();
 
                         foreach (NPC enemy in nearbyHostileEnemies)
                         {
@@ -162,9 +167,9 @@ namespace OvermorrowMod.Content.NPCs
             bool isWithinYRange = yDistance < 200;
             bool hasLineOfSight = Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, NPC.Center, 1, 1);
 
-            Main.NewText(isWithinYRange, Color.CornflowerBlue);
-            Main.NewText(isWithinXRange , Color.Red);
-            Main.NewText(hasLineOfSight, Color.LightGreen);
+            //Main.NewText(isWithinYRange, Color.CornflowerBlue);
+            //Main.NewText(isWithinXRange , Color.Red);
+            //Main.NewText(hasLineOfSight, Color.LightGreen);
 
             return isWithinXRange && isWithinYRange && hasLineOfSight;
         }

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
 using System.Collections.Generic;
@@ -196,6 +197,27 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             //PlaceAndConfigureDoor(x + 80, y + 65, DoorID.RedDiagonalRoomEntrance, DoorID.RedLongRoomSecondExit);
             PlaceAndConfigureDoor(x + 80, y + 65, DoorID.OTHERFUCKINGREDDOORTOREDDOOR, DoorID.REDDOORTOREDDOOR);
             #endregion
+
+            SetupSpawners(x, y);
+        }
+
+        private void SetupSpawners(int x, int y)
+        {
+            AddSpawnPoint(new Vector2(x + 177, y + 67), ModContent.NPCType<ChairBook>());
+            AddSpawnPoint(new Vector2(x + 268, y + 86), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 420, y + 81), ModContent.NPCType<ClockworkSpider>());
+
+            AddSpawnPoint(new Vector2(x + 380, y + 96), ModContent.NPCType<PlantBook>());
+            AddSpawnPoint(new Vector2(x + 432, y + 111), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 314, y + 163), ModContent.NPCType<ChairBook>());
+            AddSpawnPoint(new Vector2(x + 325, y + 165), ModContent.NPCType<BarrierBook>());
+
+            AddSpawnPoint(new Vector2(x + 437, y + 181), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 491, y + 169), ModContent.NPCType<WaxWalker>());
+
+            AddSpawnPoint(new Vector2(x + 554, y + 206), ModContent.NPCType<ArchiveRat>());
         }
     }
 }

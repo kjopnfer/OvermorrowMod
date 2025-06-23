@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
 using System.Collections.Generic;
@@ -260,6 +261,58 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 563, y + 80, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 544, y + 55, ModContent.TileType<WoodenArch>());
             PlaceAndConfigureDoor(x + 545, y + 80, DoorID.YellowStairsRoomExit, DoorID.YellowWaxheadRoomEntrance);
+            #endregion
+
+            SetupSpawners(x, y);
+        }
+
+        private void SetupSpawners(int x, int y)
+        {
+            #region First Floor
+            AddSpawnPoint(new Vector2(x + 185, y + 245), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 238, y + 230), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 339, y + 255), ModContent.NPCType<ClockworkSpider>());
+
+            AddSpawnPoint(new Vector2(x + 352, y + 255), ModContent.NPCType<ClockworkSpider>());
+            #endregion
+
+            #region Second Floor
+            AddSpawnPoint(new Vector2(x + 380, y + 151), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 147, y + 151), ModContent.NPCType<ClockworkSpider>());
+
+            AddSpawnPoint(new Vector2(x + 179, y + 188), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 205, y + 175), ModContent.NPCType<BarrierBook>());
+            AddSpawnPoint(new Vector2(x + 213, y + 188), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 481, y + 213), ModContent.NPCType<WaxWalker>());
+            AddSpawnPoint(new Vector2(x + 464, y + 199), ModContent.NPCType<BlasterBook>());
+
+            AddSpawnPoint(new Vector2(x + 465, y + 183), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 508, y + 178), ModContent.NPCType<InkWormBody>());
+            #endregion
+
+            #region Third Floor
+            AddSpawnPoint(new Vector2(x + 65, y + 65), ModContent.NPCType<ChairBook>());
+            AddSpawnPoint(new Vector2(x + 96, y + 67), ModContent.NPCType<BlasterBook>());
+
+            AddSpawnPoint(new Vector2(x + 91, y + 95), ModContent.NPCType<BlasterBook>());
+            AddSpawnPoint(new Vector2(x + 65, y + 97), ModContent.NPCType<BlasterBook>());
+            AddSpawnPoint(new Vector2(x + 84, y + 109), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 166, y + 110), ModContent.NPCType<WaxWalker>());
+
+            AddSpawnPoint(new Vector2(x + 243, y + 79), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 378 , y + 109), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 473, y + 67), ModContent.NPCType<BlasterBook>());
+            AddSpawnPoint(new Vector2(x + 506, y + 62), ModContent.NPCType<ChairBook>());
+
+            AddSpawnPoint(new Vector2(x + 355, y + 76), ModContent.NPCType<ArchiveRat>());
+
+            AddSpawnPoint(new Vector2(x + 499, y + 109), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 529, y + 109), ModContent.NPCType<ClockworkSpider>());
             #endregion
         }
     }

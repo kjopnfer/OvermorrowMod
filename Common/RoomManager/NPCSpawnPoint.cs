@@ -61,7 +61,7 @@ namespace OvermorrowMod.Common.RoomManager
         {
             if (ChildNPC != null && ChildNPC.active)
             {
-                Main.NewText("NPC already spawned: " + ChildNPC.FullName);
+                //Main.NewText("NPC already spawned: " + ChildNPC.FullName);
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace OvermorrowMod.Common.RoomManager
             OvermorrowNPC modNPC = ChildNPC.ModNPC as OvermorrowNPC;
             modNPC.SpawnerID = ID;
 
-            Main.NewText("spawn " + modNPC.Name + " with id: " + ID);
+            //Main.NewText("spawn " + modNPC.Name + " with id: " + ID);
             HasBeenKilled = false;
         }
 
@@ -90,7 +90,7 @@ namespace OvermorrowMod.Common.RoomManager
             {
                 if (!HasBeenKilled && !ChildNPC.active)
                 {
-                    Main.NewText("not active");
+                    //Main.NewText("not active");
                     ChildNPC = null;
                 }
             }

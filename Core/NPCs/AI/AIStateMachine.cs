@@ -172,7 +172,7 @@ namespace OvermorrowMod.Core.NPCs
             //ChangeState(superstateType, npc);
 
             // Call the dynamic SetSubstate method
-            Main.NewText("set substate to " + substate.ToString());
+            //Main.NewText("set substate to " + substate.ToString());
             dynamicSuperstate.SetSubstate(substate, npc);
         }
 

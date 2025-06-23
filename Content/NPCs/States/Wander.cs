@@ -58,6 +58,8 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Update()
         {
+            NPC.noGravity = false;
+
             // TODO: Change this to an NPC properties module.
             float maxSpeed = 1.8f;
             if (OvermorrowNPC.SpawnPoint != null)
