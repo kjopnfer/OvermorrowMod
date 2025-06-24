@@ -101,19 +101,21 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             Main.windSpeedCurrent = 0.05f;
 
             // For whatever reason, subworlds do not call these by themselves.
+            // The NPCSpawnPoint.Update() method now handles lazy loading automatically
             foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
             {
                 var tileEntity = pair.Value;
                 tileEntity.Update();
 
-                if (tileEntity is NPCSpawnPoint spawnPoint)
+                // Removed the manual spawning logic - let NPCSpawnPoint handle it internally
+                /*if (tileEntity is NPCSpawnPoint spawnPoint)
                 {
                     if (spawnPoint.ChildNPC == null && spawnPoint.SpawnerCooldown <= 0)
                     {
                         //Main.NewText("subworld spawning", Color.Red);
                         spawnPoint.SpawnNPC();
                     }
-                }
+                }*/
             }
         }
 
@@ -121,7 +123,8 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         {
             // Create a popup message or title card or something
 
-            foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
+            // Removed the automatic spawning on enter - let NPCSpawnPoint handle lazy loading
+            /*foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
             {
                 var tileEntity = pair.Value;
                 tileEntity.Update();
@@ -130,7 +133,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
                 {
                     spawnPoint.SpawnNPC();
                 }
-            }
+            }*/
 
             generatedMenuTip = false;
 

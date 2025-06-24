@@ -340,6 +340,8 @@ NPCs: {
 	StairCollision.DisplayName: Stair Collision
 	DiagonalStairsCollision.DisplayName: Diagonal Stairs Collision
 	DoorLock.DisplayName: Door Lock
+	SimplePathfindingNPC.DisplayName: Simple Pathfinding N P C
+	PathfindingNPC.DisplayName: Pathfinding N P C
 }
 
 Bestiary: {

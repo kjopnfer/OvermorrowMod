@@ -47,6 +47,11 @@ namespace OvermorrowMod.Common.RoomManager
         /// </summary>
         public int CooldownTime { get; private set; } = ModUtils.SecondsToTicks(80);
 
+        /// <summary>
+        /// Distance in pixels at which NPCs will spawn (200 tiles = 3200 pixels)
+        /// </summary>
+        private float SpawnDistance = ModUtils.TilesToPixels(200);
+
         public override void SaveData(TagCompound tag)
         {
             base.SaveData(tag);
@@ -83,6 +88,26 @@ namespace OvermorrowMod.Common.RoomManager
             SpawnerCooldown = CooldownTime;
         }
 
+        /// <summary>
+        /// Checks if any player is within spawn distance of this spawn point
+        /// </summary>
+        /// <returns>True if a player is within 200 tiles (3200 pixels)</returns>
+        private bool IsPlayerNearby()
+        {
+            foreach (var player in Main.player)
+            {
+                if (player.active)
+                {
+                    float distance = Vector2.Distance(Position.ToWorldCoordinates(), player.Center);
+                    if (distance <= SpawnDistance)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public override void Update()
         {
             // For if the NPC has been somehow manually despawned without being killed.
@@ -95,24 +120,16 @@ namespace OvermorrowMod.Common.RoomManager
                 }
             }
 
-            // Check if there are any players within a radius of 50 blocks (800 pixels)
-            bool playerNearby = false;
-            foreach (var player in Main.player)
-            {
-                if (player.active)
-                {
-                    float distance = Vector2.Distance(Position.ToWorldCoordinates(), player.Center);
-                    if (distance <= 800f) // 50 blocks = 800 pixels
-                    {
-                        playerNearby = true;
-                        break;
-                    }
-                }
-            }
+            // Check if there are any players within spawn distance
+            bool playerNearby = IsPlayerNearby();
 
             if (playerNearby)
             {
-                // Do something if a player is nearby (e.g., activate or spawn NPC)
+                // Only spawn if we don't have an active NPC and cooldown is finished
+                if (ChildNPC == null && SpawnerCooldown <= 0)
+                {
+                    SpawnNPC();
+                }
             }
             else
             {
