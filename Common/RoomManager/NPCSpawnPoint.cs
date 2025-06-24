@@ -43,9 +43,9 @@ namespace OvermorrowMod.Common.RoomManager
         public int SpawnerCooldown { get; private set; } = 0;
 
         /// <summary>
-        /// Number of ticks it takes before the NPC gets respawned.
+        /// Number of seconds in ticks that it takes before the NPC gets respawned.
         /// </summary>
-        public int CooldownTime { get; private set; } = ModUtils.SecondsToTicks(120);
+        public int CooldownTime { get; private set; } = ModUtils.SecondsToTicks(80);
 
         public override void SaveData(TagCompound tag)
         {

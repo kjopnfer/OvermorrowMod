@@ -54,7 +54,7 @@ namespace OvermorrowMod.Core.NPCs
         /// </summary>
         private AggroRadius GetEffectiveTargetRadius(Entity entity)
         {
-            AggroRadius baseRadius = Config.TargetRadius?.Clone() ?? AggroRadius.Circle(160f);
+            AggroRadius baseRadius = Config.AggroRadius?.Clone() ?? AggroRadius.Circle(160f);
 
             if (entity is Player player)
             {
@@ -103,16 +103,16 @@ namespace OvermorrowMod.Core.NPCs
         }
 
         /// <summary>
-        /// Updated method to check if an entity is within the target radius using the new AggroRadius system.
+        /// Updated method to check if an entity is within the target radius using the AggroRadius system.
         /// </summary>
-        private bool IsEntityInTargetRange(Entity entity)
+        private bool IsEntityInAggroRange(Entity entity)
         {
             AggroRadius effectiveRadius = GetEffectiveTargetRadius(entity);
             return effectiveRadius.IsPointInRange(npc.Center, entity.Center, npc.direction);
         }
 
         /// <summary>
-        /// Updated method to check if an entity is within the attack radius using the new AggroRadius system.
+        /// Updated method to check if an entity is within the attack radius using the AggroRadius system.
         /// </summary>
         private bool IsEntityInAttackRange(Entity entity)
         {
@@ -123,7 +123,7 @@ namespace OvermorrowMod.Core.NPCs
         }
 
         /// <summary>
-        /// Updated method to check if an entity is within the alert radius using the new AggroRadius system.
+        /// Updated method to check if an entity is within the alert radius using the AggroRadius system.
         /// </summary>
         private bool IsEntityInAlertRange(Entity entity)
         {
@@ -144,7 +144,7 @@ namespace OvermorrowMod.Core.NPCs
                     Entity alertTarget = GetAlertTarget();
                     if (alertTarget != null)
                     {
-                        bool inTargetRange = IsEntityInTargetRange(alertTarget);
+                        bool inTargetRange = IsEntityInAggroRange(alertTarget);
                         bool inAlertRange = IsEntityInAlertRange(alertTarget);
 
                         if (inAlertRange && !inTargetRange)
@@ -211,7 +211,7 @@ namespace OvermorrowMod.Core.NPCs
             }
 
             bool hasLineOfSight = HasLineOfSight(Target);
-            bool inTargetRange = IsEntityInTargetRange(Target);
+            bool inTargetRange = IsEntityInAttackRange(Target);
 
             // Reset aggro timer if within effective range and has line of sight
             if (inTargetRange && hasLineOfSight)
@@ -277,7 +277,7 @@ namespace OvermorrowMod.Core.NPCs
                 if (entity is NPC possibleNPC && (possibleNPC == npc || !possibleNPC.friendly)) continue;
 
                 // Use the new radius-based range checking
-                if (!IsEntityInTargetRange(entity)) continue;
+                if (!IsEntityInAggroRange(entity)) continue;
 
                 float distance = Vector2.Distance(origin, entity.Center);
                 float weight = 1f;
@@ -336,7 +336,7 @@ namespace OvermorrowMod.Core.NPCs
                 if (entity == null || !entity.active || entity.dead)
                     continue;
 
-                bool inTargetRange = IsEntityInTargetRange(entity);
+                bool inTargetRange = IsEntityInAggroRange(entity);
                 bool inAlertRange = IsEntityInAlertRange(entity);
 
                 // Must be in alert range but NOT in target range
@@ -397,7 +397,7 @@ namespace OvermorrowMod.Core.NPCs
                     return effectiveAlertRadius.GetMaxRadius() - effectiveTargetRadius.GetMaxRadius();
             }
 
-            return Config.AlertRadius.GetMaxRadius() - Config.TargetRadius.GetMaxRadius();
+            return Config.AlertRadius.GetMaxRadius() - Config.AggroRadius.GetMaxRadius();
         }
 
         /// <summary>

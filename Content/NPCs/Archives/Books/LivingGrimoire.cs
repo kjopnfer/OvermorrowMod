@@ -16,6 +16,8 @@ using Terraria.Map;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
+using OvermorrowMod.Content.Items.Archives;
+using Terraria.GameContent.ItemDropRules;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -285,6 +287,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 20));
         }
     }
 }

@@ -36,6 +36,12 @@ namespace OvermorrowMod.Core.NPCs
         {
             if (!OvermorrowNPC.TargetingModule.HasTarget())
             {
+                // If the NPC is somehow stuck attacking but cannot finish, exit out of it.
+                if (currentSubstate != null)
+                {
+                    currentSubstate.Exit();
+                }
+
                 // No target, exit back to AI decision elsewhere.
                 return;
             }

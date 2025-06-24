@@ -11,6 +11,8 @@ using OvermorrowMod.Content.Biomes;
 using System.Collections.Generic;
 using OvermorrowMod.Core.NPCs;
 using System;
+using OvermorrowMod.Content.Items.Archives;
+using Terraria.GameContent.ItemDropRules;
 
 
 namespace OvermorrowMod.Content.NPCs.Archives
@@ -43,7 +45,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.width = 44;
             NPC.height = 44;
-            NPC.lifeMax = 200;
+            NPC.lifeMax = 260;
             NPC.defense = 18;
             NPC.damage = 23;
             NPC.knockBackResist = 0.2f;
@@ -74,7 +76,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAggroTime: ModUtils.SecondsToTicks(10f),
                 aggroLossRate: 1f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
-                targetRadius: new AggroRadius(
+                aggroRadius: new AggroRadius(
                     right: ModUtils.TilesToPixels(25),            // Far right detection
                     left: ModUtils.TilesToPixels(25),             // Close left detection
                     up: ModUtils.TilesToPixels(15),               // Medium up detection
@@ -97,7 +99,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-            new Wander(this)
+            new Wander(this, minRange: 24, maxRange: 30)
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
@@ -332,6 +334,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 10));
             base.ModifyNPCLoot(npcLoot);
         }
     }

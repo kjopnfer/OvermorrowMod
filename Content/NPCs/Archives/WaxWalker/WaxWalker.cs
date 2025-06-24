@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.Particles;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -42,7 +44,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.width = 30;
             NPC.height = 100;
-            NPC.lifeMax = 200;
+            NPC.lifeMax = 450;
             NPC.defense = 18;
             NPC.damage = 23;
             NPC.knockBackResist = 0.2f;
@@ -54,7 +56,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
+            CurrentAttack = Main.rand.NextBool() ? AttackType.FlameLob : AttackType.FlameRing;
         }
 
         public override bool CheckActive() => false;
@@ -64,7 +66,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAggroTime: ModUtils.SecondsToTicks(10f),
                 aggroLossRate: 0.5f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
-                targetRadius: new AggroRadius(
+                aggroRadius: new AggroRadius(
                     right: ModUtils.TilesToPixels(25),            // Far right detection
                     left: ModUtils.TilesToPixels(25),             // Close left detection
                     up: ModUtils.TilesToPixels(15),               // Medium up detection
@@ -93,7 +95,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-            new Wander(this)
+            new Wander(this, minRange: 40, maxRange: 60)
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState>
@@ -122,38 +124,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public AttackType CurrentAttack { get; private set; } = AttackType.FlameLob;
 
         public ref float FlameCounter => ref NPC.ai[1];
+        public float AttackDelay = ModUtils.SecondsToTicks(10); // default delay in ticks (1 second)
         public override void AI()
         {
             State currentState = AIStateMachine.GetCurrentSubstate();
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
-
-            /*int version = Main.rand.Next(1, 4);
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
-            float scale = 0.025f;
-
-            Vector2 velocity = -Vector2.UnitY * 2;
-            //velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
-            var flameParticle = new Circle(texture, 0f, useSineFade: false)
-            {
-                endColor = Color.Red,
-                AnchorOffset = new Vector2(NPC.direction == 1 ? -4 : 4, -60),
-                AnchorEntity = NPC,
-                fadeIn = false
-            };
-
-            Lighting.AddLight(NPC.Center + flameParticle.AnchorOffset, 0.7f, 0.4f, 0.1f);
-
-
-            ParticleManager.CreateParticleDirect(
-                flameParticle,
-                NPC.Center,
-                velocity,
-                Color.DarkOrange,
-                1f,
-                scale,
-                Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                ParticleDrawLayer.AboveAll
-            );*/
 
             Vector2 flamePosition = NPC.Center + new Vector2(-4 * NPC.direction, -64);
 
@@ -161,8 +136,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 FlameCounter++;
 
-                // Choose new attack every 3 seconds
-                if (FlameCounter % ModUtils.SecondsToTicks(6) == 0)
+                // Choose new attack based on a set delay
+                if (FlameCounter % AttackDelay == 0)
                 {
                     ChooseNewAttack();
                 }
@@ -201,7 +176,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             switch (CurrentAttack)
             {
                 case AttackType.FlameLob:
-                    if (FlameCounter % 60 == 0 && FlameCounter < ModUtils.SecondsToTicks(6) + ModUtils.SecondsToTicks(3))
+                    if (FlameCounter % 100 == 0 && FlameCounter < AttackDelay + ModUtils.SecondsToTicks(3))
                     {
                         int randomSpeed = Main.rand.Next(6, 13);
                         Projectile.NewProjectile(
@@ -218,7 +193,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                 case AttackType.FlameRing:
                     // Fire once per attack cycle (every 3 seconds)
-                    if (FlameCounter % ModUtils.SecondsToTicks(6) == 30)
+                    if (FlameCounter % 200 == 0 && FlameCounter < AttackDelay + ModUtils.SecondsToTicks(3))
                     {
                         Vector2 directionToTarget = (TargetingModule.Target.Center - flamePosition).SafeNormalize(Vector2.UnitY);
                         int randomSpeed = Main.rand.Next(3, 5);
@@ -238,7 +213,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                 case AttackType.HomingFlame:
                     // Fire once per attack cycle (every 3 seconds)
-                    if (FlameCounter % ModUtils.SecondsToTicks(6) == 60)
+                    if (FlameCounter % AttackDelay == 60)
                     {
                         Vector2 directionToTarget = (TargetingModule.Target.Center - flamePosition).SafeNormalize(Vector2.UnitY);
                         int randomSpeed = Main.rand.Next(6, 13);
@@ -267,7 +242,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Particle spawning
             int version = Main.rand.Next(1, 4);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
-            float scale = MathHelper.Lerp(0.035f, 0.075f, MathHelper.Clamp(FlameCounter / ModUtils.SecondsToTicks(6), 0, 1f));
+            float scale = MathHelper.Lerp(0.035f, 0.075f, MathHelper.Clamp(FlameCounter / AttackDelay, 0, 1f));
 
             var flameParticle = new Circle(texture, 0f, useSineFade: false);
             flameParticle.endColor = endColor;
@@ -407,6 +382,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 10));
             base.ModifyNPCLoot(npcLoot);
         }
     }

@@ -66,9 +66,9 @@ namespace OvermorrowMod.Core.NPCs
             }
 
             // Draw target radius in red (middle)
-            if (config.TargetRadius != null)
+            if (config.AggroRadius != null)
             {
-                DrawAggroRadius(spriteBatch, config.TargetRadius, center, npcDirection, Color.Red * 0.8f);
+                DrawAggroRadius(spriteBatch, config.AggroRadius, center, npcDirection, Color.Red * 0.8f);
             }
 
             // Draw attack radius in orange (innermost)

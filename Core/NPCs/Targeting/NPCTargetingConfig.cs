@@ -32,7 +32,7 @@ namespace OvermorrowMod.Core.NPCs
         /// The aggro radius shape for detecting and targeting entities.
         /// Defaults to a circular range of 10 tiles.
         /// </summary>
-        public AggroRadius TargetRadius { get; set; } = AggroRadius.Circle(ModUtils.TilesToPixels(10));
+        public AggroRadius AggroRadius { get; set; } = AggroRadius.Circle(ModUtils.TilesToPixels(10));
 
         /// <summary>
         /// The attack radius shape for determining attack range.
@@ -53,8 +53,8 @@ namespace OvermorrowMod.Core.NPCs
         [System.Obsolete("Use TargetRadius instead for more flexible range shapes.")]
         public float MaxTargetRange
         {
-            get => TargetRadius?.GetMaxRadius() ?? 0f;
-            set => TargetRadius = AggroRadius.Circle(value);
+            get => AggroRadius?.GetMaxRadius() ?? 0f;
+            set => AggroRadius = AggroRadius.Circle(value);
         }
 
         /// <summary>
@@ -105,17 +105,17 @@ namespace OvermorrowMod.Core.NPCs
         /// <param name="maxAggroTime">The maximum duration (in frames) the NPC remains aggroed.</param>
         /// <param name="aggroLossRate">The rate at which aggro decreases per frame.</param>
         /// <param name="aggroCooldownTime">The cooldown time before re-targeting a lost target.</param>
-        /// <param name="targetRadius">The aggro radius shape for detecting targets.</param>
-        /// <param name="attackRadius">The attack radius shape for combat range.</param>
+        /// <param name="aggroRadius">The aggro radius shape for detecting targets.</param>
+        /// <param name="attackRadius">The attack radius shape for combat range. Targets outside of this range decrease aggro.</param>
         /// <param name="alertRadius">The alert radius shape for early detection. Set null to disable.</param>
         /// <param name="prioritizeAggro">Whether the NPC should prioritize targets with higher aggro values.</param>
         public NPCTargetingConfig(float maxAggroTime, float aggroLossRate, float aggroCooldownTime,
-            AggroRadius targetRadius, AggroRadius attackRadius, AggroRadius? alertRadius, bool prioritizeAggro)
+            AggroRadius aggroRadius, AggroRadius attackRadius, AggroRadius? alertRadius, bool prioritizeAggro)
         {
             MaxAggroTime = maxAggroTime;
             AggroLossRate = aggroLossRate;
             AggroCooldownTime = aggroCooldownTime;
-            TargetRadius = targetRadius;
+            AggroRadius = aggroRadius;
             AttackRadius = attackRadius;
             AlertRadius = alertRadius;
             PrioritizeAggro = prioritizeAggro;
@@ -131,7 +131,7 @@ namespace OvermorrowMod.Core.NPCs
             MaxAggroTime = maxAggroTime;
             AggroLossRate = aggroLossRate;
             AggroCooldownTime = aggroCooldownTime;
-            TargetRadius = AggroRadius.Circle(maxTargetRange);
+            AggroRadius = AggroRadius.Circle(maxTargetRange);
             AttackRadius = AggroRadius.Circle(maxAttackRange);
             AlertRadius = alertRange.HasValue ? AggroRadius.Circle(alertRange.Value) : null;
             PrioritizeAggro = prioritizeAggro;

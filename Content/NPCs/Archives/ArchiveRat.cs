@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using OvermorrowMod.Core.NPCs;
 using System;
 using OvermorrowMod.Content.Items.Archives.Accessories;
+using OvermorrowMod.Content.Items.Archives;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -171,7 +172,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAggroTime: ModUtils.SecondsToTicks(7f),
                 aggroLossRate: 1f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
-                targetRadius: new AggroRadius(
+                aggroRadius: new AggroRadius(
                     right: ModUtils.TilesToPixels(25),            // Far right detection
                     left: ModUtils.TilesToPixels(0),             // Close left detection
                     up: ModUtils.TilesToPixels(5),               // Medium up detection
@@ -200,7 +201,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
-            new Wander(this)
+            new Wander(this, minRange: 30, maxRange: 50)
         };
 
         public override List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
@@ -268,7 +269,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
             }
             #endregion
-
             /*if (!TargetingModule.HasTarget())
             {
                 NPC.RemoveStealth();
@@ -442,6 +442,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 20));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 10));
         }
     }

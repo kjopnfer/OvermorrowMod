@@ -10,7 +10,28 @@ namespace OvermorrowMod.Content.NPCs
     {
         public override int Weight => 1;
         public override bool CanExit => true;
-        public Wander(OvermorrowNPC npc) : base(npc) { }
+
+        /// <summary>
+        /// Minimum range of tiles that the NPC must choose to wander from its spawn point.
+        /// </summary>
+        public int MinWanderRange { get; private set; }
+
+        /// <summary>
+        /// Maximum range of tiles that the NPC can wander from its spawn point.
+        /// </summary>
+        public int MaxWanderRange { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="minRange">The minimum range in tiles that the NPC must choose to wander from.</param>
+        /// <param name="maxRange">The maxmimum range in tiles that the NPC can choose to wander to.</param>
+        public Wander(OvermorrowNPC npc, int minRange = 4, int maxRange = 10) : base(npc)
+        {
+            MinWanderRange = minRange;
+            MaxWanderRange = maxRange;
+        }
 
         public override void Enter()
         {
@@ -26,14 +47,16 @@ namespace OvermorrowMod.Content.NPCs
                 Vector2 newPosition;
                 do
                 {
-                    float offsetX = Main.rand.NextFloat(-10f, 10f) * 16; // Random X within 10 tiles
-                    float offsetY = Main.rand.NextFloat(-10f, 10f) * 16; // Random Y within 10 tiles
+                    //float offsetX = Main.rand.NextFloat(-10f, 10f) * 16; // Random X within 10 tiles
+                    //float offsetY = Main.rand.NextFloat(-10f, 10f) * 16; // Random Y within 10 tiles
+                    float offsetX = ModUtils.TilesToPixels(Main.rand.Next(-MaxWanderRange, MaxWanderRange));
+                    float offsetY = ModUtils.TilesToPixels(Main.rand.Next(-MaxWanderRange, MaxWanderRange));
                     newPosition = spawnPosition + new Vector2(offsetX, offsetY);
 
                     // Find the nearest ground position for the generated newPosition
                     newPosition = TileUtils.FindNearestGround(newPosition);
 
-                } while (Vector2.Distance(NPC.Center, newPosition) < 4 * 16); // Ensure at least 4 tiles away
+                } while (Vector2.Distance(NPC.Center, newPosition) < ModUtils.TilesToPixels(MinWanderRange));
 
                 // There is no target so pick a random position to walk towards.
                 OvermorrowNPC.TargetingModule.MiscTargetPosition = newPosition;
@@ -70,7 +93,7 @@ namespace OvermorrowMod.Content.NPCs
                     NPC.direction = NPC.GetDirection(targetPosition);
                     Vector2 distance = NPC.Move(targetPosition, 0.2f, maxSpeed, 8f);
 
-                    if (distance.X <= 16)
+                    if (distance.X <= ModUtils.TilesToPixels(1))
                     {
                         if (!IsFinished) // Prevent setting multiple times
                         {

@@ -45,7 +45,7 @@ namespace OvermorrowMod.Content.Misc
 
             // Fallback calculation using the new system if targeting module method fails
             var config = overmorrowNPC.TargetingConfig();
-            if (config.AlertRadius == null || config.TargetRadius == null)
+            if (config.AlertRadius == null || config.AggroRadius == null)
                 return 0f;
 
             // Get the effective radii for this specific target and NPC direction
@@ -75,7 +75,7 @@ namespace OvermorrowMod.Content.Misc
         private AggroRadius GetEffectiveTargetRadius(OvermorrowNPC overmorrowNPC, Entity target)
         {
             var config = overmorrowNPC.TargetingConfig();
-            AggroRadius baseRadius = config.TargetRadius?.Clone() ?? AggroRadius.Circle(160f);
+            AggroRadius baseRadius = config.AggroRadius?.Clone() ?? AggroRadius.Circle(160f);
 
             if (target is Player player)
             {
@@ -105,7 +105,7 @@ namespace OvermorrowMod.Content.Misc
             var config = overmorrowNPC.TargetingConfig();
 
             if (config.AlertRadius == null)
-                return config.TargetRadius ?? AggroRadius.Circle(160f);
+                return config.AggroRadius ?? AggroRadius.Circle(160f);
 
             AggroRadius baseRadius = config.AlertRadius.Clone();
 
