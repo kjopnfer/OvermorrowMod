@@ -1,11 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items.Archives.Accessories;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.WorldGeneration.Archives
@@ -160,7 +163,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             PlaceDoorObjects(x + 115, y + 296);
             //PlaceAndConfigureDoor(x + 115, y + 296, DoorID.BlueShrimpTreasureEntrance, DoorID.BlueShrimpTreasureExit, isLocked: true);
-            PlaceAndConfigureDoor(x + 115, y + 296, DoorID.BLUEGOESTOREDFUCKINGDOOR, DoorID.REDGOESTOBLUEDOOR);
+            PlaceAndConfigureDoor(x + 115, y + 296, DoorID.BlueShrimpRedDiagonalDoor, DoorID.RedDiagonalBlueShrimpDoor);
 
             PlaceStairGroup(x + 224, y + 242, 1);
             PlaceMultiVase(x + 200, y + 255, 1, 5);
@@ -317,6 +320,24 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
                 PlaceTableAndChair(x + 693 + offset, y + 258, 1, RoomID.Blue);
                 PlaceTableAndChair(x + 693 + offset, y + 288, 1, RoomID.Blue);
             }
+            #endregion
+
+            #region Treasure Room
+            PlaceAndConfigureDoor(x + 643, y + 128, DoorID.BlueShrimpTreasureExit, DoorID.BlueShrimpTreasureEntrance, isLocked: true);
+            PlaceDoorObjects(x + 643, y + 128);
+            //TileUtils.PlaceTileWithEntity<IlluminatiChest, IlluminatiChest_TE>(x + 620, y + 128);
+
+            int PlacementSuccess = WorldGen.PlaceChest(x + 620, y + 127, (ushort)ModContent.TileType<IlluminatiChest>(), false, 0);
+            if (PlacementSuccess >= 0)
+            {
+                Chest chest = Main.chest[PlacementSuccess];
+
+                int slot = 0;
+                chest.item[slot].SetDefaults(ModContent.ItemType<WhitePage>());
+            }
+
+            //Tile chest = Main.tile[x + 628, y + 128];
+            //chest
             #endregion
 
             SetupSpawners(x, y);

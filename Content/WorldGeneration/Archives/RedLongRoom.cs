@@ -146,7 +146,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceBannersBothFloors(x + 462, y + 102);
             PlaceDoorObjects(x + 435, y + 72);
             //PlaceAndConfigureDoor(x + 435, y + 72, DoorID.RedLongRoomSecondExit, DoorID.RedDiagonalRoomEntrance, isLocked: true);
-            PlaceAndConfigureDoor(x + 435, y + 72, DoorID.REDDOORTOREDDOOR, DoorID.OTHERFUCKINGREDDOORTOREDDOOR);
+            PlaceAndConfigureDoor(x + 435, y + 72, DoorID.RedLongRedDiagonalDoor, DoorID.RedDiagonalRedLongDoor);
             PlaceCozyArea(x + 427, y + 102, RoomID.Red);
 
             WorldGen.PlaceObject(x + 399, y + 63, ModContent.TileType<WaxSconce>(), true);

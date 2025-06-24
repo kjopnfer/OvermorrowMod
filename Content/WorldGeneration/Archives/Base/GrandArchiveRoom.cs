@@ -41,11 +41,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             RedGhostRoom,
 
-            BLUEGOESTOREDFUCKINGDOOR,
-            REDGOESTOBLUEDOOR,
+            BlueShrimpRedDiagonalDoor,
+            RedDiagonalBlueShrimpDoor,
 
-            REDDOORTOREDDOOR,
-            OTHERFUCKINGREDDOORTOREDDOOR,
+            RedLongRedDiagonalDoor,
+            RedDiagonalRedLongDoor,
 
             FoyerTreasureEntrance,
             FoyerTreasureExit,
