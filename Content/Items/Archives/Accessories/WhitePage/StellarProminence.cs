@@ -12,10 +12,11 @@ using OvermorrowMod.Core.Particles;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria.DataStructures;
+using OvermorrowMod.Core.Interfaces;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    public class StellarProminence : ModProjectile, ITrailEntity
+    public class StellarProminence : ModProjectile, ITrailEntity, IDrawAdditive
     {
         public IEnumerable<TrailConfig> TrailConfigurations()
         {
@@ -90,7 +91,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float particleScale = 0.1f;
+            /*float particleScale = 0.1f;
             Color color = Color.White;
 
             Texture2D circle = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_01").Value;
@@ -114,11 +115,24 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
             //Main.spriteBatch.Draw(circle, Projectile.Center - Main.screenPosition, null, color * 0.7f, MathHelper.PiOver4, circle.Size() / 2f, scale, SpriteEffects.None, 1);
 
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);*/
 
 
             return base.PreDraw(ref lightColor);
         }
 
+        public void DrawAdditive(SpriteBatch spriteBatch)
+        {
+            Color color = Color.White;
+
+            Texture2D circle = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_01").Value;
+            Texture2D tex2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05").Value;
+
+            spriteBatch.Draw(tex2, Projectile.Center - Main.screenPosition, null, color * 0.5f, Projectile.velocity.ToRotation(), tex2.Size() / 2f, new Vector2(0.7f, 0.25f), SpriteEffects.None, 1);
+            spriteBatch.Draw(tex2, Projectile.Center - Main.screenPosition, null, color * 0.3f, Projectile.velocity.ToRotation(), tex2.Size() / 2f, new Vector2(1f, 0.25f), SpriteEffects.None, 1);
+
+            spriteBatch.Draw(circle, Projectile.Center - Main.screenPosition, null, Color.White * 0.7f, MathHelper.PiOver2, circle.Size() / 2f, 0.2f, SpriteEffects.None, 1);
+            spriteBatch.Draw(circle, Projectile.Center - Main.screenPosition, null, color * 0.4f, MathHelper.PiOver2, circle.Size() / 2f, 0.5f, SpriteEffects.None, 1);
+        }
     }
 }

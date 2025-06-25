@@ -114,32 +114,13 @@ namespace OvermorrowMod.Content.Particles
             Vector2 origin = selectedTexture.Size() / 2f;
             float finalAlpha = particle.alpha * customAlpha;
 
-            if (!hasAdditiveLayers)
+            spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
+                particle.color * finalAlpha * 0.7f, particle.rotation, origin, particle.scale * 0.7f, SpriteEffects.None, 0f);
+
+            if (Main.rand.NextBool())
             {
                 spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                    particle.color * finalAlpha, particle.rotation, origin, particle.scale * 0.25f, SpriteEffects.None, 0f);
-            }
-            else
-            {
-                // Complex drawing with additive layers
-                // Base layer
-                //spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                //    particle.color * finalAlpha, 0f, origin, particle.scale * 0.125f, SpriteEffects.None, 0f);
-
-                spriteBatch.Reload(BlendState.Additive);
-
-                // Additive layer 1
-                spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                    particle.color * finalAlpha * 0.7f, particle.rotation, origin, particle.scale * 0.7f, SpriteEffects.None, 0f);
-
-                // Additive layer 2
-                if (Main.rand.NextBool())
-                {
-                    spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                        particle.color * finalAlpha * 0.4f, particle.rotation, origin, particle.scale * 2f, SpriteEffects.None, 0f);
-                }
-
-                spriteBatch.Reload(BlendState.AlphaBlend);
+                    particle.color * finalAlpha * 0.4f, particle.rotation, origin, particle.scale * 2f, SpriteEffects.None, 0f);
             }
         }
     }

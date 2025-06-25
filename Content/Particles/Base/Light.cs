@@ -112,19 +112,17 @@ namespace OvermorrowMod.Content.Particles
             float progress = timeAlive / maxTime;
             Color drawColor = Color.Lerp(particle.color, endColor.Value, progress);
 
-            // Calculate height and width lerps for vertical light ray extension
             float heightLerp, widthLerp;
-
             if (progress <= 0.5f)
             {
-                // First half: extend vertically from 0 to max
+                // Extend vertically from 0 to max
                 float growProgress = progress * 2f;
                 heightLerp = MathHelper.Lerp(0f, maxScale, EasingUtils.EaseOutQuad(growProgress));
                 widthLerp = MathHelper.Lerp(0.1f, 0.3f, EasingUtils.EaseOutQuad(growProgress)); // Thin width
             }
             else
             {
-                // Second half: retract vertically from max to 0
+                // Retract vertically from max to 0
                 float shrinkProgress = (progress - 0.5f) * 2f;
                 heightLerp = MathHelper.Lerp(maxScale, 0f, EasingUtils.EaseOutQuad(shrinkProgress));
                 widthLerp = MathHelper.Lerp(0.3f, 0.1f, EasingUtils.EaseOutQuad(shrinkProgress));

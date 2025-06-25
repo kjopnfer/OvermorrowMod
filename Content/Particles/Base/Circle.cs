@@ -23,8 +23,6 @@ namespace OvermorrowMod.Content.Particles
 
         private readonly Texture2D texture;
         public Color? endColor = null;
-
-        // Anchor system - SIMPLE VERSION
         public Entity AnchorEntity { get; set; } = null;
         public Vector2 AnchorOffset { get; set; } = Vector2.Zero;
         public bool fadeIn = true;
@@ -59,26 +57,19 @@ namespace OvermorrowMod.Content.Particles
         {
             timeAlive++;
 
-            // SIMPLE: If we have an anchor, just stick to it with offset
             if (AnchorEntity != null && AnchorEntity.active)
             {
-                // Set position to anchor + offset, that's it!
                 particle.position = AnchorEntity.Center + AnchorOffset;
-
-                // Add upward float if enabled
                 if (floatUp)
                     particle.position += -Vector2.UnitY * timeAlive * 0.5f;
             }
             else
             {
-                // No anchor - move normally
                 if (floatUp) particle.position += particle.velocity;
             }
 
-            // Add sine wiggle
             particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * positionOffset;
 
-            // Handle fading and scaling
             float lifeProgress = timeAlive / maxTime;
             float fadeProgress = 1f - lifeProgress;
 

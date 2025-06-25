@@ -9,43 +9,6 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Particles
 {
-    public class ParticleInstance
-    {
-        public CustomParticle cParticle;
-        public int id;
-        public Vector2 position;
-        public Vector2 velocity;
-        public float alpha;
-        public float scale;
-        public float rotation;
-        public Color color = Color.White;
-        public int activeTime;
-        public Vector2[] oldPos = new Vector2[10];
-        public ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll;
-
-        protected Vector2 DirectionTo(Vector2 pos) => Vector2.Normalize(pos - position);
-        public void Kill() => ParticleManager.RemoveAtIndex(id);
-
-        // Gravity-aware position for drawing
-        public Vector2 DrawPosition
-        {
-            get
-            {
-                Vector2 drawPos = position;
-
-                // If gravity is flipped, adjust the position
-                if (Main.LocalPlayer.gravDir == -1f)
-                {
-                    // Flip Y position relative to screen center
-                    Vector2 screenCenter = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) / 2f;
-                    drawPos.Y = screenCenter.Y - (position.Y - screenCenter.Y);
-                }
-
-                return drawPos;
-            }
-        }
-    }
-
     public static class ParticleManager
     {
         private static int MaxParticleCount = 5000;
@@ -58,6 +21,34 @@ namespace OvermorrowMod.Core.Particles
             particles = new ParticleInstance[MaxParticleCount];
             NextIndex = 0;
             ActiveParticles = 0;
+        }
+
+        public static void DrawAdditive(SpriteBatch spriteBatch)
+        {
+            // Draw all particles that are marked for additive blending
+            foreach (ParticleInstance particle in particles)
+            {
+                if (particle == null || !particle.UseAdditiveBlending) continue;
+
+                // Temporarily set the particle's position to the gravity-aware position for drawing
+                Vector2 originalPosition = particle.position;
+                particle.position = particle.DrawPosition;
+
+                particle.cParticle.particle = particle;
+                try
+                {
+                    particle.cParticle.Draw(spriteBatch);
+                }
+                catch (Exception e)
+                {
+                    OvermorrowModFile.Instance.Logger.Error(e.Message);
+                    Main.NewText($"Error drawing additive particle: {particle.cParticle.GetType().Name}", Color.Red);
+                    particle.Kill();
+                }
+
+                // Restore original position
+                particle.position = originalPosition;
+            }
         }
 
         public static void Unload()
@@ -102,7 +93,8 @@ namespace OvermorrowMod.Core.Particles
         {
             foreach (ParticleInstance particle in particles)
             {
-                if (particle == null || particle.drawLayer != layer) continue;
+                // Skip particles that use additive blending
+                if (particle == null || particle.drawLayer != layer || particle.UseAdditiveBlending) continue;
 
                 // Temporarily set the particle's position to the gravity-aware position for drawing
                 Vector2 originalPosition = particle.position;
@@ -144,13 +136,14 @@ namespace OvermorrowMod.Core.Particles
             ActiveParticles = 0;
         }
 
-        public static int CreateParticle(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll)
+        // Add overloads that support additive blending
+        public static int CreateParticle(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll, bool useAdditiveBlending = false)
         {
-            ParticleInstance particle = CreateParticleDirect(customParticle, position, velocity, color, alpha, scale, rotation, drawLayer);
+            ParticleInstance particle = CreateParticleDirect(customParticle, position, velocity, color, alpha, scale, rotation, drawLayer, useAdditiveBlending);
             return particle?.id ?? -1;
         }
 
-        public static ParticleInstance CreateParticleDirect(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll)
+        public static ParticleInstance CreateParticleDirect(CustomParticle customParticle, Vector2 position, Vector2 velocity, Color color, float alpha = 1f, float scale = 1f, float rotation = 0f, ParticleDrawLayer drawLayer = ParticleDrawLayer.AboveAll, bool useAdditiveBlending = false)
         {
             if (ActiveParticles >= MaxParticleCount || customParticle == null) return null;
 
@@ -174,7 +167,8 @@ namespace OvermorrowMod.Core.Particles
                 rotation = rotation,
                 id = NextIndex,
                 cParticle = customParticle,
-                drawLayer = drawLayer
+                drawLayer = drawLayer,
+                UseAdditiveBlending = useAdditiveBlending // Set the additive blending flag
             };
 
             particle.cParticle.particle = particle;
