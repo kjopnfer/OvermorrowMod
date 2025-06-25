@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Misc
         // Death animation states
         private bool isDying = false;
         public ref float DeathAnimationTimer => ref NPC.ai[0];
-        private const int DEATH_ANIMATION_DURATION = ModUtils.SecondsToTicks(1);
+        private int DEATH_ANIMATION_DURATION = ModUtils.SecondsToTicks(1);
 
         public override void AI()
         {
