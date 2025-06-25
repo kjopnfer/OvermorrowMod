@@ -20,6 +20,7 @@ namespace OvermorrowMod.Content.Items.Archives
             Item.useTime = 30;
             Item.rare = ItemRarityID.Expert;
             Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.maxStack = 9999;
         }
 
         public override bool? UseItem(Player player)

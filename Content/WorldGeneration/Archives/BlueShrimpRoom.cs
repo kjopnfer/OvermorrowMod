@@ -406,7 +406,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             AddSpawnPoint(new Vector2(x + 449, y + 271), ModContent.NPCType<BlasterBook>());
 
             AddSpawnPoint(new Vector2(x + 637, y + 287), ModContent.NPCType<ClockworkSpider>());
-            AddSpawnPoint(new Vector2(x + 523, y + 243), ModContent.NPCType<PlantBook>());
+            AddSpawnPoint(new Vector2(x + 586, y + 243), ModContent.NPCType<PlantBook>());
             AddSpawnPoint(new Vector2(x + 610, y + 257), ModContent.NPCType<ArchiveRat>());
 
             AddSpawnPoint(new Vector2(x + 678, y + 257), ModContent.NPCType<ArchiveRat>());

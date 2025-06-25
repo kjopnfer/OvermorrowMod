@@ -55,41 +55,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-
-            ArchiveDoor_TE door;
-            Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            TileUtils.TryFindModTileEntity<ArchiveDoor_TE>(bottomLeft.X, bottomLeft.Y, out door);
-            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
-            {
-
-                if (door != null && door.IsLocked)
-                {
-                    Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                    Vector2 pos = new Vector2(i * 16, j * 16);
-                    var npcType = ModContent.NPCType<DoorLock>();
-
-                    Vector2 offset = new Vector2(ModUtils.TilesToPixels(6), ModUtils.TilesToPixels(11));
-                    if (!Main.npc.Any(NPC =>
-                        NPC.type == npcType &&
-                        NPC.active &&
-                        NPC.ModNPC is DoorLock doorLock &&
-                        doorLock.tileEntity == door))
-                    {
-                        int lockNPC = NPC.NewNPC(new EntitySource_WorldEvent(), (int)(pos.X + offset.X), (int)(pos.Y + offset.Y), npcType);
-                        if (Main.npc[lockNPC].ModNPC is DoorLock doorLock)
-                        {
-                            doorLock.tileEntity = door;
-                        }
-                    }
-                }
-            }
+            // Remove the NPC spawning logic from here - it's now handled in the TileEntity
         }
 
         public override bool RightClick(int i, int j)
         {
             Tile tile = Framing.GetTileSafely(i, j);
-
 
             ArchiveDoor_TE door;
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
@@ -144,22 +115,38 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public bool IsLocked = false;
 
+        // NPC reference
+        private int lockNPCIndex = -1;
+        public NPC LockNPC => lockNPCIndex >= 0 && lockNPCIndex < Main.npc.Length && Main.npc[lockNPCIndex].active ? Main.npc[lockNPCIndex] : null;
+
         // Face sprite
         private int FrameCounter = 0;
         public int DoorFrame = 1; // Goes from frame 0 to 6
         public Vector2 DoorPosition => Position.ToWorldCoordinates(16, 16);
+
         public override void SaveData(TagCompound tag)
         {
             tag["DoorID"] = DoorID;
             tag["PairedDoor"] = PairedDoor;
+            tag["IsLocked"] = IsLocked;
         }
 
         public override void LoadData(TagCompound tag)
         {
             DoorID = tag.Get<int>("DoorID");
             PairedDoor = tag.Get<int>("PairedDoor");
+            IsLocked = tag.Get<bool>("IsLocked");
         }
 
+        public void UnlockDoors()
+        {
+            var matchingDoor = ByID.Values
+                                    .OfType<ArchiveDoor_TE>()
+                                    .FirstOrDefault(door => door.PairedDoor == DoorID && PairedDoor == door.DoorID);
+
+            IsLocked = false;
+            matchingDoor.IsLocked = false;
+        }
 
         public void Interact()
         {
@@ -173,7 +160,45 @@ namespace OvermorrowMod.Content.Tiles.Archives
             {
                 if (IsLocked)
                 {
-                    Main.NewText("The door is locked!", Color.Red);
+                    // Check if player has ArchiveKey in their inventory
+                    bool hasKey = false;
+                    Player localPlayer = Main.LocalPlayer;
+
+                    for (int i = 0; i < localPlayer.inventory.Length; i++)
+                    {
+                        if (localPlayer.inventory[i].type == ModContent.ItemType<ArchiveKey>())
+                        {
+                            hasKey = true;
+                            break;
+                        }
+                    }
+
+                    if (hasKey)
+                    {
+                        // Find the key item and reduce its stack by 1
+                        for (int i = 0; i < localPlayer.inventory.Length; i++)
+                        {
+                            if (localPlayer.inventory[i].type == ModContent.ItemType<ArchiveKey>())
+                            {
+                                localPlayer.inventory[i].stack--;
+                                if (localPlayer.inventory[i].stack <= 0)
+                                {
+                                    localPlayer.inventory[i].TurnToAir();
+                                }
+                                break;
+                            }
+                        }
+
+                        // Start the death animation directly on the lock NPC
+                        if (LockNPC?.ModNPC is DoorLock doorLock)
+                        {
+                            doorLock.StartDeathAnimation();
+                        }
+                    }
+                    else
+                    {
+                        Main.NewText("The door is locked!", Color.Red);
+                    }
                     return;
                 }
 
@@ -184,8 +209,100 @@ namespace OvermorrowMod.Content.Tiles.Archives
             }
         }
 
+        /// <summary>
+        /// Spawns the lock NPC if the door is locked and no NPC exists
+        /// </summary>
+        private void ManageLockNPC()
+        {
+            if (IsLocked)
+            {
+                // Handle forceful despawning - if we have an NPC reference but it's no longer active
+                if (lockNPCIndex >= 0 && (lockNPCIndex >= Main.npc.Length || !Main.npc[lockNPCIndex].active))
+                {
+                    //Main.NewText("Lock NPC was forcefully despawned, clearing reference");
+                    lockNPCIndex = -1;
+                }
+
+                // Check if we need to spawn a new NPC
+                if (LockNPC == null)
+                {
+                    // Check if any player is within range (100 tiles)
+                    bool playerNearby = false;
+                    Vector2 doorCenter = DoorPosition + new Vector2(ModUtils.TilesToPixels(6), ModUtils.TilesToPixels(7.5f)); // Center of door
+
+                    for (int i = 0; i < Main.maxPlayers; i++)
+                    {
+                        if (Main.player[i].active)
+                        {
+                            float distance = Vector2.Distance(Main.player[i].Center, doorCenter);
+                            if (distance <= ModUtils.TilesToPixels(100))
+                            {
+                                playerNearby = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (playerNearby)
+                    {
+                        SpawnLockNPC();
+                    }
+                }
+                else
+                {
+                    // Ensure the existing NPC has the correct reference
+                    if (LockNPC.ModNPC is DoorLock doorLock)
+                    {
+                        doorLock.tileEntity = this;
+                    }
+                }
+            }
+            else
+            {
+                // Door is not locked, remove NPC if it exists
+                if (LockNPC != null)
+                {
+                    RemoveLockNPC();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Spawns the lock NPC at the door position
+        /// </summary>
+        private void SpawnLockNPC()
+        {
+            var npcType = ModContent.NPCType<DoorLock>();
+            Vector2 spawnPosition = DoorPosition + new Vector2(ModUtils.TilesToPixels(5), -ModUtils.TilesToPixels(4.2f));
+
+            int npcIndex = NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnPosition.X, (int)spawnPosition.Y, npcType);
+
+            if (npcIndex >= 0 && Main.npc[npcIndex].ModNPC is DoorLock doorLock)
+            {
+                lockNPCIndex = npcIndex;
+                doorLock.tileEntity = this;
+            }
+        }
+
+        /// <summary>
+        /// Removes the lock NPC
+        /// </summary>
+        private void RemoveLockNPC()
+        {
+            if (LockNPC != null)
+            {
+                LockNPC.active = false;
+            }
+            lockNPCIndex = -1;
+        }
+
         public override void Update()
         {
+            // Manage the lock NPC
+            ManageLockNPC();
+
+            // Note: The validation is now handled inside ManageLockNPC() for better organization
+
             if (IsLocked) return;
 
             Vector2 playerPosition = Main.LocalPlayer.Center;
@@ -222,6 +339,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Tile tile = Main.tile[x, y];
             if (!tile.HasTile || tile.TileType != ModContent.TileType<ArchiveDoor>())
             {
+                // Clean up NPC before killing the tile entity
+                RemoveLockNPC();
                 Kill(Position.X, Position.Y);
             }
 

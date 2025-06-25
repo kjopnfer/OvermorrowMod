@@ -2,9 +2,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -41,13 +44,97 @@ namespace OvermorrowMod.Content.Misc
         }
 
         public ModTileEntity tileEntity;
+        ArchiveDoor_TE doorInstance => (ArchiveDoor_TE)TileEntity.ByID[tileEntity.ID];
+
+        // Death animation states
+        private bool isDying = false;
+        public ref float DeathAnimationTimer => ref NPC.ai[0];
+        private const int DEATH_ANIMATION_DURATION = ModUtils.SecondsToTicks(1);
+
         public override void AI()
         {
-            ArchiveDoor_TE instance = (ArchiveDoor_TE)TileEntity.ByID[tileEntity.ID];
-            if (!instance.IsLocked) return;
+            if (!doorInstance.IsLocked && !isDying) return;
 
-            Lighting.AddLight(NPC.Center, 0f, 1f, 0.5f);
-            NPC.ai[0]++;   
+            if (!isDying)
+            {
+                Lighting.AddLight(NPC.Center, 0f, 1f, 0.5f);
+                NPC.localAI[0]++;
+            }
+            else
+            {
+                DeathAnimationTimer++;
+
+                if (DeathAnimationTimer >= DEATH_ANIMATION_DURATION)
+                {
+                    NPC.noGravity = false;
+                    NPC.noTileCollide = false;
+                }
+
+                if (!NPC.noGravity && NPC.collideY && NPC.velocity.Y >= 0)
+                {
+                    NPC.life = 0;
+                    NPC.HitEffect(new NPC.HitInfo());
+                    NPC.active = false;
+
+                    doorInstance.UnlockDoors();
+                }
+            }
+        }
+
+        public void StartDeathAnimation()
+        {
+            if (!isDying)
+            {
+                isDying = true;
+                DeathAnimationTimer = 0;
+                NPC.immortal = false;
+                NPC.dontTakeDamage = false;
+            }
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            if (NPC.life <= 0)
+            {
+                float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
+                float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+
+                randomScale = Main.rand.NextFloat(10f, 20f);
+
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
+
+                Color color = Color.LimeGreen;
+                var lightOrb = new Circle(texture, ModUtils.SecondsToTicks(0.7f), canGrow: true, useSineFade: true);
+                lightOrb.rotationAmount = 0.05f;
+
+                float orbScale = 0.5f;
+                ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, orbScale, 0.2f);
+
+                lightOrb = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value, ModUtils.SecondsToTicks(0.6f), canGrow: true, useSineFade: true);
+                lightOrb.rotationAmount = 0.05f;
+                ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, scale: 0.6f, 0.2f);
+
+                Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
+                for (int i = 0; i < 16; i++)
+                {
+                    randomScale = Main.rand.NextFloat(2f, 7f);
+
+                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
+                    Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 7);
+
+                    var lightSpark = new Spark(sparkTexture, 0f, true, 0f);
+                    lightSpark.endColor = Color.LimeGreen;
+                    ParticleManager.CreateParticleDirect(lightSpark, NPC.Center, RandomVelocity * 2, color, 1f, randomScale, 0f);
+                }
+
+
+                Vector2 upwardVelocity = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-8f, -3f));
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, upwardVelocity, Mod.Find<ModGore>($"{Name}Gore1").Type, NPC.scale);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, upwardVelocity, Mod.Find<ModGore>($"{Name}Gore2").Type, NPC.scale);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, upwardVelocity, Mod.Find<ModGore>($"{Name}Gore3").Type, NPC.scale);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, upwardVelocity, Mod.Find<ModGore>($"{Name}Gore4").Type, NPC.scale);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, upwardVelocity, Mod.Find<ModGore>($"{Name}Gore5").Type, NPC.scale);
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -63,6 +150,10 @@ namespace OvermorrowMod.Content.Misc
             };
 
             float max = 5;
+
+            // Calculate death animation progress (0 to 1)
+            float deathProgress = isDying ? MathHelper.Clamp(DeathAnimationTimer / DEATH_ANIMATION_DURATION, 0f, 1f) : 0f;
+
             for (int direction = 0; direction < chainDirections.Length; direction++)
             {
                 Vector2 chainDirection = chainDirections[direction];
@@ -71,18 +162,37 @@ namespace OvermorrowMod.Content.Misc
                 {
                     Vector2 chainPosition = NPC.Center + chainDirection * chainTexture.Height * i;
 
+                    // Add falling effect during death animation
+                    if (isDying)
+                    {
+                        // Add slight random sway
+                        float sway = MathF.Sin(DeathAnimationTimer * 0.2f + i) * deathProgress * 5f;
+                        chainPosition.X += sway;
+                    }
+
                     // Calculate rotation angle for the chain to match the direction
                     float rotation = (float)Math.Atan2(chainDirection.Y, chainDirection.X) + MathHelper.PiOver2;
 
-                    // Calculate fade-out alpha based on distance from center
-                    float fadeProgress = (float)i / max; // 3 is the max chain links
-                    float alpha = MathHelper.Lerp(1f, 0.15f, fadeProgress); // Fade from 1.0 to 0.0
 
-                    // Calculate pulsing shader progress
-                    float timeOffset = (float)i * 25f; // Very fast chain-to-chain travel
-                    float pulseSpeed = 0.05f; // Very fast pulse speed
-                    float shaderProgress = MathF.Sin((NPC.ai[0] - timeOffset) * pulseSpeed) * 0.5f + 0.5f; // 0 to 1 sine wave
-                    shaderProgress = MathHelper.Clamp(shaderProgress, 0f, 1f);
+                    // Calculate fade-out alpha based on distance from center
+                    float fadeProgress = (float)i / max;
+                    float baseAlpha = MathHelper.Lerp(1f, 0.15f, fadeProgress);
+
+                    float deathFade = isDying ? (1f - deathProgress) : 1f;
+                    float alpha = baseAlpha * deathFade;
+
+                    // Skip drawing if completely faded
+                    if (alpha <= 0.01f) continue;
+
+                    // Calculate pulsing shader progress (only if not dying)
+                    float shaderProgress = 0f;
+                    if (!isDying)
+                    {
+                        float timeOffset = (float)i * 25f;
+                        float pulseSpeed = 0.05f;
+                        shaderProgress = MathF.Sin((NPC.localAI[0] - timeOffset) * pulseSpeed) * 0.5f + 0.5f;
+                        shaderProgress = MathHelper.Clamp(shaderProgress, 0f, 1f);
+                    }
 
                     // Apply shader if progress is above threshold
                     if (shaderProgress > 0.1f)
@@ -100,7 +210,7 @@ namespace OvermorrowMod.Content.Misc
                         chainTexture,
                         chainPosition - screenPos,
                         new Rectangle(0, 0, chainTexture.Width, chainTexture.Height),
-                        Color.White * alpha, // Apply fade-out alpha
+                        Color.White * alpha,
                         rotation,
                         chainTexture.Size() / 2f,
                         1f,
