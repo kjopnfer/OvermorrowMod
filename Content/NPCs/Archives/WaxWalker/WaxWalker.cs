@@ -258,7 +258,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 1f,
                 scale,
                 Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                ParticleDrawLayer.BehindProjectiles
+                ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true
             );
 
             var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
@@ -270,7 +270,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 1f,
                 scale: scale + 0.15f,
                 Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                ParticleDrawLayer.BehindNPCs
+                ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
             );
         }
 

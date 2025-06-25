@@ -108,11 +108,11 @@ namespace OvermorrowMod.Content.Misc
                 lightOrb.rotationAmount = 0.05f;
 
                 float orbScale = 0.5f;
-                ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, orbScale, 0.2f);
+                ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, orbScale, 0.2f, useAdditiveBlending: true);
 
                 lightOrb = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value, ModUtils.SecondsToTicks(0.6f), canGrow: true, useSineFade: true);
                 lightOrb.rotationAmount = 0.05f;
-                ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, scale: 0.6f, 0.2f);
+                ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, scale: 0.6f, 0.2f, useAdditiveBlending: true);
 
                 Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
                 for (int i = 0; i < 16; i++)
@@ -124,7 +124,7 @@ namespace OvermorrowMod.Content.Misc
 
                     var lightSpark = new Spark(sparkTexture, 0f, true, 0f);
                     lightSpark.endColor = Color.LimeGreen;
-                    ParticleManager.CreateParticleDirect(lightSpark, NPC.Center, RandomVelocity * 2, color, 1f, randomScale, 0f);
+                    ParticleManager.CreateParticleDirect(lightSpark, NPC.Center, RandomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
                 }
 
 

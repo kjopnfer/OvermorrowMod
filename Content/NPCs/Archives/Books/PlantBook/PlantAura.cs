@@ -130,7 +130,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                 if (Main.rand.NextBool(4))
                 {
-                    ParticleManager.CreateParticleDirect(plantGas, tileWorldPosition, -Vector2.UnitY, Color.LimeGreen, alpha: 1f, scale: 0.1f, 0f);
+                    ParticleManager.CreateParticleDirect(plantGas, tileWorldPosition, -Vector2.UnitY, Color.LimeGreen, alpha: 1f, scale: 0.1f, 0f, useAdditiveBlending: true);
                 }
                 /*switch (type)
                 {

@@ -194,8 +194,6 @@ namespace OvermorrowMod.Content.Particles
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Reload(BlendState.Additive);
-
             // Calculate scale lerps - different for rotating vs regular sparks
             float heightLerp, widthLerp;
 
@@ -229,8 +227,6 @@ namespace OvermorrowMod.Content.Particles
                 texture.Size() / 2f,
                 new Vector2(heightLerp, widthLerp),
                 SpriteEffects.None, 0f);
-
-            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
 }

@@ -56,13 +56,13 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
                 Color color = Color.Orange;
 
                 var lightSpark = new Spark(sparkTexture, 0f, true, 0f);
-                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity * 2, Color.Orange, 1f, randomScale, 0f);
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity * 2, Color.Orange, 1f, randomScale, 0f, useAdditiveBlending: true);
 
                 randomScale = Main.rand.NextFloat(20f, 30f);
                 
                 var rotatingEmber = new Spark(sparkTexture, Main.rand.Next(8, 10) * 10, false,  -1f);
                 rotatingEmber.endColor = Color.Red;
-                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(9, 10), Color.Orange, 1f, randomScale, 0f);
+                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(9, 10), Color.Orange, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
         }
 

@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using Terraria;
@@ -12,7 +13,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
-    public class Flame : ModProjectile
+    public class Flame : ModProjectile, IDrawAdditive
     {
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
@@ -54,7 +55,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     1f,
                     scale,
                     Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                    ParticleDrawLayer.BehindNPCs
+                    ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
                 );
 
             var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
@@ -68,7 +69,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 1f,
                 scale: 0.45f,
                 Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                ParticleDrawLayer.BehindNPCs
+                ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
             );
         }
 
@@ -87,10 +88,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
+        public void DrawAdditive(SpriteBatch spriteBatch)
         {
-            Main.spriteBatch.Reload(BlendState.Additive);
-
             Texture2D circle = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
 
             Vector2 center = Projectile.Center - Main.screenPosition;
@@ -110,14 +109,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 Main.spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
             }
-
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
-
-            return base.PreDraw(ref lightColor);
         }
     }
 
-    public class HomingFlame : ModProjectile
+    public class HomingFlame : ModProjectile, IDrawAdditive
     {
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
@@ -153,7 +148,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     1f,
                     scale,
                     Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                    ParticleDrawLayer.BehindNPCs
+                    ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
                 );
 
             var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
@@ -168,7 +163,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 1f,
                 scale: 0.45f,
                 Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                ParticleDrawLayer.BehindNPCs
+                ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
             );
 
             float homingSpeed = 0.05f;
@@ -240,10 +235,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
+        public void DrawAdditive(SpriteBatch spriteBatch)
         {
-            Main.spriteBatch.Reload(BlendState.Additive);
-
             Texture2D circle = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
 
             Vector2 center = Projectile.Center - Main.screenPosition;
@@ -263,14 +256,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             {
                 Main.spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
             }
-
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
-
-            return base.PreDraw(ref lightColor);
         }
     }
 
-    public class FlameOrbiter : ModProjectile
+    public class FlameOrbiter : ModProjectile, IDrawAdditive
     {
         public override string Texture => AssetDirectory.Empty;
 
@@ -336,7 +325,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     1f,
                     scale,
                     Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                    ParticleDrawLayer.BehindNPCs
+                    ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
                 );
             }
 
@@ -352,7 +341,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 1f,
                 scale: 0.45f,
                 Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                ParticleDrawLayer.BehindNPCs
+                ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
             );
         }
 
@@ -366,10 +355,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             target.AddBuff(BuffID.OnFire, ModUtils.SecondsToTicks(5));
         }
 
-        public override bool PreDraw(ref Color lightColor)
+        public void DrawAdditive(SpriteBatch spriteBatch)
         {
-            Main.spriteBatch.Reload(BlendState.Additive);
-
             Texture2D circle = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
             Vector2 center = Projectile.Center - Main.screenPosition;
             Vector2 origin = circle.Size() / 2f;
@@ -386,11 +373,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             foreach (var (scale, alpha, color) in glowLayers)
             {
-                Main.spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
             }
-
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
-            return false;
         }
     }
 

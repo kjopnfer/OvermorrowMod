@@ -78,7 +78,7 @@ namespace OvermorrowMod.Core.Globals
                                 Main.rand.Next(-maxYSteps, 1) * stepSize
                             );
 
-                            ParticleManager.CreateParticleDirect(aura, Player.Bottom + offset, -Vector2.UnitY * Main.rand.Next(3, 4), Color.Red, 1f, randomScale, 0f);
+                            ParticleManager.CreateParticleDirect(aura, Player.Bottom + offset, -Vector2.UnitY * Main.rand.Next(3, 4), Color.Red, 1f, randomScale, 0f, useAdditiveBlending: true);
                         }
                     }
                 }

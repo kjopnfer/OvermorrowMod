@@ -88,7 +88,7 @@ namespace OvermorrowMod.Content.Items.Archives
                 rotatingEmber.endColor = Color.Purple;
                 rotatingEmber.AnchorEntity = player;
 
-                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity), color, 1f, randomScale, 0f);
+                ParticleManager.CreateParticleDirect(rotatingEmber, Projectile.Center, Vector2.Normalize(RandomVelocity), color, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
 
 

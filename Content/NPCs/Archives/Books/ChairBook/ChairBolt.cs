@@ -117,7 +117,7 @@ namespace OvermorrowMod.Content.NPCs
 
                     Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
                     var lightOrb = new Circle(texture, 0f);
-                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Bottom + offset, velocity, color, 1f, scale * 0.5f, 0f);
+                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Bottom + offset, velocity, color, 1f, scale * 0.5f, 0f, useAdditiveBlending: true);
 
                 }
             }
@@ -141,7 +141,7 @@ namespace OvermorrowMod.Content.NPCs
                     for (int i = 0; i < randomIterations; i++)
                     {
                         var emberParticle = new Circle(texture, 0f, useSineFade: true); // Default max time, custom scale, sine fade
-                        ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f);
+                        ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * 0.1f, color, 1f, particleScale, 0f, useAdditiveBlending: true);
                     }
                 }
             }

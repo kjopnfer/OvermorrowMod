@@ -193,7 +193,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
 
                     var lightOrb = new Circle(texture, 0f);
-                    ParticleManager.CreateParticleDirect(lightOrb, spawnPosition, -Vector2.UnitY, color, 1f, scale * 0.5f, 0f);
+                    ParticleManager.CreateParticleDirect(lightOrb, spawnPosition, -Vector2.UnitY, color, 1f, scale * 0.5f, 0f, useAdditiveBlending: true);
                 }
             }
         }

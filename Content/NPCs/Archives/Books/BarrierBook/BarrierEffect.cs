@@ -50,7 +50,7 @@ namespace OvermorrowMod.Content.NPCs
 
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
                     var lightOrb = new Circle(texture, 0f);
-                    ParticleManager.CreateParticleDirect(lightOrb, npc.Bottom + offset, -Vector2.UnitY, Color.White, 1f, scale * 0.5f, 0f);
+                    ParticleManager.CreateParticleDirect(lightOrb, npc.Bottom + offset, -Vector2.UnitY, Color.White, 1f, scale * 0.5f, 0f, useAdditiveBlending: true);
                 }
 
                 if (Main.rand.NextBool(3))

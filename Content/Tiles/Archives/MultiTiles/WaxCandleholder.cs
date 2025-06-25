@@ -58,8 +58,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
             //velocity = velocity.RotatedBy(MathHelper.ToRadians(-5));
 
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs);
-            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.45f, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.DarkOrange, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true);
+            ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.45f, 1f, scale, 0f, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
