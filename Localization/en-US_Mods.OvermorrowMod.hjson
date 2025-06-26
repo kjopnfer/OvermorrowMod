@@ -321,6 +321,11 @@ Items: {
 		DisplayName: Archive Key
 		Tooltip: ""
 	}
+
+	Chiaroscuro: {
+		DisplayName: Chiaroscuro
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -392,4 +397,5 @@ Projectiles: {
 	FlameRing.DisplayName: Flame Ring
 	HomingFlame.DisplayName: Spirit Flame
 	FlameOrbiter.DisplayName: Flame Orbiter
+	ChiaroscuroProjectile.DisplayName: Chiaroscuro Projectile
 }

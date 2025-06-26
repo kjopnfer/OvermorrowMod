@@ -101,7 +101,7 @@ namespace OvermorrowMod.Content.Particles
                 drawColor * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
 
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
-                drawColor * particle.alpha * 0.7f, 0f, origin, particle.scale * 1.5f, SpriteEffects.None, 0f);
+                drawColor * particle.alpha * 0.7f, particle.rotation, origin, particle.scale * 1.5f, SpriteEffects.None, 0f);
         }
     }
 }

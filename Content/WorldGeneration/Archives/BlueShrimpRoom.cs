@@ -336,6 +336,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
                 chest.item[slot].SetDefaults(ModContent.ItemType<WhitePage>());
             }
 
+            WorldGen.PlaceObject(x + 620, y + 109, ModContent.TileType<ArchiveBanner>(), true);
+            WorldGen.PlaceObject(x + 634, y + 109, ModContent.TileType<ArchiveBanner>(), true);
+            WorldGen.PlaceObject(x + 660, y + 109, ModContent.TileType<ArchiveBanner>(), true);
+            WorldGen.PlaceObject(x + 674, y + 109, ModContent.TileType<ArchiveBanner>(), true);
+
             //Tile chest = Main.tile[x + 628, y + 128];
             //chest
             #endregion
