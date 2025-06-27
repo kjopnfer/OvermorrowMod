@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
+using System;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
@@ -17,12 +18,19 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
     public class ChiaroscuroProjectile : ModProjectile
     {
         public override string Texture => AssetDirectory.ArchiveProjectiles + Name;
+
+        public int maxTimeLeft;
+        public float animationDuration = 0.7f;
+
+        public Player.CompositeArmStretchAmount stretch = Player.CompositeArmStretchAmount.Full;
+        public Player Owner => Main.player[Projectile.owner];
+
         public override void SetDefaults()
         {
             Projectile.width = 46;
             Projectile.height = 48;
             Projectile.friendly = true;
-            Projectile.timeLeft = 10;
+            Projectile.timeLeft = 12;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
@@ -35,7 +43,12 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             Projectile.timeLeft = (int)(Projectile.timeLeft * (1f / Owner.GetTotalAttackSpeed(DamageClass.Melee)));
             maxTimeLeft = Projectile.timeLeft;
-            //maxTimeLeft = 5;
+
+            Projectile.velocity = Vector2.Normalize(Projectile.velocity);
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.velocity = Owner.DirectionTo(Main.MouseWorld).RotatedByRandom(0.3f);
+
+            stretch = (Player.CompositeArmStretchAmount)Main.rand.Next(4);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -48,93 +61,38 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             base.ReceiveExtraAI(reader);
         }
 
-        public int maxTimeLeft;
-        public Vector2 offset;
-        public Vector2 stabVec;
-
-        public Player.CompositeArmStretchAmount stretch = Player.CompositeArmStretchAmount.Full;
-        public Player Owner => Main.player[Projectile.owner];
         public override void AI()
         {
             Owner.heldProj = Projectile.whoAmI;
             Owner.itemTime = Owner.itemAnimation = 2;
 
-            Projectile.velocity = Vector2.Normalize(Projectile.velocity);
-            //Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            //Projectile.velocity = Owner.DirectionTo(Main.MouseWorld).RotatedByRandom(0.35f);
-            Projectile.velocity = Owner.DirectionTo(Main.MouseWorld).RotatedByRandom(0.2f);
+            float normalizedTime = 1f - (Projectile.timeLeft / (float)maxTimeLeft);
+            float progress = MathHelper.Clamp(normalizedTime / animationDuration, 0f, 1f);
 
-            int stabTimer = maxTimeLeft - Projectile.timeLeft;
-            float totalTime = maxTimeLeft * 0.2f; //total amount of frames the stab lasts
-
-            /*if (stabTimer < totalTime)
-            {
-                if (stabTimer == 1) //things are initialized here each stab, such as the random rotation, and the randomness of the length of the stab
-                {
-                    Projectile.velocity = Owner.DirectionTo(Main.MouseWorld).RotatedByRandom(0.35f);
-                    stabVec = new Vector2(Main.rand.NextFloat(90, 150), 0);
-                }
-
-                if (stabTimer < totalTime * 0.5f)
-                {
-                    float lerper = stabTimer / (totalTime * 0.5f);
-
-                    offset = Vector2.Lerp(new Vector2(75, 0), stabVec, EasingUtils.EaseOutCirc(lerper)).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
-                }
-                else
-                {
-
-                    float lerper = (stabTimer - totalTime * 0.5f) / (float)(totalTime * 0.5f);
-
-                    offset = Vector2.Lerp(stabVec, new Vector2(75, 0), EasingUtils.EaseOutCirc(lerper)).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
-                }
-            }
-            else
-            {
-                stretch = (Player.CompositeArmStretchAmount)Main.rand.Next(4);
-            }*/
-            float lerper = Projectile.timeLeft / (float)maxTimeLeft;
-            //offset = Vector2.Lerp(Vector2.Zero, new Vector2(8, 0), EasingUtils.EaseOutCirc(lerper)).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
-
-
-            /*if (!Owner.channel && Projectile.timeLeft == maxTimeLeft)
-            {
-                Projectile.timeLeft = 5;
-                //fading = true;
-            }*/
-            stretch = (Player.CompositeArmStretchAmount)Main.rand.Next(4);
-
-            Projectile.Center = Owner.MountedCenter;
+            stretch = (Player.CompositeArmStretchAmount)(3 * MathF.Sin(progress * MathHelper.Pi));
 
             Owner.SetCompositeArmFront(true, stretch, Projectile.rotation - MathHelper.Pi);
             Owner.ChangeDir(Projectile.direction);
 
-            float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
-            float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+            Projectile.Center = Owner.MountedCenter;
 
+            float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
-            Vector2 off = new Vector2(10, -20).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
 
             for (int i = 0; i < Main.rand.Next(1, 3); i++)
             {
-                if (Main.rand.NextBool(4))
+                if (Main.rand.NextBool(2))
                 {
                     randomScale = Main.rand.NextFloat(1f, 1.75f);
-                    //randomScale = Main.rand.NextFloat(0.5f, 1f);
-
-                    //float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                    Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(60)) * Main.rand.Next(10, 12);
-                    //Color color = new Color(202, 188, 255);
+                    Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(90)) * Main.rand.Next(10, 12);
                     Color color = new Color(108, 108, 224);
 
-                    //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale, 0f, 0f, 1f);
-                    var lightSpark = new Circle(sparkTexture, 45, true, false);
+                    var lightSpark = new Circle(sparkTexture, ModUtils.SecondsToTicks(0.6f), true, false);
                     lightSpark.endColor = new Color(108, 108, 224);
                     lightSpark.floatUp = false;
                     lightSpark.AnchorEntity = Owner;
-                    lightSpark.AnchorOffset = new Vector2(-10, -90).RotatedBy(Projectile.rotation);
-                    ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity, color, 0.5f, randomScale, Projectile.rotation, 0f, useAdditiveBlending: true);
+                    lightSpark.AnchorOffset = new Vector2(0, -20).RotatedBy(Projectile.rotation);
+                    ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity, color * 0.5f, 0.5f, randomScale, Projectile.rotation, 0f, useAdditiveBlending: true);
                 }
             }
         }
@@ -146,28 +104,57 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            var hitboxHeight = 140;
+            Vector2 swordStart = Projectile.Center;
+            Vector2 swordEnd = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);
+
+            Vector2 hitPoint = Vector2.Lerp(swordStart, swordEnd,
+                MathHelper.Clamp(Vector2.Dot(target.Center - swordStart, swordEnd - swordStart) /
+                Vector2.DistanceSquared(swordStart, swordEnd), 0f, 1f));
+
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D circleTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value;
+
+            for (int i = 0; i < 3; i++)
+            {
+                float randomScale = Main.rand.NextFloat(0.15f, 0.3f);
+                Vector2 RandomVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(9, 11);
+                Color color = new Color(149, 149, 239);
+
+                var lightSpark = new Spark(sparkTexture, 0f, false, 0f);
+                lightSpark.endColor = new Color(108, 108, 224);
+                ParticleManager.CreateParticleDirect(lightSpark, hitPoint, RandomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
+
+                var impact = new Circle(circleTexture, ModUtils.SecondsToTicks(0.5f), false, false);
+                impact.endColor = new Color(108, 108, 224);
+
+                randomScale = Main.rand.NextFloat(0.25f, 0.45f);
+                ParticleManager.CreateParticleDirect(impact, target.Center, Vector2.Zero, color, 0.5f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
+            }
+
             base.OnHitNPC(target, hit, damageDone);
         }
+
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             if (projHitbox.Intersects(targetHitbox)) return true;
 
             var hitboxHeight = 140;
-            var hitboxWidth = 38;
+            var hitboxWidth = 18;
             float _ = float.NaN;
             Vector2 endPosition = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);
 
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, endPosition, hitboxWidth * Projectile.scale, ref _);
-
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float progress = Projectile.timeLeft / (float)maxTimeLeft;
+            float normalizedTime = 1f - (Projectile.timeLeft / (float)maxTimeLeft);
+            float progress = MathHelper.Clamp(normalizedTime / animationDuration, 0f, 1f);
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
 
-            float swordOffset = MathHelper.Lerp(10, 0, progress);
+            float swordOffset = MathHelper.Lerp(-50, 10, EasingUtils.EaseOutCirc(progress));
             Vector2 off = new Vector2(swordOffset, -20).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0, Main.player[Projectile.owner].gfxOffY) + off, null, Color.White, Projectile.rotation - MathHelper.PiOver2, Vector2.Zero, Projectile.scale, 0, 0);
 
@@ -175,12 +162,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Main.spriteBatch.Reload(BlendState.Additive);
             Texture2D effect = ModContent.Request<Texture2D>(AssetDirectory.Textures + "slash_01").Value;
 
-            float stabOffset = MathHelper.Lerp(40, -50, progress);
-            Main.NewText(stabOffset + " " + progress + " " + Projectile.timeLeft);
+            float stabOffset = MathHelper.Lerp(-50, 30, EasingUtils.EaseOutCirc(progress));
+            float slashAlpha = normalizedTime > animationDuration ? MathHelper.Lerp(1f, 0f, (normalizedTime - animationDuration) / (1f - animationDuration)) : 1f;
+
             off = new Vector2(-200 + stabOffset, 12).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
-            Main.spriteBatch.Draw(effect, Projectile.Center - Main.screenPosition + new Vector2(0, Main.player[Projectile.owner].gfxOffY) + off, null, color * 1f, Projectile.rotation + MathHelper.Pi, Vector2.Zero, new Vector2(0.05f, 0.8f), 0, 0);
+            Main.spriteBatch.Draw(effect, Projectile.Center - Main.screenPosition + new Vector2(0, Main.player[Projectile.owner].gfxOffY) + off, null, color * slashAlpha, Projectile.rotation + MathHelper.Pi, Vector2.Zero, new Vector2(0.05f, 0.8f), 0, 0);
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(default, default, Main.DefaultSamplerState, default, Main.Rasterizer, default, Main.GameViewMatrix.TransformationMatrix); //also dont know if this spritebatch reset is needed
+            Main.spriteBatch.Begin(default, default, Main.DefaultSamplerState, default, Main.Rasterizer, default, Main.GameViewMatrix.TransformationMatrix);
 
             return false;
         }

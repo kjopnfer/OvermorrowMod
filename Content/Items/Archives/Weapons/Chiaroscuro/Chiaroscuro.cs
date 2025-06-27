@@ -36,7 +36,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
                 return false;
 
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.3f), type, damage, knockback, player.whoAmI);
 
             return false;
         }
