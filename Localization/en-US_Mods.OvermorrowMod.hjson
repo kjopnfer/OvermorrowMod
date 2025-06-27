@@ -325,6 +325,7 @@ Items: {
 	Chiaroscuro: {
 		DisplayName: Chiaroscuro
 		Tooltip: ""
+		Flavor: You feel compelled to read this
 	}
 }
 
@@ -398,4 +399,5 @@ Projectiles: {
 	HomingFlame.DisplayName: Spirit Flame
 	FlameOrbiter.DisplayName: Flame Orbiter
 	ChiaroscuroProjectile.DisplayName: Chiaroscuro Projectile
+	ChiaroscuroShadow.DisplayName: Chiaroscuro Shadow
 }

@@ -35,10 +35,19 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
                 return false;
+            if (player.altFunctionUse == 2)
+            {
+                Main.NewText("spawn the cool");
+            }
 
             Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.3f), type, damage, knockback, player.whoAmI);
 
             return false;
+        }
+
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
         }
 
         public override bool MeleePrefix()
