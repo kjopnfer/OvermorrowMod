@@ -31,12 +31,15 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Projectile.width = 46;
             Projectile.height = 48;
             Projectile.friendly = true;
-            Projectile.timeLeft = 12;
-            Projectile.penetrate = -1;
+            Projectile.timeLeft = 180;
             Projectile.tileCollide = false;
+            //Projectile.usesLocalNPCImmunity = true;
+
+            Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-            Projectile.ownerHitCheck = true;
+            Projectile.localNPCHitCooldown = ModUtils.SecondsToTicks(1);
+            //Projectile.ownerHitCheck = true;
+
             Projectile.DamageType = DamageClass.Melee;
         }
 
@@ -61,8 +64,8 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Vector2[] positions = new Vector2[]
             {
                 new Vector2(0, -105),      // Center/above
-                new Vector2(-80, -60),     // Left side
-                new Vector2(80, -60)       // Right side
+                new Vector2(-40, -60),     // Left side
+                new Vector2(40, -60)       // Right side
             };
 
             anchorOffset = positions[shadowIndex];
@@ -78,28 +81,144 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             base.ReceiveExtraAI(reader);
         }
 
+        public enum AIStates
+        {
+            Idle = 0,
+            Invisible = 1,
+            Attacking = 2
+        }
+
+        public ref float AICounter => ref Projectile.ai[0];
+        public ref float AIState => ref Projectile.ai[1];
+
+        private float scale = 1f;
+        public NPC AttackTarget { get; private set; }
+        private Vector2 attackStartPos;
         public override void AI()
         {
+            if (!Owner.active) Projectile.Kill();
+
             Projectile.timeLeft = 5;
+            Projectile.Opacity = MathHelper.Lerp(0f, 1f, MathHelper.Clamp(AICounter, 0, 15f) / 15f);
 
-            float floatSpeed = 0.025f;
-            float floatRange = 10f;
+            switch (AIState)
+            {
+                case (int)AIStates.Invisible:
+                    if (AICounter > 0)
+                        AICounter--;
 
-            float floatOffset = MathF.Sin(Main.GameUpdateCount * floatSpeed) * floatRange;
+                    if (AICounter <= 0)
+                    {
+                        Projectile.Opacity = 0;
+                    }
+                    break;
+                case (int)AIStates.Attacking:
+                    scale = 1f;
+
+                    if (AttackTarget == null || !AttackTarget.active)
+                    {
+                        // Target is gone, return to invisible
+                        AIState = (int)AIStates.Invisible;
+                        AttackTarget = null;
+                        AICounter = 0;
+                        break;
+                    }
+
+                    if (AICounter == 0)
+                    {
+                        attackStartPos = Owner.MountedCenter + anchorOffset;
+                    }
+
+                    Vector2 targetDirection = Vector2.Normalize(AttackTarget.Center - attackStartPos);
+                    Vector2 attackPos = AttackTarget.Center + targetDirection * -100f; // Position behind target
+
+
+                    //Vector2 startPos = Owner.MountedCenter + anchorOffset;
+                    //Vector2 targetDirection = Vector2.Normalize(AttackTarget.Center - startPos);
+                    //Vector2 attackPos = AttackTarget.Center + targetDirection * -100f; // Position behind target
+
+                    if (AICounter < 20)
+                    {
+                        // Move to attack position
+                        float progress = AICounter / 20f;
+                        Projectile.Center = Vector2.Lerp(attackStartPos, attackPos, EasingUtils.EaseOutCirc(progress));
+                        Projectile.rotation = targetDirection.ToRotation() + MathHelper.PiOver2;
+                    }
+                    else if (AICounter < 40)
+                    {
+                        // Stab toward target
+                        float progress = (AICounter - 20f) / 20f;
+                        Vector2 stabPos = AttackTarget.Center + targetDirection * 30f; // Position past target
+                        Projectile.Center = Vector2.Lerp(attackPos, stabPos, EasingUtils.EaseOutBack(progress));
+                    }
+                    else if (AICounter < 60)
+                    {
+                        // Return to start position
+                        float progress = (AICounter - 40f) / 20f;
+                        Vector2 currentStabPos = AttackTarget.Center + targetDirection * 30f;
+                        Projectile.Center = Vector2.Lerp(currentStabPos, attackStartPos, EasingUtils.EaseOutCirc(progress));
+
+                        Projectile.Opacity = MathHelper.Lerp(1f, 0f, MathHelper.Clamp(AICounter - 40, 0, 20f) / 20f);
+                    }
+
+                    if (AICounter++ >= 60)
+                    {
+                        AIState = (int)AIStates.Invisible;
+                        AttackTarget = null;
+                        AICounter = 0;
+                    }
+                    break;
+                default:
+                    scale = 0.75f;
+                    if (AICounter < 15)
+                    {
+                        AICounter++;
+                    }
+
+                    float floatSpeed = 0.025f;
+                    float floatRange = 10f;
+
+                    float floatOffset = MathF.Sin(Main.GameUpdateCount * floatSpeed) * floatRange;
+                    Projectile.Center = Owner.MountedCenter + anchorOffset + new Vector2(0, floatOffset);
+
+                    Projectile.rotation = 0;
+                    break;
+            }
+
+            if (AICounter == 0 && Projectile.Opacity == 1)
+            {
+                Projectile.Opacity = 0;
+            }
+            
+
             //Projectile.Center = Owner.MountedCenter + new Vector2(0, -105 + floatOffset);
-            Projectile.Center = Owner.MountedCenter + anchorOffset + new Vector2(0, floatOffset);
 
-            Projectile.rotation = 0;
+        }
+
+        public void SetActive()
+        {
+            AIState = (int)AIStates.Invisible;
+        }
+
+        public void SetAttackTarget(NPC target)
+        {
+            if (AIState != (int)AIStates.Invisible) return;
+
+            if (AttackTarget == null || !AttackTarget.active)
+            {
+                AIState = (int)AIStates.Attacking;
+                AttackTarget = target;
+            }
         }
 
         public override bool? CanHitNPC(NPC target)
         {
-            return Projectile.friendly && !target.friendly;
+            return AIState == (int)AIStates.Attacking && target == AttackTarget;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            var hitboxHeight = 140;
+            /*var hitboxHeight = 140;
             Vector2 swordStart = Projectile.Center;
             Vector2 swordEnd = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);
 
@@ -125,7 +244,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
                 randomScale = Main.rand.NextFloat(0.25f, 0.45f);
                 ParticleManager.CreateParticleDirect(impact, target.Center, Vector2.Zero, color, 0.5f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
-            }
+            }*/
 
             base.OnHitNPC(target, hit, damageDone);
         }
@@ -134,17 +253,16 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             if (projHitbox.Intersects(targetHitbox)) return true;
 
-            var hitboxHeight = 140;
+            var hitboxHeight = 70;
             var hitboxWidth = 18;
             float _ = float.NaN;
             Vector2 endPosition = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);
 
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, endPosition, hitboxWidth * Projectile.scale, ref _);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, endPosition, hitboxWidth * scale, ref _);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            /*Main.spriteBatch.Reload(SpriteSortMode.Immediate);
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
             Effect effect = OvermorrowModFile.Instance.ColorFill.Value;
@@ -153,10 +271,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             effect.CurrentTechnique.Passes["ColorFill"].Apply();
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, Color.White, Projectile.rotation - MathHelper.PiOver2, texture.Size() / 2f, Projectile.scale, 0, 0);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, Color.White * Projectile.Opacity, Projectile.rotation - MathHelper.PiOver2, texture.Size() / 2f, scale, 0, 0);
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);
-            */
+
             return false;
         }
 
@@ -164,7 +282,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             Color color = new Color(108, 108, 224);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveProjectiles + "ChiaroscuroProjectileGlow").Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, color, Projectile.rotation - MathHelper.PiOver2, texture.Size() / 2f, Projectile.scale * 0.75f, 0, 0);
+            spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, color * Projectile.Opacity, Projectile.rotation - MathHelper.PiOver2, texture.Size() / 2f, scale, 0, 0);
         }
     }
 }

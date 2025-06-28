@@ -33,14 +33,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
+            if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && (n.type == type || n.type == ModContent.ProjectileType<ChiaroscuroStance>())))
                 return false;
-            if (player.altFunctionUse == 2)
-            {
-                Main.NewText("spawn the cool");
-            }
 
-            Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.3f), type, damage, knockback, player.whoAmI);
+            if (player.altFunctionUse == 2)
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ChiaroscuroStance>(), damage, knockback, player.whoAmI);
+            else
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.3f), type, damage, knockback, player.whoAmI);
 
             return false;
         }

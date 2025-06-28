@@ -400,4 +400,5 @@ Projectiles: {
 	FlameOrbiter.DisplayName: Flame Orbiter
 	ChiaroscuroProjectile.DisplayName: Chiaroscuro Projectile
 	ChiaroscuroShadow.DisplayName: Chiaroscuro Shadow
+	ChiaroscuroStance.DisplayName: Chiaroscuro Stance
 }

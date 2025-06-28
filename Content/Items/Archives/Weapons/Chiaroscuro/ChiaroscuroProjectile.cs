@@ -8,6 +8,7 @@ using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
+using System.Linq;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
@@ -158,6 +159,32 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
                 randomScale = Main.rand.NextFloat(0.25f, 0.45f);
                 ParticleManager.CreateParticleDirect(impact, target.Center, Vector2.Zero, color, 0.5f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
+            }
+
+            int shadowCount = Main.projectile.Count(p => p.active && p.type == ModContent.ProjectileType<ChiaroscuroShadow>() && p.owner == Projectile.owner);
+            if (shadowCount < 3)
+            {
+                if (Main.rand.NextBool())
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<ChiaroscuroShadow>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                }
+            }
+            else
+            {
+                // Find a shadow that is invisible and doesn't have an attack target
+                for (int i = 0; i < Main.maxProjectiles; i++)
+                {
+                    if (Main.projectile[i].active && Main.projectile[i].type == ModContent.ProjectileType<ChiaroscuroShadow>() &&
+                        Main.projectile[i].owner == Projectile.owner)
+                    {
+                        var shadow = Main.projectile[i].ModProjectile as ChiaroscuroShadow;
+                        if (shadow != null && shadow.AIState == (int)ChiaroscuroShadow.AIStates.Invisible && shadow.AttackTarget == null)
+                        {
+                            shadow.SetAttackTarget(target);
+                            //break; // Only set one shadow to attack
+                        }
+                    }
+                }
             }
 
             base.OnHitNPC(target, hit, damageDone);
