@@ -63,8 +63,8 @@ namespace OvermorrowMod.Core.Globals
             int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             //if (GunType.ToString() != "None")
             //    tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + "]"));
-            if (GunType.ToString() != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:bruh]"));
+            //if (GunType.ToString() != "None")
+            //    tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:bruh]"));
 
             /*if (MeleeType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));*/
@@ -83,8 +83,8 @@ namespace OvermorrowMod.Core.Globals
                 var localizationKey = LocalizationPath.Items + tooltipKey + ".Tooltip";
                 if (Language.Exists(localizationKey))
                 {
-                    //tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", Language.GetTextValue(localizationKey)));
-                    tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", "bruh"));
+                    tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", Language.GetTextValue(localizationKey)));
+                    //tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", "bruh"));
                 }
             }
 

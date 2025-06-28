@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Terraria.DataStructures;
 using System.IO;
 using OvermorrowMod.Common.Utilities;
+using System;
 
 namespace OvermorrowMod.Common.Weapons.Guns
 {
@@ -128,6 +129,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// </summary>
         public virtual bool ConsumePerShot => false;
 
+        [Obsolete]
         public abstract GunType GunType { get; }
 
         public virtual void SafeSetDefaults() { }

@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -103,10 +105,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         }
     }
 
-    public class Farlander : ModGun<FarlanderHeld>
+    public class Farlander : ModGun<FarlanderHeld>, IWeaponClassification
     {
         public override GunType GunType => GunType.Sniper;
         public override string Texture => AssetDirectory.ArchiveItems + Name;
+        public WeaponType WeaponType => WeaponType.Sniper;
 
         public override void SetStaticDefaults()
         {

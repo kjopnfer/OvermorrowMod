@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
 using System.IO;
@@ -66,6 +67,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             float progress = MathHelper.Clamp(AICounter, 0, 15f) / 15f;
             if (AICounter == 15)
             {
+                Owner.AddBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>(), ModUtils.SecondsToTicks(10));
                 ActivateAllShadows();
             }
 

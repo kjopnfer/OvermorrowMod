@@ -76,10 +76,6 @@ namespace OvermorrowMod.Core.Globals
             }
 
             // Add weapon type
-            /*int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
-            string type = item.GetWeaponType();
-            if (type != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", $"[c/FAD5A5:{type}]"));*/
             AddWeaponTypeTooltip(item, tooltips);
 
             // Add tooltips from interface
@@ -148,7 +144,6 @@ namespace OvermorrowMod.Core.Globals
         private void AddWeaponTypeTooltip(Item item, List<TooltipLine> tooltips)
         {
             WeaponType weaponType = item.GetWeaponType();
-
             if (weaponType == WeaponType.None)
                 return;
 
@@ -165,13 +160,20 @@ namespace OvermorrowMod.Core.Globals
 
         private string FormatWeaponType(WeaponType weaponType)
         {
+            // TODO: Get localized text for these
             List<string> types = new List<string>();
 
-            // Check each flag and add to the list
+            // Check each weapon type flag and add to the list
+            if (weaponType.HasFlag(WeaponType.Sword))
+                types.Add("Sword");
+            if (weaponType.HasFlag(WeaponType.Broadsword))
+                types.Add("Broadsword");
             if (weaponType.HasFlag(WeaponType.Rapier))
                 types.Add("Rapier");
             if (weaponType.HasFlag(WeaponType.Greatsword))
                 types.Add("Greatsword");
+            if (weaponType.HasFlag(WeaponType.Shortsword))
+                types.Add("Shortsword");
             if (weaponType.HasFlag(WeaponType.Dagger))
                 types.Add("Dagger");
             if (weaponType.HasFlag(WeaponType.Bow))
@@ -181,21 +183,28 @@ namespace OvermorrowMod.Core.Globals
             if (weaponType.HasFlag(WeaponType.Whip))
                 types.Add("Whip");
 
-            // Add modifiers
-            //List<string> modifiers = new List<string>();
-            //if (weaponType.HasFlag(WeaponType.Magical))
-            //    modifiers.Add("Magical");
-            //if (weaponType.HasFlag(WeaponType.Cursed))
-            //    modifiers.Add("Cursed");
+            // Gun types
+            if (weaponType.HasFlag(WeaponType.Revolver))
+                types.Add("Revolver");
+            if (weaponType.HasFlag(WeaponType.Handgun))
+                types.Add("Handgun");
+            if (weaponType.HasFlag(WeaponType.Shotgun))
+                types.Add("Shotgun");
+            if (weaponType.HasFlag(WeaponType.Musket))
+                types.Add("Musket");
+            if (weaponType.HasFlag(WeaponType.Rifle))
+                types.Add("Rifle");
+            if (weaponType.HasFlag(WeaponType.SubMachineGun))
+                types.Add("SMG");
+            if (weaponType.HasFlag(WeaponType.MachineGun))
+                types.Add("Machine Gun");
+            if (weaponType.HasFlag(WeaponType.Launcher))
+                types.Add("Launcher");
+            if (weaponType.HasFlag(WeaponType.Sniper))
+                types.Add("Sniper");
 
-            // Combine modifiers with weapon types
+            // Combine weapon types
             string result = string.Join(" & ", types);
-
-            //if (modifiers.Count > 0)
-            //{
-            //    string modifierText = string.Join(" ", modifiers);
-            //    result = $"{modifierText} {result}";
-            //}
 
             return result;
         }

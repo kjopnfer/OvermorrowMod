@@ -10,6 +10,7 @@ using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.Particles;
+using OvermorrowMod.Core.Items;
 
 namespace OvermorrowMod.Core
 {
@@ -71,6 +72,7 @@ namespace OvermorrowMod.Core
 
         public override void PostSetupContent()
         {
+            VanillaWeaponRegistry.Initialize();
             ReplaceVanillaTextures();
         }
     }

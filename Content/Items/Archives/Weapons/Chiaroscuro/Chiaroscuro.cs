@@ -1,17 +1,40 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Tooltips;
+using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
+using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
-    public class Chiaroscuro : ModItem, IWeaponClassification
+    public class Chiaroscuro : ModItem, ITooltipEntities, IWeaponClassification
     {
+        public List<TooltipEntity> TooltipObjects()
+        {
+            var title = Language.GetTextValue(LocalizationPath.TooltipEntities + "ChiaroscuroShadow" + ".DisplayName");
+            var line = Language.GetTextValue(LocalizationPath.TooltipEntities + "ChiaroscuroShadow" + ".Description.Line0");
+            var line2 = Language.GetTextValue(LocalizationPath.TooltipEntities + "ChiaroscuroShadow" + ".Description.Line1");
+            var line3 = Language.GetTextValue(LocalizationPath.TooltipEntities + "ChiaroscuroShadow" + ".Description.Line2");
+            var line4 = Language.GetTextValue(LocalizationPath.TooltipEntities + "ChiaroscuroShadow" + ".Description.Line3");
+
+            return new List<TooltipEntity>() {
+                new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "ChiaroscuroShadow").Value,
+                    title,
+                    [line, line2, line3, line4],
+                    10f,
+                    ProjectileTooltipType.Projectile,
+                    DamageClass.Melee),
+            };
+        }
+
         public override string Texture => AssetDirectory.ArchiveItems + Name;
         public WeaponType WeaponType => WeaponType.Rapier;
         public override void SetDefaults()
@@ -40,7 +63,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 return false;
 
             if (player.altFunctionUse == 2)
+            {
+                //if (!player.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()))
                 Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ChiaroscuroStance>(), damage, knockback, player.whoAmI);
+            }
             else
                 Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.3f), type, damage, knockback, player.whoAmI);
 
@@ -49,7 +75,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override bool AltFunctionUse(Player player)
         {
-            return true;
+            return !player.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>());
         }
 
         public override bool MeleePrefix()
