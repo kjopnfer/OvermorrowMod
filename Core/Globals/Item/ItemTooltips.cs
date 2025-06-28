@@ -80,12 +80,14 @@ namespace OvermorrowMod.Core.Globals
             string type = item.GetWeaponType();
             if (type != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", $"[c/FAD5A5:{type}]"));*/
+            AddWeaponTypeTooltip(item, tooltips);
 
             // Add tooltips from interface
             var interfaceTooltips = TooltipSystem.GetTooltipLines(item);
             foreach (var tooltipText in interfaceTooltips)
             {
-                tooltips.Insert(3, new TooltipLine(Mod, "InterfaceTooltip", tooltipText));
+                //tooltips.Insert(3, new TooltipLine(Mod, "InterfaceTooltip", tooltipText));
+                tooltips.Insert(3, new TooltipLine(Mod, "InterfaceTooltip", "BRUHHHHHHHHHH"));
                 //tooltips.Add(new TooltipLine(Mod, "InterfaceTooltip", tooltipText));
             }
 
@@ -142,6 +144,61 @@ namespace OvermorrowMod.Core.Globals
 
         private static bool IsCowboyArmor(int itemType) =>
             itemType == ItemID.CowboyHat || itemType == ItemID.CowboyJacket || itemType == ItemID.CowboyPants;
+
+        private void AddWeaponTypeTooltip(Item item, List<TooltipLine> tooltips)
+        {
+            WeaponType weaponType = item.GetWeaponType();
+
+            if (weaponType == WeaponType.None)
+                return;
+
+            // Find where to insert the weapon type (after item name)
+            int insertIndex = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
+            if (insertIndex == -1)
+                insertIndex = 0;
+            else
+                insertIndex++;
+
+            string typeText = FormatWeaponType(weaponType);
+            tooltips.Insert(insertIndex, new TooltipLine(Mod, "WeaponType", $"[c/FAD5A5:{typeText}]"));
+        }
+
+        private string FormatWeaponType(WeaponType weaponType)
+        {
+            List<string> types = new List<string>();
+
+            // Check each flag and add to the list
+            if (weaponType.HasFlag(WeaponType.Rapier))
+                types.Add("Rapier");
+            if (weaponType.HasFlag(WeaponType.Greatsword))
+                types.Add("Greatsword");
+            if (weaponType.HasFlag(WeaponType.Dagger))
+                types.Add("Dagger");
+            if (weaponType.HasFlag(WeaponType.Bow))
+                types.Add("Bow");
+            if (weaponType.HasFlag(WeaponType.Staff))
+                types.Add("Staff");
+            if (weaponType.HasFlag(WeaponType.Whip))
+                types.Add("Whip");
+
+            // Add modifiers
+            //List<string> modifiers = new List<string>();
+            //if (weaponType.HasFlag(WeaponType.Magical))
+            //    modifiers.Add("Magical");
+            //if (weaponType.HasFlag(WeaponType.Cursed))
+            //    modifiers.Add("Cursed");
+
+            // Combine modifiers with weapon types
+            string result = string.Join(" & ", types);
+
+            //if (modifiers.Count > 0)
+            //{
+            //    string modifierText = string.Join(" ", modifiers);
+            //    result = $"{modifierText} {result}";
+            //}
+
+            return result;
+        }
 
         private void InitializeSetBonuses(Item item)
         {

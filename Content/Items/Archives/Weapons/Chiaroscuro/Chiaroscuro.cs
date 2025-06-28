@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,9 +10,10 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
-    public class Chiaroscuro : ModItem
+    public class Chiaroscuro : ModItem, IWeaponClassification
     {
         public override string Texture => AssetDirectory.ArchiveItems + Name;
+        public WeaponType WeaponType => WeaponType.Rapier;
         public override void SetDefaults()
         {
             Item.width = 60;

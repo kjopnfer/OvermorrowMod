@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
@@ -16,7 +17,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
-    public class ChiaroscuroShadow : ModProjectile, IDrawAdditive
+    public class ChiaroscuroShadow : ModProjectile, IDrawAdditive, IProjectileClassification
     {
         public override string Texture => AssetDirectory.ArchiveProjectiles + "ChiaroscuroProjectile";
 
@@ -25,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public Player.CompositeArmStretchAmount stretch = Player.CompositeArmStretchAmount.Full;
         public Player Owner => Main.player[Projectile.owner];
-
+        public WeaponType WeaponType => WeaponType.Rapier;
         public override void SetDefaults()
         {
             Projectile.width = 46;
