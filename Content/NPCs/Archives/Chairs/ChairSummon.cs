@@ -1,17 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using Terraria;
 using OvermorrowMod.Common;
-using Terraria.GameContent.Bestiary;
-using Terraria.DataStructures;
-using Terraria.Localization;
-using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.NPCs;
-using System.Collections.Generic;
-using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Particles;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 

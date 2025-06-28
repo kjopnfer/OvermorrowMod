@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
-using Steamworks;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -24,7 +23,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
         // I CANT KEEP TRACK OF THESE HOLY FUCK
         public enum DoorID
-        {            
+        {
             FoyerRedRoomDoor,
 
             RedLongRoomEntrance,

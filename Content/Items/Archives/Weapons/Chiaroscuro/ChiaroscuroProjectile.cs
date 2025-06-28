@@ -1,19 +1,17 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
@@ -110,7 +108,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 if (Main.rand.NextBool(3))
                 {
                     randomScale = Main.rand.NextFloat(1f, 1.75f);
-                    Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(90)) * Main.rand.Next(10, 12);
+                    Vector2 randomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(90)) * Main.rand.Next(10, 12);
                     Color color = new Color(108, 108, 224);
 
                     float randomPosition = Main.rand.NextFloat(0.2f, 0.9f); // Don't spawn too close to ends
@@ -120,8 +118,8 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
                     var lightSpark = new Spark(sparkTexture, 0f, false, 0f);
                     lightSpark.endColor = new Color(108, 108, 224);
-                    RandomVelocity = -Vector2.Normalize(Projectile.velocity) * Main.rand.Next(1, 2);
-                    ParticleManager.CreateParticleDirect(lightSpark, sparkPosition, RandomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
+                    randomVelocity = -Vector2.Normalize(Projectile.velocity) * Main.rand.Next(1, 2);
+                    ParticleManager.CreateParticleDirect(lightSpark, sparkPosition, randomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
                 }
             }
         }
@@ -233,7 +231,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             float normalizedTime = 1f - (Projectile.timeLeft / (float)maxTimeLeft);
             float progress = MathHelper.Clamp(normalizedTime / animationDuration, 0f, 1f);
 
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            //Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
 
             float swordOffset = MathHelper.Lerp(-50, 10, EasingUtils.EaseOutCirc(progress));
             Vector2 off = new Vector2(swordOffset, -20).RotatedBy(Projectile.rotation - MathHelper.PiOver2);

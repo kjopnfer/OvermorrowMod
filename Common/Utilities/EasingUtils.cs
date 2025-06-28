@@ -77,5 +77,16 @@ namespace OvermorrowMod.Common.Utilities
             }
         }
 
+        public static float EaseInOutBounce(float x)
+        {
+            if (x < 0.5f)
+            {
+                return (1f - EaseOutBounce(1f - 2f * x)) * 0.5f;
+            }
+            else
+            {
+                return (1f + EaseOutBounce(2f * x - 1f)) * 0.5f;
+            }
+        }
     }
 }

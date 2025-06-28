@@ -71,7 +71,6 @@ namespace OvermorrowMod.Content.Items.Archives
         public override void AI()
         {
             AICounter++;
-            base.AI();
         }
 
         public override bool PreDraw(ref Color lightColor)

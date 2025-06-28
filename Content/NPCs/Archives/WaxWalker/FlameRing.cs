@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Interfaces;
@@ -38,7 +37,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
             float scale = 0.1f;
 
-            Vector2 velocity = -Projectile.velocity.SafeNormalize(Vector2.UnitY) * 2f;
             //velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
 
             var flameParticle = new Circle(texture, 0f, useSineFade: false);
@@ -130,7 +128,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
             float scale = 0.1f;
 
-            Vector2 velocity = -Projectile.velocity * 2f;
             //velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
 
             var flameParticle = new Circle(texture, 0f, useSineFade: false);

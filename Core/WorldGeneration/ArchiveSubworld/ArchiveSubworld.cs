@@ -25,10 +25,10 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         public static int GetHeight() => new ArchiveSubworld().Height;
 
 
-        public override List<GenPass> Tasks => new()
-        {
+        public override List<GenPass> Tasks =>
+        [
             new SetupGenPass("Loading", 1)
-        };
+        ];
 
         public override void OnLoad()
         {

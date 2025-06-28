@@ -44,6 +44,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         }
 
         public Vector2 anchorOffset;
+        int shadowIndex;
         public override void OnSpawn(IEntitySource source)
         {
             //Projectile.timeLeft = (int)(Projectile.timeLeft * (1f / Owner.GetTotalAttackSpeed(DamageClass.Melee)));
@@ -58,14 +59,14 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 }
             }
 
-            int shadowIndex = existingShadows % 3; // Limit to 3 positions
+            shadowIndex = existingShadows % 3; // Limit to 3 positions
 
             // Define the different anchor positions
             Vector2[] positions = new Vector2[]
             {
-                new Vector2(0, -105),      // Center/above
                 new Vector2(-40, -60),     // Left side
-                new Vector2(40, -60)       // Right side
+                new Vector2(40, -60) ,      // Right side
+                new Vector2(0, -105)     // Center/above
             };
 
             anchorOffset = positions[shadowIndex];
@@ -73,12 +74,12 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            base.SendExtraAI(writer);
+            writer.Write((sbyte)Projectile.spriteDirection);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            base.ReceiveExtraAI(reader);
+            Projectile.spriteDirection = reader.ReadSByte();
         }
 
         public enum AIStates
@@ -114,7 +115,6 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     break;
                 case (int)AIStates.Attacking:
                     scale = 1f;
-
                     if (AttackTarget == null || !AttackTarget.active)
                     {
                         // Target is gone, return to invisible
@@ -123,44 +123,59 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                         AICounter = 0;
                         break;
                     }
-
                     if (AICounter == 0)
                     {
                         attackStartPos = Owner.MountedCenter + anchorOffset;
+
+                        // Define the preset positions
+                        Vector2[] positions = new Vector2[]
+                        {
+                            new Vector2(-80, -100),     // Left side
+                            new Vector2(80, -100),      // Right side
+                            new Vector2(0, -145)       // Center/above
+                        };
+
+                        // Calculate angle from target to player to determine rotation
+                        Vector2 targetToPlayer = -Vector2.Normalize(Owner.Center - AttackTarget.Center);
+                        float rotationAngle = targetToPlayer.ToRotation() + MathHelper.PiOver2; // +90° to align properly
+
+                        // Rotate the position based on player's location relative to target
+                        Vector2 selectedPosition = positions[shadowIndex].RotatedBy(rotationAngle);
+
+                        // Store the final attack position
+                        Projectile.localAI[0] = selectedPosition.X;
+                        Projectile.localAI[1] = selectedPosition.Y;
                     }
 
-                    Vector2 targetDirection = Vector2.Normalize(AttackTarget.Center - attackStartPos);
-                    Vector2 attackPos = AttackTarget.Center + targetDirection * -100f; // Position behind target
+                    // Use the stored attack position
+                    Vector2 attackOffset = new Vector2(Projectile.localAI[0], Projectile.localAI[1]);
+                    Vector2 attackPos = AttackTarget.Center + attackOffset; // Position around target
+                    Vector2 attackDirection = Vector2.Normalize(AttackTarget.Center - attackPos);
 
-
-                    //Vector2 startPos = Owner.MountedCenter + anchorOffset;
-                    //Vector2 targetDirection = Vector2.Normalize(AttackTarget.Center - startPos);
-                    //Vector2 attackPos = AttackTarget.Center + targetDirection * -100f; // Position behind target
+                    // Maintain rotation throughout the entire attack
+                    Projectile.rotation = attackDirection.ToRotation() + MathHelper.PiOver2;
 
                     if (AICounter < 20)
                     {
                         // Move to attack position
                         float progress = AICounter / 20f;
                         Projectile.Center = Vector2.Lerp(attackStartPos, attackPos, EasingUtils.EaseOutCirc(progress));
-                        Projectile.rotation = targetDirection.ToRotation() + MathHelper.PiOver2;
                     }
                     else if (AICounter < 40)
                     {
                         // Stab toward target
                         float progress = (AICounter - 20f) / 20f;
-                        Vector2 stabPos = AttackTarget.Center + targetDirection * 30f; // Position past target
+                        Vector2 stabPos = AttackTarget.Center + attackDirection * -30f; // Position past target
                         Projectile.Center = Vector2.Lerp(attackPos, stabPos, EasingUtils.EaseOutBack(progress));
                     }
                     else if (AICounter < 60)
                     {
                         // Return to start position
                         float progress = (AICounter - 40f) / 20f;
-                        Vector2 currentStabPos = AttackTarget.Center + targetDirection * 30f;
-                        Projectile.Center = Vector2.Lerp(currentStabPos, attackStartPos, EasingUtils.EaseOutCirc(progress));
-
+                        Vector2 currentStabPos = AttackTarget.Center + attackDirection * -30f;
+                        Projectile.Center = Vector2.Lerp(currentStabPos, attackPos, EasingUtils.EaseOutCirc(progress));
                         Projectile.Opacity = MathHelper.Lerp(1f, 0f, MathHelper.Clamp(AICounter - 40, 0, 20f) / 20f);
                     }
-
                     if (AICounter++ >= 60)
                     {
                         AIState = (int)AIStates.Invisible;
@@ -189,7 +204,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             {
                 Projectile.Opacity = 0;
             }
-            
+            //Main.NewText("AISTATE: " + AIState + " AICOUNTER: " + AICounter);
 
             //Projectile.Center = Owner.MountedCenter + new Vector2(0, -105 + floatOffset);
 
@@ -213,6 +228,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override bool? CanHitNPC(NPC target)
         {
+            if (AICounter < 20 || AICounter > 40)
+            {
+                return false;
+            }
             return AIState == (int)AIStates.Attacking && target == AttackTarget;
         }
 
@@ -253,7 +272,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             if (projHitbox.Intersects(targetHitbox)) return true;
 
-            var hitboxHeight = 70;
+            var hitboxHeight = 40;
             var hitboxWidth = 18;
             float _ = float.NaN;
             Vector2 endPosition = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);

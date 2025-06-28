@@ -1,16 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Items.Archives;
-using OvermorrowMod.Content.Items.Archives.Armor;
-using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Globals;
 using ReLogic.Content;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.DrawLayers
@@ -35,11 +31,9 @@ namespace OvermorrowMod.Core.DrawLayers
             //Color color = drawPlayer.GetImmuneAlphaPure(drawInfo.colorArmorHead, drawInfo.shadow);
 
             int charges = drawPlayer.GetModPlayer<AccessoryPlayer>().CandleCharges;
-            float scale = 0.055f;
             int direction = drawPlayer.direction;
-            Vector2 velocity = -Vector2.UnitY * 0.8f;
 
-             var shieldMask = CandleFlame;
+            var shieldMask = CandleFlame;
             Vector2 Position = drawInfo.Position;
             Vector2 origin = new(CandleFlame.Value.Width * 0.5f, CandleFlame.Value.Height * 0.5f);
             Vector2 drawPos = new Vector2((int)(Position.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(Position.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4f)) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);

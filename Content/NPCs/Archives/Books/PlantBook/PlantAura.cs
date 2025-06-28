@@ -1,14 +1,12 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
+using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
-using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
-using OvermorrowMod.Content.Particles;
-using System;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Core.Particles;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {

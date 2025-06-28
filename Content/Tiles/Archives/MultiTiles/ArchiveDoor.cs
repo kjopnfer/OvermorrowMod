@@ -1,15 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.CustomCollision;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.Items;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -60,8 +57,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override bool RightClick(int i, int j)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-
             ArchiveDoor_TE door;
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
             TileUtils.TryFindModTileEntity<ArchiveDoor_TE>(bottomLeft.X, bottomLeft.Y, out door);

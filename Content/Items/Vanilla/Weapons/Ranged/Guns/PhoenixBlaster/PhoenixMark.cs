@@ -59,20 +59,6 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 
            
             return false;
-            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
-
-            //float scale = MathHelper.Lerp(0, 0.25f, Utils.Clamp(AICounter, 0, 20f) / 20f);
-            if (Projectile.timeLeft <= 60) scale = MathHelper.Lerp(0.25f, 0f, Utils.Clamp(AICounter - 340, 0, 20f) / 20f);
-
-            Color color = Color.Lerp(Color.DarkOrange, Color.DarkRed, (float)(Math.Sin(AICounter / 10f) / 2 + 0.5f));
-            for (int i = 0; i <= 3; i++)
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * alpha, Projectile.rotation + MathHelper.PiOver2 * i, texture.Size() / 2f, scale, SpriteEffects.None, 1);
-
-            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Crosshair").Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * alpha, Projectile.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * alpha, Projectile.rotation + MathHelper.PiOver4, texture.Size() / 2f, scale * 0.5f, SpriteEffects.None, 1);
-
-            return false;
         }
     }
 

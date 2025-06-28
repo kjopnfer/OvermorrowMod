@@ -17,7 +17,7 @@ namespace OvermorrowMod.Core.NPCs
     public class AIStateMachine
     {
         private State currentState;
-        private bool hasInitializedInitialState = false;
+        //private bool hasInitializedInitialState = false;
 
         /// <summary>
         /// Maximum number of states to remember
@@ -93,7 +93,7 @@ namespace OvermorrowMod.Core.NPCs
             availableStates[AIStateType.Moving] = new MovementState(movementSubstates, npc);
             availableStates[AIStateType.Attacking] = new AttackState(attackSubstates, npc);
 
-            SetInitialState(npc);
+            SetInitialState();
         }
 
         public void RemoveSubstate<T>(AIStateType superstateType, T substate) where T : BaseState
@@ -188,13 +188,13 @@ namespace OvermorrowMod.Core.NPCs
         /// <summary>
         /// Sets the initial default state (Idle) and enters it.
         /// </summary>
-        private void SetInitialState(OvermorrowNPC npc)
+        private void SetInitialState()
         {
             currentState = availableStates[AIStateType.Idle];
             currentState.Enter(); // Null if NPC not yet passed
             stateHistory.Enqueue(currentState);
 
-            hasInitializedInitialState = false;
+            //hasInitializedInitialState = false;
         }
 
         /// <summary>

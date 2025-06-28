@@ -5,7 +5,6 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Particles
 {

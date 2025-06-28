@@ -5,7 +5,6 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core;
-using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
@@ -44,16 +43,16 @@ namespace OvermorrowMod.Content.Misc
         }
 
         public ModTileEntity tileEntity;
-        ArchiveDoor_TE doorInstance => (ArchiveDoor_TE)TileEntity.ByID[tileEntity.ID];
+        ArchiveDoor_TE DoorInstance => (ArchiveDoor_TE)TileEntity.ByID[tileEntity.ID];
 
         // Death animation states
         private bool isDying = false;
         public ref float DeathAnimationTimer => ref NPC.ai[0];
-        private int DEATH_ANIMATION_DURATION = ModUtils.SecondsToTicks(1);
+        private readonly int DEATH_ANIMATION_DURATION = ModUtils.SecondsToTicks(1);
 
         public override void AI()
         {
-            if (!doorInstance.IsLocked && !isDying) return;
+            if (!DoorInstance.IsLocked && !isDying) return;
 
             if (!isDying)
             {
@@ -76,7 +75,7 @@ namespace OvermorrowMod.Content.Misc
                     NPC.HitEffect(new NPC.HitInfo());
                     NPC.active = false;
 
-                    doorInstance.UnlockDoors();
+                    DoorInstance.UnlockDoors();
                 }
             }
         }
@@ -96,22 +95,22 @@ namespace OvermorrowMod.Content.Misc
         {
             if (NPC.life <= 0)
             {
-                float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
-                float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-
-                randomScale = Main.rand.NextFloat(10f, 20f);
+                float randomScale = Main.rand.NextFloat(10f, 20f);
 
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
 
                 Color color = Color.LimeGreen;
-                var lightOrb = new Circle(texture, ModUtils.SecondsToTicks(0.7f), canGrow: true, useSineFade: true);
-                lightOrb.rotationAmount = 0.05f;
+                var lightOrb = new Circle(texture, ModUtils.SecondsToTicks(0.7f), canGrow: true, useSineFade: true)
+                {
+                    rotationAmount = 0.05f
+                };
 
                 float orbScale = 0.5f;
                 ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, orbScale, 0.2f, useAdditiveBlending: true);
 
-                lightOrb = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value, ModUtils.SecondsToTicks(0.6f), canGrow: true, useSineFade: true);
-                lightOrb.rotationAmount = 0.05f;
+                lightOrb = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value, ModUtils.SecondsToTicks(0.6f), canGrow: true, useSineFade: true) {
+                    rotationAmount = 0.05f
+                };
                 ParticleManager.CreateParticleDirect(lightOrb, NPC.Center, Vector2.Zero, color, 1f, scale: 0.6f, 0.2f, useAdditiveBlending: true);
 
                 Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
@@ -119,12 +118,13 @@ namespace OvermorrowMod.Content.Misc
                 {
                     randomScale = Main.rand.NextFloat(2f, 7f);
 
-                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                    Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 7);
+                    Vector2 randomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 7);
 
-                    var lightSpark = new Spark(sparkTexture, 0f, true, 0f);
-                    lightSpark.endColor = Color.LimeGreen;
-                    ParticleManager.CreateParticleDirect(lightSpark, NPC.Center, RandomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
+                    var lightSpark = new Spark(sparkTexture, 0f, true, 0f)
+                    {
+                        endColor = Color.LimeGreen
+                    };
+                    ParticleManager.CreateParticleDirect(lightSpark, NPC.Center, randomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
                 }
 
 

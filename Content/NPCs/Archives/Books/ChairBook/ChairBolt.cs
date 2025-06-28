@@ -133,7 +133,6 @@ namespace OvermorrowMod.Content.NPCs
                 if (Projectile.localAI[0]++ % Main.rand.Next(2, 6) == 0)
                 {
                     int randomIterations = Main.rand.Next(2, 5);
-                    Vector2 drawOffset = new Vector2(-4, -4).RotatedBy(Projectile.rotation);
                     Color color = Color.Lerp(Color.Purple, Color.DarkOrange, Main.rand.NextFloat(0, 1f));
 
                     Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;

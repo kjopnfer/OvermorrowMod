@@ -61,7 +61,6 @@ namespace OvermorrowMod.Content.NPCs
             OvermorrowNPC.AICounter = 0;
         }
 
-        private int castTime = 120;
         float flySpeedX = 2;
         float flySpeedY = 0;
 

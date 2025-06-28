@@ -65,8 +65,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value;
             for (int i = 0; i < randomIterations; i++)
             {
-                var lightSpark = new Spark(texture, Main.rand.Next(2, 3) * 10, false);
-
                 var emberParticle = new Circle(texture, ModUtils.SecondsToTicks(0.7f), useSineFade: true);
                 emberParticle.endColor = Color.Purple;
                 ParticleManager.CreateParticleDirect(emberParticle, Projectile.Center, -Projectile.velocity * 0.1f, Color.Cyan * 0.1f, 0.5f, particleScale, 0f, useAdditiveBlending: true);

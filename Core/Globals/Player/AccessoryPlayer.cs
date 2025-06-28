@@ -53,11 +53,11 @@ namespace OvermorrowMod.Core.Globals
                 if (Player.HasBuff<WarriorsResolve>() && !WarriorsResolveTriggered)
                 {
                     Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/trace_05").Value;
-                    var aura = new Spark(texture, ModUtils.SecondsToTicks(Main.rand.NextFloat(0.7f, 1f)), false);
-                    aura.endColor = Color.DarkRed;
-                    //aura.AnchorEntity = Player;
-                    aura.slowModifier = 0.98f;
-                    aura.squashHeight = false;
+                    var aura = new Spark(texture, ModUtils.SecondsToTicks(Main.rand.NextFloat(0.7f, 1f)), false) {
+                        endColor = Color.DarkRed,
+                        slowModifier = 0.98f,
+                        squashHeight = false 
+                    };
 
                     int delay = (int)(Main.rand.NextFloat(0.5f, 0.7f) * 15);
                     if (Main.GameUpdateCount % delay == 0 && !Main.gamePaused)

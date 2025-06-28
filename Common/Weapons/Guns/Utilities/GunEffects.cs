@@ -84,12 +84,13 @@ namespace OvermorrowMod.Common.Weapons.Guns
                 Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.025f, velocityScale))
                     .RotatedByRandom(MathHelper.ToRadians(spreadAngle));
 
-                var smoke = new Gas(smokeTextures, 30f, scaleOverride: Main.rand.NextFloat(0.2f, 0.5f));
-                smoke.gasBehavior = GasBehavior.Grow;
-                smoke.driftsUpward = true;
-                smoke.rotatesOverTime = true;
-                smoke.scaleRate = 0.005f;
-                smoke.customAlpha = 0.5f;
+                var smoke = new Gas(smokeTextures, 30f, scaleOverride: Main.rand.NextFloat(0.2f, 0.5f)) {
+                    gasBehavior = GasBehavior.Grow,
+                    driftsUpward = true,
+                    rotatesOverTime = true,
+                    scaleRate = 0.005f,
+                    customAlpha = 0.5f
+                };
 
                 ParticleManager.CreateParticleDirect(smoke, position, particleVelocity, smokeColor, 1f, scale: 0.2f, 0f);
             }

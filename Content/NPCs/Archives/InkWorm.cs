@@ -64,15 +64,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override NPCTargetingConfig TargetingConfig()
         {
-            NPCTargetingConfig config = new NPCTargetingConfig();
-            config.DisplayAggroIndicator = false;
-            config.AlertRange = null;
+            NPCTargetingConfig config = new NPCTargetingConfig() {
+                DisplayAggroIndicator = false,
+                AlertRange = null
+            };
 
             return config;
         }
 
         public ref float AIState => ref NPC.ai[0];
-        public ref float AICounter => ref NPC.ai[1];
+        public new ref float AICounter => ref NPC.ai[1];
 
         protected List<NPC> inkTentacles = new List<NPC>();
         public override void OnSpawn(IEntitySource source)
@@ -289,7 +290,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public ref float ParentID => ref NPC.ai[0];
         public ref float AIState => ref NPC.ai[1];
-        public ref float AICounter => ref NPC.ai[2];
+        public new ref float AICounter => ref NPC.ai[2];
         NPC Parent => Main.npc[(int)ParentID];
 
 
@@ -311,9 +312,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override NPCTargetingConfig TargetingConfig()
         {
-            NPCTargetingConfig config = new NPCTargetingConfig();
-            config.DisplayAggroIndicator = false;
-            config.AlertRange = null;
+            NPCTargetingConfig config = new NPCTargetingConfig
+            {
+                DisplayAggroIndicator = false,
+                AlertRange = null
+            };
 
             return config;
         }

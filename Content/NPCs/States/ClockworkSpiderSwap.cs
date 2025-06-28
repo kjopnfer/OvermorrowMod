@@ -14,9 +14,6 @@ namespace OvermorrowMod.Content.NPCs
         public override bool CanExit => IsFinished;
 
         int swapCooldown = 0;
-        int bounceCount = 0;
-        float currentBounceVelocity = 20f;
-        bool gravityFlipped;
 
         public ClockworkSpiderSwap(OvermorrowNPC npc) : base(npc) { }
 
@@ -61,8 +58,6 @@ namespace OvermorrowMod.Content.NPCs
         int numBounces = 0;
         public override void Update()
         {
-            ClockworkSpider spider = NPC.ModNPC as ClockworkSpider;
-
             if (NPC.noGravity)
             {
                 NPC.velocity.Y -= 0.12f;

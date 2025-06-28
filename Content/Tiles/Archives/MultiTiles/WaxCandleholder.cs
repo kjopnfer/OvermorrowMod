@@ -37,8 +37,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.newTile.CoordinatePadding = 2;
 
             AddMapEntry(new Color(159, 131, 65));
-            LocalizedText name = CreateMapEntryName();
-
             TileObjectData.addTile(Type);
         }
 

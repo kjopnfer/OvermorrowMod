@@ -122,7 +122,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         bool firstStep = true;
         int stepCount = 0;
 
-        float tileDistance => RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
+        float TileDistance => RayTracing.CastTileCollisionLength(NPC.Bottom, Vector2.UnitY, 1000);
         bool isOnGround = false;
 
         public ref float AIState => ref NPC.ai[0];
@@ -201,9 +201,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Determine if NPC is on the ground
             float STAND_HEIGHT = 210;
             // Make sure the NPC is always a certain distance above the ground
-            if (tileDistance <= STAND_HEIGHT)
+            if (TileDistance <= STAND_HEIGHT)
             {
-                if (tileDistance != STAND_HEIGHT)
+                if (TileDistance != STAND_HEIGHT)
                 {
                     NPC.velocity.Y -= 5f;
                 }
@@ -353,9 +353,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float STAND_HEIGHT = 130;
 
             NPC.velocity.Y = 4;
-            if (tileDistance <= STAND_HEIGHT)
+            if (TileDistance <= STAND_HEIGHT)
             {
-                if (tileDistance != STAND_HEIGHT)
+                if (TileDistance != STAND_HEIGHT)
                 {
                     NPC.velocity.Y -= 5f;
                 }
@@ -377,7 +377,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             backLeg.Draw(spriteBatch, darkerColor);
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 spriteOffset = new Vector2(14, -16);
+            Vector2 spriteOffset = new(14, -16);
             spriteBatch.Draw(texture, NPC.Center + spriteOffset - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, SpriteEffects.None, 0);
 
             return false;
