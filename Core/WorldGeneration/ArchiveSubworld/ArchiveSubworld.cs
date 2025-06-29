@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.LoadingScreen;
+using OvermorrowMod.Core.UI;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using SubworldLibrary;
@@ -82,6 +83,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         public override void OnEnter()
         {
             LoadingScreenTooltips.Reset();
+            TitleCardManager.ShowTitle("The Grand Archives");
 
             base.OnEnter();
         }
