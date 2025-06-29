@@ -1,14 +1,9 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
-using OvermorrowMod.Content.Particles;
-using OvermorrowMod.Core.Particles;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 

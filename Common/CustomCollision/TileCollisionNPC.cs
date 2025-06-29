@@ -9,7 +9,7 @@ namespace OvermorrowMod.Common.CustomCollision
     {
         public Tile parentTile;
         public CollisionSurface[] colliders = null;
-        public override bool CheckActive() => false;
+        public override bool CheckActive() => true;
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {

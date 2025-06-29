@@ -48,9 +48,9 @@ namespace OvermorrowMod.Common.RoomManager
         public int CooldownTime { get; private set; } = ModUtils.SecondsToTicks(80);
 
         /// <summary>
-        /// Distance in pixels at which NPCs will spawn (200 tiles = 3200 pixels)
+        /// Distance in pixels at which NPCs will spawn, i.e., (1 tile = 16 pixels)
         /// </summary>
-        private float SpawnDistance = ModUtils.TilesToPixels(200);
+        private float SpawnDistance = ModUtils.TilesToPixels(120);
 
         public override void SaveData(TagCompound tag)
         {
@@ -101,31 +101,40 @@ namespace OvermorrowMod.Common.RoomManager
                     float distance = Vector2.Distance(Position.ToWorldCoordinates(), player.Center);
                     if (distance <= SpawnDistance)
                     {
+                        //Main.NewText("position: " + Position.ToWorldCoordinates() + ", vs " + SpawnDistance + " distance: " + distance);
                         return true;
                     }
                 }
-            }
+            }   
+
             return false;
         }
 
         public override void Update()
         {
-            // For if the NPC has been somehow manually despawned without being killed.
-            if (ChildNPC != null)
+            bool playerNearby = IsPlayerNearby();
+
+            // If the NPC is active but no players are nearby, despawn it
+            if (ChildNPC != null && ChildNPC.active)
             {
-                if (!HasBeenKilled && !ChildNPC.active)
+                if (!playerNearby)
                 {
-                    //Main.NewText("not active");
+                    ChildNPC.active = false; // Despawn NPC
                     ChildNPC = null;
+                    HasBeenKilled = false;   // Don't treat this as a natural death
+                                             // No cooldown
                 }
             }
 
-            // Check if there are any players within spawn distance
-            bool playerNearby = IsPlayerNearby();
+            // If the NPC was removed (not killed), clear the reference
+            if (ChildNPC != null && !HasBeenKilled && !ChildNPC.active)
+            {
+                ChildNPC = null;
+            }
 
+            // If player is nearby and NPC is not currently active, spawn a new one
             if (playerNearby)
             {
-                // Only spawn if we don't have an active NPC and cooldown is finished
                 if (ChildNPC == null && SpawnerCooldown <= 0)
                 {
                     SpawnNPC();
@@ -133,11 +142,10 @@ namespace OvermorrowMod.Common.RoomManager
             }
             else
             {
-                // The NPC is not allowed to respawn unless the Player is offscreen
-                if (SpawnerCooldown > 0) SpawnerCooldown--;
+                // If no player nearby, decrement cooldown only
+                if (SpawnerCooldown > 0)
+                    SpawnerCooldown--;
             }
-
-            base.Update();
         }
 
         public override bool IsTileValidForEntity(int x, int y)

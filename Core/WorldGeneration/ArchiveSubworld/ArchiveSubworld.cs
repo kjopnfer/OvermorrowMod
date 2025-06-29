@@ -6,6 +6,7 @@ using ReLogic.Content;
 using ReLogic.Graphics;
 using SubworldLibrary;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -99,6 +100,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             Main.time = 16000.0;
 
             Main.windSpeedCurrent = 0.05f;
+
+            //int activeNpcCount = Main.npc.Count(npc => npc.active);
+            //Main.NewText("Active NPC Count: " + activeNpcCount);
 
             // For whatever reason, subworlds do not call these by themselves.
             // The NPCSpawnPoint.Update() method now handles lazy loading automatically

@@ -86,7 +86,7 @@ TooltipEntities: {
 		Description: {
 			Line0: + On spawn, hover idly above the player
 			Line1: + While <Buff:Chiaroscuro Form> is active, attack any targets hit by your <Projectile:Chiaroscuro>
-			Line2: - Remove all <Projectile:Twinshades> when <Buff:Chiaroscuro Form> expires
+			Line2: - When <Buff:Chiaroscuro Form> expires, remove all <Projectile:Twinshades>
 			Line3: - Only a maximum of three may be active at a time
 		}
 	}
@@ -389,7 +389,7 @@ Items: {
 		DisplayName: Chiaroscuro
 		Tooltip:
 			'''
-			{Keyword:Strike}: 20% chance to manifest <Projectile:Twinshades>.
+			{Keyword:Strike}: 20% chance to manifest a <Projectile:Twinshade>.
 			{Keyword:Secondary}:
 			- If you have any <Projectile:Twinshades>, gain <Buff:Chiaroscuro Form>.
 			- While active, you will not spawn new <Projectile:Twinshades>.
@@ -469,5 +469,5 @@ Projectiles: {
 	FlameOrbiter.DisplayName: Flame Orbiter
 	ChiaroscuroProjectile.DisplayName: Chiaroscuro Projectile
 	ChiaroscuroShadow.DisplayName: Twinshade
-	ChiaroscuroStance.DisplayName: Chiaroscuro Stance
+	ChiaroscuroStance.DisplayName: Chiaroscuro Form
 }

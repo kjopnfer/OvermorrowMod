@@ -14,6 +14,20 @@ namespace OvermorrowMod.Common.Utilities
     /// </summary>
     public static class ModUtils
     {
+        public static bool HasNearbyPlayers(Vector2 position, float maxDistance)
+        {
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                Player player = Main.player[i];
+                if (player.active && !player.dead)
+                {
+                    if (Vector2.Distance(player.Center, position) <= maxDistance)
+                        return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Determines the direction (-1 or 1) of the target entity relative to the source entity.
         /// Returns 1 if the target is to the right, -1 if to the left.

@@ -67,6 +67,7 @@ namespace OvermorrowMod.Core.Globals
             npc.chaseable = !npc.HasBuff<Stealth>();
             npc.ShowNameOnHover = !npc.HasBuff<Stealth>();
 
+            //Main.NewText("I am active: " + npc.FullName);
             return base.PreAI(npc);
         }
 

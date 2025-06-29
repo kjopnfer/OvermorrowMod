@@ -41,15 +41,15 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             Item.width = 60;
             Item.height = 102;
-            Item.useAnimation = 120;
-            Item.useTime = 120;
+            Item.useAnimation = 20;
+            Item.useTime = 20;
             Item.rare = ItemRarityID.Blue;
             Item.useStyle = ItemUseStyleID.Shoot;
 
             Item.knockBack = 2;
             Item.shootSpeed = 5f;
             Item.autoReuse = true;
-            Item.damage = 10;
+            Item.damage = 13;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.noUseGraphic = true;
