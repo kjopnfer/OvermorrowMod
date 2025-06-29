@@ -663,11 +663,13 @@ namespace OvermorrowMod.Core.Items
             string convertedText = text;
             foreach (var highlight in ObjectHighlights)
             {
-                string pattern = $@"(<{highlight.Key}:.*>)";
+                string pattern = $@"(<{highlight.Key}:.*?>)";
                 var matches = Regex.Matches(text, pattern);
                 foreach (Match match in matches)
                 {
-                    string newValue = match.Value.Replace($"<{highlight.Key}:", $"[c/{highlight.Value}:{{");
+                    // Extract the content between the tags (e.g., "Twinshades" from "<Projectile:Twinshades>")
+                    string content = match.Value.Replace($"<{highlight.Key}:", "").Replace(">", "");
+                    string newValue = $"[c/{highlight.Value}:{content}]";
                     convertedText = convertedText.Replace(match.Value, newValue);
                 }
             }
@@ -677,7 +679,7 @@ namespace OvermorrowMod.Core.Items
                 convertedText = convertedText.Replace("DeathsDoor", "Deaths Door");
             }
 
-            return convertedText.Replace(">", "}]");
+            return convertedText;
         }
 
         #endregion
