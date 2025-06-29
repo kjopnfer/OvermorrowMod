@@ -48,6 +48,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             GreenBridgeRoom bridgeRoom = new();
             bridgeRoom.Generate(new Vector2(foyer.Position.X - bridgeRoom.Width, foyer.Position.Y - bridgeRoom.Height / 2));
 
+            GreenTreasureRoom greenTreasure = new();
+            greenTreasure.Generate(new Vector2(bridgeRoom.Position.X + (bridgeRoom.Width / 2f) - (greenTreasure.Width / 2), bridgeRoom.Position.Y - greenTreasure.Height));
+
             ArchiveGreenRoom greenRoom = new();
             greenRoom.Generate(new Vector2(bridgeRoom.Position.X - greenRoom.Width, bridgeRoom.Position.Y));
 
@@ -74,6 +77,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             RedDiagonalRoom diagonalRoom = new();
             diagonalRoom.Generate(new Vector2(foyer.Position.X - (diagonalRoom.Width / 2), longRoom.Position.Y + longRoom.Height));
+
+            RedTreasureRoom redTreasure = new();
+            redTreasure.Generate(new Vector2(diagonalRoom.Position.X + (diagonalRoom.Width) - (redTreasure.Width), diagonalRoom.Position.Y - redTreasure.Height));
 
             ArchiveRedRoom redRoom = new();
             redRoom.Generate(new Vector2(longRoom.Position.X - redRoom.Width, longRoom.Position.Y));
