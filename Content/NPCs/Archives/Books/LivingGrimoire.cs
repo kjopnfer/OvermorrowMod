@@ -1,23 +1,17 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using Terraria;
-using Terraria.ModLoader;
 using OvermorrowMod.Common;
-using Terraria.ID;
-using Terraria.GameContent.Bestiary;
-using Terraria.DataStructures;
-using OvermorrowMod.Content.Biomes;
-using Terraria.Localization;
-using System;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Common.Particles;
-using Terraria.Map;
-using OvermorrowMod.Content.Misc;
+using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
-using OvermorrowMod.Content.Items.Archives;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -78,7 +72,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override NPCTargetingConfig TargetingConfig()
         {
-            return new NPCTargetingConfig(
+            /*return new NPCTargetingConfig(
                 maxAggroTime: ModUtils.SecondsToTicks(15),
                 aggroLossRate: 1f,
                 aggroCooldownTime: 180f,
@@ -86,7 +80,25 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAttackRange: ModUtils.TilesToPixels(30),
                 alertRange: null,
                 prioritizeAggro: true
-            );
+            );*/
+            return new NPCTargetingConfig(
+                maxAggroTime: ModUtils.SecondsToTicks(10f),
+                aggroLossRate: 0.5f,
+                aggroCooldownTime: ModUtils.SecondsToTicks(4f),
+                aggroRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(30),            // Far right detection
+                    left: ModUtils.TilesToPixels(30),             // Close left detection
+                    up: ModUtils.TilesToPixels(2),               // Medium up detection
+                    down: ModUtils.TilesToPixels(20),             // Far down detection
+                    flipWithDirection: true                       // Flip based on NPC direction
+                ),
+                attackRadius: null,
+                alertRadius: null,
+                prioritizeAggro: true
+            )
+            {
+                ShowDebugVisualization = true
+            };
         }
 
         /// <summary>
@@ -94,15 +106,48 @@ namespace OvermorrowMod.Content.NPCs.Archives
         /// </summary>
         public void ReenableAlertIndicator()
         {
-            TargetingModule = new NPCTargetingModule(NPC, new NPCTargetingConfig(
-                maxAggroTime: ModUtils.SecondsToTicks(15),
-                aggroLossRate: 1f,
-                aggroCooldownTime: 180f,
-                maxTargetRange: ModUtils.TilesToPixels(50),
-                maxAttackRange: ModUtils.TilesToPixels(50),
-                alertRange: ModUtils.TilesToPixels(60),
-                prioritizeAggro: true
-            ));
+            TargetingModule =
+                new NPCTargetingModule(NPC,
+                new NPCTargetingConfig(
+                maxAggroTime: ModUtils.SecondsToTicks(10f),
+                aggroLossRate: 0.5f,
+                aggroCooldownTime: ModUtils.SecondsToTicks(4f),
+                aggroRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(25),            // Far right detection
+                    left: ModUtils.TilesToPixels(25),             // Close left detection
+                    up: ModUtils.TilesToPixels(15),               // Medium up detection
+                    down: ModUtils.TilesToPixels(5),             // Far down detection
+                    flipWithDirection: true                       // Flip based on NPC direction
+                ),
+                attackRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(50),
+                    left: ModUtils.TilesToPixels(50),
+                    up: ModUtils.TilesToPixels(25),
+                    down: ModUtils.TilesToPixels(10),
+                    flipWithDirection: true
+                ),
+                alertRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(35),
+                    left: ModUtils.TilesToPixels(35),
+                    up: ModUtils.TilesToPixels(25),
+                    down: ModUtils.TilesToPixels(5),
+                    flipWithDirection: true
+                ),
+                prioritizeAggro: true)
+                {
+                    ShowDebugVisualization = true
+                }
+           );
+
+            /*new NPCTargetingModule(NPC, new NPCTargetingConfig(
+            maxAggroTime: ModUtils.SecondsToTicks(15),
+            aggroLossRate: 1f,
+            aggroCooldownTime: 180f,
+            maxTargetRange: ModUtils.TilesToPixels(50),
+            maxAttackRange: ModUtils.TilesToPixels(50),
+            alertRange: ModUtils.TilesToPixels(60),
+            prioritizeAggro: true
+        ));*/
         }
 
         public override void AI()
@@ -246,6 +291,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            //TargetingModule?.DrawDebugVisualization(spriteBatch);
+
             Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
