@@ -4,6 +4,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.DataStructures;
@@ -44,6 +45,19 @@ namespace OvermorrowMod.Core.Globals
             CandlelitSanctuary = false;
             WarriorsEpic = false;
             WhitePage = false;
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+        }
+
+        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (proj.IsWeaponType(WeaponType.Rapier))
+            {
+                // Add armor penetration equal to twice the projectile's damage
+                modifiers.ArmorPenetration += proj.damage * 2;
+            }
         }
 
         public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)

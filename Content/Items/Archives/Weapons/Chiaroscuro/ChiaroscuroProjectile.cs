@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
@@ -163,12 +164,14 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             int shadowCount = Main.projectile.Count(p => p.active && p.type == ModContent.ProjectileType<ChiaroscuroShadow>() && p.owner == Projectile.owner);
             if (shadowCount < 3)
             {
-                if (Main.rand.NextBool())
+                if (Main.rand.NextBool(4) && !Owner.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()))
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<ChiaroscuroShadow>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
             }
-            else
+
+
+            if (Owner.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()))
             {
                 // Find a shadow that is invisible and doesn't have an attack target
                 for (int i = 0; i < Main.maxProjectiles; i++)

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Interfaces;
@@ -34,8 +35,6 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Projectile.friendly = true;
             Projectile.timeLeft = 180;
             Projectile.tileCollide = false;
-            //Projectile.usesLocalNPCImmunity = true;
-
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = ModUtils.SecondsToTicks(1);
@@ -65,9 +64,9 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             // Define the different anchor positions
             Vector2[] positions = new Vector2[]
             {
-                new Vector2(-40, -60),     // Left side
-                new Vector2(40, -60) ,      // Right side
-                new Vector2(0, -105)     // Center/above
+                new(-40, -60),     // Left side
+                new(40, -60) ,      // Right side
+                new(0, -105)     // Center/above
             };
 
             anchorOffset = positions[shadowIndex];
@@ -113,6 +112,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     {
                         Projectile.Opacity = 0;
                     }
+
+                    if (Projectile.Opacity == 0 && !Owner.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()))
+                    {
+                        Projectile.Kill();
+                    }
                     break;
                 case (int)AIStates.Attacking:
                     scale = 1f;
@@ -131,9 +135,9 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                         // Define the preset positions
                         Vector2[] positions = new Vector2[]
                         {
-                            new Vector2(-80, -100),     // Left side
-                            new Vector2(80, -100),      // Right side
-                            new Vector2(0, -145)       // Center/above
+                            new(-80, -100),     // Left side
+                            new(80, -100),      // Right side
+                            new(0, -145)       // Center/above
                         };
 
                         // Calculate angle from target to player to determine rotation
@@ -208,7 +212,6 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             //Main.NewText("AISTATE: " + AIState + " AICOUNTER: " + AICounter);
 
             //Projectile.Center = Owner.MountedCenter + new Vector2(0, -105 + floatOffset);
-
         }
 
         public void SetActive()

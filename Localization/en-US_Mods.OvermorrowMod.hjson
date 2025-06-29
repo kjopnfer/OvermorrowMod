@@ -113,6 +113,53 @@ TooltipEntities: {
 	}
 }
 
+LoadingTips: {
+	CombatTargeting: {
+		DisplayName: Combat Targeting
+		Description: NPCs prioritize players with higher aggro. Taunts increase it; stealth or invisibility can reduce it.
+	}
+
+	HiddenItems: {
+		DisplayName: Hidden Items
+		Description: Certain items can be obtained by clearing rooms or interacting with objects in the environment.
+	}
+
+	EliteEnemies: {
+		DisplayName: Elite Enemies
+		Description: Some enemies are much stronger than others. Avoiding fighting them if you cannot defeat one.
+	}
+
+	EnemyPerception: {
+		DisplayName: Enemy Perception
+		Description: Enemies start passive and become alert when a player is nearby. Staying out of range or using stealth can avoid combat.
+	}
+
+	Scouting: {
+		DisplayName: Scouting
+		Description: Use items that increase your range to help spot threats early and plan your approach.
+	}
+
+	SupportEnemies: {
+		DisplayName: Support Enemies
+		Description: Prioritize taking out enemies that buff their allies in order to reduce overall enemy effectiveness.
+	}
+
+	Barrier: {
+		DisplayName: Barrier
+		Description: NPCs with barrier will absorb damage before their health is affected. Remove it to deal real damage.
+	}
+
+	StealthMechanics: {
+		DisplayName: Stealth Mechanics
+		Description: Stealthed enemies are difficult to spot. Detection gear or status effects can expose them.
+	}
+
+	Rapiers: {
+		DisplayName: Rapiers
+		Description: Rapiers ignore enemy defense equal to twice their damage, use them to gain an advantage against heavily armored enemies
+	}
+}
+
 Keywords: {
 	Aerial: {
 		DisplayName: Aerial
