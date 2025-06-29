@@ -42,9 +42,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             ArchiveFoyer foyer = new();
             foyer.Generate(new Vector2(ArchiveSubworld.GetWidth() / 2 - foyer.Width / 2 - 15, ArchiveSubworld.GetHeight() / 2 - foyer.Height / 2 - 200));
 
+            FoyerTreasureRoom foyerTreasure = new();
+            foyerTreasure.Generate(new Vector2(foyer.Position.X + (foyer.Width / 2f) - (foyerTreasure.Width / 2), foyer.Position.Y - foyerTreasure.Height));
 
-
-            
             GreenBridgeRoom bridgeRoom = new();
             bridgeRoom.Generate(new Vector2(foyer.Position.X - bridgeRoom.Width, foyer.Position.Y - bridgeRoom.Height / 2));
 
@@ -56,6 +56,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
             YellowStairsRoom stairsRoom = new();
             stairsRoom.Generate(new Vector2(pitRoom.Position.X + pitRoom.Width, pitRoom.Position.Y - pitRoom.Height / 2));
+
+            YellowTreasureRoom yellowTreasure = new();
+            yellowTreasure.Generate(new Vector2(stairsRoom.Position.X + (stairsRoom.Width / 2f) - (yellowTreasure.Width / 2), stairsRoom.Position.Y - yellowTreasure.Height));
 
             WaxheadRoom waxheadRoom = new();
             waxheadRoom.Generate(new Vector2(stairsRoom.Position.X + stairsRoom.Width, stairsRoom.Position.Y));
