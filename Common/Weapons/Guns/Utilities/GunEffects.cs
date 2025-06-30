@@ -92,7 +92,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
                     customAlpha = 0.5f
                 };
 
-                ParticleManager.CreateParticleDirect(smoke, position, particleVelocity, smokeColor, 1f, scale: 0.2f, 0f);
+                ParticleManager.CreateParticleDirect(smoke, position, particleVelocity, smokeColor, 1f, scale: 0.025f, 0f);
             }
         }
     }

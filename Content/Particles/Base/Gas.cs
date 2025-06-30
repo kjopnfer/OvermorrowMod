@@ -45,7 +45,6 @@ namespace OvermorrowMod.Content.Particles
         {
             this.textures = textures;
             this.maxTime = maxTimeOverride > 0 ? maxTimeOverride : Main.rand.Next(4, 5) * 10;
-            this.initialScale = scaleOverride > 0 ? scaleOverride : Main.rand.NextFloat(0.2f, 0.3f);
 
             // Select random texture variant
             this.selectedTexture = textures[Main.rand.Next(textures.Length)];
@@ -58,6 +57,8 @@ namespace OvermorrowMod.Content.Particles
         {
             particle.alpha = 0f;
             particle.rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+            this.initialScale = particle.scale;
+
             particle.scale = initialScale;
         }
 

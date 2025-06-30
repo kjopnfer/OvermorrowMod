@@ -433,12 +433,17 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
                     recoilTimer = RECOIL_TIME;
 
-                    Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld)) * 16;
+                    //Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld)) * 16;
 
                     Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
                     Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
 
                     SoundEngine.PlaySound(ShootSound);
+                    Vector2 direction = Main.MouseWorld - shootPosition;
+                    if (direction != Vector2.Zero)
+                        direction.Normalize();
+
+                    Vector2 velocity = direction * 16f;
 
                     OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, BonusBullets);
 
