@@ -88,5 +88,20 @@ namespace OvermorrowMod.Common.Utilities
                 return (1f + EaseOutBounce(2f * x - 1f)) * 0.5f;
             }
         }
+
+        public static float EaseInOutCubic(float x)
+        {
+            return x < 0.5f
+                ? 4f * x * x * x
+                : 1f - MathF.Pow(-2f * x + 2f, 3f) / 2f;
+        }
+
+        public static float EaseInOutQuint(float x)
+        {
+            return x < 0.5f
+                ? 16f * x * x * x * x * x
+                : 1f - MathF.Pow(-2f * x + 2f, 5f) / 2f;
+        }
+
     }
 }

@@ -43,7 +43,8 @@ namespace OvermorrowMod.Core.UI
             else if (timer > ShowDuration - FadeDuration)
             {
                 // Fade out
-                alpha = 1f - ((timer - (ShowDuration - FadeDuration)) / (float)FadeDuration);
+                //alpha = 1f - ((timer - (ShowDuration - FadeDuration)) / (float)FadeDuration);
+                alpha = EasingUtils.EaseInCubic(1f - ((timer - (ShowDuration - FadeDuration)) / (float)FadeDuration));
             }
 
             Vector2 textSize = FontAssets.DeathText.Value.MeasureString(text);
@@ -60,8 +61,10 @@ namespace OvermorrowMod.Core.UI
 
             for (int x = 0; x < maxDistance; x += stripWidth)
             {
-                float backroundProgress = x / (float)maxDistance;
-                float segmentAlpha = (1f - backroundProgress) * 1f * alpha;
+                //float backgroundProgress = x / (float)maxDistance;
+                float backgroundProgress = EasingUtils.EaseInCubic(x / (float)maxDistance);
+
+                float segmentAlpha = (1f - backgroundProgress) * 1f * alpha;
 
                 spriteBatch.Draw(pixel, new Rectangle((int)(center.X - x - stripWidth), stripY, stripWidth, stripHeight), Color.Black * segmentAlpha);
                 spriteBatch.Draw(pixel, new Rectangle((int)(center.X + x), stripY, stripWidth, stripHeight), Color.Black * segmentAlpha);
@@ -86,7 +89,12 @@ namespace OvermorrowMod.Core.UI
             if (timer > 20)
             {
                 float delayedProgress = EasingUtils.EaseOutQuart(MathHelper.Clamp((timer - 20) / (float)ModUtils.SecondsToTicks(1), 0, 1f));
+                //float delayedProgress = EasingUtils.EaseInOutCirc(MathHelper.Clamp((timer - 20) / (float)ModUtils.SecondsToTicks(1), 0, 1f));
+
+                //float delayedProgress = MathHelper.Clamp((timer - 20) / (float)ModUtils.SecondsToTicks(1), 0, 1f);
+                //bannerWidth = (int)MathHelper.SmoothStep(20, textSize.X, MathHelper.Clamp(delayedProgress, 0, 1f));
                 bannerWidth = (int)MathHelper.Lerp(20, textSize.X, MathHelper.Clamp(delayedProgress, 0, 1f));
+
             }
 
             if (timer > ShowDuration - FadeDuration)
@@ -126,7 +134,7 @@ namespace OvermorrowMod.Core.UI
                 timer++;
                 if (timer >= ShowDuration)
                 {
-                    visible = false;
+                    //visible = false;
                     timer = 0;
                 }
             }
