@@ -470,4 +470,5 @@ Projectiles: {
 	ChiaroscuroProjectile.DisplayName: Chiaroscuro Projectile
 	ChiaroscuroShadow.DisplayName: Twinshade
 	ChiaroscuroStance.DisplayName: Chiaroscuro Form
+	BlackEcho.DisplayName: Black Echo
 }

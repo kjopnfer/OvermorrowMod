@@ -103,5 +103,12 @@ namespace OvermorrowMod.Common.Utilities
                 : 1f - MathF.Pow(-2f * x + 2f, 5f) / 2f;
         }
 
+        public static float EaseInOutCirc(float x)
+        {
+            return x < 0.5f
+                ? (1f - MathF.Sqrt(1f - MathF.Pow(2f * x, 2f))) / 2f
+                : (MathF.Sqrt(1f - MathF.Pow(-2f * x + 2f, 2f)) + 1f) / 2f;
+        }
+
     }
 }

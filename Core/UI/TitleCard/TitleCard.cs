@@ -134,7 +134,7 @@ namespace OvermorrowMod.Core.UI
                 timer++;
                 if (timer >= ShowDuration)
                 {
-                    //visible = false;
+                    visible = false;
                     timer = 0;
                 }
             }
