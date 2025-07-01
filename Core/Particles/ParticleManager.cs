@@ -23,34 +23,6 @@ namespace OvermorrowMod.Core.Particles
             ActiveParticles = 0;
         }
 
-        public static void DrawAdditive(SpriteBatch spriteBatch)
-        {
-            // Draw all particles that are marked for additive blending
-            foreach (ParticleInstance particle in particles)
-            {
-                if (particle == null || !particle.UseAdditiveBlending) continue;
-
-                // Temporarily set the particle's position to the gravity-aware position for drawing
-                Vector2 originalPosition = particle.position;
-                particle.position = particle.DrawPosition;
-
-                particle.cParticle.particle = particle;
-                try
-                {
-                    particle.cParticle.Draw(spriteBatch);
-                }
-                catch (Exception e)
-                {
-                    OvermorrowModFile.Instance.Logger.Error(e.Message);
-                    Main.NewText($"Error drawing additive particle: {particle.cParticle.GetType().Name}", Color.Red);
-                    particle.Kill();
-                }
-
-                // Restore original position
-                particle.position = originalPosition;
-            }
-        }
-
         public static void Unload()
         {
             NextIndex = -1;
@@ -116,6 +88,35 @@ namespace OvermorrowMod.Core.Particles
                 particle.position = originalPosition;
             }
         }
+
+        public static void DrawAdditive(SpriteBatch spriteBatch, ParticleDrawLayer layer)
+        {
+            foreach (ParticleInstance particle in particles)
+            {
+                if (particle == null || !particle.UseAdditiveBlending || particle.drawLayer != layer)
+                    continue;
+
+                // Temporarily set the particle's position to the gravity-aware position for drawing
+                Vector2 originalPosition = particle.position;
+                particle.position = particle.DrawPosition;
+
+                particle.cParticle.particle = particle;
+                try
+                {
+                    particle.cParticle.Draw(spriteBatch);
+                }
+                catch (Exception e)
+                {
+                    OvermorrowModFile.Instance.Logger.Error(e.Message);
+                    Main.NewText($"Error drawing additive particle: {particle.cParticle.GetType().Name}", Color.Red);
+                    particle.Kill();
+                }
+
+                // Restore original position
+                particle.position = originalPosition;
+            }
+        }
+
 
         public static void DrawParticles(SpriteBatch spriteBatch)
         {

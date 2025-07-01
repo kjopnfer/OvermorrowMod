@@ -42,7 +42,7 @@ namespace OvermorrowMod.Core.Effects
                     (Main.npc[k].ModNPC as IDrawAdditive).DrawAdditive(Main.spriteBatch);
             }
 
-            ParticleManager.DrawAdditive(Main.spriteBatch);
+            //ParticleManager.DrawAdditive(Main.spriteBatch);
 
             Main.spriteBatch.End();
         }

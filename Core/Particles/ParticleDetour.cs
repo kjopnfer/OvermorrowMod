@@ -34,6 +34,10 @@ namespace OvermorrowMod.Core.Particles
             ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.BehindNPCs);
             Main.spriteBatch.End();
 
+            Main.spriteBatch.Begin(default, BlendState.Additive, SamplerState.PointWrap, default, RasterizerState.CullNone, default, Main.GameViewMatrix.TransformationMatrix);
+            ParticleManager.DrawAdditive(Main.spriteBatch, ParticleDrawLayer.BehindNPCs);
+            Main.spriteBatch.End();
+
             orig(self);
         }
 
@@ -44,6 +48,10 @@ namespace OvermorrowMod.Core.Particles
             ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.AboveAll);
             Main.spriteBatch.End();
 
+            Main.spriteBatch.Begin(default, BlendState.Additive, SamplerState.PointWrap, default, RasterizerState.CullNone, default, Main.GameViewMatrix.TransformationMatrix);
+            ParticleManager.DrawAdditive(Main.spriteBatch, ParticleDrawLayer.AboveAll);
+            Main.spriteBatch.End();
+
             orig(self, time);
         }
 
@@ -52,6 +60,10 @@ namespace OvermorrowMod.Core.Particles
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             //Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.ZoomMatrix);
             ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.BehindProjectiles);
+            Main.spriteBatch.End();
+
+            Main.spriteBatch.Begin(default, BlendState.Additive, SamplerState.PointWrap, default, RasterizerState.CullNone, default, Main.GameViewMatrix.TransformationMatrix);
+            ParticleManager.DrawAdditive(Main.spriteBatch, ParticleDrawLayer.BehindProjectiles);
             Main.spriteBatch.End();
 
             orig(self);
