@@ -68,6 +68,11 @@ Buffs: {
 		DisplayName: Chiaroscuro Stance
 		Description: Mods.OvermorrowMod.Buffs.ChiaroscuroStance.Description
 	}
+
+	BlackEchoes: {
+		DisplayName: Black Echoes
+		Description: Mods.OvermorrowMod.Buffs.BlackEchoes.Description
+	}
 }
 
 TooltipEntities: {
