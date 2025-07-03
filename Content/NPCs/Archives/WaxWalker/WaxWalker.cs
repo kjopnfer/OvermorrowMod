@@ -28,6 +28,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 19;
+            ItemID.Sets.KillsToBanner[Type] = 5;
 
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -382,7 +383,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 10));
-            base.ModifyNPCLoot(npcLoot);
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneGreen>(), chanceDenominator: 4));
         }
     }
 }

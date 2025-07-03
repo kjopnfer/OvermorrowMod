@@ -32,6 +32,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => (AICase)AIState != AICase.Hidden;
         public override void SetStaticDefaults()
         {
+            ItemID.Sets.KillsToBanner[Type] = 5;
+
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Hide = true

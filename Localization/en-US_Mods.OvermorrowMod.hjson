@@ -73,6 +73,11 @@ Buffs: {
 		DisplayName: Black Echoes
 		Description: Mods.OvermorrowMod.Buffs.BlackEchoes.Description
 	}
+
+	ShadowBrand: {
+		DisplayName: Shadow Brand
+		Description: Mods.OvermorrowMod.Buffs.ShadowBrand.Description
+	}
 }
 
 TooltipEntities: {
@@ -400,6 +405,35 @@ Items: {
 			- While active, you will not spawn new <Projectile:Twinshades>.
 			'''
 		Flavor: Light reveals form. Shadow gives it meaning.
+	}
+
+	BlackPage: {
+		DisplayName: Black Page
+		Tooltip: ""
+	}
+
+	ChaosDiamond: {
+		DisplayName: Aetherion
+		Tooltip: ""
+		Flavor: Impossible to forge, impossible to replicate.
+	}
+
+	MonkeyStoneBlue: {
+		DisplayName: Miranth
+		Tooltip: ""
+		Flavor: Fragile and fleeting, yet sought after for reasons no scholar can explain.
+	}
+
+	MonkeyStoneGreen: {
+		DisplayName: Sylvite
+		Tooltip: ""
+		Flavor: Sought by collectors and sages alike for the promise it holds.
+	}
+
+	MonkeyStoneOrange: {
+		DisplayName: Solenith
+		Tooltip: ""
+		Flavor: Power radiates from within, unstable and unpredictable.
 	}
 }
 
