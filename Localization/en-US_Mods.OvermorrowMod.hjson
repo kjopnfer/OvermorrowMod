@@ -81,6 +81,25 @@ Buffs: {
 }
 
 TooltipEntities: {
+	Shadowbrand: {
+		DisplayName: Shadowbrand
+
+		Description: {
+			Line0: + Minions deal an additional 5 summon tag damage
+			Line1: + On target death, spawn 2 <Projectile:Black Echoes>
+		}
+	}
+
+	BlackEchoes: {
+		DisplayName: Black Echoes
+
+		Description: {
+			Line0: + Idles near the player and attacks all nearby enemies
+			Line1: + Whenever you gain another <Projectile:Black Echo>, refresh this minion's expiration time
+			Line2: + Does not take any minion slots
+		}
+	}
+
 	CandleBurst: {
 		DisplayName: Candle Burst
 
@@ -408,8 +427,13 @@ Items: {
 	}
 
 	BlackPage: {
-		DisplayName: Black Page
-		Tooltip: ""
+		DisplayName: The Black Page
+		Tooltip: 
+			'''
+			{Keyword:Strike}: Whips have a 20% chance to inflict <Debuff:Shadowbrand>
+			Enemies that die with <Debuff:Shadowbrand> spawn 2 <Projectile:Black Echoes>
+			'''
+		Flavor: YOU SHOULDN'T BE READING THIS
 	}
 
 	ChaosDiamond: {

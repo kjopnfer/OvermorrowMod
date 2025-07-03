@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Items.Archives;
+using OvermorrowMod.Content.Items.Archives.Accessories;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Particles;
@@ -25,6 +26,7 @@ namespace OvermorrowMod.Core.Globals
         /// </summary>
         public float AggroLossBonus = 0;
 
+        public bool BlackPage = false;
         public bool CandlelitSanctuary = false;
         public bool WarriorsEpic = false;
         public bool WhitePage = false;
@@ -42,6 +44,7 @@ namespace OvermorrowMod.Core.Globals
             if (!Player.HasBuff<WarriorsResolve>())
                 WarriorsResolveTriggered = false;
 
+            BlackPage = false;
             CandlelitSanctuary = false;
             WarriorsEpic = false;
             WhitePage = false;

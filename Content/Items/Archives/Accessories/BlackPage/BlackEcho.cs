@@ -84,7 +84,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     Projectile.rotation = 0f;
                     break;
                 case (int)AIStates.Alert:
-                    Main.NewText("alerted");
                     AlertState(owner);
                     break;
                 case (int)AIStates.Attack:
