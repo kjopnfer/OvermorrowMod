@@ -44,26 +44,33 @@ namespace OvermorrowMod.Core.Items
             float yOffset = 0;
             foreach (var tooltip in tooltips)
             {
-                float height = CalculateTooltipHeight(tooltip);
-                Vector2 position = CalculateTooltipPosition(x, y, yOffset, widestLine, height);
+                Vector2 position = new Vector2(x, y + yOffset);
+
+                // Calculate position with proper offset handling
+                float containerOffset = ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X;
+                position += new Vector2(containerOffset + 30, 0);
+
+                // Adjust for screen edges
+                if (Main.MouseScreen.X > Main.screenWidth / 2)
+                    position = new Vector2(x, y + yOffset) - new Vector2(360, 0);
+
+                float actualHeight = 0;
 
                 if (tooltip is SetBonusTooltip setBonus)
                 {
-                    DrawSetBonusTooltip(spriteBatch, setBonus, position, height, Color.White);
+                    actualHeight = DrawSetBonusTooltip(spriteBatch, setBonus, position, Color.White);
                 }
                 else if (tooltip is ProjectileTooltip projectileTooltip)
                 {
-                    DrawProjectileTooltip(spriteBatch, projectileTooltip, position, height);
+                    actualHeight = DrawProjectileTooltip(spriteBatch, projectileTooltip, position);
                 }
                 else if (tooltip is BuffTooltip buffTooltip)
                 {
-                    DrawBuffTooltip(spriteBatch, buffTooltip, position, height);
-
-                    // uhh i dont know how to fix it in the other code and im too lazy to
-                    yOffset += 11;
+                    actualHeight = DrawBuffTooltip(spriteBatch, buffTooltip, position);
                 }
 
-                yOffset += height + 5;
+                // Use the actual height returned from drawing methods
+                yOffset += actualHeight + 15;
             }
         }
 
@@ -96,7 +103,7 @@ namespace OvermorrowMod.Core.Items
 
         #region Specific Tooltip Drawing
 
-        public static void DrawSetBonusTooltip(SpriteBatch spriteBatch, SetBonusTooltip setBonus, Vector2 containerPosition, float height, Color primaryColor)
+        public static float DrawSetBonusTooltip(SpriteBatch spriteBatch, SetBonusTooltip setBonus, Vector2 containerPosition, Color primaryColor)
         {
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.Title, new Vector2(1.25f));
             var setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetName, Vector2.One) + new Vector2(8, 0);
@@ -133,6 +140,8 @@ namespace OvermorrowMod.Core.Items
 
             actualTotalHeight += TooltipConfiguration.BOTTOM_PADDING;
 
+            containerPosition = AdjustPositionForOverflow(containerPosition, actualTotalHeight);
+
             Utils.DrawInvBG(spriteBatch,
                 new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10,
                 (int)TooltipConfiguration.CONTAINER_WIDTH, (int)actualTotalHeight),
@@ -167,9 +176,11 @@ namespace OvermorrowMod.Core.Items
 
             DrawDivider(spriteBatch, containerPosition, (int)setItemsStartY);
             DrawSetItems(spriteBatch, setBonus, containerPosition, setBonusTitleLength, setItemsStartY + 8);
+
+            return actualTotalHeight;
         }
 
-        public static void DrawProjectileTooltip(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition, float height)
+        public static float DrawProjectileTooltip(SpriteBatch spriteBatch, ProjectileTooltip projectileTooltip, Vector2 containerPosition)
         {
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Title, new Vector2(1.25f));
             var subtitleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), Vector2.One);
@@ -244,9 +255,11 @@ namespace OvermorrowMod.Core.Items
             }
 
             DrawProjectileStats(spriteBatch, projectileTooltip, containerPosition, currentDescriptionY);
+
+            return actualTotalHeight;
         }
 
-        public static void DrawBuffTooltip(SpriteBatch spriteBatch, BuffTooltip buffTooltip, Vector2 containerPosition, float height)
+        public static float DrawBuffTooltip(SpriteBatch spriteBatch, BuffTooltip buffTooltip, Vector2 containerPosition)
         {
             var titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.Title, new Vector2(1.25f));
             var subtitleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.Type.ToString(), Vector2.One);
@@ -325,6 +338,8 @@ namespace OvermorrowMod.Core.Items
 
             DrawDivider(spriteBatch, containerPosition, (int)currentDescriptionY);
             DrawBuffStats(spriteBatch, buffTooltip, containerPosition, currentDescriptionY);
+
+            return actualTotalHeight;
         }
 
         private static void DrawKeywordTooltip(SpriteBatch spriteBatch, string keyword, Vector2 position, float height)
