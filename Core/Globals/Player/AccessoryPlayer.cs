@@ -67,44 +67,13 @@ namespace OvermorrowMod.Core.Globals
         {
             if (drawInfo.shadow == 0)
             {
-                if (Player.HasBuff<WarriorsResolve>() && !WarriorsResolveTriggered)
-                {
-                    Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/trace_05").Value;
-                    var aura = new Spark(texture, ModUtils.SecondsToTicks(Main.rand.NextFloat(0.7f, 1f)), false) {
-                        endColor = Color.DarkRed,
-                        slowModifier = 0.98f,
-                        squashHeight = false 
-                    };
-
-                    int delay = (int)(Main.rand.NextFloat(0.5f, 0.7f) * 15);
-                    if (Main.GameUpdateCount % delay == 0 && !Main.gamePaused)
-                    {
-                        var widthRange = Player.width + 8;
-                        var heightRange = Player.height - 4;
-
-                        int randomIterations = 2;
-                        for (int i = 0; i < randomIterations; i++)
-                        {
-                            float randomScale = Main.rand.NextFloat(0.1f, 0.2f);
-                            int stepSize = 2; // Random step size between 4-5
-                            int maxXSteps = widthRange / stepSize;
-                            int maxYSteps = heightRange / stepSize;
-
-                            Vector2 offset = new Vector2(
-                                Main.rand.Next(-maxXSteps, maxXSteps + 1) * stepSize,
-                                Main.rand.Next(-maxYSteps, 1) * stepSize
-                            );
-
-                            ParticleManager.CreateParticleDirect(aura, Player.Bottom + offset, -Vector2.UnitY * Main.rand.Next(3, 4), Color.Red, 1f, randomScale, 0f, useAdditiveBlending: true);
-                        }
-                    }
-                }
+                Content.Items.Accessories.WarriorsEpic.DrawEffects(Player, drawInfo, ref r, ref g, ref b, ref a, ref fullBright);
             }
         }
 
         public override void UpdateEquips()
         {
-            VigorEffects();
+            Content.Items.Accessories.WarriorsEpic.WarriorsEpicEffect(Player);
 
             if (Player.HasBuff<WarriorsResolve>() && !WarriorsResolveTriggered)
             {
@@ -114,7 +83,7 @@ namespace OvermorrowMod.Core.Globals
 
         public override void PostUpdateBuffs()
         {
-            
+
         }
 
         public override void PostUpdate()
@@ -183,15 +152,7 @@ namespace OvermorrowMod.Core.Globals
             OnKillEffects(target);
         }
 
-        private void VigorEffects()
-        {
-            if (Player.statLife < Player.statLifeMax2 * 0.8f) return;
 
-            if (WarriorsEpic)
-            {
-                Player.GetDamage(DamageClass.Melee) += 0.15f; // 15% damage bonus if at or above 80% health
-            }
-        }
 
         private void OnHitEffects(NPC npc)
         {

@@ -1,4 +1,10 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,6 +19,39 @@ namespace OvermorrowMod.Content.Buffs
         public override void SetStaticDefaults()
         {
             BuffID.Sets.IsATagBuff[Type] = true;
+        }
+
+
+        public static void DrawEffects(NPC npc, ref Color drawColor)
+        {
+            if (Main.gamePaused) return;
+
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/spotlight").Value;
+            int widthRange = npc.width + 8;
+            int heightRange = npc.height - 4;
+            int stepSize = 2;
+            int maxXSteps = widthRange / stepSize;
+            int maxYSteps = heightRange / stepSize;
+
+            if (Main.rand.NextBool())
+            {
+                Vector2 offset = new Vector2(
+                    Main.rand.Next(-maxXSteps, maxXSteps + 1) * stepSize,
+                    Main.rand.Next(-maxYSteps, 1) * stepSize
+                );
+
+                var aura = new Spark(texture, ModUtils.SecondsToTicks(Main.rand.NextFloat(0.7f, 1f)), false)
+                {
+                    endColor = Color.Red,
+                    slowModifier = 0.98f,
+                    squashHeight = false
+                };
+
+                float scale = Main.rand.NextFloat(0.1f, 0.2f);
+                Vector2 velocity = -Vector2.UnitY * Main.rand.Next(3, 4);
+
+                ParticleManager.CreateParticleDirect(aura, npc.Bottom + offset, velocity, Color.Black, 1f, scale, 0f, useAdditiveBlending: false);
+            }
         }
     }
 }

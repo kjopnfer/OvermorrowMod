@@ -118,11 +118,11 @@ namespace OvermorrowMod.Content.Particles
             spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
                 particle.color * finalAlpha * 0.7f, particle.rotation, origin, particle.scale * 0.7f, SpriteEffects.None, 0f);
 
-            if (Main.rand.NextBool())
-            {
-                spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
-                    particle.color * finalAlpha * 0.4f, particle.rotation, origin, particle.scale * 2f, SpriteEffects.None, 0f);
-            }
+            //if (Main.rand.NextBool())
+            //{
+            //    spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
+            //        particle.color * finalAlpha * 0.4f, particle.rotation, origin, particle.scale * 2f, SpriteEffects.None, 0f);
+            //}
         }
     }
 }

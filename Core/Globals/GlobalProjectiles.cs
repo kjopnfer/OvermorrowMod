@@ -13,6 +13,7 @@ namespace OvermorrowMod.Core.Globals
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             WhitePage.TryApplyStellarCorona(projectile, target);
+            BlackPage.TryApplyShadowBrand(projectile, target);
         }
     }
 }

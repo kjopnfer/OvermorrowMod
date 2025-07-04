@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetModPlayer<AccessoryPlayer>().WhitePage = true;
+            player.GetModPlayer<AccessoryPlayer>().BlackPage = true;
         }
 
         public static void TryApplyShadowBrand(Projectile projectile, NPC target)
@@ -64,29 +65,18 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             Player player = Main.player[projectile.owner];
             var accessoryPlayer = player.GetModPlayer<AccessoryPlayer>();
 
-            if (!accessoryPlayer.WhitePage || projectile.DamageType != DamageClass.Magic)
+            if (!accessoryPlayer.BlackPage || projectile.DamageType != DamageClass.SummonMeleeSpeed)
                 return;
 
             // 20% chance
-            if (Main.rand.NextFloat() > 0.20f)
-                return;
+            //if (Main.rand.NextFloat() > 0.20f)
+            //    return;
 
-            int coronaType = ModContent.ProjectileType<StellarCorona>();
-            int prominenceType = ModContent.ProjectileType<StellarProminence>();
+            var debuff = ModContent.BuffType<ShadowBrand>();
+            //if (!target.HasBuff(debuff))
+            Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<ShadowGrasp>(), 16, 0f, player.whoAmI, 0f, target.whoAmI);
 
-            // Prevent it from spawning itself somehow
-            if (projectile.type == coronaType || projectile.type == prominenceType)
-                return;
-
-            // Check if any active StellarCorona exists owned by this player
-            for (int i = 0; i < Main.maxProjectiles; i++)
-            {
-                Projectile proj = Main.projectile[i];
-                if (proj.active && proj.type == coronaType && proj.owner == player.whoAmI)
-                    return; // Already has a StellarCorona active
-            }
-
-            Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, coronaType, 16, 0f, player.whoAmI);
+            target.AddBuff(debuff, ModUtils.SecondsToTicks(10));
         }
     }
 }

@@ -428,7 +428,7 @@ Items: {
 
 	BlackPage: {
 		DisplayName: The Black Page
-		Tooltip: 
+		Tooltip:
 			'''
 			{Keyword:Strike}: Whips have a 20% chance to inflict <Debuff:Shadowbrand>
 			Enemies that die with <Debuff:Shadowbrand> spawn 2 <Projectile:Black Echoes>
@@ -534,4 +534,5 @@ Projectiles: {
 	ChiaroscuroShadow.DisplayName: Twinshade
 	ChiaroscuroStance.DisplayName: Chiaroscuro Form
 	BlackEcho.DisplayName: Black Echo
+	ShadowGrasp.DisplayName: Shadow Grasp
 }

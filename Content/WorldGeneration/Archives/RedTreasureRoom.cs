@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.Accessories.GuideLantern;
-using OvermorrowMod.Content.Items.Archives.Accessories;
+using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Tiles.Archives;
 using ReLogic.Content;
 using Terraria;
