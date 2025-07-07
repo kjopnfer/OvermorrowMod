@@ -459,6 +459,16 @@ Items: {
 		Tooltip: ""
 		Flavor: Power radiates from within, unstable and unpredictable.
 	}
+
+	ArtOfBallistics: {
+		DisplayName: Art Of Ballistics
+		Tooltip:
+			'''
+			Gain 4% Ranged critical strike chance
+			Ranged projectiles gain 2 penetration (excludes infinite pierce)
+			For each target hit, that projectile gains 15% crit chance and 5% damage
+			'''
+	}
 }
 
 NPCs: {
