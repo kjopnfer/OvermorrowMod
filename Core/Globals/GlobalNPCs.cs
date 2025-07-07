@@ -11,6 +11,8 @@ namespace OvermorrowMod.Core.Globals
     {
         public override bool InstancePerEntity => true;
 
+        public Player ShadowBrandOwner = null;
+
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             var projTagMultiplier = ProjectileID.Sets.SummonTagDamageMultiplier[projectile.type];
@@ -40,6 +42,11 @@ namespace OvermorrowMod.Core.Globals
             }
 
             base.DrawEffects(npc, ref drawColor);
+        }
+
+        public override void OnKill(NPC npc)
+        {
+            ShadowBrand.OnKill(npc);
         }
     }
 }

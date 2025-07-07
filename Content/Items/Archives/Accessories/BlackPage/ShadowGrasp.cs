@@ -61,9 +61,9 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     Projectile.frameCounter = 0;
                     Projectile.frame++;
 
-                    if (Projectile.frame == 7)
+                    if (Projectile.frame == 6 || Projectile.frame == 7)
                     {
-                        SpawnSmoke();
+                        SpawnSmoke(Projectile.Center);
                     }
 
                     if (Projectile.frame >= Main.projFrames[Projectile.type])
@@ -76,38 +76,41 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             }
         }
 
-        private void SpawnSmoke()
+        public static void SpawnSmoke(Vector2 position)
         {
             var smokeTextures = new Texture2D[] {
-                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_01", AssetRequestMode.ImmediateLoad).Value,
-                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_02", AssetRequestMode.ImmediateLoad).Value,
-                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_03", AssetRequestMode.ImmediateLoad).Value,
-                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_04", AssetRequestMode.ImmediateLoad).Value,
-                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_05", AssetRequestMode.ImmediateLoad).Value,
-                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_06", AssetRequestMode.ImmediateLoad).Value,
-                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_07", AssetRequestMode.ImmediateLoad).Value
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_01", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_02", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_03", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/flame_04", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/fire_01", AssetRequestMode.ImmediateLoad).Value,
+                ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/fire_02", AssetRequestMode.ImmediateLoad).Value,
+                //ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_05", AssetRequestMode.ImmediateLoad).Value,
+                //ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_06", AssetRequestMode.ImmediateLoad).Value,
+                //ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/smoke_07", AssetRequestMode.ImmediateLoad).Value
             };
 
             Color smokeColor = Color.Black;
             Vector2 velocity = Vector2.UnitY * 3;
-            float spreadAngle = 40f;
-            float velocityScale = 0.55f;
+            float spreadAngle = 180f;
+            float velocityScale = 0.25f;
             var count = 30;
             for (int i = 0; i < count; i++)
             {
-                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.025f, velocityScale))
+                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.005f, velocityScale))
                     .RotatedByRandom(MathHelper.ToRadians(spreadAngle));
 
                 var smoke = new Gas(smokeTextures, ModUtils.SecondsToTicks(Main.rand.NextFloat(0.6f, 1.1f)), scaleOverride: Main.rand.NextFloat(0.3f, 0.6f))
                 {
                     gasBehavior = GasBehavior.Grow,
                     driftsUpward = true,
+                    driftRate = 0.05f,
                     rotatesOverTime = true,
                     scaleRate = 0.005f,
-                    customAlpha = 0.85f
+                    customAlpha = 0.75f,
                 };
 
-                ParticleManager.CreateParticleDirect(smoke, Projectile.Center, particleVelocity, smokeColor, 1f, scale: 0.05f, 0f);
+                ParticleManager.CreateParticleDirect(smoke, position, particleVelocity, smokeColor, 1f, scale: 0.05f, 0f);
             }
         }
 

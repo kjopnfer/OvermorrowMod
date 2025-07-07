@@ -37,6 +37,7 @@ namespace OvermorrowMod.Content.Particles
         public GasBehavior gasBehavior = GasBehavior.Grow;
         public bool rotatesOverTime = false;
         public bool driftsUpward = false;
+        public float driftRate = 0.1f;
         public float scaleRate = 0.005f;
         public float customAlpha = 1f;
         public float lightIntensity = 0.5f;
@@ -78,7 +79,7 @@ namespace OvermorrowMod.Content.Particles
             if (driftsUpward)
             {
                 // Smoke movement - rises upward
-                particle.velocity.Y -= 0.1f;
+                particle.velocity.Y -= driftRate;
             }
 
             if (rotatesOverTime)

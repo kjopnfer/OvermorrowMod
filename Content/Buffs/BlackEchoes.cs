@@ -11,20 +11,12 @@ namespace OvermorrowMod.Content.Buffs
         public override void SetStaticDefaults()
         {
             Main.buffNoSave[Type] = true;
-            Main.buffNoTimeDisplay[Type] = true;
+            Main.buffNoTimeDisplay[Type] = false;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<BlackEcho>()] > 0)
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-            else
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
+
         }
     }
 }

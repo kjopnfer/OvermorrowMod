@@ -2,7 +2,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items.Archives.Accessories;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.ID;
@@ -20,7 +22,6 @@ namespace OvermorrowMod.Content.Buffs
         {
             BuffID.Sets.IsATagBuff[Type] = true;
         }
-
 
         public static void DrawEffects(NPC npc, ref Color drawColor)
         {
@@ -51,6 +52,24 @@ namespace OvermorrowMod.Content.Buffs
                 Vector2 velocity = -Vector2.UnitY * Main.rand.Next(3, 4);
 
                 ParticleManager.CreateParticleDirect(aura, npc.Bottom + offset, velocity, Color.Black, 1f, scale, 0f, useAdditiveBlending: false);
+            }
+        }
+
+        public static void OnKill(NPC npc)
+        {
+            if (!npc.HasBuff(ModContent.BuffType<ShadowBrand>())) return;
+
+            ShadowGrasp.SpawnSmoke(npc.Center);
+            var modNPC = npc.GetGlobalNPC<GlobalNPCs>();
+            var owner = modNPC.ShadowBrandOwner;
+
+            owner.AddBuff(ModContent.BuffType<BlackEchoes>(), ModUtils.SecondsToTicks(10));
+            for (int i = 0; i < 2; i++)
+            {
+                float xDirection = (i == 0) ? -3f : 3f;
+                Vector2 velocity = new Vector2(xDirection, -Main.rand.Next(2, 3));
+
+                Projectile.NewProjectile(npc.GetSource_Death(), npc.Center, velocity, ModContent.ProjectileType<BlackEcho>(), 16, 1f, owner.whoAmI, ai0: (int)BlackEcho.AIStates.Spawned);
             }
         }
     }

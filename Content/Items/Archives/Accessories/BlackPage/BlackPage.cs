@@ -69,14 +69,17 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 return;
 
             // 20% chance
-            //if (Main.rand.NextFloat() > 0.20f)
-            //    return;
+            if (Main.rand.NextFloat() > 0.20f)
+                return;
 
             var debuff = ModContent.BuffType<ShadowBrand>();
-            //if (!target.HasBuff(debuff))
-            Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<ShadowGrasp>(), 16, 0f, player.whoAmI, 0f, target.whoAmI);
+            if (!target.HasBuff(debuff))
+                Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<ShadowGrasp>(), 16, 0f, player.whoAmI, 0f, target.whoAmI);
 
             target.AddBuff(debuff, ModUtils.SecondsToTicks(10));
+
+            var modNPC = target.GetGlobalNPC<GlobalNPCs>();
+            modNPC.ShadowBrandOwner = player;
         }
     }
 }

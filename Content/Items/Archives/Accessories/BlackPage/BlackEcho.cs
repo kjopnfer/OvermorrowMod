@@ -52,18 +52,16 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public enum AIStates
         {
+            Spawned = -1,
             Idle = 0,
             Alert = 1,
             Attack = 2
         }
 
         public ref float AIState => ref Projectile.ai[0];
-        public ref float AITimer => ref Projectile.ai[1];
+        public ref float AICounter => ref Projectile.ai[1];
         public override void AI()
         {
-            Projectile.owner = Main.LocalPlayer.whoAmI;
-            Projectile.damage = 15;
-
             Player owner = Main.player[Projectile.owner];
             if (owner.dead || !owner.active)
             {
@@ -75,10 +73,19 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 Projectile.timeLeft = 2;
             }
 
-            Projectile.timeLeft = 5;
+            //Projectile.timeLeft = 5;
 
             switch (AIState)
             {
+                case (int)AIStates.Spawned:
+                    Projectile.velocity *= 0.99f;
+
+                    if (AICounter++ > 60)
+                    {
+                        AICounter = 0;
+                        AIState = (int)AIStates.Idle;
+                    }
+                    break;
                 case (int)AIStates.Idle:
                     IdleState(owner);
                     Projectile.rotation = 0f;
@@ -98,7 +105,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     Vector2 velocity = Projectile.Center - previousCenter;
                     previousCenter = Projectile.Center;
                     break;
-            } 
+            }
 
             return;
 
@@ -138,7 +145,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             if (SearchForTargets(owner, out bool foundTarget, out float distanceFromTarget, out Vector2 targetCenter))
             {
                 AIState = (int)AIStates.Alert;
-                AITimer = 0;
+                AICounter = 0;
                 return;
             }
 
@@ -148,13 +155,13 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         private void AlertState(Player owner)
         {
-            AITimer++;
+            AICounter++;
 
             // Just play animation and transition, no movement or target searching
-            if (AITimer >= 60)
+            if (AICounter >= 60)
             {
                 AIState = (int)AIStates.Attack;
-                AITimer = 0;
+                AICounter = 0;
             }
 
             Projectile.friendly = false;
@@ -173,7 +180,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             {
                 // No target found, return to idle
                 AIState = (int)AIStates.Idle;
-                AITimer = 0;
+                AICounter = 0;
                 Projectile.friendly = false;
             }
         }
@@ -317,7 +324,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             }
         }
 
-        private void DrawTentacle(Vector2 center, Texture2D texture, Effect effect = null, float segmentSpacing = 5f, float baseWidth = 32f)
+        private void DrawEyeTrail(Vector2 center, Texture2D texture, Effect effect = null, float segmentSpacing = 5f, float baseWidth = 32f)
         {
             if (Projectile.oldPos.Length < 2) return;
 
@@ -429,6 +436,11 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
+        public override void OnKill(int timeLeft)
+        {
+            ShadowGrasp.SpawnSmoke(Projectile.Center);
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
@@ -440,16 +452,16 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             {
                 case (int)AIStates.Alert:
                     frame = 1;
-                    if (AITimer > 10)
+                    if (AICounter > 10)
                     {
                         // Calculate shake intensity that increases then decreases
-                        float shakeProgress = (AITimer - 10f) / 50f; // 50 ticks from start to end of alert
+                        float shakeProgress = (AICounter - 10f) / 50f; // 50 ticks from start to end of alert
                         float intensityCurve = (float)(Math.Sin(shakeProgress * Math.PI)); // Creates 0 -> 1 -> 0 curve
                         float maxShakeIntensity = MathHelper.ToRadians(30f);
                         float currentIntensity = intensityCurve * maxShakeIntensity;
 
                         float shakeSpeed = 0.8f;
-                        float shakeOffset = (float)Math.Sin(AITimer * shakeSpeed) * currentIntensity;
+                        float shakeOffset = (float)Math.Sin(AICounter * shakeSpeed) * currentIntensity;
                         rotation += shakeOffset;
                     }
                     break;
@@ -470,7 +482,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             if (AIState == (int)AIStates.Attack)
             {
                 Texture2D trailTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
-                DrawTentacle(Projectile.Center, trailTexture, null, segmentSpacing: 8f, baseWidth: 16f);
+                DrawEyeTrail(Projectile.Center, trailTexture, null, segmentSpacing: 8f, baseWidth: 16f);
             }
 
             return false;
