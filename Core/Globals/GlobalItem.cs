@@ -12,6 +12,11 @@ namespace OvermorrowMod.Core.Globals
             {
                 player.GetModPlayer<BowPlayer>().AddBowModifier(bowModifier);
             }
+
+            if (item.ModItem is IBowDrawEffects drawEffects)
+            {
+                player.GetModPlayer<BowPlayer>().AddBowDrawEffect(drawEffects);
+            }
         }
     }
 }

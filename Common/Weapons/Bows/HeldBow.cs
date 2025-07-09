@@ -52,6 +52,11 @@ namespace OvermorrowMod.Common.Weapons.Bows
         public ref float drawCounter => ref Projectile.ai[0];
         public ref float delayCounter => ref Projectile.ai[1];
 
+        public virtual void DrawChargingEffects(SpriteBatch spriteBatch, float chargeProgress) { }
+        public virtual void DrawArrowEffects(SpriteBatch spriteBatch, Vector2 arrowPosition, float chargeProgress) { }
+        public virtual void DrawBowEffects(SpriteBatch spriteBatch, Vector2 bowPosition, float chargeProgress) { }
+        public virtual void UpdateChargingEffects(float chargeProgress) { }
+        public virtual void UpdatePowerShotReadyEffects() { }
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
@@ -62,11 +67,21 @@ namespace OvermorrowMod.Common.Weapons.Bows
 
             player.heldProj = Projectile.whoAmI;
 
-            // Update stats every frame to account for changing modifiers
             currentStats = BowModifierHandler.GetModifiedStats(baseStats, player);
 
             HandlePlayerDrawing();
             HandleBowUse();
+
+            if (drawCounter > 0)
+            {
+                float chargeProgress = Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime;
+                UpdateChargingEffects(chargeProgress);
+
+                if (drawCounter >= ModifiedChargeTime)
+                {
+                    UpdatePowerShotReadyEffects();
+                }
+            }
         }
 
         //private float PracticeTargetModifier => currentStats.MaxChargeTime * (0.05f * player.GetModPlayer<BowPlayer>().PracticeTargetCounter);
@@ -244,8 +259,44 @@ namespace OvermorrowMod.Common.Weapons.Bows
 
         public override bool PreDraw(ref Color lightColor)
         {
+            float chargeProgress = Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime;
+
             DrawBow(lightColor);
             DrawArrow(lightColor);
+
+            // Draw bow-specific effects first
+            DrawBowEffects(Main.spriteBatch, Projectile.Center, chargeProgress);
+
+            // Draw arrow-specific effects
+            if (LoadedArrowItemType != -1)
+            {
+                Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
+                Vector2 arrowPosition = player.MountedCenter + arrowOffset;
+
+                DrawArrowEffects(Main.spriteBatch, arrowPosition, chargeProgress);
+            }
+
+            // Draw charging effects
+            if (drawCounter > 0)
+            {
+                DrawChargingEffects(Main.spriteBatch, chargeProgress);
+            }
+
+            // Draw all global and accessory effects LAST (so they appear on top)
+            BowDrawEffectsHandler.DrawAllBowEffects(this, player, Main.spriteBatch, Projectile.Center, chargeProgress);
+
+            if (LoadedArrowItemType != -1)
+            {
+                Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
+                Vector2 arrowPosition = player.MountedCenter + arrowOffset;
+                BowDrawEffectsHandler.DrawAllArrowEffects(this, player, Main.spriteBatch, arrowPosition, chargeProgress);
+            }
+
+            if (drawCounter > 0)
+            {
+                BowDrawEffectsHandler.DrawAllChargingEffects(this, player, Main.spriteBatch, chargeProgress);
+            }
+
             return false;
         }
 
