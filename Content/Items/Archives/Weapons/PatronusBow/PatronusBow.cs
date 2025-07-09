@@ -4,6 +4,7 @@ using OvermorrowMod.Common.Weapons.Bows;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Items.Bows;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,6 +27,56 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 PositionOffset = new Vector2(12, 0),
                 StringPositions = (new Vector2(-4, 18), new Vector2(-4, -16))
             };
+        }
+
+        protected override int GetArrowTypeForShot(int defaultArrowType, bool isPowerShot)
+        {
+            if (isPowerShot)
+            {
+                return ProjectileID.FireArrow;
+                //return ModContent.ProjectileType<PatronusSpecialArrow>();
+            }
+
+            return base.GetArrowTypeForShot(defaultArrowType, isPowerShot);
+        }
+
+        protected override void OnArrowFired(Projectile arrow, bool isPowerShot)
+        {
+            if (!isPowerShot)
+            {
+                int spreadCount = 2;
+                float spreadAngle = 15f;
+
+                Vector2 baseVelocity = arrow.velocity;
+                float baseSpeed = baseVelocity.Length();
+                Vector2 direction = Vector2.Normalize(baseVelocity);
+
+                for (int i = 1; i <= spreadCount; i++)
+                {
+                    Vector2 leftVelocity = direction.RotatedBy(MathHelper.ToRadians(-spreadAngle * i)) * baseSpeed;
+                    Projectile.NewProjectile(
+                        arrow.GetSource_FromThis(),
+                        arrow.position,
+                        leftVelocity,
+                        arrow.type,
+                        arrow.damage,
+                        arrow.knockBack,
+                        arrow.owner
+                    );
+
+                    Vector2 rightVelocity = direction.RotatedBy(MathHelper.ToRadians(spreadAngle * i)) * baseSpeed;
+                    Projectile.NewProjectile(
+                        arrow.GetSource_FromThis(),
+                        arrow.position,
+                        rightVelocity,
+                        arrow.type,
+                        arrow.damage,
+                        arrow.knockBack,
+                        arrow.owner
+                    );
+                }
+            }
+            base.OnArrowFired(arrow, isPowerShot);
         }
     }
 

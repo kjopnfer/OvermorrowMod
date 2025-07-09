@@ -21,11 +21,24 @@ namespace OvermorrowMod.Common.Weapons.Bows
         protected BowStats currentStats;
         protected BowStats baseStats;
 
+        /// <summary>
+        /// Defines the base statistics for this bow before any modifiers are applied.
+        /// Override this method to set the bow's default behavior and appearance.
+        /// </summary>
+        /// <returns>A BowStats instance containing the bow's base properties.</returns>
         public virtual BowStats GetBaseBowStats() => new BowStats();
         public virtual SoundStyle DrawbackSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/BowCharge");
         public virtual SoundStyle ShootSound => SoundID.Item5;
+
+        /// <summary>
+        /// The item type that creates this bow projectile. Used to determine when to despawn the projectile.
+        /// </summary>
         public abstract int ParentItem { get; }
 
+        /// <summary>
+        /// Override this method to set bow-specific defaults like damage type and size.
+        /// This is called after the base bow setup is complete.
+        /// </summary>
         public virtual void SafeSetDefaults() { }
 
         public sealed override void SetDefaults()
@@ -52,11 +65,66 @@ namespace OvermorrowMod.Common.Weapons.Bows
         public ref float drawCounter => ref Projectile.ai[0];
         public ref float delayCounter => ref Projectile.ai[1];
 
+        /// <summary>
+        /// Draws visual effects while the bow is being charged.
+        /// Override this method to add bow-specific charging effects like particles or glows.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to draw with.</param>
+        /// <param name="chargeProgress">Charging progress from 0.0 (not charged) to 1.0 (fully charged).</param>
         public virtual void DrawChargingEffects(SpriteBatch spriteBatch, float chargeProgress) { }
+
+        /// <summary>
+        /// Draws visual effects on the loaded arrow.
+        /// Override this method to add bow-specific arrow effects like trails or glows.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to draw with.</param>
+        /// <param name="arrowPosition">World position of the arrow.</param>
+        /// <param name="chargeProgress">Charging progress from 0.0 (not charged) to 1.0 (fully charged).</param>
         public virtual void DrawArrowEffects(SpriteBatch spriteBatch, Vector2 arrowPosition, float chargeProgress) { }
+
+        /// <summary>
+        /// Draws visual effects on the bow itself.
+        /// Override this method to add bow-specific effects like auras or overlays.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to draw with.</param>
+        /// <param name="bowPosition">World position of the bow.</param>
+        /// <param name="chargeProgress">Charging progress from 0.0 (not charged) to 1.0 (fully charged).</param>
         public virtual void DrawBowEffects(SpriteBatch spriteBatch, Vector2 bowPosition, float chargeProgress) { }
+
+        /// <summary>
+        /// Called every frame during AI updates while the bow is being charged.
+        /// Override this method to add particle effects, lighting, or other continuous charging effects.
+        /// </summary>
+        /// <param name="chargeProgress">Charging progress from 0.0 (not charged) to 1.0 (fully charged).</param>
         public virtual void UpdateChargingEffects(float chargeProgress) { }
+
+        /// <summary>
+        /// Called every frame during AI updates when the bow is fully charged and ready for a power shot.
+        /// Override this method to add continuous effects that indicate a power shot is ready.
+        /// </summary>
         public virtual void UpdatePowerShotReadyEffects() { }
+
+        /// <summary>
+        /// Determines which arrow type to fire based on the loaded arrow and shot conditions.
+        /// Override this method to customize arrow selection behavior for specific bows.
+        /// </summary>
+        /// <param name="defaultArrowType">The arrow type that would normally be fired based on loaded ammo</param>
+        /// <param name="isPowerShot">Whether this shot is a fully charged power shot</param>
+        /// <returns>The projectile type ID of the arrow to actually fire</returns>
+        protected virtual int GetArrowTypeForShot(int defaultArrowType, bool isPowerShot)
+        {
+            return defaultArrowType;
+        }
+
+        /// <summary>
+        /// Called immediately after an arrow projectile is created and configured.
+        /// Override this method to add custom behavior like firing additional arrows,
+        /// applying special effects, or modifying the fired arrow's properties.
+        /// </summary>
+        /// <param name="arrow">The arrow projectile that was just created</param>
+        /// <param name="isPowerShot">Whether this shot was a fully charged power shot</param>
+        protected virtual void OnArrowFired(Projectile arrow, bool isPowerShot) { }
+
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
@@ -87,6 +155,9 @@ namespace OvermorrowMod.Common.Weapons.Bows
         //private float PracticeTargetModifier => currentStats.MaxChargeTime * (0.05f * player.GetModPlayer<BowPlayer>().PracticeTargetCounter);
         private int ModifiedChargeTime => (int)Math.Ceiling(currentStats.MaxChargeTime < 6 ? 6 : currentStats.MaxChargeTime);
 
+        /// <summary>
+        /// Handles player arm positioning and bow rotation based on mouse position.
+        /// </summary>
         private void HandlePlayerDrawing()
         {
             float bowRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation();
@@ -105,6 +176,9 @@ namespace OvermorrowMod.Common.Weapons.Bows
             player.SetCompositeArmFront(true, stretchAmount, Projectile.rotation - MathHelper.PiOver2);
         }
 
+        /// <summary>
+        /// Handles bow charging, firing, and delay mechanics.
+        /// </summary>
         private void HandleBowUse()
         {
             if (delayCounter > 0) delayCounter--;
@@ -147,8 +221,13 @@ namespace OvermorrowMod.Common.Weapons.Bows
             }
         }
 
+        /// <summary>
+        /// Handles arrow firing, damage calculation, and effect triggering.
+        /// </summary>
         private void ShootArrow()
         {
+            bool isPowerShot = IsPowerShot();
+
             float progress = Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime;
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, progress).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.Center + arrowOffset;
@@ -160,12 +239,17 @@ namespace OvermorrowMod.Common.Weapons.Bows
 
             float damage = MathHelper.Lerp(0.25f, 1, Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime) * Projectile.damage * currentStats.DamageMultiplier;
 
-            float speedBonus = IsPowerShot() ? 1.5f : 1f;
-            int arrow = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed * speedBonus, LoadedArrowType, (int)damage, Projectile.knockBack * currentStats.KnockbackMultiplier, player.whoAmI);
+            float speedBonus = isPowerShot ? 1.5f : 1f;
+
+            // Allow derived classes to override arrow type selection
+            int finalArrowType = GetArrowTypeForShot(LoadedArrowType, isPowerShot);
+
+            // Create the main arrow projectile
+            int arrow = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, finalArrowType, "HeldBow"), arrowPosition, velocity * speed * speedBonus, finalArrowType, (int)damage, Projectile.knockBack * currentStats.KnockbackMultiplier, player.whoAmI);
 
             Projectile arrowProjectile = Main.projectile[arrow];
 
-            if (IsPowerShot())
+            if (isPowerShot)
             {
                 BowModifierHandler.TriggerPowerShot(this, player);
 
@@ -187,12 +271,19 @@ namespace OvermorrowMod.Common.Weapons.Bows
             }
 
             BowModifierHandler.TriggerArrowFired(this, player, arrowProjectile);
+
+            // Allow derived classes to add custom behavior after arrow creation
+            OnArrowFired(arrowProjectile, isPowerShot);
+
             ConsumeAmmo();
 
             delayCounter = currentStats.ShootDelay;
             LoadedArrowItemType = -1;
         }
 
+        /// <summary>
+        /// Consumes ammo from the player's inventory if allowed by current stats.
+        /// </summary>
         private void ConsumeAmmo()
         {
             if (!currentStats.CanConsumeAmmo) return;
@@ -201,6 +292,10 @@ namespace OvermorrowMod.Common.Weapons.Bows
                 player.inventory[AmmoSlotID].stack--;
         }
 
+        /// <summary>
+        /// Searches the player's ammo slots for compatible arrows and loads them into the bow.
+        /// </summary>
+        /// <returns>True if ammo was found and loaded, false otherwise.</returns>
         private bool FindAmmo()
         {
             LoadedArrowItemType = -1;
@@ -255,6 +350,10 @@ namespace OvermorrowMod.Common.Weapons.Bows
             return LoadedArrowType;
         }
 
+        /// <summary>
+        /// Determines if the current shot will be a power shot based on charge time and flash counter.
+        /// </summary>
+        /// <returns>True if this shot is a power shot, false otherwise.</returns>
         private bool IsPowerShot() => flashCounter >= 6 && flashCounter <= 36;
 
         public override bool PreDraw(ref Color lightColor)
