@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs;
+using OvermorrowMod.Content.Items.Archives.Accessories;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,6 +31,18 @@ namespace OvermorrowMod.Core.Globals
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
+            if (WhitePage.HasStellarCorona(npc))
+            {
+                float brightnessFactor = 0.4f;
+
+                drawColor = new Color(
+                    (int)(drawColor.R * brightnessFactor),
+                    (int)(drawColor.G * brightnessFactor),
+                    (int)(drawColor.B * brightnessFactor),
+                    drawColor.A
+                );
+            }
+
             for (int i = 0; i < npc.buffType.Length; i++)
             {
                 if (npc.buffTime[i] > 0)
@@ -40,6 +53,9 @@ namespace OvermorrowMod.Core.Globals
                     }
                 }
             }
+
+            
+            
 
             base.DrawEffects(npc, ref drawColor);
         }

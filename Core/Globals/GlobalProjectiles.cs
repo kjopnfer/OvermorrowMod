@@ -8,6 +8,9 @@ namespace OvermorrowMod.Core.Globals
     public class GlobalProjectiles : GlobalProjectile
     {
         public override bool InstancePerEntity => true;
+
+        public bool IsPowerShot = false;
+
         public int ArtOfBallisticsHit = 0;
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
@@ -25,7 +28,10 @@ namespace OvermorrowMod.Core.Globals
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
         {
-            base.ModifyHitNPC(projectile, target, ref modifiers);
+            if (IsPowerShot)
+            {
+                modifiers.SourceDamage *= 1.25f;
+            }
         }
     }
 }
