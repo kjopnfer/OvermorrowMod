@@ -77,5 +77,23 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
             Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, coronaType, 20, 0f, player.whoAmI, 0f, target.whoAmI);
         }
+
+        public static bool HasStellarCorona(NPC npc)
+        {
+            int coronaType = ModContent.ProjectileType<StellarCorona>();
+
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile proj = Main.projectile[i];
+
+                if (proj.active && proj.type == coronaType && (int)proj.ai[1] == npc.whoAmI)
+                {
+                    return true; // NPC has a StellarCorona targeting it
+                }
+            }
+
+            return false; // No matching StellarCorona found
+        }
+
     }
 }

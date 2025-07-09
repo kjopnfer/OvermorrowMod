@@ -461,13 +461,19 @@ Items: {
 	}
 
 	ArtOfBallistics: {
-		DisplayName: Art Of Ballistics
+		DisplayName: Art Of Ballistics 3rd Edition
 		Tooltip:
 			'''
 			Gain 4% Ranged critical strike chance
 			Ranged projectiles gain 2 penetration (excludes infinite pierce)
 			For each target hit, that projectile gains 15% crit chance and 5% damage
 			'''
+		Flavor: Chapter 11: Cascading Damage Theory
+	}
+
+	PatronusBow: {
+		DisplayName: Patronus Bow
+		Tooltip: ""
 	}
 }
 
@@ -507,6 +513,7 @@ Bestiary: {
 	ClockworkSpider: Powered by a gravity core and precision gears, it crawls along floors and ceilings alike enabling it to patrol even the most vertically complex areas.
 	InkWorm: A slithering parasite that hides in bookshelves, lashing out with ink-covered tendrils to blind and attack unsuspecting intruders.
 	PlantBook: An ancient tome brought to life, this flying book summons vicious plants from its enchanted pages to protect its secrets from intruders.
+	WaxWalker: Wax Walkers march silently on stilted legs. Their candle heads never go out, and neither does their memory of intruders.
 }
 
 Projectiles: {
@@ -545,4 +552,5 @@ Projectiles: {
 	ChiaroscuroStance.DisplayName: Chiaroscuro Form
 	BlackEcho.DisplayName: Black Echo
 	ShadowGrasp.DisplayName: Shadow Grasp
+	PatronusBow_Held.DisplayName: Patronus Bow_ Held
 }
