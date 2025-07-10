@@ -2,8 +2,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Items.Guns;
+using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,27 +15,27 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
     {
         public override string Texture => AssetDirectory.Resprites + "Undertaker";
         public override int ParentItem => ItemID.TheUndertaker;
-        public override GunType GunType => GunType.Revolver;
+        public override WeaponType WeaponType => WeaponType.Revolver;
 
-        public override void SafeSetDefaults()
-        {
-            new GunBuilder(this)
-                .AsType(GunType.Revolver)
-                .WithMaxShots(4)
-                .WithReloadTime(60)
-                .WithRecoil(10)
-                .WithSound(SoundID.Item41)
-                .WithReloadZones((20, 45), (60, 85))
-                .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
-                .WithBulletPosition(new Vector2(15, 16), new Vector2(15, -6))
-                .WithScale(0.9f)
-                .Build();
-        }
+        public override GunStats BaseStats => new GunBuilder()
+            .AsRevolver()
+            .WithMaxShots(4)
+            .WithReloadTime(60)
+            .WithRecoil(10)
+            .WithShootSound(SoundID.Item41)
+            .WithClickZones((20, 45), (60, 85))
+            .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
+            .WithBulletShootPosition(new Vector2(15, 16), new Vector2(15, -6))
+            .WithProjectileScale(0.9f)
+            .Build();
 
-        public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
+        protected override List<int> OnGunShootCore(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
             string context = "HeldGun_Undertaker";
-            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
+            var bullet = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context),
+                shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
+
+            return new List<int> { bullet };
         }
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
@@ -56,7 +58,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             GunEffects.CreateSmoke(shootPosition, velocity);
         }
 
-        public override void OnReloadEnd(Player player)
+        protected override void OnReloadComplete(Player player, bool wasSuccessful)
         {
             for (int i = 0; i < 6; i++)
             {
@@ -65,15 +67,17 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             }
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
+        protected override void OnReloadSuccessCore(Player player)
         {
-            BonusAmmo = 2;
-            useTimeModifier = -10;
+            // Perfect reload gives 2 bonus ammo and faster fire rate
+            CurrentStats.BonusAmmo = 2;
+            CurrentStats.UseTimeModifier = -10;
         }
 
-        public override void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier)
+        protected override void OnReloadFailCore(Player player)
         {
-            BonusAmmo = -2;
+            // Failed reload reduces ammo by 2
+            CurrentStats.BonusAmmo = -2;
         }
     }
 }

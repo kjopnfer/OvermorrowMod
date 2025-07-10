@@ -12,26 +12,13 @@ using Terraria.Localization;
 
 namespace OvermorrowMod.Core.Globals
 {
-    public class GunStats
-    {
-        public int GunType;
-        public int GunDamage;
-        public GunType WeaponType;
-
-        public GunStats(int GunType, int GunDamage, GunType WeaponType)
-        {
-            this.GunType = GunType;
-            this.GunDamage = GunDamage;
-            this.WeaponType = WeaponType;
-        }
-    }
 
     // TODO: Generalize this to not only be guns
     public class GlobalGun : GlobalItem
     {
         public override bool InstancePerEntity => true;
 
-        public GunType GunType = GunType.None;
+        /*public GunType GunType = GunType.None;
 
         public Dictionary<int, GunStats> OverridedGuns = new Dictionary<int, GunStats>()
         {
@@ -61,13 +48,6 @@ namespace OvermorrowMod.Core.Globals
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
             int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
-            //if (GunType.ToString() != "None")
-            //    tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + "]"));
-            //if (GunType.ToString() != "None")
-            //    tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:bruh]"));
-
-            /*if (MeleeType.ToString() != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));*/
 
             if (OverridedGuns.ContainsKey(item.type))
             {
@@ -155,6 +135,6 @@ namespace OvermorrowMod.Core.Globals
             }
 
             return base.Shoot(item, player, source, position, velocity, type, damage, knockback);
-        }
+        }*/
     }
 }

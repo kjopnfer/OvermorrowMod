@@ -5,6 +5,8 @@ using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Items.Guns;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,27 +17,24 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
     {
         public override string Texture => AssetDirectory.ArchiveItems + "Farlander";
         public override int ParentItem => ModContent.GetInstance<Farlander>().Type;
-        public override GunType GunType => GunType.Sniper;
+        public override WeaponType WeaponType => WeaponType.Sniper;
 
-        public override void SafeSetDefaults()
-        {
-            new GunBuilder(this)
-                .AsType(GunType.Sniper)
-                .WithMaxShots(2)
-                .WithReloadTime(200)
-                .WithRecoil(10)
-                .WithSound(SoundID.Item41)
-                .WithReloadZones((45, 50))
-                .WithPositionOffset(new Vector2(28, -9), new Vector2(28, -2))
-                .WithBulletPosition(new Vector2(20, 18), new Vector2(26, -12))
-                .WithScale(0.95f)
-                .TwoHanded()
-                .CanRightClick()
-                .WithRightClickDelay(false)
-                .Build();
-        }
+        public override GunStats BaseStats => new GunBuilder()
+            .AsSniper()
+            .WithMaxShots(2)
+            .WithReloadTime(200)
+            .WithRecoil(10)
+            .WithShootSound(SoundID.Item41)
+            .WithClickZone(45, 50)
+            .WithPositionOffset(new Vector2(28, -9), new Vector2(28, -2))
+            .WithBulletShootPosition(new Vector2(20, 18), new Vector2(26, -12))
+            .WithProjectileScale(0.95f)
+            .WithTwoHanded()
+            .WithRightClick()
+            .WithRightClickDelay(false)
+            .Build();
 
-        public override void RightClickEvent(Player player, ref int BonusDamage, int baseDamage)
+        public override void RightClickEvent(Player player)
         {
             if (player.ownedProjectileCounts[ModContent.ProjectileType<FarlanderScope>()] < 1 && ShotsFired < MaxShots)
             {
@@ -43,7 +42,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             }
         }
 
-        public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
+        protected override List<int> OnGunShootCore(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
@@ -55,12 +54,15 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
             string action = gunPlayer.FarlanderCharge < 120 ? "_Farlander" : "_FarlanderPowerShot";
             int projectile = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun" + action), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
+            
             if (gunPlayer.FarlanderPierce)
             {
                 Main.projectile[projectile].penetrate++;
                 Main.projectile[projectile].usesLocalNPCImmunity = true;
                 Main.projectile[projectile].localNPCHitCooldown = -1;
             }
+
+            return new List<int> { projectile };
         }
 
         public override void Update(Player player)
@@ -71,7 +73,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             if (ShotsFired < MaxShots) player.scope = true;
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
+        protected override void OnReloadSuccessCore(Player player)
         {
             player.GetModPlayer<GunPlayer>().FarlanderPierce = true;
         }
@@ -98,28 +100,17 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets)
         {
-            Vector2 shootOffset = new Vector2(-40 * player.direction, 0);
+            Vector2 shootOffset = new(-40 * player.direction, 0);
 
             SpawnBulletCasing(Projectile, player, shootPosition, shootOffset);
             GunEffects.CreateSmoke(shootPosition, velocity);
         }
     }
 
-    public class Farlander : ModGun<FarlanderHeld>, IWeaponClassification
+    public class Farlander : ModGun<FarlanderHeld>
     {
-        public override GunType GunType => GunType.Sniper;
+        public override WeaponType WeaponType => WeaponType.Sniper;
         public override string Texture => AssetDirectory.ArchiveItems + Name;
-        public WeaponType WeaponType => WeaponType.Sniper;
-
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("Farlander");
-            /* Tooltip.SetDefault("{Keyword:Reload}: Your next clip gains 1 piercing\n" +
-                "{Keyword:Alt}: Increase view range and charge\n" +
-                "{Keyword:Focus}: Gain increased damage and accuracy\n" +
-                "Improves charge time for each enemy hit by a {Keyword:Focus} shot\n" +
-                "Charge bonus resets on miss"); */
-        }
 
         public override void SafeSetDefaults()
         {

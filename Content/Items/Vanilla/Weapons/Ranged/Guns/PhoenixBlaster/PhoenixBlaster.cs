@@ -5,8 +5,11 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Items.Guns;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -19,24 +22,20 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
     {
         public override string Texture => AssetDirectory.Resprites + "PhoenixBlaster";
         public override int ParentItem => ItemID.PhoenixBlaster;
-        public override GunType GunType => GunType.Handgun;
+        public override WeaponType WeaponType => WeaponType.Handgun;
 
-        public override void SafeSetDefaults()
-        {
-            new GunBuilder(this)
-                .AsType(GunType.Handgun)
-                .WithMaxShots(10)
-                .WithReloadTime(40)
-                .WithRecoil(15)
-                .WithSound(SoundID.Item41)
-                .WithReloadZones((35, 65))
-                .WithPositionOffset(new Vector2(18, -6), new Vector2(16, -4))
-                .WithBulletPosition(new Vector2(10, 20), new Vector2(-10, -10))
-                .WithScale(0.75f)
-                .Build();
-
-            ReloadFinishSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/HandgunReload");
-        }
+        public override GunStats BaseStats => new GunBuilder()
+            .AsHandgun()
+            .WithMaxShots(10)
+            .WithReloadTime(40)
+            .WithRecoil(15)
+            .WithShootSound(SoundID.Item41)
+            .WithReloadSound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/HandgunReload"))
+            .WithClickZone(35, 65)
+            .WithPositionOffset(new Vector2(18, -6), new Vector2(16, -4))
+            .WithBulletShootPosition(new Vector2(10, 20), new Vector2(-10, -10))
+            .WithProjectileScale(0.75f)
+            .Build();
 
         public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets)
         {
@@ -52,20 +51,28 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
                 float randomScale = Main.rand.NextFloat(0.05f, 0.15f);
 
                 Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.3f, 0.6f)).RotatedByRandom(MathHelper.ToRadians(15));
-                
+
                 var lightSpark = new Spark(sparkTexture, 20f, false);
                 ParticleManager.CreateParticleDirect(lightSpark, shootPosition + shootOffset, particleVelocity, Color.Orange, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
+        protected override void OnReloadSuccessCore(Player player)
         {
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PhoenixBurst>(), Projectile.damage, 10f, player.whoAmI);
         }
 
-        public override void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier)
+        protected override void OnReloadFailCore(Player player)
         {
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PhoenixMisfire>(), (int)(Projectile.damage / 2f), 0, player.whoAmI);
+        }
+
+        protected override List<int> OnGunShootCore(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
+        {
+            var bullet = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"),
+                shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
+
+            return new List<int> { bullet };
         }
 
         public override bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor)

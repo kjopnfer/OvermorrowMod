@@ -3,9 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Items.Guns;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 {
@@ -13,23 +16,20 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
     {
         public override string Texture => AssetDirectory.Resprites + "Musket";
         public override int ParentItem => ItemID.Musket;
-        public override GunType GunType => GunType.Musket;
+        public override WeaponType WeaponType => WeaponType.Musket;
 
-        public override void SafeSetDefaults()
-        {
-            new GunBuilder(this)
-                .AsType(GunType.Musket)
-                .WithMaxShots(1)
-                .WithReloadTime(100)
-                .WithRecoil(25)
-                .WithSound(SoundID.Item40)
-                .WithReloadZones((15, 35), (45, 65), (75, 95))
-                .WithPositionOffset(new Vector2(20, -5), new Vector2(20, -4))
-                .WithBulletPosition(new Vector2(20, 18), new Vector2(20, -4))
-                .WithScale(1f)
-                .TwoHanded()
-                .Build();
-        }
+        public override GunStats BaseStats => new GunBuilder()
+            .AsMusket()
+            .WithMaxShots(1)
+            .WithReloadTime(100)
+            .WithRecoil(25)
+            .WithShootSound(SoundID.Item40)
+            .WithClickZones((15, 35), (45, 65), (75, 95))
+            .WithPositionOffset(new Vector2(20, -5), new Vector2(20, -4))
+            .WithBulletShootPosition(new Vector2(20, 18), new Vector2(20, -4))
+            .WithProjectileScale(1f)
+            .WithTwoHanded()
+            .Build();
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
         {
@@ -51,23 +51,26 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             GunEffects.CreateSmoke(shootPosition, velocity);
         }
 
-        public override void OnReloadEnd(Player player)
+        protected override void OnReloadComplete(Player player, bool wasSuccessful)
         {
             int gore = Gore.NewGore(null, Projectile.Center, new Vector2(player.direction * -0.01f, 0f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
             Main.gore[gore].sticky = true;
         }
 
-        public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
+        protected override List<int> OnGunShootCore(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
-
             Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(gunPlayer.MusketInaccuracy));
-            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"), shootPosition, rotatedVelocity, LoadedBulletType, damage, knockBack, player.whoAmI);
+
+            var bullet = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"),
+                shootPosition, rotatedVelocity, LoadedBulletType, damage, knockBack, player.whoAmI);
 
             gunPlayer.MusketInaccuracy = 45;
+
+            return new List<int> { bullet };
         }
 
-        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
+        protected override void OnReloadZoneHit(Player player, int zoneIndex, int clicksLeft)
         {
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
             gunPlayer.MusketInaccuracy -= 15;

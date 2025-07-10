@@ -1,10 +1,14 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Core.Items.Guns;
+using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Interfaces;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Common.Utilities;
 
 namespace OvermorrowMod.Common.Weapons.Guns
 {
@@ -12,12 +16,12 @@ namespace OvermorrowMod.Common.Weapons.Guns
     /// Base class for all gun items. Automatically connects to a corresponding HeldGun projectile.
     /// </summary>
     /// <typeparam name="HeldProjectile">The HeldGun projectile type associated with this gun</typeparam>
-    public abstract class ModGun<HeldProjectile> : ModItem where HeldProjectile : HeldGun
+    public abstract class ModGun<HeldProjectile> : ModItem, IWeaponClassification where HeldProjectile : HeldGun
     {
         /// <summary>
-        /// The type of gun this weapon represents.
+        /// The type of weapon this gun represents using the unified classification system.
         /// </summary>
-        public abstract GunType GunType { get; }
+        public abstract WeaponType WeaponType { get; }
 
         /// <summary>
         /// Checks if the player can use this gun. Prevents using if the held projectile already exists.
@@ -47,7 +51,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// </summary>
         public sealed override void SetDefaults()
         {
-            Item.SetWeaponType(GunType);
+            Item.SetWeaponType(WeaponType);
 
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = ItemUseStyleID.Shoot;
