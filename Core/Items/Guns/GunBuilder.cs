@@ -79,12 +79,15 @@ namespace OvermorrowMod.Core.Items.Guns
         // Reload Zones
         public GunBuilder WithClickZone(int startPercent, int endPercent)
         {
+            _stats.ClickZones.Clear();
             _stats.ClickZones.Add(new ReloadZone(startPercent, endPercent));
             return this;
         }
 
         public GunBuilder WithClickZones(params (int start, int end)[] zones)
         {
+            _stats.ClickZones.Clear();
+
             foreach (var zone in zones)
             {
                 _stats.ClickZones.Add(new ReloadZone(zone.start, zone.end));

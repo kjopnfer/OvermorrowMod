@@ -450,17 +450,27 @@ namespace OvermorrowMod.Common.Weapons.Guns
             player.itemTime = 2;
             player.itemAnimation = 2;
 
+            // Only process clicks if there's no click delay and reload hasn't failed
             if (player.controlUseItem && clickDelay == 0 && !reloadFail)
             {
                 float clickPercentage = (1 - (float)reloadTime / MaxReloadTime);
                 clickDelay = 15;
 
-                if (CheckInZone(clickPercentage, out int zoneIndex))
+                // Check if we clicked in any zone that hasn't been clicked yet
+                bool hitValidZone = false;
+                for (int i = 0; i < ClickZones.Count; i++)
                 {
-                    ClickZones[zoneIndex].HasClicked = true;
-                    ReloadEventTrigger(player, zoneIndex, GetClicksLeft());
+                    var zone = ClickZones[i];
+                    if (!zone.HasClicked && clickPercentage >= zone.StartPercentage && clickPercentage <= zone.EndPercentage)
+                    {
+                        zone.HasClicked = true;
+                        ReloadEventTrigger(player, i, GetClicksLeft());
+                        hitValidZone = true;
+                        break; // Only hit one zone per click
+                    }
                 }
-                else
+
+                if (!hitValidZone)
                 {
                     SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/youmissedthatone") with
                     {
@@ -680,26 +690,37 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
             foreach (ReloadZone clickZone in ClickZones)
             {
-                float startOffset = (clickZone.StartPercentage / 100f) * texture.Width;
+                Main.NewText(clickZone.StartPercentage + " " + clickZone.EndPercentage);
+                // Calculate the actual pixel positions for this zone
+                float zoneStartPixel = (clickZone.StartPercentage / 100f) * texture.Width;
+                float zoneEndPixel = (clickZone.EndPercentage / 100f) * texture.Width;
+                float zoneWidthPixels = zoneEndPixel - zoneStartPixel;
 
-                Vector2 zoneOffset = new Vector2(-2 + startOffset, 41f);
+                Vector2 zoneOffset = new Vector2(-texture.Width / 2f + zoneStartPixel, 41f);
                 Vector2 zonePosition = player.Center + zoneOffset;
 
-                float clickWidth = (clickZone.EndPercentage - clickZone.StartPercentage) / 100f;
-                Texture2D clickTexture = clickZone.HasClicked ? ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadZone_Clicked").Value : ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadZone").Value;
-                Rectangle drawRectangle = new Rectangle(0, 0, (int)(clickTexture.Width * clickWidth), clickTexture.Height);
-                Main.spriteBatch.Draw(clickTexture, zonePosition - Main.screenPosition, drawRectangle, Color.White, 0f, clickTexture.Size() / 2f, scale, SpriteEffects.None, 1);
+                Texture2D clickTexture = clickZone.HasClicked ?
+                    ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadZone_Clicked").Value :
+                    ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadZone").Value;
+
+                // Create a rectangle for the specific zone width
+                Rectangle drawRectangle = new Rectangle(0, 0, (int)zoneWidthPixels, clickTexture.Height);
+
+                Main.spriteBatch.Draw(clickTexture, zonePosition - Main.screenPosition, drawRectangle, Color.White, 0f,
+                    new Vector2(0, clickTexture.Height / 2f), scale, SpriteEffects.None, 1);
             }
 
-            float cursorProgress = MathHelper.Lerp(0, texture.Width, 1 - ((float)reloadTime / MaxReloadTime));
+            // Draw reload cursor
+            float cursorProgress = (1 - (float)reloadTime / MaxReloadTime) * texture.Width;
             Texture2D cursor = ModContent.Request<Texture2D>(AssetDirectory.GunUI + "ReloadCursor").Value;
-            Vector2 cursorOffset = new Vector2(-66 + cursorProgress, 42.5f);
+            Vector2 cursorOffset = new Vector2(-texture.Width / 2f + cursorProgress, 42.5f);
             Vector2 cursorPosition = player.Center + cursorOffset;
             Main.spriteBatch.Draw(cursor, cursorPosition - Main.screenPosition, null, Color.White, 0f, cursor.Size() / 2f, scale, SpriteEffects.None, 1);
 
+            // Draw bullet icon
             string bulletTexture = GetBulletTexture();
             Texture2D bullet = ModContent.Request<Texture2D>(AssetDirectory.GunUI + bulletTexture).Value;
-            Vector2 bulletPosition = player.Center + new Vector2(-68 * scale, 40f);
+            Vector2 bulletPosition = player.Center + new Vector2(-texture.Width / 2f - 2, 40f);
             Main.spriteBatch.Draw(bullet, bulletPosition - Main.screenPosition, null, Color.White, 0f, bullet.Size() / 2f, scale, SpriteEffects.None, 1);
         }
 
@@ -859,18 +880,14 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
         private bool CheckInZone(float clickPercentage, out int zoneIndex)
         {
-            clickPercentage = clickPercentage * 100;
-
-            int zoneCounter = 0;
-            foreach (ReloadZone clickZone in ClickZones)
+            for (int i = 0; i < ClickZones.Count; i++)
             {
-                if (clickPercentage >= clickZone.StartPercentage && clickPercentage <= clickZone.EndPercentage)
+                var zone = ClickZones[i];
+                if (!zone.HasClicked && clickPercentage >= zone.StartPercentage && clickPercentage <= zone.EndPercentage)
                 {
-                    zoneIndex = zoneCounter;
+                    zoneIndex = i;
                     return true;
                 }
-
-                zoneCounter++;
             }
 
             zoneIndex = -1;
