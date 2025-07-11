@@ -13,6 +13,7 @@ using System;
 using OvermorrowMod.Core.Items.Guns;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.Weapons.Guns
 {
@@ -49,8 +50,27 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// </summary>
         public void RefreshStats()
         {
+            // Store the current reload zone states before refreshing
+            var preservedZoneStates = new Dictionary<int, bool>();
+            if (_currentStats?.ClickZones != null)
+            {
+                for (int i = 0; i < _currentStats.ClickZones.Count; i++)
+                {
+                    preservedZoneStates[i] = _currentStats.ClickZones[i].HasClicked;
+                }
+            }
+
             _baseStats = BaseStats.Clone();
             _currentStats = GunModifierHandler.GetModifiedStats(_baseStats, player);
+
+            // Restore the reload zone states after refreshing
+            if (_currentStats?.ClickZones != null && preservedZoneStates.Count > 0)
+            {
+                for (int i = 0; i < _currentStats.ClickZones.Count && i < preservedZoneStates.Count; i++)
+                {
+                    _currentStats.ClickZones[i].HasClicked = preservedZoneStates[i];
+                }
+            }
         }
 
         // Properties derived from stats
@@ -453,7 +473,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
             // Only process clicks if there's no click delay and reload hasn't failed
             if (player.controlUseItem && clickDelay == 0 && !reloadFail)
             {
-                float clickPercentage = (1 - (float)reloadTime / MaxReloadTime);
+                float clickPercentage = (1 - (float)reloadTime / MaxReloadTime) * 100f;
                 clickDelay = 15;
 
                 // Check if we clicked in any zone that hasn't been clicked yet
@@ -461,7 +481,10 @@ namespace OvermorrowMod.Common.Weapons.Guns
                 for (int i = 0; i < ClickZones.Count; i++)
                 {
                     var zone = ClickZones[i];
-                    if (!zone.HasClicked && clickPercentage >= zone.StartPercentage && clickPercentage <= zone.EndPercentage)
+                    bool inRange = clickPercentage >= zone.StartPercentage && clickPercentage <= zone.EndPercentage;
+                    bool alreadyClicked = zone.HasClicked;
+
+                    if (!alreadyClicked && inRange)
                     {
                         zone.HasClicked = true;
                         ReloadEventTrigger(player, i, GetClicksLeft());
@@ -482,25 +505,38 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
             if (reloadTime == 0)
             {
+                // Check success FIRST, before doing anything else
+                bool wasSuccessful = CheckEventSuccess();
+
+                // Set reload success flag immediately after checking
+                reloadSuccess = wasSuccessful;
+
+                // Reset state variables
                 reloadFail = false;
                 reloadDelay = 30;
                 inReloadState = false;
                 ShotsFired = 0;
                 clickDelay = 0;
 
-                if (CheckEventSuccess())
+                // Trigger success/fail events BEFORE resetting zones
+                if (wasSuccessful)
                 {
-                    reloadSuccess = true;
                     OnReloadEventSuccess(player);
                 }
                 else
+                {
                     OnReloadEventFail(player);
+                }
 
                 ReloadBulletDisplay();
-                OnReloadEnd(player);
-                ResetReloadZones();
-                SoundEngine.PlaySound(ReloadFinishSound);
 
+                // Trigger end events
+                OnReloadEnd(player);
+
+                // IMPORTANT: Reset zones LAST, after everything else is done
+                ResetReloadZones();
+
+                SoundEngine.PlaySound(ReloadFinishSound);
                 Projectile.netUpdate = true;
             }
         }
@@ -690,7 +726,6 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
             foreach (ReloadZone clickZone in ClickZones)
             {
-                Main.NewText(clickZone.StartPercentage + " " + clickZone.EndPercentage);
                 // Calculate the actual pixel positions for this zone
                 float zoneStartPixel = (clickZone.StartPercentage / 100f) * texture.Width;
                 float zoneEndPixel = (clickZone.EndPercentage / 100f) * texture.Width;
@@ -851,12 +886,15 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
         private bool CheckEventSuccess()
         {
-            foreach (ReloadZone clickZone in ClickZones)
+            int clickedCount = 0;
+            for (int i = 0; i < ClickZones.Count; i++)
             {
-                if (!clickZone.HasClicked) return false;
+                bool clicked = ClickZones[i].HasClicked;
+                if (clicked) clickedCount++;
             }
 
-            return true;
+            bool success = clickedCount == ClickZones.Count;
+            return success;
         }
 
         private int GetClicksLeft()
@@ -872,6 +910,13 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
         private void ResetReloadZones()
         {
+            // Print the call stack to see where this is being called from
+            var stackTrace = new System.Diagnostics.StackTrace(true);
+            for (int i = 0; i < Math.Min(5, stackTrace.FrameCount); i++)
+            {
+                var frame = stackTrace.GetFrame(i);
+            }
+
             foreach (ReloadZone clickZone in ClickZones)
             {
                 clickZone.HasClicked = false;
