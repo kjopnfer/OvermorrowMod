@@ -187,7 +187,6 @@ namespace OvermorrowMod.Common.Weapons.Guns
             RefreshStats();
 
             HandleGunDrawing();
-            //UpdateBulletDisplay();
             ForceCorrectBulletDisplay();
             Update(player);
 
@@ -299,8 +298,8 @@ namespace OvermorrowMod.Common.Weapons.Guns
                 if (chargeCounter == MaxChargeTime)
                 {
                     OnChargeShootEffects(player);
-
-                    if (player.controlUseItem && shootCounter == 0 && !ConsumePerShot)
+ 
+                    if (player.controlUseItem && shootCounter == 0)
                     {
                         shootCounter = ShootTime + CurrentStats.UseTimeModifier;
 

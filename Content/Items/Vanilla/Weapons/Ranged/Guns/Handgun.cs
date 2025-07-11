@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Core;
 using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Items.Guns;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             .WithPositionOffset(new Vector2(16, -8), new Vector2(14, -2))
             .WithBulletShootPosition(new Vector2(10, 20), new Vector2(-10, -10))
             .WithProjectileScale(0.9f)
+            .WithShootTime(20)
+            .WithShootAnimation(20)
             .Build();
 
         protected override void OnReloadSuccessCore(Player player)

@@ -182,7 +182,9 @@ namespace OvermorrowMod.Core.Items.Guns
 
         public static GunBuilder AsHandgun(this GunBuilder builder)
         {
-            return builder.AsWeaponType(WeaponType.Handgun);
+            return builder.AsWeaponType(WeaponType.Handgun)
+                .WithShootTime(20)
+                .WithShootAnimation(20);
         }
 
         public static GunBuilder AsShotgun(this GunBuilder builder)
@@ -204,6 +206,8 @@ namespace OvermorrowMod.Core.Items.Guns
         public static GunBuilder AsMachineGun(this GunBuilder builder)
         {
             return builder.AsWeaponType(WeaponType.MachineGun)
+                .WithShootTime(6)
+                .WithShootAnimation(6)
                 .WithReload(false)
                 .WithConsumePerShot()
                 .WithChargeTime(60);

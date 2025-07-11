@@ -35,6 +35,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             .WithPositionOffset(new Vector2(18, -6), new Vector2(16, -4))
             .WithBulletShootPosition(new Vector2(10, 20), new Vector2(-10, -10))
             .WithProjectileScale(0.75f)
+            .WithShootAnimation(20)
             .Build();
 
         public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets)

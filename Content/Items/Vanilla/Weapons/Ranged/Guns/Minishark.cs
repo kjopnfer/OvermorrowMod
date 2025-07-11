@@ -29,6 +29,7 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             .WithProjectileScale(1f)
             .WithChargeTime(60)
             .WithTwoHanded()
+            .WithShootAnimation(6)
             .Build();
 
         private int spinCounter = 0;
