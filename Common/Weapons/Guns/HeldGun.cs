@@ -298,7 +298,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
                 if (chargeCounter == MaxChargeTime)
                 {
                     OnChargeShootEffects(player);
- 
+
                     if (player.controlUseItem && shootCounter == 0)
                     {
                         shootCounter = ShootTime + CurrentStats.UseTimeModifier;
@@ -316,7 +316,12 @@ namespace OvermorrowMod.Common.Weapons.Guns
                         else
                         {
                             if (CanReload()) ShotsFired++;
-                            ConsumeAmmo();
+
+                            // For machine guns, always consume but respect save chance
+                            if (!ShouldSaveAmmo())
+                            {
+                                ConsumeAmmo();
+                            }
                         }
 
                         Projectile.netUpdate = true;
@@ -349,21 +354,27 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
                 if (!ConsumePerShot)
                 {
-                    PopBulletDisplay();
+                    // Check if ammo should be saved BEFORE doing anything
+                    bool ammoSaved = ShouldSaveAmmo();
 
-                    if (ShotsFired == MaxShots)
+                    if (!ammoSaved)
                     {
-                        shootCounter = 0;
-                        inReloadState = true;
-                        reloadTime = MaxReloadTime;
-                        reloadBuffer = 10;
-                        return;
-                    }
-                    else
-                    {
-                        if (CanReload()) ShotsFired++;
+                        // Only progress shots and consume ammo if NOT saved
+                        PopBulletDisplay();
                         ConsumeAmmo();
+
+                        if (CanReload()) ShotsFired++;
+
+                        if (ShotsFired >= MaxShots)
+                        {
+                            shootCounter = 0;
+                            inReloadState = true;
+                            reloadTime = MaxReloadTime;
+                            reloadBuffer = 10;
+                            return;
+                        }
                     }
+                    // If ammo was saved, we still shoot but don't progress anything
                 }
 
                 Projectile.netUpdate = true;
@@ -378,20 +389,23 @@ namespace OvermorrowMod.Common.Weapons.Guns
                 {
                     if (ConsumePerShot)
                     {
-                        PopBulletDisplay();
+                        bool ammoSaved = ShouldSaveAmmo();
 
-                        if (ShotsFired == MaxShots)
+                        if (!ammoSaved)
                         {
-                            shootCounter = 0;
-                            inReloadState = true;
-                            reloadTime = MaxReloadTime;
-                            reloadBuffer = 10;
-                            return;
-                        }
-                        else
-                        {
-                            if (CanReload()) ShotsFired++;
+                            PopBulletDisplay();
                             ConsumeAmmo();
+
+                            if (CanReload()) ShotsFired++;
+
+                            if (ShotsFired >= MaxShots)
+                            {
+                                shootCounter = 0;
+                                inReloadState = true;
+                                reloadTime = MaxReloadTime;
+                                reloadBuffer = 10;
+                                return;
+                            }
                         }
                     }
 
@@ -842,20 +856,19 @@ namespace OvermorrowMod.Common.Weapons.Guns
             return false;
         }
 
+        private bool ShouldSaveAmmo()
+        {
+            float totalSaveChance = Math.Min(CurrentStats.AmmoSaveChance, 100f);
+            return Main.rand.NextFloat(0f, 100f) < totalSaveChance;
+        }
+
         private void ConsumeAmmo()
         {
             if (!CanConsumeAmmo(player)) return;
 
-            float totalSaveChance = Math.Min(CurrentStats.AmmoSaveChance, 100f);
-            if (Main.rand.NextFloat(0f, 100f) < totalSaveChance)
-            {
-                return;
-            }
-
             if (player.inventory[AmmoSlotID].type != ItemID.EndlessMusketPouch)
                 player.inventory[AmmoSlotID].stack--;
         }
-
 
         private void ReloadBulletDisplay()
         {
