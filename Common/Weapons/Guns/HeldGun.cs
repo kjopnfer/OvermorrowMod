@@ -234,6 +234,11 @@ namespace OvermorrowMod.Common.Weapons.Guns
             else
                 if (CanReload()) DrawReloadBar();
 
+            // These need to be here otherwise the player arm gets drawn additively for some reason
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState,
+                DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
             return false;
         }
 
@@ -385,7 +390,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
         {
             if (shootCounter > 0)
             {
-                if (shootCounter % (ShootAnimation + CurrentStats.UseTimeModifier) == 0)
+                if (shootCounter == (ShootTime + CurrentStats.UseTimeModifier))
                 {
                     if (ConsumePerShot)
                     {
