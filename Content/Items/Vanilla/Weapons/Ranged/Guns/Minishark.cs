@@ -30,14 +30,10 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             .WithChargeTime(60)
             .WithTwoHanded()
             .WithShootAnimation(6)
+            .WithAmmoSaveChance(33f)  // 33% chance to not consume ammo
             .Build();
 
         private int spinCounter = 0;
-
-        public override bool CanConsumeAmmo(Player player)
-        {
-            return Main.rand.NextFloat() >= 0.33f;
-        }
 
         public override void OnChargeShootEffects(Player player)
         {

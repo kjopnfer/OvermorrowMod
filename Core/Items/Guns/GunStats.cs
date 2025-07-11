@@ -13,6 +13,12 @@ namespace OvermorrowMod.Core.Items.Guns
     public class GunStats
     {
         /// <summary>
+        /// Percentage chance (0-100) to not consume ammo when firing.
+        /// Multiple sources stack additively up to 100%.
+        /// </summary>
+        public float AmmoSaveChance = 0f;
+
+        /// <summary>
         /// Maximum number of shots the gun can fire before needing to reload.
         /// </summary>
         public int MaxShots = 6;

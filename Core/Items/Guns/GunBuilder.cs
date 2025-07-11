@@ -68,6 +68,16 @@ namespace OvermorrowMod.Core.Items.Guns
         public GunBuilder WithConsumePerShot(bool consumePerShot = true) { _stats.ConsumePerShot = consumePerShot; return this; }
         public GunBuilder WithRightClickDelay(bool useDelay = true) { _stats.UsesRightClickDelay = useDelay; return this; }
 
+        /// <summary>
+        /// Sets the chance to not consume ammo when firing.
+        /// </summary>
+        /// <param name="chancePercent">Percentage chance (0-100) to save ammo</param>
+        public GunBuilder WithAmmoSaveChance(float chancePercent)
+        {
+            _stats.AmmoSaveChance = chancePercent;
+            return this;
+        }
+
         // Ammo System
         public GunBuilder WithBulletType(int bulletType) { _stats.BulletType = bulletType; return this; }
         public GunBuilder WithConvertBullet(int convertBullet) { _stats.ConvertBullet = convertBullet; return this; }

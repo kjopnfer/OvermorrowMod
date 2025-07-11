@@ -846,9 +846,16 @@ namespace OvermorrowMod.Common.Weapons.Guns
         {
             if (!CanConsumeAmmo(player)) return;
 
+            float totalSaveChance = Math.Min(CurrentStats.AmmoSaveChance, 100f);
+            if (Main.rand.NextFloat(0f, 100f) < totalSaveChance)
+            {
+                return;
+            }
+
             if (player.inventory[AmmoSlotID].type != ItemID.EndlessMusketPouch)
                 player.inventory[AmmoSlotID].stack--;
         }
+
 
         private void ReloadBulletDisplay()
         {
