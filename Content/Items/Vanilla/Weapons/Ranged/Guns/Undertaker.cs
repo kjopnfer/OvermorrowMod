@@ -17,17 +17,31 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
         public override int ParentItem => ItemID.TheUndertaker;
         public override WeaponType WeaponType => WeaponType.Revolver;
 
-        public override GunStats BaseStats => new GunBuilder()
-            .AsRevolver()
-            .WithMaxShots(4)
-            .WithReloadTime(60)
-            .WithRecoil(10)
-            .WithShootSound(SoundID.Item41)
-            .WithClickZones((20, 45), (60, 85))
-            .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
-            .WithBulletShootPosition(new Vector2(15, 16), new Vector2(15, -6))
-            .WithProjectileScale(0.9f)
-            .Build();
+        private int currentBonusShots = 0;
+        private int currentUseTimeModifier = 0;
+        public override GunStats BaseStats
+        {
+            get
+            {
+                var stats = new GunBuilder()
+                    .AsRevolver()
+                    .WithMaxShots(4)
+                    .WithReloadTime(60)
+                    .WithRecoil(10)
+                    .WithShootSound(SoundID.Item41)
+                    .WithClickZones((20, 45), (60, 85))
+                    .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
+                    .WithBulletShootPosition(new Vector2(15, 16), new Vector2(15, -6))
+                    .WithProjectileScale(0.9f)
+                    .Build();
+
+                // Apply persistent bonuses
+                stats.MaxShotsBonus = currentBonusShots;
+                stats.UseTimeModifier = currentUseTimeModifier;
+
+                return stats;
+            }
+        }
 
         protected override List<int> OnGunShootCore(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
@@ -70,14 +84,21 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
         protected override void OnReloadSuccessCore(Player player)
         {
             // Perfect reload gives 2 bonus ammo and faster fire rate
-            CurrentStats.BonusAmmo = 2;
-            CurrentStats.UseTimeModifier = -10;
+            currentBonusShots = 2;
+            currentUseTimeModifier = -10;
         }
 
         protected override void OnReloadFailCore(Player player)
         {
             // Failed reload reduces ammo by 2
-            CurrentStats.BonusAmmo = -2;
+            currentBonusShots = -2;
+            currentUseTimeModifier = 0;
+        }
+
+        public override void OnReloadStart(Player player)
+        {
+            currentBonusShots = 0;
+            currentUseTimeModifier = 0;
         }
     }
 }

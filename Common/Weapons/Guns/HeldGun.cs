@@ -134,7 +134,16 @@ namespace OvermorrowMod.Common.Weapons.Guns
             // Deactivate any bullets that were previously fired and stored
             for (int i = 0; i < ShotsFired; i++)
             {
-                BulletDisplay[BulletDisplay.Count - 1 - i].isActive = false;
+                if (BulletDisplay.Count - 1 - i >= 0)
+                {
+                    BulletDisplay[BulletDisplay.Count - 1 - i].isActive = false;
+                }
+            }
+
+            int activeBulletsAfter = 0;
+            foreach (var bullet in BulletDisplay)
+            {
+                if (bullet.isActive) activeBulletsAfter++;
             }
         }
 
@@ -178,7 +187,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
             RefreshStats();
 
             HandleGunDrawing();
-            UpdateBulletDisplay();
+            //UpdateBulletDisplay();
             ForceCorrectBulletDisplay();
             Update(player);
 
@@ -505,10 +514,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
             if (reloadTime == 0)
             {
-                // Check success FIRST, before doing anything else
                 bool wasSuccessful = CheckEventSuccess();
-
-                // Set reload success flag immediately after checking
                 reloadSuccess = wasSuccessful;
 
                 // Reset state variables
@@ -518,7 +524,6 @@ namespace OvermorrowMod.Common.Weapons.Guns
                 ShotsFired = 0;
                 clickDelay = 0;
 
-                // Trigger success/fail events BEFORE resetting zones
                 if (wasSuccessful)
                 {
                     OnReloadEventSuccess(player);
@@ -528,9 +533,10 @@ namespace OvermorrowMod.Common.Weapons.Guns
                     OnReloadEventFail(player);
                 }
 
-                ReloadBulletDisplay();
+                // Refresh stats after success/fail events to pick up bonus changes
+                RefreshStats();
 
-                // Trigger end events
+                ReloadBulletDisplay();
                 OnReloadEnd(player);
 
                 // IMPORTANT: Reset zones LAST, after everything else is done
@@ -627,8 +633,15 @@ namespace OvermorrowMod.Common.Weapons.Guns
             string bulletTexture = GetBulletTexture();
             float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.GunUI + bulletTexture).Value.Width;
 
-            int bulletCounts = BulletDisplay.Count % 10;
-            if (bulletCounts == 0 && BulletDisplay.Count > 0) bulletCounts = 10;
+            // Count active bullets for display purposes
+            int activeBullets = 0;
+            foreach (var bullet in BulletDisplay)
+            {
+                if (bullet.isActive) activeBullets++;
+            }
+
+            int bulletCounts = activeBullets % 10;
+            if (bulletCounts == 0 && activeBullets > 0) bulletCounts = 10;
 
             float gapOffset = 6 * Utils.Clamp(bulletCounts - 1, 0, MaxShots);
             float total = textureWidth * bulletCounts + gapOffset;
@@ -636,17 +649,16 @@ namespace OvermorrowMod.Common.Weapons.Guns
             float startOffset = bulletTexture == "GunBullet_Shotgun" ? 12 : 8;
             float startPosition = (-total / 2) + startOffset;
 
-            int startIndex = BulletDisplay.Count - bulletCounts;
-
+            // Draw only the active bullets
             var offsetCounter = 0;
-            for (int i = startIndex; i < BulletDisplay.Count; i++)
+            foreach (var bullet in BulletDisplay)
             {
-                if (!BulletDisplay[i].isActive) continue;
+                if (!bullet.isActive) continue;
 
-                BulletDisplay[i].Update();
+                bullet.Update();
 
                 Vector2 offset = new Vector2(startPosition + 18 * offsetCounter, 42);
-                BulletDisplay[i].Draw(Main.spriteBatch, player.Center + offset);
+                bullet.Draw(Main.spriteBatch, player.Center + offset);
 
                 offsetCounter++;
             }
@@ -843,7 +855,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
         {
             BulletDisplay.Clear();
 
-            for (int _ = 0; _ < MaxShots; _++)
+            for (int i = 0; i < MaxShots; i++)
             {
                 BulletDisplay.Add(new BulletObject(GetBulletTexture(), Main.rand.Next(0, 9) * 7));
             }
