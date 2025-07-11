@@ -365,7 +365,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
                         if (CanReload()) ShotsFired++;
 
-                        if (ShotsFired >= MaxShots)
+                        if (ShotsFired > MaxShots)
                         {
                             shootCounter = 0;
                             inReloadState = true;
