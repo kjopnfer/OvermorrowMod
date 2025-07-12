@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.Particles
         public Vector2 AnchorOffset { get; set; } = Vector2.Zero;
         public bool fadeIn = true;
         public bool floatUp = true;
-
+        public bool doWaveMotion = true;
         public Circle(Texture2D texture, float maxTime = 0f, bool canGrow = false, bool useSineFade = true)
         {
             this.texture = texture;
@@ -67,9 +67,12 @@ namespace OvermorrowMod.Content.Particles
                 if (floatUp) particle.position += particle.velocity;
             }
 
-            particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * positionOffset;
+            if (doWaveMotion)
+                particle.position += particle.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(timeAlive * Math.PI / 10) * positionOffset;
+            else
+                particle.position += particle.velocity * positionOffset;
 
-            float lifeProgress = timeAlive / maxTime;
+            float lifeProgress = timeAlive / (float)maxTime;
             float fadeProgress = 1f - lifeProgress;
 
             particle.alpha = useSineFade ? initialAlpha * (float)(Math.Sin(fadeProgress * Math.PI)) : initialAlpha * fadeProgress;

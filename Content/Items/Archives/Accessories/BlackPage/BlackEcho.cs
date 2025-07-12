@@ -106,36 +106,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     previousCenter = Projectile.Center;
                     break;
             }
-
-            return;
-
-            /*Vector2 targetPosition = Main.MouseWorld + new Vector2(0, -30);
-            Vector2 directionToTarget = targetPosition - Projectile.Center;
-
-            if (directionToTarget.Length() > 5f)
-            {
-                directionToTarget.Normalize();
-                float homingSpeed = 14f;
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, directionToTarget * homingSpeed, 0.1f);
-            }
-            else
-            {
-                Projectile.velocity *= 0.95f;
-            }
-
-            Projectile.Center += Projectile.velocity;
-            wavePhase += 0.08f;
-
-            if (Projectile.velocity.LengthSquared() > 0.1f)
-            {
-                float offset = Projectile.direction == -1 ? MathHelper.ToRadians(180) : 0;
-                Projectile.rotation = Projectile.velocity.ToRotation() + offset;
-            }
-
-            Vector2 velocity = Projectile.Center - previousCenter;
-            previousCenter = Projectile.Center;*/
-
-            base.AI();
         }
 
         private void IdleState(Player owner)

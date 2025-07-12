@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Weapons.Bows;
 using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged;
 using System.Collections.Generic;
@@ -90,6 +91,10 @@ namespace OvermorrowMod.Core.Globals
         {
             // Automatically spawn the held projectile when the item is held
             if (ModContent.GetModProjectile(item.shoot) is HeldGun && player.ownedProjectileCounts[player.HeldItem.shoot] < 1)
+                Projectile.NewProjectile(null, player.Center, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI);
+
+            // TODO: putting this here temporarily
+            if (ModContent.GetModProjectile(item.shoot) is HeldBow && player.ownedProjectileCounts[player.HeldItem.shoot] < 1)
                 Projectile.NewProjectile(null, player.Center, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI);
         }
 

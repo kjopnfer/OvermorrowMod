@@ -33,8 +33,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             if (isPowerShot)
             {
-                return ProjectileID.FireArrow;
-                //return ModContent.ProjectileType<PatronusSpecialArrow>();
+                return ModContent.ProjectileType<Patronus>();
             }
 
             return base.GetArrowTypeForShot(defaultArrowType, isPowerShot);
@@ -76,6 +75,12 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     );
                 }
             }
+            else
+            {
+                Vector2 direction = Vector2.Normalize(arrow.velocity);
+                arrow.velocity = direction * 8f;
+            }
+
             base.OnArrowFired(arrow, isPowerShot);
         }
     }

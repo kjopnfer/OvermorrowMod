@@ -553,4 +553,5 @@ Projectiles: {
 	BlackEcho.DisplayName: Black Echo
 	ShadowGrasp.DisplayName: Shadow Grasp
 	PatronusBow_Held.DisplayName: Patronus Bow_ Held
+	Patronus.DisplayName: Patronus
 }
