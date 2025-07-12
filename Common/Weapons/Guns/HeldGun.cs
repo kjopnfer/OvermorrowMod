@@ -524,7 +524,7 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// </summary>
         private void OnEmptyFire(Player player)
         {
-            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/EmptyClick") with
+            SoundEngine.PlaySound(CurrentStats.EmptyClickSound with
             {
                 Volume = 0.8f,
                 Pitch = Main.rand.NextFloat(-0.1f, 0.1f)

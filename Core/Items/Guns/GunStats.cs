@@ -184,6 +184,11 @@ namespace OvermorrowMod.Core.Items.Guns
         public int UseTimeModifier = 0;
 
         /// <summary>
+        /// Sound played when the gun attempts to fire but has no ammo.
+        /// </summary>
+        public SoundStyle EmptyClickSound = new($"{nameof(OvermorrowMod)}/Sounds/EmptyClick");
+
+        /// <summary>
         /// Creates a deep copy of this GunStats instance.
         /// </summary>
         /// <returns>A new GunStats instance with identical values.</returns>

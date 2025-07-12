@@ -86,6 +86,16 @@ namespace OvermorrowMod.Core.Items.Guns
         public GunBuilder WithShootSound(SoundStyle sound) { _stats.ShootSound = sound; return this; }
         public GunBuilder WithReloadSound(SoundStyle sound) { _stats.ReloadFinishSound = sound; return this; }
 
+        /// <summary>
+        /// Sets the sound played when the gun clicks empty.
+        /// </summary>
+        /// <param name="sound">The sound style to play when empty</param>
+        public GunBuilder WithEmptyClickSound(SoundStyle sound)
+        {
+            _stats.EmptyClickSound = sound;
+            return this;
+        }
+
         // Reload Zones
         public GunBuilder WithClickZone(int startPercent, int endPercent)
         {
