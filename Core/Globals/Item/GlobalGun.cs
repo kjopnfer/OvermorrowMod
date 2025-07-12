@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged;
 using System.Collections.Generic;
 using Terraria;
@@ -57,7 +58,6 @@ namespace OvermorrowMod.Core.Globals
         {
             if (VanillaGunReplacements.ContainsKey(item.type))
             {
-                // Set up the item to use our custom gun system
                 int projectileType = VanillaGunReplacements[item.type];
                 item.shoot = projectileType;
                 item.noUseGraphic = true;
@@ -83,27 +83,19 @@ namespace OvermorrowMod.Core.Globals
                     item.crit = 1;
                     item.useTime = item.useAnimation = 6;
                     break;
-
-                    // Add other specific tweaks here as needed
             }
         }
 
         public override void HoldItem(Item item, Player player)
         {
-            // Automatically spawn the held gun projectile when holding a replaced vanilla gun
-            if (VanillaGunReplacements.ContainsKey(item.type))
-            {
-                int projectileType = VanillaGunReplacements[item.type];
-                if (player.ownedProjectileCounts[projectileType] < 1)
-                {
-                    Projectile.NewProjectile(null, player.Center, Vector2.Zero, projectileType, item.damage, item.knockBack, player.whoAmI);
-                }
-            }
+            // Automatically spawn the held projectile when the item is held
+            if (ModContent.GetModProjectile(item.shoot) is HeldGun && player.ownedProjectileCounts[player.HeldItem.shoot] < 1)
+                Projectile.NewProjectile(null, player.Center, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI);
         }
 
         public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player)
         {
-            // Prevent vanilla guns from consuming ammo - let the HeldGun handle it
+            // Do not consume ammo, the gun handles the logic manually
             if (VanillaGunReplacements.ContainsKey(weapon.type))
             {
                 return false;
@@ -126,7 +118,7 @@ namespace OvermorrowMod.Core.Globals
 
         public override void ModifyShootStats(Item item, Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            // Redirect the projectile type to our custom HeldGun
+            // Redirect the projectile type to custom HeldGun
             if (VanillaGunReplacements.ContainsKey(item.type))
             {
                 type = VanillaGunReplacements[item.type];
