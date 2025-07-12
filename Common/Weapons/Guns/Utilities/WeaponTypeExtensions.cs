@@ -1,8 +1,6 @@
 using OvermorrowMod.Common.Weapons.Guns;
 using OvermorrowMod.Core.Items;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Weapons.Guns
 {

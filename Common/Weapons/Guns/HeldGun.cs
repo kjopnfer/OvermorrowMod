@@ -1,23 +1,23 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Items.Guns;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using Terraria.Audio;
-using System.Collections.Generic;
-using Terraria.DataStructures;
-using System.IO;
-using OvermorrowMod.Common.Utilities;
-using System;
-using OvermorrowMod.Core.Items.Guns;
-using OvermorrowMod.Core.Globals;
-using OvermorrowMod.Core.Items;
-using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.Weapons.Guns
 {
-    public abstract partial class HeldGun : ModProjectile
+    public abstract partial class HeldGun : ModProjectile, IProjectileClassification
     {
         private GunStats _baseStats;
         private GunStats _currentStats;
@@ -155,6 +155,8 @@ namespace OvermorrowMod.Common.Weapons.Guns
             writer.Write(chargeCounter);
             writer.Write(ShotsFired);
             writer.Write(reloadTime);
+            writer.Write(isEmptyFiring);
+            writer.Write(hasReleasedAfterEmpty);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -165,6 +167,8 @@ namespace OvermorrowMod.Common.Weapons.Guns
             chargeCounter = reader.ReadInt16();
             ShotsFired = reader.ReadInt16();
             reloadTime = reader.ReadInt16();
+            isEmptyFiring = reader.ReadBoolean();
+            hasReleasedAfterEmpty = reader.ReadBoolean();
         }
 
         private bool inReloadState = false;
@@ -173,6 +177,9 @@ namespace OvermorrowMod.Common.Weapons.Guns
         public ref float SecondaryCounter => ref Projectile.ai[1];
 
         public int rightClickDelay = 0;
+
+        private bool isEmptyFiring = false;  // Track if we're in empty firing state
+        private bool hasReleasedAfterEmpty = false;  // Track if player released trigger after going empty
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
@@ -218,14 +225,16 @@ namespace OvermorrowMod.Common.Weapons.Guns
         }
 
         public virtual void RightClickEvent(Player player) { }
-
         public virtual bool PreDrawAmmo(Player player, SpriteBatch spriteBatch) { return true; }
         public override bool PreDraw(ref Color lightColor)
         {
             if (PreDrawGun(player, Main.spriteBatch, ShotsFired, shootCounter, lightColor))
                 DrawGun(lightColor);
 
-            DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, ShootTime + CurrentStats.UseTimeModifier);
+            if (!isEmptyFiring)
+            {
+                DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, ShootTime + CurrentStats.UseTimeModifier);
+            }
 
             if (reloadTime == 0 && PreDrawAmmo(player, Main.spriteBatch))
             {
@@ -353,8 +362,38 @@ namespace OvermorrowMod.Common.Weapons.Guns
 
         private void HandleAmmoAction()
         {
+            // Check if player has released the trigger after emptying the gun
+            if (isEmptyFiring && !player.controlUseItem)
+            {
+                hasReleasedAfterEmpty = true;
+            }
+
+            // If player clicks again after releasing when empty, enter reload
+            if (isEmptyFiring && hasReleasedAfterEmpty && player.controlUseItem && shootCounter == 0)
+            {
+                isEmptyFiring = false;
+                hasReleasedAfterEmpty = false;
+                inReloadState = true;
+                reloadTime = MaxReloadTime;
+                reloadBuffer = 10;
+                Projectile.netUpdate = true;
+                return;
+            }
+
             if (player.controlUseItem && shootCounter == 0 && CanUseGun(player))
             {
+                if (ShotsFired >= MaxShots)
+                {
+                    // We're out of ammo, enter empty firing state
+                    isEmptyFiring = true;
+                    shootCounter = ShootTime + CurrentStats.UseTimeModifier;
+
+                    // Play click sound instead of shoot sound
+                    OnEmptyFire(player);
+                    Projectile.netUpdate = true;
+                    return;
+                }
+
                 shootCounter = ShootTime + CurrentStats.UseTimeModifier;
 
                 if (!ConsumePerShot)
@@ -392,44 +431,45 @@ namespace OvermorrowMod.Common.Weapons.Guns
             {
                 if (shootCounter == (ShootTime + CurrentStats.UseTimeModifier))
                 {
-                    if (ConsumePerShot)
+                    // Only do shooting effects if we're NOT empty firing
+                    if (!isEmptyFiring)
                     {
-                        bool ammoSaved = ShouldSaveAmmo();
-
-                        if (!ammoSaved)
+                        if (ConsumePerShot)
                         {
-                            PopBulletDisplay();
-                            ConsumeAmmo();
+                            bool ammoSaved = ShouldSaveAmmo();
 
-                            if (CanReload()) ShotsFired++;
-
-                            if (ShotsFired >= MaxShots)
+                            if (!ammoSaved)
                             {
-                                shootCounter = 0;
-                                inReloadState = true;
-                                reloadTime = MaxReloadTime;
-                                reloadBuffer = 10;
-                                return;
+                                PopBulletDisplay();
+                                ConsumeAmmo();
+
+                                if (CanReload()) ShotsFired++;
+
+                                if (ShotsFired >= MaxShots)
+                                {
+                                    shootCounter = 0;
+                                    return; // Only return here if we need to enter reload immediately
+                                }
                             }
                         }
+
+                        recoilTimer = RECOIL_TIME;
+
+                        Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
+                        Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
+
+                        SoundEngine.PlaySound(ShootSound);
+                        Vector2 direction = Main.MouseWorld - shootPosition;
+                        if (direction != Vector2.Zero)
+                            direction.Normalize();
+
+                        Vector2 velocity = direction * 16f;
+
+                        OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, CurrentStats.BonusBullets);
+
+                        float damage = Projectile.damage + CurrentStats.BonusDamage;
+                        OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, CurrentStats.BonusBullets);
                     }
-
-                    recoilTimer = RECOIL_TIME;
-
-                    Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
-                    Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
-
-                    SoundEngine.PlaySound(ShootSound);
-                    Vector2 direction = Main.MouseWorld - shootPosition;
-                    if (direction != Vector2.Zero)
-                        direction.Normalize();
-
-                    Vector2 velocity = direction * 16f;
-
-                    OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, CurrentStats.BonusBullets);
-
-                    float damage = Projectile.damage + CurrentStats.BonusDamage;
-                    OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, CurrentStats.BonusBullets);
                 }
 
                 if (shootCounter > 0) shootCounter--;
@@ -478,6 +518,19 @@ namespace OvermorrowMod.Common.Weapons.Guns
         private int clickDelay = 0;
         public int reloadDelay { get; private set; } = 0;
         private int reloadBuffer = 10;
+
+        /// <summary>
+        /// Called when the gun attempts to fire but has no ammo.
+        /// </summary>
+        private void OnEmptyFire(Player player)
+        {
+            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/EmptyClick") with
+            {
+                Volume = 0.8f,
+                Pitch = Main.rand.NextFloat(-0.1f, 0.1f)
+            });
+        }
+
 
         private void HandleReloadAction()
         {
@@ -571,6 +624,10 @@ namespace OvermorrowMod.Common.Weapons.Guns
         /// </summary>
         public void OnReloadEnd(Player player)
         {
+            // Reset empty firing state when reload completes
+            isEmptyFiring = false;
+            hasReleasedAfterEmpty = false;
+
             // Always trigger modifier events
             GunModifierHandler.TriggerGunReload(this, player, reloadSuccess);
 

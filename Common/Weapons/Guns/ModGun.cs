@@ -1,14 +1,10 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.Weapons.Guns;
-using OvermorrowMod.Core.Items.Guns;
-using OvermorrowMod.Core.Items;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Interfaces;
-using System.Collections.Generic;
+using OvermorrowMod.Core.Items;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Common.Utilities;
 
 namespace OvermorrowMod.Common.Weapons.Guns
 {
