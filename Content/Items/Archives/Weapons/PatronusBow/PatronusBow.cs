@@ -33,52 +33,18 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             if (isPowerShot)
             {
-                return ModContent.ProjectileType<Patronus>();
+                //return ModContent.ProjectileType<Patronus>();
             }
 
-            return base.GetArrowTypeForShot(defaultArrowType, isPowerShot);
+            return ModContent.ProjectileType<WispArrow>();
         }
 
         protected override void OnArrowFired(Projectile arrow, bool isPowerShot)
         {
-            if (!isPowerShot)
+            if (isPowerShot)
             {
-                int spreadCount = 2;
-                float spreadAngle = 15f;
-
-                Vector2 baseVelocity = arrow.velocity;
-                float baseSpeed = baseVelocity.Length();
-                Vector2 direction = Vector2.Normalize(baseVelocity);
-
-                for (int i = 1; i <= spreadCount; i++)
-                {
-                    Vector2 leftVelocity = direction.RotatedBy(MathHelper.ToRadians(-spreadAngle * i)) * baseSpeed;
-                    Projectile.NewProjectile(
-                        arrow.GetSource_FromThis(),
-                        arrow.position,
-                        leftVelocity,
-                        arrow.type,
-                        arrow.damage,
-                        arrow.knockBack,
-                        arrow.owner
-                    );
-
-                    Vector2 rightVelocity = direction.RotatedBy(MathHelper.ToRadians(spreadAngle * i)) * baseSpeed;
-                    Projectile.NewProjectile(
-                        arrow.GetSource_FromThis(),
-                        arrow.position,
-                        rightVelocity,
-                        arrow.type,
-                        arrow.damage,
-                        arrow.knockBack,
-                        arrow.owner
-                    );
-                }
-            }
-            else
-            {
-                Vector2 direction = Vector2.Normalize(arrow.velocity);
-                arrow.velocity = direction * 8f;
+                //Vector2 direction = Vector2.Normalize(arrow.velocity);
+                //arrow.velocity = direction * 8f;
             }
 
             base.OnArrowFired(arrow, isPowerShot);

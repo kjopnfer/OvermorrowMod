@@ -472,7 +472,7 @@ Items: {
 	}
 
 	PatronusBow: {
-		DisplayName: Patronus Bow
+		DisplayName: Rangifel
 		Tooltip: ""
 	}
 }
@@ -554,4 +554,5 @@ Projectiles: {
 	ShadowGrasp.DisplayName: Shadow Grasp
 	PatronusBow_Held.DisplayName: Patronus Bow_ Held
 	Patronus.DisplayName: Patronus
+	WispArrow.DisplayName: Wisp Arrow
 }

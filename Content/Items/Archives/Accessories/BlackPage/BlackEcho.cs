@@ -321,9 +321,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     (float)Math.Cos(timeOffset * 1.1f) * driftStrength * 10f
                 );
 
-                //v0 += smokeOffset;
-                //v1 += smokeOffset * 0.8f;
-
                 Vector2 normaldir = v1 - v0;
                 if (normaldir.LengthSquared() > 0)
                 {
@@ -337,7 +334,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     normaldir = new Vector2((float)Math.Cos(rotation + MathHelper.PiOver2), (float)Math.Sin(rotation + MathHelper.PiOver2));
                 }
 
-                // Your preferred easing - tapering with EaseInOutBounce
                 float width1 = baseWidth * MathHelper.Lerp(1f, 0f, EasingUtils.EaseInOutBounce(prog1));
                 float width2 = baseWidth * MathHelper.Lerp(1f, 0f, EasingUtils.EaseInOutBounce(prog2));
 
@@ -346,13 +342,11 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 Vector2 pos2Top = v1 + width2 * normaldir;
                 Vector2 pos2Bottom = v1 - width2 * normaldir;
 
-                // Convert to screen space
                 pos1Top -= Main.screenPosition;
                 pos1Bottom -= Main.screenPosition;
                 pos2Top -= Main.screenPosition;
                 pos2Bottom -= Main.screenPosition;
 
-                // Your preferred alpha calculation with EaseInQuad
                 float alpha = MathHelper.Lerp(2f, 0f, MathHelper.Clamp(EasingUtils.EaseInQuad(prog1), 0, 1f));
                 Color color1 = Color.Lerp(Color.Red, Color.Black, EasingUtils.EaseOutQuint(prog1)) * alpha;
                 Color color2 = Color.Lerp(Color.Red, Color.Black, EasingUtils.EaseOutQuint(prog2)) * alpha;
