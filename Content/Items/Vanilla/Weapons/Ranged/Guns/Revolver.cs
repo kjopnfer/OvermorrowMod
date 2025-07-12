@@ -2,9 +2,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Items.Guns;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 {
@@ -12,22 +13,19 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
     {
         public override string Texture => AssetDirectory.Resprites + "Revolver";
         public override int ParentItem => ItemID.Revolver;
-        public override GunType GunType => GunType.Revolver;
+        public override WeaponType WeaponType => WeaponType.Revolver;
 
-        public override void SafeSetDefaults()
-        {
-            new GunBuilder(this)
-                .AsType(GunType.Revolver)
-                .WithMaxShots(6)
-                .WithReloadTime(60)
-                .WithRecoil(10)
-                .WithSound(SoundID.Item41)
-                .WithReloadZones((45, 60))
-                .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
-                .WithBulletPosition(new Vector2(15, 16), new Vector2(15, -6))
-                .WithScale(0.85f)
-                .Build();
-        }
+        public override GunStats BaseStats => new GunBuilder()
+            .AsRevolver()
+            .WithMaxShots(6)
+            .WithReloadTime(60)
+            .WithRecoil(10)
+            .WithShootSound(SoundID.Item41)
+            .WithClickZone(45, 60)
+            .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
+            .WithBulletShootPosition(new Vector2(15, 16), new Vector2(15, -6))
+            .WithProjectileScale(0.85f)
+            .Build();
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
         {
@@ -49,19 +47,25 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             GunEffects.CreateSmoke(shootPosition, velocity);
         }
 
-        public override void OnReloadEnd(Player player)
+        protected override void OnReloadComplete(Player player, bool wasSuccessful)
         {
             DropMultipleCasings(Projectile, player, 6);
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
+        protected override void OnReloadSuccessCore(Player player)
         {
-            BonusDamage = (int)(baseDamage * 0.2f);
+            // Perfect reload gives 20% damage bonus
+            CurrentStats.BonusDamage = (int)(Projectile.damage * 0.2f);
         }
 
-        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
+        protected override void OnReloadZoneHit(Player player, int zoneIndex, int clicksLeft)
         {
-            if (clicksLeft == 0) reloadTime = 0;
+            // If this is the last zone hit, instantly complete the reload
+            if (clicksLeft == 0)
+            {
+                // Set reload time to 0 to complete instantly
+                reloadTime = 0;
+            }
         }
     }
 }

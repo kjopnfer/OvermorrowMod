@@ -1,75 +1,38 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Terraria.Audio;
-using OvermorrowMod.Common.Weapons.Guns;
-using OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Globals
 {
-    public class GunStats
-    {
-        public int GunType;
-        public int GunDamage;
-        public GunType WeaponType;
-
-        public GunStats(int GunType, int GunDamage, GunType WeaponType)
-        {
-            this.GunType = GunType;
-            this.GunDamage = GunDamage;
-            this.WeaponType = WeaponType;
-        }
-    }
-
-    // TODO: Generalize this to not only be guns
     public class GlobalGun : GlobalItem
     {
         public override bool InstancePerEntity => true;
 
-        public GunType GunType = GunType.None;
-
-        public Dictionary<int, GunStats> OverridedGuns = new Dictionary<int, GunStats>()
+        /// <summary>
+        /// Maps vanilla gun items to their corresponding HeldGun projectile types.
+        /// </summary>
+        public static Dictionary<int, int> VanillaGunReplacements = new Dictionary<int, int>()
         {
-            { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<BoomstickHeld>(), 20, GunType.Shotgun) },
-            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<HandgunHeld>(), 22, GunType.Handgun) },
-            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<MinisharkHeld>(), 15, GunType.MachineGun) },
-            { ItemID.Revolver, new GunStats(ModContent.ProjectileType<RevolverHeld>(), 30, GunType.Revolver) },
-            { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrelHeld>(), 20, GunType.Shotgun) },
-            { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<UndertakerHeld>(), 13, GunType.Revolver) },
-            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlasterHeld>(), 32, GunType.Handgun) },
-            { ItemID.Musket, new GunStats(ModContent.ProjectileType<MusketHeld>(), 56, GunType.Musket) }
+            { ItemID.Boomstick, ModContent.ProjectileType<BoomstickHeld>() },
+            { ItemID.Handgun, ModContent.ProjectileType<HandgunHeld>() },
+            { ItemID.Minishark, ModContent.ProjectileType<MinisharkHeld>() },
+            { ItemID.Revolver, ModContent.ProjectileType<RevolverHeld>() },
+            { ItemID.QuadBarrelShotgun, ModContent.ProjectileType<QuadBarrelHeld>() },
+            { ItemID.TheUndertaker, ModContent.ProjectileType<UndertakerHeld>() },
+            { ItemID.PhoenixBlaster, ModContent.ProjectileType<PhoenixBlasterHeld>() },
+            { ItemID.Musket, ModContent.ProjectileType<MusketHeld>() }
         };
-
-        private string ConvertWeaponTypeString(GunType weaponType)
-        {
-            switch (weaponType)
-            {
-                case GunType.MachineGun:
-                    return "Machine Gun";
-                case GunType.SubMachineGun:
-                    return "Submachine Gun";
-                default:
-                    return weaponType.ToString();
-            }
-        }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
-            //if (GunType.ToString() != "None")
-            //    tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(GunType) + "]"));
-            //if (GunType.ToString() != "None")
-            //    tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:bruh]"));
-
-            /*if (MeleeType.ToString() != "None")
-                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + MeleeType.ToString() + " Type]"));*/
-
-            if (OverridedGuns.ContainsKey(item.type))
+            if (VanillaGunReplacements.ContainsKey(item.type))
             {
                 string tooltipKey = item.type switch
                 {
@@ -84,7 +47,6 @@ namespace OvermorrowMod.Core.Globals
                 if (Language.Exists(localizationKey))
                 {
                     tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", Language.GetTextValue(localizationKey)));
-                    //tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", "bruh"));
                 }
             }
 
@@ -93,34 +55,56 @@ namespace OvermorrowMod.Core.Globals
 
         public override void SetDefaults(Item item)
         {
-            if (OverridedGuns.ContainsKey(item.type))
+            if (VanillaGunReplacements.ContainsKey(item.type))
             {
-                GunStats gun = OverridedGuns[item.type];
-                item.shoot = gun.GunType;
-                item.damage = gun.GunDamage;
+                // Set up the item to use our custom gun system
+                int projectileType = VanillaGunReplacements[item.type];
+                item.shoot = projectileType;
                 item.noUseGraphic = true;
-                item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
+                item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // Silent sound
 
-                GunType = gun.WeaponType;
+                // Apply item-specific tweaks
+                ApplyItemSpecificTweaks(item);
             }
+        }
 
-            if (item.type == ItemID.Handgun) item.useTime = item.useAnimation = 18;
-            if (item.type == ItemID.Minishark)
+        /// <summary>
+        /// Apply specific tweaks to individual vanilla guns that can't be handled by the stats system.
+        /// </summary>
+        private void ApplyItemSpecificTweaks(Item item)
+        {
+            switch (item.type)
             {
-                item.crit = 1;
-                item.useTime = item.useAnimation = 6;
+                case ItemID.Handgun:
+                    item.useTime = item.useAnimation = 18;
+                    break;
+
+                case ItemID.Minishark:
+                    item.crit = 1;
+                    item.useTime = item.useAnimation = 6;
+                    break;
+
+                    // Add other specific tweaks here as needed
             }
         }
 
         public override void HoldItem(Item item, Player player)
         {
-            if (ModContent.GetModProjectile(item.shoot) is HeldGun && player.ownedProjectileCounts[player.HeldItem.shoot] < 1)
-                Projectile.NewProjectile(null, player.Center, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI);
+            // Automatically spawn the held gun projectile when holding a replaced vanilla gun
+            if (VanillaGunReplacements.ContainsKey(item.type))
+            {
+                int projectileType = VanillaGunReplacements[item.type];
+                if (player.ownedProjectileCounts[projectileType] < 1)
+                {
+                    Projectile.NewProjectile(null, player.Center, Vector2.Zero, projectileType, item.damage, item.knockBack, player.whoAmI);
+                }
+            }
         }
 
         public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player)
         {
-            if (OverridedGuns.ContainsKey(weapon.type))
+            // Prevent vanilla guns from consuming ammo - let the HeldGun handle it
+            if (VanillaGunReplacements.ContainsKey(weapon.type))
             {
                 return false;
             }
@@ -130,9 +114,11 @@ namespace OvermorrowMod.Core.Globals
 
         public override bool CanUseItem(Item item, Player player)
         {
-            if (OverridedGuns.ContainsKey(item.type))
+            // Prevent using the item if the held gun projectile already exists
+            if (VanillaGunReplacements.ContainsKey(item.type))
             {
-                return player.ownedProjectileCounts[item.shoot] <= 0;
+                int projectileType = VanillaGunReplacements[item.type];
+                return player.ownedProjectileCounts[projectileType] <= 0;
             }
 
             return base.CanUseItem(item, player);
@@ -140,21 +126,40 @@ namespace OvermorrowMod.Core.Globals
 
         public override void ModifyShootStats(Item item, Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            if (OverridedGuns.ContainsKey(item.type))
+            // Redirect the projectile type to our custom HeldGun
+            if (VanillaGunReplacements.ContainsKey(item.type))
             {
-                type = item.shoot;
+                type = VanillaGunReplacements[item.type];
             }
         }
 
         public override bool Shoot(Item item, Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (OverridedGuns.ContainsKey(item.type))
+            // Handle shooting for replaced vanilla guns
+            if (VanillaGunReplacements.ContainsKey(item.type))
             {
-                Projectile.NewProjectile(null, position, velocity, type, damage, knockback, player.whoAmI);
-                return false;
+                int projectileType = VanillaGunReplacements[item.type];
+                Projectile.NewProjectile(null, position, velocity, projectileType, damage, knockback, player.whoAmI);
+                return false; // Prevent vanilla shooting
             }
 
             return base.Shoot(item, player, source, position, velocity, type, damage, knockback);
+        }
+
+        /// <summary>
+        /// Helper method to check if an item is a replaced vanilla gun.
+        /// </summary>
+        public static bool IsReplacedVanillaGun(int itemType)
+        {
+            return VanillaGunReplacements.ContainsKey(itemType);
+        }
+
+        /// <summary>
+        /// Helper method to get the HeldGun projectile type for a vanilla gun.
+        /// </summary>
+        public static int GetHeldGunProjectileType(int itemType)
+        {
+            return VanillaGunReplacements.TryGetValue(itemType, out int projectileType) ? projectileType : -1;
         }
     }
 }

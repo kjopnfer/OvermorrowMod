@@ -97,16 +97,6 @@ namespace OvermorrowMod.Common.Utilities
                 }
             }
         }
-
-        public static void SetWeaponType(this Item item, GunType gunType)
-        {
-            item.GetGlobalItem<GlobalGun>().GunType = gunType;
-        }
-
-        public static GunType GetWeaponType(this Item item)
-        {
-            return item.GetGlobalItem<GlobalGun>().GunType;
-        }
         #endregion
 
         #region Tooltips
