@@ -9,8 +9,8 @@ namespace OvermorrowMod.Common.Primitives.Trails
     {
         protected float offset;
         private bool useOffset;
-        public SimpleTrail(int length, Texture2D texture, bool useOffset = false, Effect effect = null)
-            : base(length, texture, effect)
+        public SimpleTrail(int length, Texture2D defaultTexture, bool useOffset = false, Effect effect = null)
+            : base(length, defaultTexture, effect)
         {
             this.useOffset = useOffset;
         }

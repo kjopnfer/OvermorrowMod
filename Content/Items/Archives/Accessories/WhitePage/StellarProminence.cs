@@ -25,12 +25,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 new TrailConfig(
                     typeof(LaserTrail),
                     progress => Color.Lerp(Color.White, Color.White, progress) * MathHelper.SmoothStep(0, 1, progress),
-                    progress => 10
+                    progress => 10,
+                    null
                 ),
                 new TrailConfig(
                     typeof(FireTrail),
                     progress => DrawUtils.ColorLerp3(Color.White, Color.White, Color.White, progress) *  MathHelper.SmoothStep(0, 1, progress),
-                    progress => 20
+                    progress => 20,
+                    null
                 )
             };
         }

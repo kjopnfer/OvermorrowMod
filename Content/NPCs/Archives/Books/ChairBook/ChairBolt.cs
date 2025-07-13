@@ -28,12 +28,14 @@ namespace OvermorrowMod.Content.NPCs
                 new TrailConfig(
                     typeof(LaserTrail),
                     progress => Color.Lerp(Color.Purple, Color.Orange, progress) * MathHelper.SmoothStep(0, 1, progress),
-                    progress => MathHelper.Lerp(30, 31, progress)
+                    progress => MathHelper.Lerp(30, 31, progress),
+                    null
                 ),
                 new TrailConfig(
                     typeof(LaserTrail),
                     progress => DrawUtils.ColorLerp3(Color.HotPink, Color.HotPink, Color.Orange, progress) * 0.5f *  MathHelper.SmoothStep(0, 1, progress),
-                    progress => MathHelper.Lerp(50, 61, progress)
+                    progress => MathHelper.Lerp(50, 61, progress),
+                    null
                 )
             };
         }

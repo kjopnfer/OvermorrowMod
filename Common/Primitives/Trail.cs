@@ -12,7 +12,7 @@ namespace OvermorrowMod.Common.Primitives
     {
         protected Effect Effect { get; }
         public List<VertexPositionColorTexture> Vertices { get; } = new List<VertexPositionColorTexture>();
-        protected Texture2D Texture { get; }
+        protected Texture2D Texture => Config?.TrailTexture ?? _defaultTexture;
         protected TrailPositionBuffer Positions { get; }
         public bool Dying = false;
         public bool Dead = false;
@@ -23,6 +23,7 @@ namespace OvermorrowMod.Common.Primitives
         public bool Pixelated = false;
 
         private TrailConfig _config;
+        private readonly Texture2D _defaultTexture;
 
         public TrailConfig Config
         {
@@ -34,10 +35,10 @@ namespace OvermorrowMod.Common.Primitives
             }
         }
 
-        protected Trail(int length, Texture2D texture, Effect effect = null)
+        protected Trail(int length, Texture2D defaultTexture, Effect effect = null)
         {
             Positions = new TrailPositionBuffer(length);
-            Texture = texture;
+            _defaultTexture = defaultTexture;
             Effect = effect ?? OvermorrowModFile.Instance.TrailShader.Value;
         }
 

@@ -25,13 +25,15 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             {
                 new TrailConfig(
                     typeof(LaserTrail),
-                    progress => Color.Lerp(Color.DarkGray, Color.Black, progress) * MathHelper.SmoothStep(0, 1, progress),
-                    progress => 30
+                    progress => Color.Lerp(Color.White, Color.White, progress) * MathHelper.SmoothStep(0, 1, progress) * 0,
+                    progress => 30,
+                    null
                 ),
                 new TrailConfig(
                     typeof(LaserTrail),
                     progress => Color.Lerp(new Color(202, 188, 255), new Color(108, 108, 224), progress) *  MathHelper.SmoothStep(0, 1, progress),
-                    progress => 20
+                    progress => 20,
+                    null
                 )
             };
         }
