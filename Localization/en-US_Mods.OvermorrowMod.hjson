@@ -555,4 +555,5 @@ Projectiles: {
 	PatronusBow_Held.DisplayName: Patronus Bow_ Held
 	Patronus.DisplayName: Patronus
 	WispArrow.DisplayName: Wisp Arrow
+	WispArrowExplosion.DisplayName: Wisp Arrow
 }

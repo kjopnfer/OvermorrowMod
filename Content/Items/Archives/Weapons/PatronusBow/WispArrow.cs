@@ -6,6 +6,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
@@ -286,45 +287,52 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnKill(int timeLeft)
         {
+            bool isPowerShot = Projectile.GetGlobalProjectile<GlobalProjectiles>().IsPowerShot;
+
             float randomScale = Main.rand.NextFloat(5f, 10f);
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D texture2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_04", AssetRequestMode.ImmediateLoad).Value;
-            float time = ModUtils.SecondsToTicks(0.4f);
             Color color = new Color(202, 188, 255);
-            var lightOrb = new Circle(texture, time, canGrow: true, useSineFade: true)
-            {
-                rotationAmount = 0.05f
-            };
+            float time = ModUtils.SecondsToTicks(0.4f);
 
-            for (int _ = 0; _ < 8; _++)
+            if (isPowerShot)
             {
-                float orbScale = 0.2f;
-                ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale, 0.2f, useAdditiveBlending: true);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WispArrowExplosion>(), Projectile.damage, 4f, Projectile.owner);
+                return;
 
-                lightOrb = new Circle(texture2, time, canGrow: true, useSineFade: true)
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
+                Texture2D texture2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_04", AssetRequestMode.ImmediateLoad).Value;
+                var lightOrb = new Circle(texture, time, canGrow: true, useSineFade: true)
                 {
                     rotationAmount = 0.05f
                 };
-                ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale * 2, 0.2f, useAdditiveBlending: true);
+
+                for (int _ = 0; _ < 8; _++)
+                {
+                    float orbScale = 0.2f;
+                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale, 0.2f, useAdditiveBlending: true);
+
+                    lightOrb = new Circle(texture2, time, canGrow: true, useSineFade: true)
+                    {
+                        rotationAmount = 0.05f
+                    };
+                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale * 2, 0.2f, useAdditiveBlending: true);
+                }
             }
 
             Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06", AssetRequestMode.ImmediateLoad).Value;
-            for (int i = 0; i < 16; i++)
+            var numSparks = 16;
+            for (int i = 0; i < numSparks; i++)
             {
-                randomScale = Main.rand.NextFloat(0.1f, 0.2f);
+                randomScale = isPowerShot ? Main.rand.NextFloat(0.1f, 0.2f) : Main.rand.NextFloat(0.05f, 0.125f);
 
-                Vector2 randomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(1, 3);
+                Vector2 direction = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi);
+                float randomVelocity = isPowerShot ? Main.rand.NextFloat(1, 3) : Main.rand.NextFloat(0.5f, 1.5f);
 
                 var lightSpark = new Spark(sparkTexture, 0f, true, 0f)
                 {
                     endColor = new Color(108, 108, 224)
                 };
-                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, randomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, direction * randomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
-
-
-            base.OnKill(timeLeft);
         }
 
         private void DrawPrimitives(List<VertexPositionColorTexture> vertices, Texture2D texture, Effect effect)
@@ -375,6 +383,77 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
 
             return base.PreDraw(ref lightColor);
+        }
+    }
+
+    public class WispArrowExplosion : ModProjectile
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public override void SetDefaults()
+        {
+            Projectile.width = 128;
+            Projectile.height = 128;
+            Projectile.friendly = true;
+            Projectile.timeLeft = ModUtils.SecondsToTicks(1);
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = ModUtils.SecondsToTicks(12);
+
+            Projectile.Opacity = 0;
+            Projectile.DamageType = DamageClass.Ranged;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            float randomScale = Main.rand.NextFloat(5f, 10f);
+            Color color = new Color(202, 188, 255);
+            float time = ModUtils.SecondsToTicks(0.4f);
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D texture2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_04", AssetRequestMode.ImmediateLoad).Value;
+            var lightOrb = new Circle(texture, time, canGrow: true, useSineFade: true)
+            {
+                rotationAmount = 0.05f
+            };
+
+            for (int _ = 0; _ < 8; _++)
+            {
+                float orbScale = 0.2f;
+                ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale, 0.2f, useAdditiveBlending: true);
+
+                lightOrb = new Circle(texture2, time, canGrow: true, useSineFade: true)
+                {
+                    rotationAmount = 0.05f
+                };
+                ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale * 2, 0.2f, useAdditiveBlending: true);
+            }
+
+
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06", AssetRequestMode.ImmediateLoad).Value;
+            var numSparks = 16;
+            for (int i = 0; i < numSparks; i++)
+            {
+                randomScale = Main.rand.NextFloat(0.1f, 0.2f);
+
+                Vector2 direction = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi);
+                float randomVelocity = Main.rand.NextFloat(1, 3);
+
+                var lightSpark = new Spark(sparkTexture, 0f, true, 0f)
+                {
+                    endColor = new Color(108, 108, 224)
+                };
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, direction * randomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
+            }
+        }
+
+        public override void AI()
+        {
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            base.OnHitNPC(target, hit, damageDone);
         }
     }
 }
