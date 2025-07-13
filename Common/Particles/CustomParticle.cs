@@ -13,7 +13,7 @@ namespace OvermorrowMod.Common.Particles
         public ParticleInstance particle;
 
         public float rotationAmount = 0f;
-
+        public int intensity = 1;
         public virtual void OnSpawn() { }
         public virtual void Update() { }
         public virtual string Texture { get; protected set; } = AssetDirectory.Empty;

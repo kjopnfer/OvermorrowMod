@@ -99,11 +99,14 @@ namespace OvermorrowMod.Content.Particles
 
             Vector2 origin = texture.Size() / 2f;
 
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
-                drawColor * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
+            for (int _ = 0; _ < intensity; _++)
+            {
+                spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
+                    drawColor * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
 
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
-                drawColor * particle.alpha * 0.7f, particle.rotation, origin, particle.scale * 1.5f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
+                    drawColor * particle.alpha * 0.7f, particle.rotation, origin, particle.scale * 1.5f, SpriteEffects.None, 0f);
+            }
         }
     }
 }
