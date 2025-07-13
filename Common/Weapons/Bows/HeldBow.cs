@@ -59,11 +59,23 @@ namespace OvermorrowMod.Common.Weapons.Bows
         public int LoadedArrowItemType { private set; get; }
 
         private int AmmoSlotID;
-        private int flashCounter = 0;
+        protected int flashCounter = 0;
 
         public Player player => Main.player[Projectile.owner];
         public ref float drawCounter => ref Projectile.ai[0];
         public ref float delayCounter => ref Projectile.ai[1];
+
+        /// <summary>
+        /// Override this method to provide a custom arrow texture for drawing while charging.
+        /// Return null to use the default arrow texture.
+        /// </summary>
+        /// <param name="defaultTexture">The default arrow texture that would be used</param>
+        /// <param name="isPowerShot">Whether this is currently a power shot</param>
+        /// <returns>Custom texture to use, or null to use default</returns>
+        protected virtual Texture2D GetCustomArrowTexture(Texture2D defaultTexture, bool isPowerShot)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Draws visual effects while the bow is being charged.
@@ -448,9 +460,13 @@ namespace OvermorrowMod.Common.Weapons.Bows
             Color lerpColor = Color.Lerp(color, Color.White, flashProgress);
 
             Main.instance.LoadProjectile(LoadedArrowType);
-            Texture2D texture = TextureAssets.Projectile[LoadedArrowType].Value;
+            Texture2D defaultTexture = TextureAssets.Projectile[LoadedArrowType].Value;
 
-            Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, lerpColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+            //Texture2D texture = TextureAssets.Projectile[LoadedArrowType].Value;
+            bool isPowerShot = drawCounter >= ModifiedChargeTime;
+            Texture2D finalTexture = GetCustomArrowTexture(defaultTexture, isPowerShot) ?? defaultTexture;
+
+            Main.spriteBatch.Draw(finalTexture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, lerpColor, Projectile.rotation + MathHelper.PiOver2, finalTexture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);
         }

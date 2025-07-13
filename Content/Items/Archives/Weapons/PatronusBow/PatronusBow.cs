@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Weapons.Bows;
 using OvermorrowMod.Core.Interfaces;
@@ -27,6 +28,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 PositionOffset = new Vector2(12, 0),
                 StringPositions = (new Vector2(-4, 18), new Vector2(-4, -16))
             };
+        }
+
+        protected override Texture2D GetCustomArrowTexture(Texture2D defaultTexture, bool isPowerShot)
+        {
+            return ModContent.Request<Texture2D>(AssetDirectory.ArchiveProjectiles + "PatronusArrow").Value;
         }
 
         protected override int GetArrowTypeForShot(int defaultArrowType, bool isPowerShot)
