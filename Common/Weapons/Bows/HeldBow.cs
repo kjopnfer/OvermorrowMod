@@ -413,6 +413,8 @@ namespace OvermorrowMod.Common.Weapons.Bows
 
         private void DrawBow(Color lightColor)
         {
+            var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+
             Vector2 topPosition = Projectile.Center + currentStats.StringPositions.Item1.RotatedBy(Projectile.rotation);
             Vector2 bottomPosition = Projectile.Center + currentStats.StringPositions.Item2.RotatedBy(Projectile.rotation);
 
@@ -426,7 +428,7 @@ namespace OvermorrowMod.Common.Weapons.Bows
             Utils.DrawLine(Main.spriteBatch, bottomPosition, armPosition, color, currentStats.StringColor, 1.25f);
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, 1f, spriteEffects, 1);
         }
 
         private void DrawArrow(Color lightColor)
