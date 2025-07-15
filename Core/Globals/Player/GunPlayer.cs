@@ -25,10 +25,10 @@ namespace OvermorrowMod.Core.Globals
         public bool FarlanderPierce = false;
         public bool WildEyeCrit = false;
 
-        public int MusketInaccuracy = 0;
         public int GraniteEnergyCount = 0;
         public float FarlanderCharge = 0;
         public int FarlanderSpeedBoost = 0;
+        public int MusketInaccuracy = 0;
 
         //public Dictionary<int, GraniteShard> ShardList = new Dictionary<int, GraniteShard>();
 

@@ -95,13 +95,22 @@ namespace OvermorrowMod.Common.Weapons.Bows
         public virtual void DrawArrowEffects(SpriteBatch spriteBatch, Vector2 arrowPosition, float chargeProgress) { }
 
         /// <summary>
+        /// Draws visual effects before the actual bow drawing.
+        /// Override this method to add bow-specific effects like auras or overlays.
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to draw with.</param>
+        /// <param name="bowPosition">World position of the bow.</param>
+        /// <param name="chargeProgress">Charging progress from 0.0 (not charged) to 1.0 (fully charged).</param>
+        public virtual void PreDrawBowEffects(SpriteBatch spriteBatch, Vector2 bowPosition, float chargeProgress) { }
+
+        /// <summary>
         /// Draws visual effects on the bow itself.
         /// Override this method to add bow-specific effects like auras or overlays.
         /// </summary>
         /// <param name="spriteBatch">The SpriteBatch to draw with.</param>
         /// <param name="bowPosition">World position of the bow.</param>
         /// <param name="chargeProgress">Charging progress from 0.0 (not charged) to 1.0 (fully charged).</param>
-        public virtual void DrawBowEffects(SpriteBatch spriteBatch, Vector2 bowPosition, float chargeProgress) { }
+        public virtual void PostDrawBowEffects(SpriteBatch spriteBatch, Vector2 bowPosition, float chargeProgress) { }
 
         /// <summary>
         /// Called every frame during AI updates while the bow is being charged.
@@ -372,11 +381,13 @@ namespace OvermorrowMod.Common.Weapons.Bows
         {
             float chargeProgress = Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime;
 
+            PreDrawBowEffects(Main.spriteBatch, Projectile.Center, chargeProgress);
+
             DrawBow(lightColor);
             DrawArrow(lightColor);
 
             // Draw bow-specific effects first
-            DrawBowEffects(Main.spriteBatch, Projectile.Center, chargeProgress);
+            PostDrawBowEffects(Main.spriteBatch, Projectile.Center, chargeProgress);
 
             // Draw arrow-specific effects
             if (LoadedArrowItemType != -1)

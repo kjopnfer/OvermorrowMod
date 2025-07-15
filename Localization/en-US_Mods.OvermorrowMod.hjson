@@ -120,6 +120,16 @@ TooltipEntities: {
 		}
 	}
 
+	StarboundStag: {
+		DisplayName: Starbound Stag
+
+		Description: {
+			Line0: + Leaves a trail of lingering stars in its wake
+			Line1: + For 10 seconds, stars deal contact damage to any enemies
+			Line2: + Enemies damaged by these have their damage reduced by 4
+		}
+	}
+
 	StellarCorona: {
 		DisplayName: Stellar Corona
 
@@ -473,7 +483,18 @@ Items: {
 
 	PatronusBow: {
 		DisplayName: Rangifel
-		Tooltip: ""
+		Tooltip:
+			'''
+			Replaces your arrows with <Projectile:Wisp Arrows>
+			{Keyword:Focus}:
+			- Enchant your <Projectile:Wisp Arrows> to explode, dealing 100% damage
+			- If you've dealt 200 or more damage, fire a <Projectile:Starbound Stag> instead
+			'''
+		Flavor:
+			'''
+			Shaped in the image of the Deer God's crown, 
+			whose heralds blessed scholars with divine knowledge.
+			'''
 	}
 }
 

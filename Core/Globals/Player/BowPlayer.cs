@@ -6,10 +6,14 @@ namespace OvermorrowMod.Core.Globals
 {
     public class BowPlayer : ModPlayer
     {
-        public int ArrowArmorPenetration;
-        //public int PracticeTargetCounter = 0;
         public List<IBowModifier> ActiveModifiers { get; private set; } = new List<IBowModifier>();
         public List<IBowDrawEffects> ActiveDrawEffects { get; private set; } = new List<IBowDrawEffects>();
+
+
+        public int ArrowArmorPenetration;
+        //public int PracticeTargetCounter = 0;
+   
+        public int PatronusBowDamage = 0;
 
         public override void ResetEffects()
         {

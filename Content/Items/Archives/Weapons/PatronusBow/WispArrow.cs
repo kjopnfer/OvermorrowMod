@@ -30,10 +30,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     null
                 ),
                 new TrailConfig(
-                    typeof(LaserTrail),
+                    typeof(FireTrail),
                     progress => Color.Lerp(new Color(202, 188, 255), new Color(108, 108, 224), progress) *  MathHelper.SmoothStep(0, 1, progress),
                     progress => 20,
-                    null
+                    ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value
                 )
             };
         }
@@ -284,7 +284,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
                 ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center + randomOffset, randomVelocity, color, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
-            base.OnHitNPC(target, hit, damageDone);
+
+            Player player = Main.player[Projectile.owner];
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            bowPlayer.PatronusBowDamage += Projectile.damage;
         }
 
         public override void OnKill(int timeLeft)
@@ -299,25 +302,6 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WispArrowExplosion>(), Projectile.damage, 4f, Projectile.owner);
                 return;
-
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
-                Texture2D texture2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_04", AssetRequestMode.ImmediateLoad).Value;
-                var lightOrb = new Circle(texture, time, canGrow: true, useSineFade: true)
-                {
-                    rotationAmount = 0.05f
-                };
-
-                for (int _ = 0; _ < 8; _++)
-                {
-                    float orbScale = 0.2f;
-                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale, 0.2f, useAdditiveBlending: true);
-
-                    lightOrb = new Circle(texture2, time, canGrow: true, useSineFade: true)
-                    {
-                        rotationAmount = 0.05f
-                    };
-                    ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale * 2, 0.2f, useAdditiveBlending: true);
-                }
             }
 
             Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06", AssetRequestMode.ImmediateLoad).Value;
@@ -455,7 +439,9 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            base.OnHitNPC(target, hit, damageDone);
+            Player player = Main.player[Projectile.owner];
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            bowPlayer.PatronusBowDamage += Projectile.damage;
         }
     }
 }
