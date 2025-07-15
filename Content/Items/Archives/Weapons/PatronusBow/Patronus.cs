@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Projectile.width = 58;
             Projectile.height = 70;
             Projectile.friendly = true;
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = ModUtils.SecondsToTicks(6);
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
@@ -50,6 +50,8 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 trailPositions.Add(trailPosition);
                 trailRotations.Add(Projectile.rotation);
             }
+
+            TransformEffect();
         }
 
         private float fadeInTime = 20f; // Frames to fade in
@@ -59,31 +61,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         private List<Vector2> trailPositions = new List<Vector2>();
         private List<float> trailRotations = new List<float>();
         private int MAX_TRAIL_LENGTH = 100;
-        private int INITIAL_TRAIL_LENGTH = 50;
+        private int INITIAL_TRAIL_LENGTH = 0;
+        private int DELAY = 10;
         public override void AI()
         {
-            AICounter++;
-            Projectile.rotation = Projectile.velocity.ToRotation();
-
-            float fadeOpacity = GetFadeOpacity();
-            Projectile.Opacity = fadeOpacity;
-
-            UpdateTrail();
-
-            if (++Projectile.frameCounter >= 5)
-            {
-                Projectile.frameCounter = 0;
-                Projectile.frame++;
-
-                // Reset to frame 0 after reaching frame 8 (9 total frames: 0 to 8)
-                if (Projectile.frame >= 9)
-                {
-                    Projectile.frame = 0;
-                }
-            }
-
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value;
-
             var glowParticle = new Circle(texture, ModUtils.SecondsToTicks(10), useSineFade: false)
             {
                 endColor = new Color(202, 188, 255),
@@ -100,7 +82,48 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 fadeIn = true
             };
 
-            if (Projectile.timeLeft % 3 == 0)
+            if (AICounter == DELAY)
+            {
+                Vector2 currentCenter = Projectile.Center;
+                Vector2 backwardDirection = -Vector2.Normalize(Projectile.velocity);
+
+                for (int i = 0; i < 25; i++)
+                {
+                    // Each position is 2 pixels further back
+                    Vector2 trailPosition = currentCenter + (backwardDirection * i * 6f);
+                    trailPositions.Add(trailPosition);
+                    trailRotations.Add(Projectile.rotation);
+                }
+
+                Projectile.velocity = Vector2.Normalize(Projectile.velocity) * 5;
+            }
+
+            AICounter++;
+            Projectile.rotation = Projectile.velocity.ToRotation();
+
+            if (AICounter > DELAY)
+            {
+                UpdateTrail();
+
+                float fadeOpacity = GetFadeOpacity();
+                Projectile.Opacity = fadeOpacity;
+            }
+
+
+
+            if (++Projectile.frameCounter >= 5)
+            {
+                Projectile.frameCounter = 0;
+                Projectile.frame++;
+
+                // Reset to frame 0 after reaching frame 8 (9 total frames: 0 to 8)
+                if (Projectile.frame >= 9)
+                {
+                    Projectile.frame = 0;
+                }
+            }
+
+            if (Projectile.timeLeft % 3 == 0 && AICounter > DELAY)
             {
                 Vector2 randomOffset = Main.rand.NextVector2Circular(64f, 64f);
                 float randomSpeed = Main.rand.NextFloat(0.5f, 1f);
@@ -109,18 +132,16 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     float scale = Main.rand.NextFloat(0.01f, 0.025f);
 
                     ParticleManager.CreateParticleDirect(
-                            glowParticle,
-                            Projectile.Center + randomOffset,
-                            -Vector2.Normalize(Projectile.velocity) * randomSpeed,
-                            new Color(108, 108, 224),
-                            1f,
-                            scale,
-                            Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                            ParticleDrawLayer.BehindNPCs,
-                            useAdditiveBlending: true
-                        );
-
-
+                        glowParticle,
+                        Projectile.Center + randomOffset,
+                        -Vector2.Normalize(Projectile.velocity) * randomSpeed,
+                        new Color(108, 108, 224),
+                        1f,
+                        scale,
+                        Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                        ParticleDrawLayer.BehindNPCs,
+                        useAdditiveBlending: true
+                    );
                 }
 
                 if (Main.rand.NextBool(3))
@@ -128,31 +149,88 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     randomOffset = Main.rand.NextVector2Circular(64f, 64f);
                     float scale2 = Main.rand.NextFloat(0.02f, 0.05f);
                     ParticleManager.CreateParticleDirect(
-                                starParticle,
-                                Projectile.Center + randomOffset,
-                                -Vector2.Normalize(Projectile.velocity) * randomSpeed,
-                                new Color(108, 108, 224),
-                                1f,
-                                scale2,
-                                Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                                ParticleDrawLayer.BehindNPCs,
-                                useAdditiveBlending: true
-                            );
+                        starParticle,
+                        Projectile.Center + randomOffset,
+                        -Vector2.Normalize(Projectile.velocity) * randomSpeed,
+                        new Color(108, 108, 224),
+                        1f,
+                        scale2,
+                        Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                        ParticleDrawLayer.BehindNPCs,
+                        useAdditiveBlending: true
+                    );
                 }
             }
-
 
             Lighting.AddLight(Projectile.Center, new Vector3(0.1f, 0.4f, 0.7f));
         }
 
+        private void TransformEffect()
+        {
+            Color color = new Color(202, 188, 255);
+            float randomScale = Main.rand.NextFloat(5f, 10f);
+            float time = ModUtils.SecondsToTicks(0.4f);
+
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06", AssetRequestMode.ImmediateLoad).Value;
+            var numSparks = 16;
+            for (int i = 0; i < numSparks; i++)
+            {
+                randomScale = Main.rand.NextFloat(0.1f, 0.2f);
+
+                Vector2 direction = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi);
+                float randomVelocity = Main.rand.NextFloat(1, 3);
+
+                var lightSpark = new Spark(sparkTexture, 0f, true, 0f)
+                {
+                    endColor = new Color(108, 108, 224)
+                };
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, direction * randomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
+            }
+
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
+            for (int _ = 0; _ < 16; _++)
+            {
+                randomScale = Main.rand.NextFloat(0.04f, 0.08f);
+                time = ModUtils.SecondsToTicks(Main.rand.NextFloat(0.5f, 1.2f));
+                Vector2 randomVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.7f, 0.9f);
+                Vector2 randomOffset = Main.rand.NextVector2Circular(16f, 16f);
+                var lightSpark = new Circle(texture, time, true, false)
+                {
+                    endColor = new Color(108, 108, 224),
+                    floatUp = true,
+                    doWaveMotion = false,
+                    intensity = 3
+                };
+
+                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center + randomOffset, randomVelocity, color, 1f, randomScale, 0f, useAdditiveBlending: true);
+            }
+
+            Texture2D circleTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value;
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 RandomVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(9, 11);
+
+                var impact = new Circle(circleTexture, ModUtils.SecondsToTicks(0.5f), canGrow: true, false)
+                {
+                    endColor = new Color(108, 108, 224),
+                    intensity = 4
+                };
+
+                randomScale = Main.rand.NextFloat(0.25f, 0.45f);
+                ParticleManager.CreateParticleDirect(impact, Projectile.Center, Vector2.Zero, new Color(108, 108, 224), 2f, 0.5f, MathHelper.Pi, useAdditiveBlending: true);
+            }
+        }
+
         private float GetFadeOpacity()
         {
-            float fadeOpacity = 1f;
+            if (AICounter < DELAY) return 0f;
 
+            float fadeOpacity = 1f;
             // Fade in at the beginning
-            if (AICounter < fadeInTime)
+            if (AICounter < fadeInTime + DELAY)
             {
-                fadeOpacity = AICounter / fadeInTime;
+                fadeOpacity = (AICounter - DELAY) / fadeInTime;
             }
             // Fade out at the end
             else if (Projectile.timeLeft < fadeOutTime)
@@ -169,10 +247,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             trailPositions.Insert(0, Projectile.Center);
             trailRotations.Insert(0, Projectile.rotation);
 
-            if (trailPositions.Count < MAX_TRAIL_LENGTH)
-            {
-                return;
-            }
+            if (trailPositions.Count < MAX_TRAIL_LENGTH) return;
 
             // Once at max length, remove the oldest position
             if (trailPositions.Count > MAX_TRAIL_LENGTH)
@@ -293,24 +368,26 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trailTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_02").Value;
-            Vector2 offset = new Vector2(200, 0).RotatedBy(Projectile.velocity.ToRotation());
-            var spriteEffects = Projectile.direction == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
-            //for (int _ = 0; _ < 2; _++)
+            if (AICounter > DELAY)
+            {
+                Texture2D trailTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_02").Value;
+                Vector2 offset = new Vector2(200, 0).RotatedBy(Projectile.velocity.ToRotation());
+                var spriteEffects = Projectile.direction == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
+                //for (int _ = 0; _ < 2; _++)
 
-            DrawTrail(Projectile.Center + offset, ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, new Color(108, 108, 224),
-                new Color(202, 188, 255), trailLength: 80, segmentSpacing: 16f, baseWidth: 120f);
+                DrawTrail(Projectile.Center + offset, ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, new Color(108, 108, 224),
+                    new Color(202, 188, 255), trailLength: 80, segmentSpacing: 16f, baseWidth: 120f);
 
-            offset = new Vector2(160, 0).RotatedBy(Projectile.velocity.ToRotation());
-            for (int _ = 0; _ < 2; _++)
-                DrawTrail(Projectile.Center + offset, trailTexture, Color.White, Color.MediumPurple, trailLength: 100, segmentSpacing: 16f, baseWidth: 70f);
+                offset = new Vector2(160, 0).RotatedBy(Projectile.velocity.ToRotation());
+                for (int _ = 0; _ < 2; _++)
+                    DrawTrail(Projectile.Center + offset, trailTexture, Color.White, Color.MediumPurple, trailLength: 100, segmentSpacing: 16f, baseWidth: 70f);
 
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
 
-            var textureHeight = texture.Height / 9;
-            Rectangle drawRectangle = new Rectangle(0, textureHeight * Projectile.frame, texture.Width, textureHeight);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, drawRectangle, Color.White * Projectile.Opacity, Projectile.rotation, drawRectangle.Size() / 2f, Projectile.scale, spriteEffects, 0);
-
+                var textureHeight = texture.Height / 9;
+                Rectangle drawRectangle = new Rectangle(0, textureHeight * Projectile.frame, texture.Width, textureHeight);
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, drawRectangle, Color.White * Projectile.Opacity, Projectile.rotation, drawRectangle.Size() / 2f, Projectile.scale, spriteEffects, 0);
+            }
 
             return false;
         }

@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             if (isPowerShot && BowPlayer.PatronusBowDamage >= 200)
             {
-                return ModContent.ProjectileType<Patronus>();
+                //return ModContent.ProjectileType<Patronus>();
             }
 
             return ModContent.ProjectileType<WispArrow>();
@@ -85,8 +85,9 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             if (isPowerShot && BowPlayer.PatronusBowDamage >= 200)
             {
                 BowPlayer.PatronusBowDamage = 0;
-                Vector2 direction = Vector2.Normalize(arrow.velocity);
-                arrow.velocity = direction * 8f;
+                arrow.ai[1] = 1;
+                //Vector2 direction = Vector2.Normalize(arrow.velocity);
+                //arrow.velocity = direction * 8f;
             }
 
             base.OnArrowFired(arrow, isPowerShot);
@@ -117,6 +118,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void SafeSetDefaults()
         {
+            //Item.damage = 1000;
             Item.damage = 32;
             Item.width = 24;
             Item.height = 72;

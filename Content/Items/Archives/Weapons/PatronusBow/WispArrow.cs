@@ -75,6 +75,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         private float fadeInTime = 20f; // Frames to fade in
         private float fadeOutTime = 30f; // Frames to fade out before despawn
         public ref float AICounter => ref Projectile.ai[0];
+        public ref float PatronusFlag => ref Projectile.ai[1];
 
         private List<Vector2> trailPositions = new List<Vector2>();
         private List<float> trailRotations = new List<float>();
@@ -116,18 +117,16 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     float scale = Main.rand.NextFloat(0.01f, 0.025f);
 
                     ParticleManager.CreateParticleDirect(
-                            glowParticle,
-                            Projectile.Center + randomOffset,
-                            -Vector2.Normalize(Projectile.velocity) * randomSpeed,
-                            new Color(108, 108, 224),
-                            1f,
-                            scale,
-                            Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                            ParticleDrawLayer.BehindNPCs,
-                            useAdditiveBlending: true
-                        );
-
-
+                        glowParticle,
+                        Projectile.Center + randomOffset,
+                        -Vector2.Normalize(Projectile.velocity) * randomSpeed,
+                        new Color(108, 108, 224),
+                        1f,
+                        scale,
+                        Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                        ParticleDrawLayer.BehindNPCs,
+                        useAdditiveBlending: true
+                    );
                 }
 
                 if (Main.rand.NextBool(3))
@@ -135,17 +134,23 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     randomOffset = Main.rand.NextVector2Circular(16f, 16f);
                     float scale2 = Main.rand.NextFloat(0.02f, 0.05f);
                     ParticleManager.CreateParticleDirect(
-                                starParticle,
-                                Projectile.Center + randomOffset,
-                                -Vector2.Normalize(Projectile.velocity) * randomSpeed,
-                                new Color(108, 108, 224),
-                                1f,
-                                scale2,
-                                Main.rand.NextFloat(0f, MathHelper.TwoPi),
-                                ParticleDrawLayer.BehindNPCs,
-                                useAdditiveBlending: true
-                            );
+                        starParticle,
+                        Projectile.Center + randomOffset,
+                        -Vector2.Normalize(Projectile.velocity) * randomSpeed,
+                        new Color(108, 108, 224),
+                        1f,
+                        scale2,
+                        Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                        ParticleDrawLayer.BehindNPCs,
+                        useAdditiveBlending: true
+                    );
                 }
+            }
+
+            if (PatronusFlag > 0 && AICounter == 15)
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Projectile.velocity) * 5, ModContent.ProjectileType<Patronus>(), Projectile.damage, 4f, Projectile.owner);
+                Projectile.Kill();
             }
 
             Lighting.AddLight(Projectile.Center, new Vector3(0.1f, 0.4f, 0.7f));
@@ -298,7 +303,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Color color = new Color(202, 188, 255);
             float time = ModUtils.SecondsToTicks(0.4f);
 
-            if (isPowerShot)
+            if (isPowerShot && PatronusFlag <= 0)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WispArrowExplosion>(), Projectile.damage, 4f, Projectile.owner);
                 return;
