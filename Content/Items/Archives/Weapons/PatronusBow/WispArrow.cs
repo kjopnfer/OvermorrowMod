@@ -55,6 +55,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Projectile.DamageType = DamageClass.Ranged;
         }
 
+        public override bool? CanDamage() => PatronusFlag <= 0;
         public override void OnSpawn(IEntitySource source)
         {
             Vector2 currentCenter = Projectile.Center;
@@ -83,6 +84,8 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         private int INITIAL_TRAIL_LENGTH = 50;
         public override void AI()
         {
+            if (PatronusFlag > 0) Projectile.tileCollide = false;
+
             AICounter++;
             Projectile.rotation = Projectile.velocity.ToRotation();
 
@@ -147,7 +150,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 }
             }
 
-            if (PatronusFlag > 0 && AICounter == 15)
+            if (PatronusFlag > 0 && AICounter == 6)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Projectile.velocity) * 5, ModContent.ProjectileType<Patronus>(), Projectile.damage, 4f, Projectile.owner);
                 Projectile.Kill();

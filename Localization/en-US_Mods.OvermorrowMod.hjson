@@ -124,9 +124,8 @@ TooltipEntities: {
 		DisplayName: Starbound Stag
 
 		Description: {
-			Line0: + Leaves a trail of lingering stars in its wake
+			Line0: + Leaves a trail of lingering stars
 			Line1: + For 10 seconds, stars deal contact damage to any enemies
-			Line2: + Enemies damaged by these have their damage reduced by 4
 		}
 	}
 
@@ -577,4 +576,5 @@ Projectiles: {
 	Patronus.DisplayName: Patronus
 	WispArrow.DisplayName: Wisp Arrow
 	WispArrowExplosion.DisplayName: Wisp Arrow
+	PatronusStar.DisplayName: Patronus Star
 }

@@ -101,12 +101,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             var title = Language.GetTextValue(LocalizationPath.TooltipEntities + "StarboundStag" + ".DisplayName");
             var line = Language.GetTextValue(LocalizationPath.TooltipEntities + "StarboundStag" + ".Description.Line0");
             var line2 = Language.GetTextValue(LocalizationPath.TooltipEntities + "StarboundStag" + ".Description.Line1");
-            var line3 = Language.GetTextValue(LocalizationPath.TooltipEntities + "StarboundStag" + ".Description.Line2");
 
             return new List<TooltipEntity>() {
                 new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "StarboundStag").Value,
                     title,
-                    [line, line2, line3],
+                    [line, line2],
                     30f,
                     ProjectileTooltipType.Projectile,
                     DamageClass.Ranged),

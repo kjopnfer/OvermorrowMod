@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Projectile.width = 58;
             Projectile.height = 70;
             Projectile.friendly = true;
-            Projectile.timeLeft = ModUtils.SecondsToTicks(6);
+            Projectile.timeLeft = ModUtils.SecondsToTicks(4);
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
@@ -162,7 +162,28 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 }
             }
 
+            SpawnStars();
+
             Lighting.AddLight(Projectile.Center, new Vector3(0.1f, 0.4f, 0.7f));
+        }
+
+        private void SpawnStars()
+        {
+            if (Projectile.timeLeft % 5 == 0 && AICounter > DELAY && Main.rand.NextBool(2))
+            {
+                Vector2 starSpawnOffset = Main.rand.NextVector2Circular(80f, 80f);
+                Vector2 starVelocity = Main.rand.NextVector2Circular(2f, 2f);
+
+                Projectile.NewProjectile(
+                    Projectile.GetSource_FromThis(),
+                    Projectile.Center + starSpawnOffset,
+                    starVelocity,
+                    ModContent.ProjectileType<PatronusStar>(),
+                    Projectile.damage / 2,
+                    Projectile.knockBack * 0.5f,
+                    Projectile.owner
+                );
+            }
         }
 
         private void TransformEffect()
