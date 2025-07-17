@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Items;

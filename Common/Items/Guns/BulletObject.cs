@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Weapons.Guns
+namespace OvermorrowMod.Common.Items.Guns
 {
     /// <summary>
     /// Represents a bullet in the gun's visual display with flexible modification support.

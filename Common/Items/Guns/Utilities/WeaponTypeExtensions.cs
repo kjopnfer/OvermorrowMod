@@ -1,8 +1,8 @@
-using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Core.Items;
 using Terraria.ID;
 
-namespace OvermorrowMod.Common.Weapons.Guns
+namespace OvermorrowMod.Common.Items.Guns
 {
     /// <summary>
     /// Extension methods for the WeaponType enum to provide gun-specific functionality

@@ -11,7 +11,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Weapons.Bows
+namespace OvermorrowMod.Common.Items.Bows
 {
     public abstract class HeldBow : ModProjectile
     {

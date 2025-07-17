@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Tooltips;
-using OvermorrowMod.Common.Weapons.Bows;
+using OvermorrowMod.Common.Items.Bows;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;

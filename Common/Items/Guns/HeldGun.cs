@@ -15,7 +15,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Weapons.Guns
+namespace OvermorrowMod.Common.Items.Guns
 {
     public abstract partial class HeldGun : ModProjectile, IProjectileClassification
     {

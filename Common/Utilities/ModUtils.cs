@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Tooltips;
-using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Core.Globals;
 using System.Collections.Generic;
 using Terraria;

@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Common.Items.Guns;
 using Terraria.Audio;
 
 namespace OvermorrowMod.Core.Items.Guns

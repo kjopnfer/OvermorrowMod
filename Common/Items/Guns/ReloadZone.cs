@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Weapons.Guns
+namespace OvermorrowMod.Common.Items.Guns
 {
     /// <summary>
     /// Defines a clickable zone in the reload bar used for the reloading mechanic.

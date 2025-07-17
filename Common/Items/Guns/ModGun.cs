@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Weapons.Guns
+namespace OvermorrowMod.Common.Items.Guns
 {
     /// <summary>
     /// Base class for all gun items. Automatically connects to a corresponding HeldGun projectile.

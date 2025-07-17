@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Items;

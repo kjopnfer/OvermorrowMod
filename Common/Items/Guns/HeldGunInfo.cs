@@ -1,4 +1,4 @@
-namespace OvermorrowMod.Common.Weapons.Guns
+namespace OvermorrowMod.Common.Items.Guns
 {
     public class HeldGunInfo
     {

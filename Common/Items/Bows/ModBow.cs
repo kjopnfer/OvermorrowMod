@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Weapons.Bows
+namespace OvermorrowMod.Common.Items.Bows
 {
     public abstract class ModBow<HeldProjectile> : ModItem where HeldProjectile : HeldBow
     {

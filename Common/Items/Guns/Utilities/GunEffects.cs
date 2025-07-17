@@ -7,7 +7,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Weapons.Guns
+namespace OvermorrowMod.Common.Items.Guns
 {
     public static class GunEffects
     {

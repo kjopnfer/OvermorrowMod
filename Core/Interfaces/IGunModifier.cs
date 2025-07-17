@@ -1,4 +1,4 @@
-using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Core.Items.Guns;
 using System.Collections.Generic;
 using Terraria;

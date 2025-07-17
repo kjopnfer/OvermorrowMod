@@ -3,7 +3,7 @@ using OvermorrowMod.Core.Items;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
-using OvermorrowMod.Common.Weapons.Guns;
+using OvermorrowMod.Common.Items.Guns;
 
 namespace OvermorrowMod.Common.Utilities
 {

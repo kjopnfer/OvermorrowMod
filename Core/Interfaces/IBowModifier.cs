@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common.Weapons.Bows;
+using OvermorrowMod.Common.Items.Bows;
 using OvermorrowMod.Core.Items.Bows;
 using Terraria;
 
