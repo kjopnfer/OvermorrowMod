@@ -23,9 +23,6 @@ namespace OvermorrowMod.Core.Globals
             Player player = Main.player[projectile.owner];
 
             AccessoryKeywords.TriggerProjectileSpawn(player, projectile, source);
-
-            //Main.NewText(projectile.Name + ", " + projectile.penetrate);
-            //ArtOfBallistics.OnSpawn(projectile, source);
         }
 
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
@@ -39,8 +36,6 @@ namespace OvermorrowMod.Core.Globals
             {
                 AccessoryKeywords.TriggerExecute(player, target);
             }
-
-            //ArtOfBallistics.OnHitNPC(projectile, target, hit, damageDone);
         }
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)

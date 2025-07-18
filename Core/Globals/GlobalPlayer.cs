@@ -47,20 +47,11 @@ namespace OvermorrowMod.Core.Globals
         {
             AccessoryKeywords.TriggerStrike(Player, target, hit, damageDone);
 
-            if (target.life <= 0)
-            {
-                AccessoryKeywords.TriggerExecute(Player, target);
-            }
         }
 
         public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)
         {
             AccessoryKeywords.TriggerStrike(Player, target, hit, damageDone);
-
-            if (target.life <= 0)
-            {
-                AccessoryKeywords.TriggerExecute(Player, target);
-            }
         }
 
         public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)

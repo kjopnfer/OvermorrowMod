@@ -69,7 +69,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     if (Main.rand.NextFloat() > 0.20f)
                         return false;
 
-
                     return true;
                 },
                 effect: (player, projectile, npc, hit, damageDone) =>

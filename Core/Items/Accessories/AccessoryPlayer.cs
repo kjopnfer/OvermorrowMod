@@ -2,6 +2,7 @@ using OvermorrowMod.Common.Items;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Items.Accessories
@@ -86,6 +87,23 @@ namespace OvermorrowMod.Core.Items.Accessories
             foreach (var accessoryType in previousAccessories)
             {
                 AccessoryManager.DeactivateAccessoryEffects(Player, accessoryType);
+            }
+        }
+
+        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (proj.IsWeaponType(WeaponType.Rapier))
+            {
+                // Add armor penetration equal to twice the projectile's damage
+                modifiers.ArmorPenetration += proj.damage * 2;
+            }
+        }
+
+        public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
+        {
+            if (drawInfo.shadow == 0)
+            {
+                Content.Items.Accessories.WarriorsEpic.DrawEffects(Player, drawInfo, ref r, ref g, ref b, ref a, ref fullBright);
             }
         }
     }

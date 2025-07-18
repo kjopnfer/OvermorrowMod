@@ -1,12 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Items;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items.Accessories;
 using OvermorrowMod.Core.Particles;
 using System.Collections.Generic;
 using Terraria;
@@ -17,7 +19,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Accessories
 {
-    public class WarriorsEpic : ModItem, ITooltipEntities
+    public class WarriorsEpic : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()
         {
@@ -37,30 +39,67 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override string Texture => AssetDirectory.ArchiveItems + Name;
 
-        public override void SetDefaults()
+        protected override void SafeSetDefaults()
         {
-            Item.accessory = true;
             Item.width = 38;
             Item.height = 42;
             Item.rare = ItemRarityID.Green;
             Item.value = Item.sellPrice(0, 1, 0, 0);
         }
 
+        public int WarriorsEpicCooldown { get; private set; } = 0;
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
+        /// <summary>
+        /// Determines whether we have activated the Heal after killing an enemy.
+        /// </summary>
+        public bool WarriorsResolveTriggered { get; private set; } = false;
+        protected override void UpdateAccessoryEffects(Player player)
         {
-            player.GetModPlayer<OldAccessoryPlayer>().WarriorsEpic = true;
-            /*if (player.statLife >= player.statLifeMax2 * 0.8f)
+            if (WarriorsEpicCooldown > 0) WarriorsEpicCooldown--;
+
+            if (!player.HasBuff<WarriorsResolve>())
+                WarriorsResolveTriggered = false;
+
+            if (player.HasBuff<WarriorsResolve>() && !WarriorsResolveTriggered)
             {
-                player.GetDamage(DamageClass.Melee) += 0.15f; // 15% damage bonus if at or above 80% health
-            }*/
+                player.GetCritChance(DamageClass.Melee) += 100; // 100% crit chance bonus
+            }
         }
 
-        public static void WarriorsEpicEffect(Player player)
+        protected override void SetAccessoryEffects(AccessoryDefinition definition)
         {
-            if (player.statLife < player.statLifeMax2 * 0.8f) return;
+            definition.AddDeathsDoorEffect(
+                condition: (player) =>
+                {
+                    return GetInstance<WarriorsEpic>(player).WarriorsEpicCooldown <= 0;
+                },
+                effect: (player) =>
+                {
+                    player.AddBuff(ModContent.BuffType<WarriorsResolve>(), ModUtils.SecondsToTicks(10));
+                    GetInstance<WarriorsEpic>(player).WarriorsEpicCooldown = ModUtils.SecondsToTicks(10);
+                }
+            );
 
-            player.GetDamage(DamageClass.Melee) += 0.15f; // 15% damage bonus if at or above 80% health
+            // Heal when killing an enemy while Warriors Resolve is active but prevent healing multiple times
+            definition.AddExecuteEffect(
+                condition: (player, killedNPC) =>
+                {
+                    return player.HasBuff<WarriorsResolve>() && !GetInstance<WarriorsEpic>(player).WarriorsResolveTriggered;
+                },
+                effect: (player, killedNPC) =>
+                {
+                    player.Heal(40);
+                    GetInstance<WarriorsEpic>(player).WarriorsResolveTriggered = true;
+                }
+            );
+
+            definition.AddVigorEffect(
+                condition: (player) => true, // Vigor keyword already checks for 80%+ health
+                effect: (player) =>
+                {
+                    player.GetDamage(DamageClass.Melee) += 0.15f;
+                }
+            );
         }
 
         public static void DrawEffects(Player player, PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
