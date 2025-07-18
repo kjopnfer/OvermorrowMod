@@ -475,7 +475,7 @@ Items: {
 			'''
 			Gain 4% Ranged critical strike chance
 			Ranged projectiles gain 2 penetration (excludes infinite pierce)
-			For each target hit, that projectile gains 15% crit chance and 5% damage
+			{Keyword:Strike}: Gain an additional 15% crit chance and 5% damage for each target hit by that projectile
 			'''
 		Flavor: Chapter 11: Cascading Damage Theory
 	}

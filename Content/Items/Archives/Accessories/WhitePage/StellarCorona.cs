@@ -69,13 +69,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             if (AICounter % 10 == 0)
             {
                 Texture2D lightTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ray").Value;
+                Color color = new Color(54, 54, 191);
 
                 for (int i = 0; i < 3; i++)
                 {
                     var lightRay = new Light(lightTexture, ModUtils.SecondsToTicks(3), npc, Vector2.Zero);
                     float randomRotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
                     float randomSize = Main.rand.NextFloat(0.1f, 0.3f);
-                    ParticleManager.CreateParticleDirect(lightRay, npc.Center, Vector2.Zero, Color.White, 1f, randomSize, randomRotation, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true); // Scale of 3f becomes the max height
+                    ParticleManager.CreateParticleDirect(lightRay, npc.Center, Vector2.Zero, color, 1f, randomSize, randomRotation, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true); // Scale of 3f becomes the max height
                 }
             }
         }

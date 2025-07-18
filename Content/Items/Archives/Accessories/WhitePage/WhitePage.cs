@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items;
 using OvermorrowMod.Common.Tooltips;
-using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items.Accessories;
 using System.Collections.Generic;

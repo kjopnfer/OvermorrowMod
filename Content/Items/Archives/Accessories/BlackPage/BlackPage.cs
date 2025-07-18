@@ -1,11 +1,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Items;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items.Accessories;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -14,7 +16,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    public class BlackPage : ModItem, ITooltipEntities
+    public class BlackPage : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()
         {
@@ -46,40 +48,42 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         }
 
         public override string Texture => AssetDirectory.ArchiveItems + Name;
-        public override void SetDefaults()
+
+        protected override void SafeSetDefaults()
         {
-            Item.accessory = true;
             Item.width = 30;
             Item.height = 40;
             Item.rare = ItemRarityID.Green;
             Item.value = Item.sellPrice(0, gold: 1, silver: 50, copper: 0);
         }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
+        protected override void SetAccessoryEffects(AccessoryDefinition definition)
         {
-            player.GetModPlayer<OldAccessoryPlayer>().BlackPage = true;
-        }
+            definition.AddProjectileStrikeEffect(
+                condition: (player, projectile, npc, hit, damageDone) =>
+                {
+                    // Must be a whip
+                    if (projectile.DamageType != DamageClass.SummonMeleeSpeed)
+                        return false;
 
-        public static void TryApplyShadowBrand(Projectile projectile, NPC target)
-        {
-            Player player = Main.player[projectile.owner];
-            var accessoryPlayer = player.GetModPlayer<OldAccessoryPlayer>();
+                    // 20% chance
+                    if (Main.rand.NextFloat() > 0.20f)
+                        return false;
 
-            if (!accessoryPlayer.BlackPage || projectile.DamageType != DamageClass.SummonMeleeSpeed)
-                return;
 
-            // 20% chance
-            if (Main.rand.NextFloat() > 0.20f)
-                return;
+                    return true;
+                },
+                effect: (player, projectile, npc, hit, damageDone) =>
+                {
+                    var debuff = ModContent.BuffType<ShadowBrand>();
+                    if (!npc.HasBuff(debuff))
+                        Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.Zero, ModContent.ProjectileType<ShadowGrasp>(), 16, 0f, player.whoAmI, 0f, npc.whoAmI);
 
-            var debuff = ModContent.BuffType<ShadowBrand>();
-            if (!target.HasBuff(debuff))
-                Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<ShadowGrasp>(), 16, 0f, player.whoAmI, 0f, target.whoAmI);
+                    npc.AddBuff(debuff, ModUtils.SecondsToTicks(10));
 
-            target.AddBuff(debuff, ModUtils.SecondsToTicks(10));
-
-            var modNPC = target.GetGlobalNPC<GlobalNPCs>();
-            modNPC.ShadowBrandOwner = player;
+                    var modNPC = npc.GetGlobalNPC<GlobalNPCs>();
+                    modNPC.ShadowBrandOwner = player;
+                }
+            );
         }
     }
 }

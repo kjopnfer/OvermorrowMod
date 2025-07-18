@@ -31,7 +31,7 @@ namespace OvermorrowMod.Core.Globals
 
             ArtOfBallistics.OnHitNPC(projectile, target, hit, damageDone);
 
-            BlackPage.TryApplyShadowBrand(projectile, target);
+            //BlackPage.TryApplyShadowBrand(projectile, target);
             //WhitePage.TryApplyStellarCorona(projectile, target);
         }
 
