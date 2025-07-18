@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using Terraria;
+using Terraria.DataStructures;
 
 namespace OvermorrowMod.Core.Items.Accessories
 {
@@ -160,6 +161,27 @@ namespace OvermorrowMod.Core.Items.Accessories
             AddEffect<SecondaryKeyword>(
                 (player, args) => condition(player, (Item)args[0]),
                 (player, args) => effect(player, (Item)args[0])
+            );
+        }
+
+        public void AddProjectileSpawnEffect(Func<Player, Projectile, IEntitySource, bool> condition, Action<Player, Projectile, IEntitySource> effect)
+        {
+            AddEffect<ProjectileSpawnKeyword>(
+                (player, args) => condition(player, (Projectile)args[0], (IEntitySource)args[1]),
+                (player, args) => effect(player, (Projectile)args[0], (IEntitySource)args[1])
+            );
+        }
+
+        /// <summary>
+        /// Uses HitModifiers instead of the StrikeEffect's HitInfo.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="effect"></param>
+        public void AddProjectileModifyHitEffect(Func<Player, Projectile, NPC, NPC.HitModifiers, bool> condition, Action<Player, Projectile, NPC, NPC.HitModifiers> effect)
+        {
+            AddEffect<ProjectileModifyHitKeyword>(
+                (player, args) => condition(player, (Projectile)args[0], (NPC)args[1], (NPC.HitModifiers)args[2]),
+                (player, args) => effect(player, (Projectile)args[0], (NPC)args[1], (NPC.HitModifiers)args[2])
             );
         }
     }

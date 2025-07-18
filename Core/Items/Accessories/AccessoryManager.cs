@@ -13,6 +13,7 @@ namespace OvermorrowMod.Core.Items.Accessories
 
         public override void PostSetupContent()
         {
+            // Subscribe to all keyword events
             AccessoryKeywords.OnRetaliate += (player, attacker, hurtInfo) =>
                     TriggerKeywordEffects(AccessoryKeywordTypes.Retaliate, player, attacker, hurtInfo);
 
@@ -60,6 +61,12 @@ namespace OvermorrowMod.Core.Items.Accessories
 
             AccessoryKeywords.OnSecondary += (player, item) =>
                 TriggerKeywordEffects(AccessoryKeywordTypes.Secondary, player, item);
+
+            AccessoryKeywords.OnProjectileSpawn += (player, projectile, source) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.ProjectileSpawn, player, projectile, source);
+
+            AccessoryKeywords.OnProjectileModifyHit += (player, projectile, target, modifiers) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.ProjectileModifyHit, player, projectile, target, modifiers);
         }
 
         private static void TriggerKeywordEffects(Type keywordType, Player player, params object[] args)

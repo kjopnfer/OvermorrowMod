@@ -1,5 +1,6 @@
 using System;
 using Terraria;
+using Terraria.DataStructures;
 
 namespace OvermorrowMod.Core.Items.Accessories
 {
@@ -22,6 +23,9 @@ namespace OvermorrowMod.Core.Items.Accessories
         public static event Action<Player> OnRespite;
         public static event Action<Player, Item> OnSecondary;
 
+        public static event Action<Player, Projectile, IEntitySource> OnProjectileSpawn;
+        public static event Action<Player, Projectile, NPC, NPC.HitModifiers> OnProjectileModifyHit;
+
         public static void TriggerRetaliate(Player player, NPC attacker, Player.HurtInfo hurtInfo) => OnRetaliate?.Invoke(player, attacker, hurtInfo);
         public static void TriggerStrike(Player player, NPC target, NPC.HitInfo hit, int damageDone) => OnStrike?.Invoke(player, target, hit, damageDone);
         public static void TriggerProjectileStrike(Player player, Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
@@ -41,6 +45,11 @@ namespace OvermorrowMod.Core.Items.Accessories
         public static void TriggerQuickslot(Player player, Item item) => OnQuickslot?.Invoke(player, item);
         public static void TriggerRespite(Player player) => OnRespite?.Invoke(player);
         public static void TriggerSecondary(Player player, Item item) => OnSecondary?.Invoke(player, item);
+
+
+        public static void TriggerProjectileSpawn(Player player, Projectile projectile, IEntitySource source) => OnProjectileSpawn?.Invoke(player, projectile, source);
+        public static void TriggerProjectileModifyHit(Player player, Projectile projectile, NPC target, NPC.HitModifiers modifiers) => OnProjectileModifyHit?.Invoke(player, projectile, target, modifiers);
+
     }
 
     public static class AccessoryKeywordTypes
@@ -61,6 +70,10 @@ namespace OvermorrowMod.Core.Items.Accessories
         public static readonly Type Quickslot = typeof(QuickslotKeyword);
         public static readonly Type Respite = typeof(RespiteKeyword);
         public static readonly Type Secondary = typeof(SecondaryKeyword);
+
+        public static readonly Type ProjectileSpawn = typeof(ProjectileSpawnKeyword);
+        public static readonly Type ProjectileModifyHit = typeof(ProjectileModifyHitKeyword);
+
     }
     public abstract class AccessoryKeyword { }
     public class RetaliateKeyword : AccessoryKeyword { }
@@ -79,4 +92,9 @@ namespace OvermorrowMod.Core.Items.Accessories
     public class QuickslotKeyword : AccessoryKeyword { }
     public class RespiteKeyword : AccessoryKeyword { }
     public class SecondaryKeyword : AccessoryKeyword { }
+
+
+    public class ProjectileSpawnKeyword : AccessoryKeyword { }
+    public class ProjectileModifyHitKeyword : AccessoryKeyword { }
+
 }
