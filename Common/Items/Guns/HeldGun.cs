@@ -4,6 +4,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Items.Accessories;
 using OvermorrowMod.Core.Items.Guns;
 using System;
 using System.Collections.Generic;
@@ -603,6 +604,8 @@ namespace OvermorrowMod.Common.Items.Guns
                 {
                     OnReloadEventFail(player);
                 }
+
+                AccessoryKeywords.TriggerReload(player, wasSuccessful);
 
                 // Refresh stats after success/fail events to pick up bonus changes
                 RefreshStats();

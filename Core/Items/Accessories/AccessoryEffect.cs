@@ -5,10 +5,10 @@ namespace OvermorrowMod.Core.Items.Accessories
 {
     public class AccessoryEffect
     {
-        public Func<Player, bool> Condition { get; set; }
+        public Func<Player, object[], bool> Condition { get; set; }
         public Action<Player, object[]> Effect { get; set; }
 
-        public AccessoryEffect(Func<Player, bool> condition, Action<Player, object[]> effect)
+        public AccessoryEffect(Func<Player, object[], bool> condition, Action<Player, object[]> effect)
         {
             Condition = condition;
             Effect = effect;
@@ -16,7 +16,7 @@ namespace OvermorrowMod.Core.Items.Accessories
 
         public void TryExecute(Player player, params object[] args)
         {
-            if (Condition(player))
+            if (Condition(player, args))
             {
                 Effect(player, args);
             }

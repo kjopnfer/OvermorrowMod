@@ -77,36 +77,6 @@ namespace OvermorrowMod.Core.Items.Accessories
             return _activeAccessories;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            base.OnHitNPC(target, hit, damageDone);
-        }
-
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            base.OnHitNPCWithProj(proj, target, hit, damageDone);
-        }
-
-        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            base.OnHitNPCWithItem(item, target, hit, damageDone);
-        }
-
-        public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)
-        {
-            base.OnHitByProjectile(proj, hurtInfo);
-        }
-
-        public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
-        {
-            base.OnHitByNPC(npc, hurtInfo);
-        }
-
-        public override void PostUpdate()
-        {
-            base.PostUpdate();
-        }
-
         public override void ResetEffects()
         {
             ClearActiveAccessories();

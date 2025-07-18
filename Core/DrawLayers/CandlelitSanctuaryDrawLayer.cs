@@ -30,7 +30,7 @@ namespace OvermorrowMod.Core.DrawLayers
             Player drawPlayer = drawInfo.drawPlayer;
             //Color color = drawPlayer.GetImmuneAlphaPure(drawInfo.colorArmorHead, drawInfo.shadow);
 
-            int charges = drawPlayer.GetModPlayer<AccessoryPlayer>().CandleCharges;
+            int charges = drawPlayer.GetModPlayer<OldAccessoryPlayer>().CandleCharges;
             int direction = drawPlayer.direction;
 
             var shieldMask = CandleFlame;

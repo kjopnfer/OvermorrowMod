@@ -13,7 +13,8 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Globals
 {
-    public class AccessoryPlayer : ModPlayer
+    // TODO: This needs to go away
+    public class OldAccessoryPlayer : ModPlayer
     {
         /// <summary>
         /// Used for calculating whether the player is in the NPC's aggro range.

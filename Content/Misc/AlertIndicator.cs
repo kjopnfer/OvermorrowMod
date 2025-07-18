@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.Misc
 
             if (target is Player player)
             {
-                int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
+                int alertBonus = player.GetModPlayer<OldAccessoryPlayer>().AlertBonus;
 
                 // AlertBonus reduces all radius values proportionally
                 float reductionFactor = Math.Max(0.1f, 1f - (alertBonus / baseRadius.GetMaxRadius()));
@@ -111,7 +111,7 @@ namespace OvermorrowMod.Content.Misc
 
             if (target is Player player)
             {
-                int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
+                int alertBonus = player.GetModPlayer<OldAccessoryPlayer>().AlertBonus;
 
                 // AlertBonus increases alert radius
                 return new AggroRadius(

@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetModPlayer<AccessoryPlayer>().WarriorsEpic = true;
+            player.GetModPlayer<OldAccessoryPlayer>().WarriorsEpic = true;
             /*if (player.statLife >= player.statLifeMax2 * 0.8f)
             {
                 player.GetDamage(DamageClass.Melee) += 0.15f; // 15% damage bonus if at or above 80% health
@@ -65,7 +65,7 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public static void DrawEffects(Player player, PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
         {
-            var modPlayer = player.GetModPlayer<AccessoryPlayer>();
+            var modPlayer = player.GetModPlayer<OldAccessoryPlayer>();
             if (!player.HasBuff<WarriorsResolve>() || modPlayer.WarriorsResolveTriggered || Main.gamePaused)
                 return;
 

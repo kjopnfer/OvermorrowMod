@@ -57,13 +57,13 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetModPlayer<AccessoryPlayer>().BlackPage = true;
+            player.GetModPlayer<OldAccessoryPlayer>().BlackPage = true;
         }
 
         public static void TryApplyShadowBrand(Projectile projectile, NPC target)
         {
             Player player = Main.player[projectile.owner];
-            var accessoryPlayer = player.GetModPlayer<AccessoryPlayer>();
+            var accessoryPlayer = player.GetModPlayer<OldAccessoryPlayer>();
 
             if (!accessoryPlayer.BlackPage || projectile.DamageType != DamageClass.SummonMeleeSpeed)
                 return;

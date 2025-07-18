@@ -24,7 +24,7 @@ namespace OvermorrowMod.Core.Items.Accessories
 
         public static void TriggerRetaliate(Player player, NPC attacker, Player.HurtInfo hurtInfo) => OnRetaliate?.Invoke(player, attacker, hurtInfo);
         public static void TriggerStrike(Player player, NPC target, NPC.HitInfo hit, int damageDone) => OnStrike?.Invoke(player, target, hit, damageDone);
-        public static void TriggerStrikeProjectile(Player player, Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone) => OnStrikeProjectile?.Invoke(player, projectile, target, hit, damageDone);
+        public static void TriggerProjectileStrike(Player player, Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone) => OnStrikeProjectile?.Invoke(player, projectile, target, hit, damageDone);
         public static void TriggerVigor(Player player) => OnVigor?.Invoke(player);
         public static void TriggerDeathsDoor(Player player) => OnDeathsDoor?.Invoke(player);
         public static void TriggerMindDown(Player player) => OnMindDown?.Invoke(player);

@@ -22,14 +22,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetModPlayer<AccessoryPlayer>().ArtOfBallistics = true;
+            player.GetModPlayer<OldAccessoryPlayer>().ArtOfBallistics = true;
             player.GetCritChance(DamageClass.Ranged) += 4;
         }
 
         public static void OnSpawn(Projectile projectile, IEntitySource source)
         {
             Player player = Main.player[projectile.owner];
-            if (!player.GetModPlayer<AccessoryPlayer>().ArtOfBallistics) return;
+            if (!player.GetModPlayer<OldAccessoryPlayer>().ArtOfBallistics) return;
             if (projectile.DamageType != DamageClass.Ranged) return;
 
             if (projectile.penetrate != -1)
@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         public static void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[projectile.owner];
-            var accessoryPlayer = player.GetModPlayer<AccessoryPlayer>();
+            var accessoryPlayer = player.GetModPlayer<OldAccessoryPlayer>();
             if (!accessoryPlayer.ArtOfBallistics || projectile.DamageType != DamageClass.Ranged)
                 return;
 
@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         public static void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[projectile.owner];
-            var accessoryPlayer = player.GetModPlayer<AccessoryPlayer>();
+            var accessoryPlayer = player.GetModPlayer<OldAccessoryPlayer>();
 
             if (!accessoryPlayer.ArtOfBallistics || projectile.DamageType != DamageClass.Ranged)
                 return;

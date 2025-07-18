@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Items.Accessories;
 using OvermorrowMod.Core.Items.Bows;
 using System;
 using Terraria;
@@ -289,6 +290,8 @@ namespace OvermorrowMod.Common.Items.Bows
                 //    MirageDummyProjectile mirage = Projectile.NewProjectileDirect(null, arrowPosition, velocity * speed * speedBonus, ModContent.ProjectileType<MirageDummyProjectile>(), (int)damage, Projectile.knockBack, player.whoAmI).ModProjectile as MirageDummyProjectile;
                 //    mirage.mirageArrow = GetRandomArrow();
                 //}
+
+                AccessoryKeywords.TriggerFocus(player, Projectile);
             }
 
             BowModifierHandler.TriggerArrowFired(this, player, arrowProjectile);

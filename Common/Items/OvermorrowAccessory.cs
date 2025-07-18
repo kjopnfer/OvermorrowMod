@@ -6,11 +6,16 @@ namespace OvermorrowMod.Common.Items
 {
     public abstract class OvermorrowAccessory : ModItem
     {
+        protected AccessoryDefinition Definition { get; private set; }
+
         public sealed override void SetDefaults()
         {
             Item.accessory = true;
 
+            Definition = new AccessoryDefinition(GetType());
+
             SafeSetDefaults();
+            SetAccessoryEffects(Definition);
         }
 
         /// <summary>
@@ -22,6 +27,11 @@ namespace OvermorrowMod.Common.Items
         /// Override this to add frame-by-frame updates while the accessory is equipped
         /// </summary>
         protected virtual void UpdateAccessoryEffects(Player player) { }
+
+        /// <summary>
+        /// Override this to add keyword effects to the accessory
+        /// </summary>
+        protected abstract void SetAccessoryEffects(AccessoryDefinition definition);
 
         /// <summary>
         /// Helper method to check if this accessory is active for a player

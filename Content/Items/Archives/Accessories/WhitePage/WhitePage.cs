@@ -1,10 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Items;
 using OvermorrowMod.Common.Tooltips;
-using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items.Accessories;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    public class WhitePage : ModItem, ITooltipEntities
+    public class WhitePage : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()
         {
@@ -32,51 +33,95 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     DamageClass.Magic),
             };
         }
-    
+
         public override string Texture => AssetDirectory.ArchiveItems + Name;
-        public override void SetDefaults()
+        protected override void SafeSetDefaults()
         {
-            Item.accessory = true;
             Item.width = 38;
             Item.height = 36;
             Item.rare = ItemRarityID.Green;
             Item.value = Item.sellPrice(0, gold: 1, silver: 50, copper: 0);
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
+        protected override void SetAccessoryEffects(AccessoryDefinition definition)
         {
-            player.GetModPlayer<AccessoryPlayer>().WhitePage = true;
+            definition.AddProjectileStrikeEffect(
+                condition: (player, projectile, target, hit, damageDone) =>
+                {
+                    Main.NewText("test");
+
+                    if (projectile.DamageType != DamageClass.Magic)
+                        return false;
+
+                    // 20% chance to apply Stellar Corona
+                    if (Main.rand.NextFloat() > 0.20f)
+                        return false;
+
+                    int coronaType = ModContent.ProjectileType<StellarCorona>();
+                    int prominenceType = ModContent.ProjectileType<StellarProminence>();
+
+                    // Prevent it from spawning itself somehow
+                    if (projectile.type == coronaType || projectile.type == prominenceType)
+                        return false;
+
+                    // Check if any active StellarCorona exists owned by this player
+                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    {
+                        Projectile proj = Main.projectile[i];
+                        if (proj.active && proj.type == coronaType && proj.owner == player.whoAmI)
+                            return false; // Already has a StellarCorona active
+                    }
+
+                    return true;
+                },
+                effect: (player, projectile, target, hit, damageDone) =>
+                {
+                    int coronaType = ModContent.ProjectileType<StellarCorona>();
+
+                    Projectile.NewProjectile(
+                        projectile.GetSource_OnHit(target),
+                        target.Center,
+                        Vector2.Zero,
+                        coronaType,
+                        20,
+                        0f,
+                        player.whoAmI,
+                        0f,
+                        target.whoAmI
+                    );
+                }
+            );
         }
 
-        public static void TryApplyStellarCorona(Projectile projectile, NPC target)
-        {
-            Player player = Main.player[projectile.owner];
-            var accessoryPlayer = player.GetModPlayer<AccessoryPlayer>();
+        //public static void TryApplyStellarCorona(Projectile projectile, NPC target)
+        //{
+        //    Player player = Main.player[projectile.owner];
+        //    var accessoryPlayer = player.GetModPlayer<AccessoryPlayer>();
 
-            if (!accessoryPlayer.WhitePage || projectile.DamageType != DamageClass.Magic)
-                return;
+        //    if (!accessoryPlayer.WhitePage || projectile.DamageType != DamageClass.Magic)
+        //        return;
 
-            // 20% chance
-            if (Main.rand.NextFloat() > 0.20f)
-                return;
+        //    // 20% chance
+        //    if (Main.rand.NextFloat() > 0.20f)
+        //        return;
 
-            int coronaType = ModContent.ProjectileType<StellarCorona>();
-            int prominenceType = ModContent.ProjectileType<StellarProminence>();
+        //    int coronaType = ModContent.ProjectileType<StellarCorona>();
+        //    int prominenceType = ModContent.ProjectileType<StellarProminence>();
 
-            // Prevent it from spawning itself somehow
-            if (projectile.type == coronaType || projectile.type == prominenceType)
-                return;
+        //    // Prevent it from spawning itself somehow
+        //    if (projectile.type == coronaType || projectile.type == prominenceType)
+        //        return;
 
-            // Check if any active StellarCorona exists owned by this player
-            for (int i = 0; i < Main.maxProjectiles; i++)
-            {
-                Projectile proj = Main.projectile[i];
-                if (proj.active && proj.type == coronaType && proj.owner == player.whoAmI)
-                    return; // Already has a StellarCorona active
-            }
+        //    // Check if any active StellarCorona exists owned by this player
+        //    for (int i = 0; i < Main.maxProjectiles; i++)
+        //    {
+        //        Projectile proj = Main.projectile[i];
+        //        if (proj.active && proj.type == coronaType && proj.owner == player.whoAmI)
+        //            return; // Already has a StellarCorona active
+        //    }
 
-            Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, coronaType, 20, 0f, player.whoAmI, 0f, target.whoAmI);
-        }
+        //    Projectile.NewProjectile(projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, coronaType, 20, 0f, player.whoAmI, 0f, target.whoAmI);
+        //}
 
         public static bool HasStellarCorona(NPC npc)
         {
@@ -94,6 +139,5 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
             return false; // No matching StellarCorona found
         }
-
     }
 }
