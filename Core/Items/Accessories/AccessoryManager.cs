@@ -13,7 +13,53 @@ namespace OvermorrowMod.Core.Items.Accessories
 
         public override void PostSetupContent()
         {
-            base.PostSetupContent();
+            AccessoryKeywords.OnRetaliate += (player, attacker, hurtInfo) =>
+                    TriggerKeywordEffects(AccessoryKeywordTypes.Retaliate, player, attacker, hurtInfo);
+
+            AccessoryKeywords.OnStrike += (player, target, hit, damageDone) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Strike, player, target, hit, damageDone);
+
+            AccessoryKeywords.OnStrikeProjectile += (player, projectile, target, hit, damageDone) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.StrikeProjectile, player, projectile, target, hit, damageDone);
+
+            AccessoryKeywords.OnVigor += (player) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Vigor, player);
+
+            AccessoryKeywords.OnDeathsDoor += (player) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.DeathsDoor, player);
+
+            AccessoryKeywords.OnMindDown += (player) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.MindDown, player);
+
+            AccessoryKeywords.OnExecute += (player, killedNPC) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Execute, player, killedNPC);
+
+            AccessoryKeywords.OnAmbush += (player, target, hit, damageDone) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Ambush, player, target, hit, damageDone);
+
+            AccessoryKeywords.OnAerial += (player) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Aerial, player);
+
+            AccessoryKeywords.OnAwakened += (player) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Awakened, player);
+
+            AccessoryKeywords.OnFocus += (player, projectile) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Focus, player, projectile);
+
+            AccessoryKeywords.OnReload += (player, wasSuccessful) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Reload, player, wasSuccessful);
+
+            AccessoryKeywords.OnMisfire += (player) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Misfire, player);
+
+            AccessoryKeywords.OnQuickslot += (player, item) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Quickslot, player, item);
+
+            AccessoryKeywords.OnRespite += (player) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Respite, player);
+
+            AccessoryKeywords.OnSecondary += (player, item) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.Secondary, player, item);
         }
 
         private static void TriggerKeywordEffects(Type keywordType, Player player, params object[] args)
