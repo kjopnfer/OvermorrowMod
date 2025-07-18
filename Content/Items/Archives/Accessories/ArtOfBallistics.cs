@@ -4,7 +4,6 @@ using OvermorrowMod.Common.Items;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Items.Accessories;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,16 +18,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             Item.height = 42;
             Item.rare = ItemRarityID.Green;
             Item.value = Item.sellPrice(0, gold: 1, silver: 50, copper: 0);
-        }
-
-        public static void OnSpawn(Projectile projectile, IEntitySource source)
-        {
-            Player player = Main.player[projectile.owner];
-            if (!player.GetModPlayer<OldAccessoryPlayer>().ArtOfBallistics) return;
-            if (projectile.DamageType != DamageClass.Ranged) return;
-
-            if (projectile.penetrate != -1)
-                projectile.penetrate += 2;
         }
 
         protected override void UpdateAccessoryEffects(Player player)
@@ -49,7 +38,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 effect: (player, projectile, source) =>
                 {
                     projectile.penetrate += 2;
-                    Main.NewText("triggered");
                 }
             );
 
@@ -82,35 +70,5 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 }
             );
         }
-
-        public static void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            Player player = Main.player[projectile.owner];
-            var accessoryPlayer = player.GetModPlayer<OldAccessoryPlayer>();
-            if (!accessoryPlayer.ArtOfBallistics || projectile.DamageType != DamageClass.Ranged)
-                return;
-
-            var globalProjectile = projectile.GetGlobalProjectile<GlobalProjectiles>();
-            globalProjectile.NumberHits++;
-
-            if (globalProjectile.NumberHits > 1)
-                CombatText.NewText(target.Hitbox, new Color(20, 166, 159), $"+{globalProjectile.NumberHits}", true);
-        }
-
-        public static void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
-        {
-            Player player = Main.player[projectile.owner];
-            var accessoryPlayer = player.GetModPlayer<OldAccessoryPlayer>();
-
-            if (!accessoryPlayer.ArtOfBallistics || projectile.DamageType != DamageClass.Ranged)
-                return;
-
-            var globalProjectile = projectile.GetGlobalProjectile<GlobalProjectiles>();
-
-            projectile.CritChance += 15 * globalProjectile.NumberHits;
-            modifiers.SourceDamage += (1.05f * globalProjectile.NumberHits);
-        }
-
-
     }
 }
