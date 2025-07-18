@@ -79,7 +79,14 @@ namespace OvermorrowMod.Core.Items.Accessories
 
         public override void ResetEffects()
         {
+            var previousAccessories = new HashSet<Type>(_activeAccessories);
             ClearActiveAccessories();
+
+            // Deactivate effects for accessories that are no longer equipped
+            foreach (var accessoryType in previousAccessories)
+            {
+                AccessoryManager.DeactivateAccessoryEffects(Player, accessoryType);
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ namespace OvermorrowMod.Core.Globals
         /// </summary>
         public float AggroLossBonus = 0;
 
-        public bool ArtOfBallistics = false;
+        //public bool ArtOfBallistics = false;
         public bool BlackPage = false;
         public bool CandlelitSanctuary = false;
         public bool WarriorsEpic = false;
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Core.Globals
             if (!Player.HasBuff<WarriorsResolve>())
                 WarriorsResolveTriggered = false;
 
-            ArtOfBallistics = false;
+            //ArtOfBallistics = false;
             BlackPage = false;
             CandlelitSanctuary = false;
             WarriorsEpic = false;

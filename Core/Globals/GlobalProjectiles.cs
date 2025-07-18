@@ -24,7 +24,7 @@ namespace OvermorrowMod.Core.Globals
 
             AccessoryKeywords.TriggerProjectileSpawn(player, projectile, source);
 
-            Main.NewText(projectile.Name + ", " + projectile.penetrate);
+            //Main.NewText(projectile.Name + ", " + projectile.penetrate);
             //ArtOfBallistics.OnSpawn(projectile, source);
         }
 
@@ -41,9 +41,6 @@ namespace OvermorrowMod.Core.Globals
             }
 
             //ArtOfBallistics.OnHitNPC(projectile, target, hit, damageDone);
-
-            //BlackPage.TryApplyShadowBrand(projectile, target);
-            //WhitePage.TryApplyStellarCorona(projectile, target);
         }
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)

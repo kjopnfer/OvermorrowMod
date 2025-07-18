@@ -100,7 +100,7 @@ namespace OvermorrowMod.Core.Items.Accessories
 
             var playerEffects = _playerActiveEffects[player.whoAmI];
 
-            // Add all effects from this accessory to the player's active effects
+            // Check if this accessory's effects are already active to prevent duplicates
             foreach (var kvp in accessory.KeywordEffects)
             {
                 var keywordType = kvp.Key;
@@ -109,7 +109,14 @@ namespace OvermorrowMod.Core.Items.Accessories
                 if (!playerEffects.ContainsKey(keywordType))
                     playerEffects[keywordType] = new List<AccessoryEffect>();
 
-                playerEffects[keywordType].AddRange(effects);
+                // Only add effects that aren't already in the list
+                foreach (var effect in effects)
+                {
+                    if (!playerEffects[keywordType].Contains(effect))
+                    {
+                        playerEffects[keywordType].Add(effect);
+                    }
+                }
             }
         }
 

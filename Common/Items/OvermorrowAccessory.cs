@@ -1,4 +1,6 @@
 using OvermorrowMod.Core.Items.Accessories;
+using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -6,16 +8,20 @@ namespace OvermorrowMod.Common.Items
 {
     public abstract class OvermorrowAccessory : ModItem
     {
-        protected AccessoryDefinition Definition { get; private set; }
+        private static Dictionary<Type, AccessoryDefinition> _definitions = new();
 
         public sealed override void SetDefaults()
         {
             Item.accessory = true;
 
-            Definition = new AccessoryDefinition(GetType());
+            if (!_definitions.ContainsKey(GetType()))
+            {
+                var definition = new AccessoryDefinition(GetType());
+                SetAccessoryEffects(definition);
+                _definitions[GetType()] = definition;
+            }
 
             SafeSetDefaults();
-            SetAccessoryEffects(Definition);
         }
 
         /// <summary>
@@ -24,7 +30,8 @@ namespace OvermorrowMod.Common.Items
         protected abstract void SafeSetDefaults();
 
         /// <summary>
-        /// Override this to add frame-by-frame updates while the accessory is equipped
+        /// Override this to apply direct stat modifications and effects that should be active every frame while the accessory is equipped. 
+        /// Use for simple stat bonuses, not for keyword-based effects.
         /// </summary>
         protected virtual void UpdateAccessoryEffects(Player player) { }
 
@@ -34,7 +41,8 @@ namespace OvermorrowMod.Common.Items
         protected abstract void SetAccessoryEffects(AccessoryDefinition definition);
 
         /// <summary>
-        /// Helper method to check if this accessory is active for a player
+        /// Called every frame while this accessory is equipped. Handles activation of keyword-based effects
+        /// and applies direct stat modifications that don't use the keyword system.
         /// </summary>
         public sealed override void UpdateAccessory(Player player, bool hideVisual)
         {
