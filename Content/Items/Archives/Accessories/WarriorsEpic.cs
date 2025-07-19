@@ -76,7 +76,7 @@ namespace OvermorrowMod.Content.Items.Accessories
                 effect: (player) =>
                 {
                     player.AddBuff(ModContent.BuffType<WarriorsResolve>(), ModUtils.SecondsToTicks(10));
-                    GetInstance<WarriorsEpic>(player).WarriorsEpicCooldown = ModUtils.SecondsToTicks(10);
+                    GetInstance<WarriorsEpic>(player).WarriorsEpicCooldown = ModUtils.SecondsToTicks(30);
                 }
             );
 
@@ -104,15 +104,15 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public static void DrawEffects(Player player, PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
         {
-            var modPlayer = player.GetModPlayer<OldAccessoryPlayer>();
-            if (!player.HasBuff<WarriorsResolve>() || modPlayer.WarriorsResolveTriggered || Main.gamePaused)
+            var instance = GetInstance<WarriorsEpic>(player);
+            if (!player.HasBuff<WarriorsResolve>() || instance?.WarriorsResolveTriggered != false || Main.gamePaused)
                 return;
 
             int delay = (int)(Main.rand.NextFloat(0.5f, 0.7f) * 15);
             if (Main.GameUpdateCount % delay != 0)
                 return;
 
-            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/trace_05").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_05").Value;
             int widthRange = player.width + 8;
             int heightRange = player.height - 4;
             int stepSize = 2;

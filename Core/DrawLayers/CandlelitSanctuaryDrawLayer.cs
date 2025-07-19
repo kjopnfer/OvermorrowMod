@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Items;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Core.Globals;
 using ReLogic.Content;
@@ -29,8 +30,10 @@ namespace OvermorrowMod.Core.DrawLayers
         {
             Player drawPlayer = drawInfo.drawPlayer;
             //Color color = drawPlayer.GetImmuneAlphaPure(drawInfo.colorArmorHead, drawInfo.shadow);
+            var candleInstance = OvermorrowAccessory.GetInstance<CandlelitSanctuary>(drawPlayer);
+            if (candleInstance == null) return;
 
-            int charges = drawPlayer.GetModPlayer<OldAccessoryPlayer>().CandleCharges;
+            int charges = candleInstance.CandleCharges;
             int direction = drawPlayer.direction;
 
             var shieldMask = CandleFlame;
