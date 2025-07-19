@@ -45,7 +45,7 @@ public class MyAccessory : OvermorrowAccessory
 
     public override void ResetVariables()
     {
-        // Called when equipped OR unequipped
+        // Called when unequipped
         MyCounter = 0;
         MyFlag = false;
     }
@@ -228,7 +228,7 @@ definition.AddDeathsDoorEffect(
 - Use keyword effects for event-based triggers
 
 ### Don't:
-- Store per-player data in static variables
+- Store specialized accessory-related data inside the Accessory Player (the typical design pattern)
 - Forget to reset variables when accessories are unequipped
 - Mix direct effects and keyword effects for the same functionality
 - Access instance variables from static contexts without `GetInstance<T>`

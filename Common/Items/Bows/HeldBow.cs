@@ -270,6 +270,7 @@ namespace OvermorrowMod.Common.Items.Bows
             int arrow = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, finalArrowType, "HeldBow"), arrowPosition, velocity * speed * speedBonus, finalArrowType, (int)damage, Projectile.knockBack * currentStats.KnockbackMultiplier, player.whoAmI);
 
             Projectile arrowProjectile = Main.projectile[arrow];
+            arrowProjectile.arrow = true;
 
             if (isPowerShot)
             {

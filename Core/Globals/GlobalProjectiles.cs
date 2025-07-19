@@ -25,6 +25,12 @@ namespace OvermorrowMod.Core.Globals
             AccessoryKeywords.TriggerProjectileSpawn(player, projectile, source);
         }
 
+        public override void OnKill(Projectile projectile, int timeLeft)
+        {
+            Player player = Main.player[projectile.owner];
+            AccessoryKeywords.TriggerProjectileKill(player, projectile, timeLeft);
+        }
+
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             NumberHits++;

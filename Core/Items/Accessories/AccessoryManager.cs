@@ -67,6 +67,9 @@ namespace OvermorrowMod.Core.Items.Accessories
 
             AccessoryKeywords.OnProjectileModifyHit += (player, projectile, target, modifiers) =>
                 TriggerKeywordEffects(AccessoryKeywordTypes.ProjectileModifyHit, player, projectile, target, modifiers);
+
+            AccessoryKeywords.OnProjectileKill += (player, projectile, timeLeft) =>
+                TriggerKeywordEffects(AccessoryKeywordTypes.ProjectileKill, player, projectile, timeLeft);
         }
 
         private static void TriggerKeywordEffects(Type keywordType, Player player, params object[] args)

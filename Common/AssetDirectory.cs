@@ -42,5 +42,7 @@ namespace OvermorrowMod.Common
         public const string ArchiveNPCs = NPCs + "Archives/";
         public const string ArchiveItems = Items + "Archives/";
         public const string ArchiveProjectiles = Projectiles + "Archives/";
+
+        public const string GuildItems = Items + "AdventurersGuild/";
     }
 }

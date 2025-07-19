@@ -184,5 +184,13 @@ namespace OvermorrowMod.Core.Items.Accessories
                 (player, args) => effect(player, (Projectile)args[0], (NPC)args[1], (NPC.HitModifiers)args[2])
             );
         }
+
+        public void AddProjectileKillEffect(Func<Player, Projectile, int, bool> condition, Action<Player, Projectile, int> effect)
+        {
+            AddEffect<ProjectileKillKeyword>(
+                (player, args) => condition(player, (Projectile)args[0], (int)args[1]),
+                (player, args) => effect(player, (Projectile)args[0], (int)args[1])
+            );
+        }
     }
 }
