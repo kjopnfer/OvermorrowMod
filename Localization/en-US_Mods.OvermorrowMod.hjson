@@ -507,6 +507,16 @@ Items: {
 			'''
 		Flavor: I guess they never miss.
 	}
+
+	BandOfFocus: {
+		DisplayName: Band Of Focus
+		Tooltip: "{Keyword:Vigor}: Gain 15% increased Magic critical strike chance"
+		Flavor: 
+			'''
+			Congratulations, you're healthy. 
+			Have some magical murder as a reward.
+			'''
+	}
 }
 
 NPCs: {

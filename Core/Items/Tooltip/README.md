@@ -147,7 +147,7 @@ Keywords: {
 ### ProjectileTooltip
 - **Purpose**: Display projectile/summon information  
 - **Properties**: Texture, title, description, damage value, projectile type, damage class
-- **Usage**: Summoned creatures, special projectiles, weapons that create projectiles
+- **Usage**: Summoned minions, special projectiles
 
 ### SetBonusTooltip
 - **Status**: Work in progress, not yet implemented
