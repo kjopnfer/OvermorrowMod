@@ -78,6 +78,15 @@ Buffs: {
 		DisplayName: Shadow Brand
 		Description: Mods.OvermorrowMod.Buffs.ShadowBrand.Description
 	}
+
+	FocusedBlade: {
+		DisplayName: Sharpened Intent
+		Description:
+			'''
+			Your next True Melee hit gains doubled damage and 100% crit chance
+			On Strike, clear this buff
+			'''
+	}
 }
 
 TooltipEntities: {
@@ -104,8 +113,8 @@ TooltipEntities: {
 		DisplayName: Candle Burst
 
 		Description: {
-			Line0: + Increases damage per Candle
-			Line1: + Deals strong knockback
+			Line0: + This projectile's damage is increased by 15 per Candle
+			Line1: + Deals strong knockback to all nearby enemies
 		}
 	}
 
@@ -117,6 +126,15 @@ TooltipEntities: {
 			Line1: + While <Buff:Chiaroscuro Form> is active, attack any targets hit by your <Projectile:Chiaroscuro>
 			Line2: - When <Buff:Chiaroscuro Form> expires, remove all <Projectile:Twinshades>
 			Line3: - Only a maximum of three may be active at a time
+		}
+	}
+
+	FocusedBlade: {
+		DisplayName: Sharpened Intent
+
+		Description: {
+			Line0: + {Keyword:Strike}: Your next {Type:True Melee} hit gains doubled damage and 100% crit chance
+			Line1: + On {Keyword:Strike}, clear this buff. You cannot regain this buff for 5 seconds.
 		}
 	}
 
@@ -307,8 +325,12 @@ Items: {
 	}
 
 	TowerKey: {
-		DisplayName: Tower Key
-		Tooltip: ""
+		DisplayName: Subworld Key
+		Tooltip: 
+			'''
+			For testing purposes only. 
+			Used to access the Archive subworld.
+			'''
 	}
 
 	Farlander: {
@@ -515,6 +537,22 @@ Items: {
 			'''
 			Congratulations, you're healthy. 
 			Have some magical murder as a reward.
+			'''
+	}
+
+	SimpleScabbard: {
+		DisplayName: Simple Scabbard
+		Tooltip:
+			'''
+			{Keyword:Respite}:
+			- Gain <Buff:Sharpened Intent>
+			- If you did not have <Buff:Sharpened Intent> before, restore 20 health
+			- This buff does not expire while {Keyword:Respite} is active
+			'''
+		Flavor:
+			'''
+			A novice knows how to swing a blade.
+			A master knows when to hold it still.
 			'''
 	}
 }
