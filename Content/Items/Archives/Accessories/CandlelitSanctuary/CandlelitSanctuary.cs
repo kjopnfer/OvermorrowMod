@@ -5,7 +5,6 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items.Accessories;
 using System;
@@ -50,7 +49,7 @@ namespace OvermorrowMod.Content.Items.Archives
         public override void ResetVariables()
         {
             CandleCharges = 0;
-            CandleCounter = 0;  
+            CandleCounter = 0;
         }
 
         protected override void UpdateAccessoryEffects(Player player)
@@ -84,7 +83,7 @@ namespace OvermorrowMod.Content.Items.Archives
                     {
                         var damageReduction = 15 * GetInstance<CandlelitSanctuary>(player).CandleCharges;
                         hurtInfo.Damage = Math.Max(1, hurtInfo.Damage - damageReduction);
-                        
+
                         GetInstance<CandlelitSanctuary>(player).CandleCounter = 0;
 
                         var item = ItemLoader.GetItem(ModContent.ItemType<CandlelitSanctuary>()).Item;
