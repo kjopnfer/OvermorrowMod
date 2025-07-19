@@ -62,8 +62,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         private int afterimageLinger = 0;
-
-        private int stealthDelay = 300;
         public override void OnSpawn(IEntitySource source)
         {
             var stealthDelay = ModUtils.SecondsToTicks(Main.rand.NextFloat(4, 5.5f));

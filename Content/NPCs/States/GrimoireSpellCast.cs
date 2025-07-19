@@ -17,7 +17,6 @@ namespace OvermorrowMod.Content.NPCs
         public override int Weight => 1;
         public override bool CanExit => IsFinished;
 
-        private int tileAttackDistance = 24;
         private int attackDelay = 60;
         public GrimoireSpellCast(OvermorrowNPC npc) : base(npc) { }
 
@@ -56,7 +55,6 @@ namespace OvermorrowMod.Content.NPCs
             //Main.NewText("exiting spell", Color.Red);
         }
 
-        private int castTime = 120;
         float flySpeedX = 2;
         float flySpeedY = 0;
         int distanceFromGround = 180;
