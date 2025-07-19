@@ -12,25 +12,13 @@ namespace OvermorrowMod.Core.Items.Accessories
         private HashSet<Type> _activeAccessories = new();
         private HashSet<Type> _lastFrameAccessories = new();
 
-        /// <summary>
-        /// Used for calculating whether the player is in the NPC's aggro range.
-        /// Higher values reduce the NPC's aggro range while increasing their alert threshold.
-        /// </summary>
-        public int AlertBonus = 0;
-
-        /// <summary>
-        /// Used for calculating how quickly the enemy loses aggro if the Player is their target.
-        /// </summary>
-        public float AggroLossBonus = 0;
+        
 
         public override void ResetEffects()
         {
             // Store what was active last frame before clearing
             _lastFrameAccessories = new HashSet<Type>(_activeAccessories);
             ClearActiveAccessories();
-
-            AlertBonus = 0;
-            AggroLossBonus = 0;
         }
 
         /// <summary>

@@ -163,7 +163,9 @@ namespace OvermorrowMod.Core.Items
             float currentDescriptionY = descriptionStartY;
             foreach (string descriptionLine in setBonus.Description)
             {
-                string parsedLine = ParseTooltipObjects(descriptionLine);
+                string parsedLine = ParseTooltipText(descriptionLine); // This handles {Keyword:} syntax
+                parsedLine = ParseTooltipObjects(parsedLine);
+                
                 var snippets = ChatManager.ParseMessage(parsedLine, Color.White);
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, parsedLine,
                     new Vector2(containerPosition.X, containerPosition.Y + currentDescriptionY), Color.White, 0f, Vector2.Zero,
@@ -244,7 +246,9 @@ namespace OvermorrowMod.Core.Items
             float currentDescriptionY = descriptionStartY;
             foreach (string descriptionLine in projectileTooltip.Description)
             {
-                string parsedLine = ParseTooltipObjects(descriptionLine);
+                string parsedLine = ParseTooltipText(descriptionLine); // This handles {Keyword:} syntax
+                parsedLine = ParseTooltipObjects(parsedLine);
+                
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, parsedLine,
                     new Vector2(containerPosition.X, containerPosition.Y + currentDescriptionY), Color.White, 0f, Vector2.Zero,
                     Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40);
@@ -267,7 +271,9 @@ namespace OvermorrowMod.Core.Items
             float descriptionHeight = 0;
             foreach (string descriptionLine in buffTooltip.Description)
             {
-                string parsedLine = ParseTooltipObjects(descriptionLine);
+                string parsedLine = ParseTooltipText(descriptionLine);
+                parsedLine = ParseTooltipObjects(parsedLine);
+                
                 var wrappedSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, parsedLine,
                     Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40);
                 descriptionHeight += wrappedSize.Y;
@@ -326,7 +332,9 @@ namespace OvermorrowMod.Core.Items
             float currentDescriptionY = descriptionStartY;
             foreach (string descriptionLine in buffTooltip.Description)
             {
-                string parsedLine = ParseTooltipObjects(descriptionLine);
+                string parsedLine = ParseTooltipText(descriptionLine); // This handles {Keyword:} syntax
+                parsedLine = ParseTooltipObjects(parsedLine);
+
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, parsedLine,
                     new Vector2(containerPosition.X, containerPosition.Y + currentDescriptionY), Color.White, 0f, Vector2.Zero,
                     Vector2.One * 0.95f, TooltipConfiguration.CONTAINER_WIDTH - 40);
@@ -584,7 +592,7 @@ namespace OvermorrowMod.Core.Items
 
             foreach (var highlight in TextHighlights)
             {
-                string pattern = $@"({{{highlight.Key}:.*}})";
+                string pattern = $@"({{{highlight.Key}:.*?}})";
                 var matches = Regex.Matches(text, pattern);
                 foreach (Match match in matches)
                 {

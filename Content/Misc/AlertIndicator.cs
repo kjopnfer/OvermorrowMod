@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Globals;
-using OvermorrowMod.Core.Items.Accessories;
 using OvermorrowMod.Core.NPCs;
 using System;
 using Terraria;
@@ -80,7 +79,7 @@ namespace OvermorrowMod.Content.Misc
 
             if (target is Player player)
             {
-                int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
+                int alertBonus = player.GetModPlayer<GlobalPlayer>().AlertBonus;
 
                 // AlertBonus reduces all radius values proportionally
                 float reductionFactor = Math.Max(0.1f, 1f - (alertBonus / baseRadius.GetMaxRadius()));
@@ -112,7 +111,7 @@ namespace OvermorrowMod.Content.Misc
 
             if (target is Player player)
             {
-                int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
+                int alertBonus = player.GetModPlayer<GlobalPlayer>().AlertBonus;
 
                 // AlertBonus increases alert radius
                 return new AggroRadius(

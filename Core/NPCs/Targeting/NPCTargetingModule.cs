@@ -59,7 +59,7 @@ namespace OvermorrowMod.Core.NPCs
 
             if (entity is Player player)
             {
-                int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
+                int alertBonus = player.GetModPlayer<GlobalPlayer>().AlertBonus;
 
                 // AlertBonus reduces all radius values proportionally
                 float reductionFactor = Math.Max(0.1f, 1f - (alertBonus / baseRadius.GetMaxRadius()));
@@ -88,7 +88,7 @@ namespace OvermorrowMod.Core.NPCs
 
             if (entity is Player player)
             {
-                int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
+                int alertBonus = player.GetModPlayer<GlobalPlayer>().AlertBonus;
 
                 // AlertBonus increases alert radius
                 return new AggroRadius(
@@ -224,7 +224,7 @@ namespace OvermorrowMod.Core.NPCs
                 float lossBonus = 0;
                 if (Target is Player player)
                 {
-                    lossBonus += player.GetModPlayer<AccessoryPlayer>().AggroLossBonus;
+                    lossBonus += player.GetModPlayer<GlobalPlayer>().AggroLossBonus;
                 }
 
                 aggroTimer -= Config.AggroLossRate + lossBonus;
