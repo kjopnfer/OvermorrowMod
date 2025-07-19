@@ -112,7 +112,7 @@ namespace OvermorrowMod.Content.Misc
 
             if (target is Player player)
             {
-                int alertBonus = player.GetModPlayer<OldAccessoryPlayer>().AlertBonus;
+                int alertBonus = player.GetModPlayer<AccessoryPlayer>().AlertBonus;
 
                 // AlertBonus increases alert radius
                 return new AggroRadius(
