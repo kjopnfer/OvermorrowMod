@@ -1,6 +1,6 @@
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Items.Accessories;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,8 +22,8 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.aggro -= ModUtils.TilesToPixels(10);
-            player.GetModPlayer<OldAccessoryPlayer>().AlertBonus = ModUtils.TilesToPixels(10);
-            player.GetModPlayer<OldAccessoryPlayer>().AggroLossBonus = 0.5f;
+            player.GetModPlayer<AccessoryPlayer>().AlertBonus = ModUtils.TilesToPixels(10);
+            player.GetModPlayer<AccessoryPlayer>().AggroLossBonus = 0.5f;
         }
     }
 }

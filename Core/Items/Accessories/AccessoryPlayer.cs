@@ -10,6 +10,28 @@ namespace OvermorrowMod.Core.Items.Accessories
     public class AccessoryPlayer : ModPlayer
     {
         private HashSet<Type> _activeAccessories = new();
+        private HashSet<Type> _lastFrameAccessories = new();
+
+        /// <summary>
+        /// Used for calculating whether the player is in the NPC's aggro range.
+        /// Higher values reduce the NPC's aggro range while increasing their alert threshold.
+        /// </summary>
+        public int AlertBonus = 0;
+
+        /// <summary>
+        /// Used for calculating how quickly the enemy loses aggro if the Player is their target.
+        /// </summary>
+        public float AggroLossBonus = 0;
+
+        public override void ResetEffects()
+        {
+            // Store what was active last frame before clearing
+            _lastFrameAccessories = new HashSet<Type>(_activeAccessories);
+            ClearActiveAccessories();
+
+            AlertBonus = 0;
+            AggroLossBonus = 0;
+        }
 
         /// <summary>
         /// Activates an accessory for this player using type
@@ -78,15 +100,33 @@ namespace OvermorrowMod.Core.Items.Accessories
             return _activeAccessories;
         }
 
-        public override void ResetEffects()
+        public override void PostUpdateEquips()
         {
-            var previousAccessories = new HashSet<Type>(_activeAccessories);
-            ClearActiveAccessories();
+            var unequippedAccessories = new HashSet<Type>(_lastFrameAccessories);
+            unequippedAccessories.ExceptWith(_activeAccessories);
 
-            // Deactivate effects for accessories that are no longer equipped
-            foreach (var accessoryType in previousAccessories)
+            // Clean up unequipped accessories
+            foreach (var accessoryType in unequippedAccessories)
             {
+                // Deactivate the accessory effects
                 AccessoryManager.DeactivateAccessoryEffects(Player, accessoryType);
+
+                // Find the instance and reset its variables
+                ResetUnequippedAccessoryVariables(accessoryType);
+            }
+        }
+
+        private void ResetUnequippedAccessoryVariables(Type accessoryType)
+        {
+            // Search through all inventory slots to find the unequipped accessory
+            for (int i = 0; i < Player.inventory.Length; i++)
+            {
+                if (Player.inventory[i].ModItem?.GetType() == accessoryType &&
+                    Player.inventory[i].ModItem is OvermorrowAccessory accessory)
+                {
+                    accessory.ResetVariables();
+                    break;
+                }
             }
         }
 
