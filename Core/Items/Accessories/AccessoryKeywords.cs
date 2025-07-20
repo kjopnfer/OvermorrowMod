@@ -21,6 +21,7 @@ namespace OvermorrowMod.Core.Items.Accessories
     public class QuickslotKeyword : AccessoryKeyword { }
     public class RespiteKeyword : AccessoryKeyword { }
     public class SecondaryKeyword : AccessoryKeyword { }
+    public class TrueMeleeKeyword : AccessoryKeyword { }
 
 
     public class ProjectileSpawnKeyword : AccessoryKeyword { }
@@ -45,6 +46,10 @@ namespace OvermorrowMod.Core.Items.Accessories
         public static event Action<Player, Item> OnQuickslot;
         public static event Action<Player> OnRespite;
         public static event Action<Player, Item> OnSecondary;
+        //public static event Action<Player, Item, Projectile, NPC, NPC.HitModifiers> OnTrueMelee;
+
+        public delegate void TrueMeleeDelegate(Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers);
+        public static event TrueMeleeDelegate OnTrueMelee;
 
         public static event Action<Player, Projectile, IEntitySource> OnProjectileSpawn;
         public static event Action<Player, Projectile, NPC, NPC.HitModifiers> OnProjectileModifyHit;
@@ -69,8 +74,8 @@ namespace OvermorrowMod.Core.Items.Accessories
         public static void TriggerQuickslot(Player player, Item item) => OnQuickslot?.Invoke(player, item);
         public static void TriggerRespite(Player player) => OnRespite?.Invoke(player);
         public static void TriggerSecondary(Player player, Item item) => OnSecondary?.Invoke(player, item);
-
-
+        //public static void TriggerTrueMelee(Player player, Item item, Projectile projectile, NPC target, NPC.HitModifiers modifiers) =>OnTrueMelee?.Invoke(player, item, projectile, target, modifiers);
+        public static void TriggerTrueMelee(Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers) => OnTrueMelee?.Invoke(player, item, projectile, target, ref modifiers);
         public static void TriggerProjectileSpawn(Player player, Projectile projectile, IEntitySource source) => OnProjectileSpawn?.Invoke(player, projectile, source);
         public static void TriggerProjectileModifyHit(Player player, Projectile projectile, NPC target, NPC.HitModifiers modifiers) => OnProjectileModifyHit?.Invoke(player, projectile, target, modifiers);
         public static void TriggerProjectileKill(Player player, Projectile projectile, int timeLeft) => OnProjectileKill?.Invoke(player, projectile, timeLeft);
@@ -94,6 +99,7 @@ namespace OvermorrowMod.Core.Items.Accessories
         public static readonly Type Quickslot = typeof(QuickslotKeyword);
         public static readonly Type Respite = typeof(RespiteKeyword);
         public static readonly Type Secondary = typeof(SecondaryKeyword);
+        public static readonly Type TrueMelee = typeof(TrueMeleeKeyword);
 
         public static readonly Type ProjectileSpawn = typeof(ProjectileSpawnKeyword);
         public static readonly Type ProjectileModifyHit = typeof(ProjectileModifyHitKeyword);

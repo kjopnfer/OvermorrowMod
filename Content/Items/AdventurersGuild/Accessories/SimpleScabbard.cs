@@ -60,15 +60,15 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
                 }
             );
 
-            definition.AddStrikeEffect(
-                condition: (player, npc, hit, damageDone) =>
+            // This needs explicit parameter type specification because idk
+            definition.AddTrueMeleeEffect(
+                condition: (Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers) => player.HasBuff<FocusedBlade>(),
+                effect: (Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers) =>
                 {
-                    return player.HasBuff<FocusedBlade>();
-                },
-                effect: (player, npc, hit, damageDone) =>
-                {
+                    modifiers.SourceDamage *= 2f;
+                    modifiers.SetCrit();
+
                     player.ClearBuff(ModContent.BuffType<FocusedBlade>());
-                    player.GetDamage(DamageClass.Melee) += 0.05f; // 5% damage boost
                 }
             );
         }

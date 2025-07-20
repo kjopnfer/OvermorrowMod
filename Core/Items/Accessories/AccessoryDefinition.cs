@@ -1,10 +1,13 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 
 namespace OvermorrowMod.Core.Items.Accessories
 {
+    public delegate bool TrueMeleeConditionDelegate(Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers);
+    public delegate void TrueMeleeEffectDelegate(Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers);
+
     public class AccessoryDefinition
     {
         public Type AccessoryType { get; set; }
@@ -42,6 +45,34 @@ namespace OvermorrowMod.Core.Items.Accessories
                 KeywordEffects[keywordType] = new List<AccessoryEffect>();
 
             KeywordEffects[keywordType].Add(new AccessoryEffect(condition, effect));
+        }
+
+        //public Action<Player, Item, Projectile, NPC, NPC.HitModifiers> TrueMeleeCallback { get; set; }
+        public TrueMeleeEffectDelegate TrueMeleeCallback { get; set; }
+
+
+        /// <summary>
+        /// The equivalent "Strike" trigger but for True Melee only.
+        /// Includes both Item and Projectile fields.
+        /// <para>
+        /// However, depending on where this effect triggers from, one of the parameters will be null.
+        /// It is important to check for null safety prior to implementing this effect.
+        /// </para>
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="effect"></param>
+        public void AddTrueMeleeEffect(TrueMeleeConditionDelegate condition, TrueMeleeEffectDelegate effect)
+        {
+            TrueMeleeCallback = (Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers) =>
+            {
+                if (!player.GetModPlayer<AccessoryPlayer>().HasAccessory(AccessoryType))
+                    return;
+
+                if (condition(player, item, projectile, target, ref modifiers))
+                {
+                    effect(player, item, projectile, target, ref modifiers);
+                }
+            };
         }
 
         public void AddRetaliateEffect(Func<Player, NPC, Player.HurtInfo, bool> condition, Action<Player, NPC, Player.HurtInfo> effect)
@@ -163,6 +194,24 @@ namespace OvermorrowMod.Core.Items.Accessories
                 (player, args) => effect(player, (Item)args[0])
             );
         }
+
+        /// <summary>
+        /// The equivalent "Strike" trigger but for True Melee only.
+        /// Includes both Item and Projectile fields.
+        /// <para>
+        /// However, depending on where this effect triggers from, one of the parameters will be null.
+        /// It is important to check for null safety prior to implementing this effect.
+        /// </para>
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="effect"></param>
+        /*public void AddTrueMeleeEffect(Func<Player, Item, Projectile, NPC, NPC.HitModifiers, bool> condition, Action<Player, Item, Projectile, NPC, NPC.HitModifiers> effect)
+        {
+            AddEffect<TrueMeleeKeyword>(
+                (player, args) => condition(player, (Item)args[0], (Projectile)args[1], (NPC)args[2], (NPC.HitModifiers)args[3]),
+                (player, args) => effect(player, (Item)args[0], (Projectile)args[1], (NPC)args[2], (NPC.HitModifiers)args[3])
+            );
+        }*/
 
         public void AddProjectileSpawnEffect(Func<Player, Projectile, IEntitySource, bool> condition, Action<Player, Projectile, IEntitySource> effect)
         {

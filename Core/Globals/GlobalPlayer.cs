@@ -35,12 +35,23 @@ namespace OvermorrowMod.Core.Globals
             AggroLossBonus = 0;
         }
 
+        public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            AccessoryKeywords.TriggerTrueMelee(Player, item, null, target, ref modifiers);
+        }
+
         public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)
         {
             if (proj.IsWeaponType(WeaponType.Rapier))
             {
                 // Add armor penetration equal to twice the projectile's damage
                 modifiers.ArmorPenetration += proj.damage * 2;
+            }
+
+            // Activate "true" melee hit
+            if (Player.heldProj == proj.whoAmI)
+            {
+                AccessoryKeywords.TriggerTrueMelee(Player, Player.HeldItem, proj, target, ref modifiers);
             }
         }
 
@@ -60,18 +71,14 @@ namespace OvermorrowMod.Core.Globals
             AccessoryKeywords.TriggerStrike(Player, target, hit, damageDone);
             RespiteCounter = 0;
 
-            // Activate "true" melee hit
-            if (Player.heldProj == proj.whoAmI)
-            {
-
-            }
+            
         }
 
         public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)
         {
             AccessoryKeywords.TriggerStrike(Player, target, hit, damageDone);
+
             RespiteCounter = 0;
-            // Activate true melee hit
         }
 
         public override void OnHitByProjectile(Projectile proj, Player.HurtInfo hurtInfo)

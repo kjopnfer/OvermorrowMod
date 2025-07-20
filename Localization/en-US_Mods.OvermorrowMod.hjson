@@ -326,7 +326,7 @@ Items: {
 
 	TowerKey: {
 		DisplayName: Subworld Key
-		Tooltip: 
+		Tooltip:
 			'''
 			For testing purposes only. 
 			Used to access the Archive subworld.
@@ -551,8 +551,8 @@ Items: {
 			'''
 		Flavor:
 			'''
-			A novice knows how to swing a blade.
-			A master knows when to hold it still.
+			A novice knows how to swing a blade,
+			a master knows when to hold it still.
 			'''
 	}
 }

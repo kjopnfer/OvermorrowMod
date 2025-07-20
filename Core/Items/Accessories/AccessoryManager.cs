@@ -62,6 +62,10 @@ namespace OvermorrowMod.Core.Items.Accessories
             AccessoryKeywords.OnSecondary += (player, item) =>
                 TriggerKeywordEffects(AccessoryKeywordTypes.Secondary, player, item);
 
+            //AccessoryKeywords.OnTrueMelee += (player, item, projectile, target, modifiers) =>
+            //    TriggerKeywordEffects(AccessoryKeywordTypes.TrueMelee, player, item, projectile, target, modifiers);
+            AccessoryKeywords.OnTrueMelee += TriggerTrueMeleeEffects;
+
             AccessoryKeywords.OnProjectileSpawn += (player, projectile, source) =>
                 TriggerKeywordEffects(AccessoryKeywordTypes.ProjectileSpawn, player, projectile, source);
 
@@ -156,6 +160,20 @@ namespace OvermorrowMod.Core.Items.Accessories
         public static void ClearPlayerEffects(Player player)
         {
             _playerActiveEffects.Remove(player.whoAmI);
+        }
+
+        private static void TriggerTrueMeleeEffects(Player player, Item item, Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            var accessoryPlayer = player.GetModPlayer<AccessoryPlayer>();
+
+            foreach (var accessoryType in accessoryPlayer.GetActiveAccessories())
+            {
+                var accessory = _allAccessories.FirstOrDefault(a => a.AccessoryType == accessoryType);
+                if (accessory?.TrueMeleeCallback != null)
+                {
+                    accessory.TrueMeleeCallback(player, item, projectile, target, ref modifiers);
+                }
+            }
         }
     }
 }

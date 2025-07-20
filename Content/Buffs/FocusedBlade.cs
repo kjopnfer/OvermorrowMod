@@ -12,6 +12,7 @@ namespace OvermorrowMod.Content.Buffs
             Main.buffNoSave[Type] = true;
         }
 
+        // Actual effects are handled in the Accessory
         public override void Update(Player player, ref int buffIndex)
         {
         }
