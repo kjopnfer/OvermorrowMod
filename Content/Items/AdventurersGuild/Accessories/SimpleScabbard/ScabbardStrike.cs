@@ -44,7 +44,6 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
         {
             InitializeSlashes();
 
-            // Hitstop effect
             if (Main.myPlayer == Projectile.owner)
             {
                 Main.player[Projectile.owner].velocity *= 0.1f;
@@ -152,30 +151,38 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 
         public override bool PreDraw(ref Color lightColor)
         {
-            DrawSlash(slash1, Color.White * 0.6f, Color.Cyan * 0.6f, 1.5f);
-            DrawSlash(slash1, Color.White, Color.LightCyan, 1.0f);
-            DrawSlash(slash1, Color.White * 1.5f, Color.White * 1.2f, 0.4f);
+            var allVertices = new List<VertexPositionColorTexture>();
 
-            DrawSlash(slash2, Color.White * 0.6f, Color.Cyan * 0.6f, 1.5f);
-            DrawSlash(slash2, Color.White, Color.LightCyan, 1.0f);
-            DrawSlash(slash2, Color.White * 1.5f, Color.White * 1.2f, 0.4f);
+            // Collect all vertices from all layers of both slashes
+            CollectSlashVertices(slash1, Color.White * 0.6f, Color.Cyan * 0.6f, 1.5f, allVertices);
+            CollectSlashVertices(slash1, Color.White, Color.LightCyan, 1.0f, allVertices);
+            CollectSlashVertices(slash1, Color.White * 1.5f, Color.White * 1.2f, 0.4f, allVertices);
+
+            CollectSlashVertices(slash2, Color.White * 0.6f, Color.Cyan * 0.6f, 1.5f, allVertices);
+            CollectSlashVertices(slash2, Color.White, Color.LightCyan, 1.0f, allVertices);
+            CollectSlashVertices(slash2, Color.White * 1.5f, Color.White * 1.2f, 0.4f, allVertices);
+
+            // Draw all vertices at once
+            if (allVertices.Count > 0)
+            {
+                DrawPrimitives(allVertices, ModContent.Request<Texture2D>(AssetDirectory.Trails + "Laser").Value);
+            }
 
             return false;
         }
 
-        private void DrawSlash(SlashData slash, Color startColor, Color endColor, float widthMultiplier)
+        private void CollectSlashVertices(SlashData slash, Color startColor, Color endColor, float widthMultiplier, List<VertexPositionColorTexture> vertices)
         {
             if (slash.CurrentLength <= 0) return;
 
             Vector2 direction = Vector2.Normalize(slash.EndPoint - slash.StartPoint);
             Vector2 currentEnd = slash.StartPoint + direction * slash.CurrentLength;
 
-            DrawSlashPrimitive(slash.StartPoint, currentEnd, startColor * slash.Alpha, endColor * slash.Alpha, slash.Width * widthMultiplier);
+            GenerateSlashVertices(slash.StartPoint, currentEnd, startColor * slash.Alpha, endColor * slash.Alpha, slash.Width * widthMultiplier, vertices);
         }
 
-        private void DrawSlashPrimitive(Vector2 start, Vector2 end, Color startColor, Color endColor, float widthScale)
+        private void GenerateSlashVertices(Vector2 start, Vector2 end, Color startColor, Color endColor, float widthScale, List<VertexPositionColorTexture> vertices)
         {
-            var vertices = new List<VertexPositionColorTexture>();
             float maxWidth = 32f * widthScale;
             int segments = 80;
 
@@ -216,11 +223,6 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color2, new Vector2(t2, 0f)));
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color1, new Vector2(t1, 1f)));
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Bottom.X, pos2Bottom.Y, 0f), color2, new Vector2(t2, 1f)));
-            }
-
-            if (vertices.Count > 0)
-            {
-                DrawPrimitives(vertices, ModContent.Request<Texture2D>(AssetDirectory.Trails + "Laser").Value);
             }
         }
 
