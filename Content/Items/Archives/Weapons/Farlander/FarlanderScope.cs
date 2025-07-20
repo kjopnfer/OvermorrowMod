@@ -1,16 +1,12 @@
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Globals;
 using System;
-using System.Collections.Generic;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons

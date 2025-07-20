@@ -131,7 +131,7 @@ namespace OvermorrowMod.Core.Items.Accessories
         {
             if (drawInfo.shadow == 0)
             {
-                Content.Items.Accessories.WarriorsEpic.DrawEffects(Player, drawInfo, ref r, ref g, ref b, ref a, ref fullBright);
+                Content.Items.Archives.Accessories.WarriorsEpic.DrawEffects(Player, drawInfo, ref r, ref g, ref b, ref a, ref fullBright);
             }
         }
     }

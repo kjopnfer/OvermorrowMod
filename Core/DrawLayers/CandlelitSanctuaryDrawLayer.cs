@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items;
 using OvermorrowMod.Content.Items.Archives;
+using OvermorrowMod.Content.Items.Archives.Accessories;
 using OvermorrowMod.Core.Globals;
 using ReLogic.Content;
 using System.Linq;

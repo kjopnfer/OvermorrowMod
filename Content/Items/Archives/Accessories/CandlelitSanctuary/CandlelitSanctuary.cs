@@ -14,7 +14,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.Archives
+namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
     public class CandlelitSanctuary : OvermorrowAccessory, ITooltipEntities

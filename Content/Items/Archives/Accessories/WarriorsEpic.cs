@@ -17,7 +17,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.Accessories
+namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
     public class WarriorsEpic : OvermorrowAccessory, ITooltipEntities
     {

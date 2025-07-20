@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Core.Globals;
-using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Items.Guns;
 using System.Collections.Generic;
@@ -54,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
             string action = gunPlayer.FarlanderCharge < 120 ? "_Farlander" : "_FarlanderPowerShot";
             int projectile = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun" + action), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
-            
+
             if (gunPlayer.FarlanderPierce)
             {
                 Main.projectile[projectile].penetrate++;
