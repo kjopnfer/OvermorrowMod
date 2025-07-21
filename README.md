@@ -21,3 +21,6 @@
 
 ## License
 [All code here is licensed under the GPL v3 license.](LICENSE).
+
+TL;DR: You can freely use, modify, and distribute this code, but any software you create that incorporates this GPL v3 
+code must also be released under GPL v3 and you must provide the source code to anyone you distribute it to.
