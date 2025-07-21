@@ -624,6 +624,11 @@ namespace OvermorrowMod.Core.Items
                 convertedText = convertedText.Replace("DeathsDoor", "Deaths Door");
             }
 
+            if (convertedText.Contains("MindDown"))
+            {
+                convertedText = convertedText.Replace("MindDown", "Mind Down");
+            }
+
             return convertedText;
         }
 

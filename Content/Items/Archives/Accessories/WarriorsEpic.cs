@@ -6,7 +6,6 @@ using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Particles;
-using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items.Accessories;
 using OvermorrowMod.Core.Particles;

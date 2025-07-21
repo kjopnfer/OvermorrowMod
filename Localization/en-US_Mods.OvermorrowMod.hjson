@@ -87,9 +87,29 @@ Buffs: {
 			On Strike, clear this buff
 			'''
 	}
+
+	ChaliceHealth: {
+		DisplayName: Chalice Health
+		Description: Mods.OvermorrowMod.Buffs.ChaliceHealth.Description
+	}
+
+	ChaliceMana: {
+		DisplayName: Chalice Mana
+		Description: Mods.OvermorrowMod.Buffs.ChaliceMana.Description
+	}
 }
 
 TooltipEntities: {
+	ChaliceHealth: {
+		DisplayName: Super Health Regeneration
+		Description.Line0: + Gain 16 health per second
+	}
+
+	ChaliceMana: {
+		DisplayName: Super Mana Regeneration
+		Description.Line0: + Gain 16 mana per second
+	}
+
 	Shadowbrand: {
 		DisplayName: Shadowbrand
 
@@ -245,6 +265,11 @@ Keywords: {
 	Focus: {
 		DisplayName: Focus
 		Description: Triggers when firing a shot during the weapon's white flash window
+	}
+
+	MindDown: {
+		DisplayName: Mind Down
+		Description: Activates while below 20% mana
 	}
 
 	Misfire: {
@@ -513,8 +538,8 @@ Items: {
 			'''
 		Flavor:
 			'''
-			Shaped in the image of the Deer God's crown; 
-			whose heralds once blessed scholars with divine knowledge.
+			Shaped in the image of the Deer God's crown:
+			Whose heralds once blessed scholars with divine knowledge.
 			'''
 	}
 
@@ -554,6 +579,18 @@ Items: {
 			A novice knows how to swing a blade,
 			a master knows when to hold it still.
 			'''
+	}
+
+	OrnateChalice: {
+		DisplayName: Ornate Chalice
+		Tooltip:
+			'''
+			Gain increased health and mana regeneration
+			{Keyword:MindDown}: Drink from the chalice to gain <Buff:Super Mana Regeneration>
+			{Keyword:DeathsDoor}: Drink from the chalice to gain <Buff:Super Health Regeneration>
+			On any activation, you cannot gain either buff for 40 seconds
+			'''
+		Flavor: Old draconic script etched around the rim translates to 'seriously, don't mix these.'
 	}
 }
 

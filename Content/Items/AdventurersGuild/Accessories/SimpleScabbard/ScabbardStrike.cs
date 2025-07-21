@@ -153,7 +153,6 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
         {
             var allVertices = new List<VertexPositionColorTexture>();
 
-            // Collect all vertices from all layers of both slashes
             CollectSlashVertices(slash1, Color.White * 0.6f, Color.Cyan * 0.6f, 1.5f, allVertices);
             CollectSlashVertices(slash1, Color.White, Color.LightCyan, 1.0f, allVertices);
             CollectSlashVertices(slash1, Color.White * 1.5f, Color.White * 1.2f, 0.4f, allVertices);
@@ -162,7 +161,6 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
             CollectSlashVertices(slash2, Color.White, Color.LightCyan, 1.0f, allVertices);
             CollectSlashVertices(slash2, Color.White * 1.5f, Color.White * 1.2f, 0.4f, allVertices);
 
-            // Draw all vertices at once
             if (allVertices.Count > 0)
             {
                 DrawPrimitives(allVertices, ModContent.Request<Texture2D>(AssetDirectory.Trails + "Laser").Value);
@@ -184,7 +182,7 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
         private void GenerateSlashVertices(Vector2 start, Vector2 end, Color startColor, Color endColor, float widthScale, List<VertexPositionColorTexture> vertices)
         {
             float maxWidth = 32f * widthScale;
-            int segments = 80;
+            int segments = 200;
 
             Vector2 direction = end - start;
             Vector2 normal = Vector2.Normalize(new Vector2(-direction.Y, direction.X));

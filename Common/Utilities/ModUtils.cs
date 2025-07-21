@@ -14,6 +14,28 @@ namespace OvermorrowMod.Common.Utilities
     /// </summary>
     public static class ModUtils
     {
+        /// <summary>
+        /// Adds health regeneration at the specified rate per second.
+        /// </summary>
+        /// <param name="player">The player to modify</param>
+        /// <param name="healthPerSecond">Health regenerated per second</param>
+        public static void AddHealthRegenPerSecond(this Player player, float healthPerSecond)
+        {
+            // 1 lifeRegen = 0.5 health per second, so multiply by 2
+            player.lifeRegen += (int)(healthPerSecond * 2);
+        }
+
+        /// <summary>
+        /// Adds mana regeneration at the specified rate per second.
+        /// </summary>
+        /// <param name="player">The player to modify</param>
+        /// <param name="manaPerSecond">Mana regenerated per second</param>
+        public static void AddManaRegenPerSecond(this Player player, float manaPerSecond)
+        {
+            // Assuming same pattern as health: 1 manaRegen = 0.5 mana per second
+            player.manaRegen += (int)(manaPerSecond * 2);
+        }
+
         public static bool HasNearbyPlayers(Vector2 position, float maxDistance)
         {
             for (int i = 0; i < Main.maxPlayers; i++)
