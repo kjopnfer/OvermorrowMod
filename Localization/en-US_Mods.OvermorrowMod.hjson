@@ -677,4 +677,5 @@ Projectiles: {
 	PracticeTargetIcon.DisplayName: Practice Target Icon
 	PracticeTargetIconFail.DisplayName: Practice Target Icon Fail
 	ScabbardStrike.DisplayName: Scabbard Strike
+	ChaliceHealth.DisplayName: Chalice Health
 }

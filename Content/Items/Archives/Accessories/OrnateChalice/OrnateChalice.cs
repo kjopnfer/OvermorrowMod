@@ -66,7 +66,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 condition: (player) => GetInstance<OrnateChalice>(player).ChaliceCounter <= 0,
                 effect: (player) =>
                 {
-                    player.AddBuff(ModContent.BuffType<ChaliceHealth>(), ModUtils.SecondsToTicks(5));
+                    player.AddBuff(ModContent.BuffType<Buffs.ChaliceHealth>(), ModUtils.SecondsToTicks(5));
                     GetInstance<OrnateChalice>(player).ChaliceCounter = ModUtils.SecondsToTicks(40);
                 }
             );
