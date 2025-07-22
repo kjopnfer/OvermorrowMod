@@ -116,7 +116,8 @@ namespace OvermorrowMod.Content.Particles
             Vector2 origin = selectedTexture.Size() / 2f;
             float finalAlpha = particle.alpha * customAlpha;
 
-            spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
+            for (int _ = 0; _ < intensity; _++)
+                spriteBatch.Draw(selectedTexture, particle.position - Main.screenPosition, null,
                 particle.color * finalAlpha * 0.7f, particle.rotation, origin, particle.scale * 0.7f, SpriteEffects.None, 0f);
 
             //if (Main.rand.NextBool())

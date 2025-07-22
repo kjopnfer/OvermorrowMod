@@ -150,9 +150,10 @@ namespace OvermorrowMod.Content.Misc
         public override void AI()
         {
             NPC npc = Main.npc[(int)ParentID];
+            OvermorrowNPC overmorrowNPC = npc.ModNPC as OvermorrowNPC;
+
             if (!npc.active) Projectile.Kill();
 
-            OvermorrowNPC overmorrowNPC = npc.ModNPC as OvermorrowNPC;
             if (overmorrowNPC.TargetingModule.IsInAlertState())
             {
                 Projectile.timeLeft = 10;

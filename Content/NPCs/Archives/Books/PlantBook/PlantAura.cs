@@ -119,16 +119,20 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     new Rectangle(0, 0, 16, 16),
                     displayColor * 0.5f);*/
 
-                var plantGas = new Gas(gasTextures, 0f, 0f);
-                plantGas.hasLight = true;
-                plantGas.hasWaveMovement = true;
-                plantGas.hasAdditiveLayers = true;
-                plantGas.gasBehavior = GasBehavior.Shrink;
-                plantGas.lightIntensity = 0.5f;
+                var plantGas = new Gas(gasTextures, 0f, 0f)
+                {
+                    intensity = 2,
+                    hasLight = true,
+                    hasWaveMovement = true,
+                    hasAdditiveLayers = true,
+                    gasBehavior = GasBehavior.Shrink,
+                    lightIntensity = 0.5f
+                };
 
                 if (Main.rand.NextBool(4))
                 {
-                    ParticleManager.CreateParticleDirect(plantGas, tileWorldPosition, -Vector2.UnitY, Color.LimeGreen, alpha: 1f, scale: 0.1f, 0f, useAdditiveBlending: true);
+                    float scale = Main.rand.NextFloat(0.1f, 0.2f);
+                    ParticleManager.CreateParticleDirect(plantGas, tileWorldPosition, -Vector2.UnitY, Color.LimeGreen, alpha: 1f, scale, 0f, ParticleDrawLayer.AboveAll, true);
                 }
                 /*switch (type)
                 {
