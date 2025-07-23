@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.RenderTargets
@@ -10,6 +12,7 @@ namespace OvermorrowMod.Core.RenderTargets
     class OutlineRenderer : ILoadable
     {
         public static RenderTarget2D outlineRenderTarget;
+        public static RenderTarget2D fillRenderTarget; // New: for custom fill textures
         public static RenderTarget2D processedRenderTarget;
 
         public float Priority => 1.1f;
@@ -26,8 +29,10 @@ namespace OvermorrowMod.Core.RenderTargets
         public void Unload()
         {
             outlineRenderTarget?.Dispose();
+            fillRenderTarget?.Dispose();
             processedRenderTarget?.Dispose();
             outlineRenderTarget = null;
+            fillRenderTarget = null;
             processedRenderTarget = null;
         }
 
@@ -67,97 +72,242 @@ namespace OvermorrowMod.Core.RenderTargets
                 return;
 
             var gD = Main.graphics.GraphicsDevice;
-
             int RTwidth = Main.screenWidth;
             int RTheight = Main.screenHeight;
 
-            if (outlineRenderTarget is null || outlineRenderTarget.Size() != new Vector2(RTwidth, RTheight))
-            {
-                outlineRenderTarget?.Dispose();
-                outlineRenderTarget = new RenderTarget2D(gD, RTwidth, RTheight, default, default, default, default, RenderTargetUsage.PreserveContents);
-            }
-
-            if (processedRenderTarget is null || processedRenderTarget.Size() != new Vector2(RTwidth, RTheight))
-            {
-                processedRenderTarget?.Dispose();
-                processedRenderTarget = new RenderTarget2D(gD, RTwidth, RTheight, default, default, default, default, RenderTargetUsage.PreserveContents);
-            }
+            // Initialize render targets
+            InitializeRenderTargets(gD, RTwidth, RTheight);
 
             var validProjectiles = Main.projectile.Where(proj => proj.active && ShouldDrawOutline(proj)).ToList();
             var validNPCs = Main.npc.Where(npc => npc.active && ShouldDrawOutline(npc)).ToList();
 
-            gD.SetRenderTarget(outlineRenderTarget);
+            if (validProjectiles.Count == 0 && validNPCs.Count == 0)
+            {
+                ClearRenderTargets(gD);
+                return;
+            }
+
+            // Clear the processed render target once at the start
+            gD.SetRenderTarget(processedRenderTarget);
             gD.Clear(Color.Transparent);
 
-            if (validProjectiles.Count > 0 || validNPCs.Count > 0)
+            // Group entities by their fill type for optimal rendering
+            var entityGroups = GroupEntitiesByFillType(validProjectiles, validNPCs);
+
+            // Render each group
+            foreach (var group in entityGroups)
             {
-                Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
-
-                foreach (Projectile proj in validProjectiles)
-                {
-                    DrawProjectileToTarget(proj);
-                }
-
-                foreach (NPC npc in validNPCs)
-                {
-                    DrawNPCToTarget(npc);
-                }
-
-                Main.spriteBatch.End();
-
-                gD.SetRenderTarget(processedRenderTarget);
-                gD.Clear(Color.Transparent);
-
-                Effect outline = OvermorrowModFile.Instance.Outline.Value;
-                if (outline != null)
-                {
-                    var firstEntity = validProjectiles.FirstOrDefault() as Entity ?? validNPCs.FirstOrDefault() as Entity;
-                    var outlineInterface = GetOutlineInterface(firstEntity);
-
-                    outline.Parameters["PixelSize"].SetValue(new Vector2(1f / RTwidth, 1f / RTheight));
-                    outline.Parameters["OutlineColor"].SetValue((outlineInterface?.OutlineColor ?? Color.White).ToVector4());
-                    outline.Parameters["FillColor"].SetValue((outlineInterface?.FillColor ?? Color.White).ToVector4());
-                    outline.Parameters["UseFillColor"].SetValue(outlineInterface?.UseFillColor ?? true);
-
-                    Main.spriteBatch.Begin(default, default, Main.DefaultSamplerState, default, RasterizerState.CullNone, outline);
-                    Main.spriteBatch.Draw(outlineRenderTarget, Vector2.Zero, Color.White);
-                    Main.spriteBatch.End();
-                }
-            }
-            else
-            {
-                // If no entities, clear the processed target too
-                gD.SetRenderTarget(processedRenderTarget);
-                gD.Clear(Color.Transparent);
+                RenderEntityGroup(gD, group, RTwidth, RTheight);
             }
 
             gD.SetRenderTarget(null);
         }
 
-        private void DrawProjectileToTarget(Projectile proj)
+        private void InitializeRenderTargets(GraphicsDevice gD, int width, int height)
         {
-            if (proj.ModProjectile != null)
+            var targetSize = new Vector2(width, height);
+
+            if (outlineRenderTarget?.Size() != targetSize)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(proj.ModProjectile.Texture).Value;
+                outlineRenderTarget?.Dispose();
+                outlineRenderTarget = new RenderTarget2D(gD, width, height, default, default, default, default, RenderTargetUsage.PreserveContents);
+            }
 
-                Vector2 position = proj.Center - Main.screenPosition;
-                Vector2 origin = texture.Size() / 2f;
+            if (fillRenderTarget?.Size() != targetSize)
+            {
+                fillRenderTarget?.Dispose();
+                fillRenderTarget = new RenderTarget2D(gD, width, height, default, default, default, default, RenderTargetUsage.PreserveContents);
+            }
 
-                Main.spriteBatch.Draw(texture, position, null, Color.White, proj.rotation, origin, proj.scale, SpriteEffects.None, 0f);
+            if (processedRenderTarget?.Size() != targetSize)
+            {
+                processedRenderTarget?.Dispose();
+                processedRenderTarget = new RenderTarget2D(gD, width, height, default, default, default, default, RenderTargetUsage.PreserveContents);
             }
         }
 
-        private void DrawNPCToTarget(NPC npc)
+        private void ClearRenderTargets(GraphicsDevice gD)
         {
-            if (npc.type > 0 && npc.type < Terraria.ID.NPCID.Count)
+            gD.SetRenderTarget(processedRenderTarget);
+            gD.Clear(Color.Transparent);
+        }
+
+        private List<EntityGroup> GroupEntitiesByFillType(List<Projectile> projectiles, List<NPC> npcs)
+        {
+            var groups = new List<EntityGroup>();
+
+            // Group all entities by their fill configuration
+            var allEntities = new List<(Entity entity, IOutlineEntity outlineEntity)>();
+
+            foreach (var proj in projectiles)
             {
-                Texture2D texture = Terraria.GameContent.TextureAssets.Npc[npc.type].Value;
-
-                Vector2 position = npc.Center - Main.screenPosition;
-                Vector2 origin = texture.Size() / 2f;
-
-                Main.spriteBatch.Draw(texture, position, null, Color.White, npc.rotation, origin, npc.scale, SpriteEffects.None, 0f);
+                if (proj.ModProjectile is IOutlineEntity outlineEntity)
+                    allEntities.Add((proj, outlineEntity));
             }
+
+            foreach (var npc in npcs)
+            {
+                if (npc.ModNPC is IOutlineEntity outlineEntity)
+                    allEntities.Add((npc, outlineEntity));
+            }
+
+            // Group by fill type and properties
+            var grouped = allEntities.GroupBy(x => new
+            {
+                HasFillTexture = x.outlineEntity.FillTexture != null,
+                HasFillColor = x.outlineEntity.FillColor.HasValue,
+                FillTexture = x.outlineEntity.FillTexture?.Name ?? "",
+                FillColor = x.outlineEntity.FillColor ?? Color.Transparent,
+                OutlineColor = x.outlineEntity.OutlineColor
+            });
+
+            foreach (var group in grouped)
+            {
+                groups.Add(new EntityGroup
+                {
+                    Entities = group.ToList(),
+                    OutlineColor = group.Key.OutlineColor,
+                    FillColor = group.Key.FillColor,
+                    FillTexture = group.First().outlineEntity.FillTexture,
+                    UseFillColor = group.Key.HasFillColor && !group.Key.HasFillTexture
+                });
+            }
+
+            return groups;
+        }
+
+        private void RenderEntityGroup(GraphicsDevice gD, EntityGroup group, int RTwidth, int RTheight)
+        {
+            // Render outline shapes to outline target
+            gD.SetRenderTarget(outlineRenderTarget);
+            gD.Clear(Color.Transparent);
+
+            Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
+
+            foreach (var (entity, outlineEntity) in group.Entities)
+            {
+                DrawEntityToTarget(entity);
+            }
+
+            Main.spriteBatch.End();
+
+            // Render fill content to fill target
+            gD.SetRenderTarget(fillRenderTarget);
+            gD.Clear(Color.Transparent);
+
+            Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
+
+            foreach (var (entity, outlineEntity) in group.Entities)
+            {
+                if (group.FillTexture != null)
+                {
+                    DrawEntityWithCustomTexture(entity, group.FillTexture);
+                }
+                else if (group.UseFillColor)
+                {
+                    DrawEntityWithSolidColor(entity, group.FillColor);
+                }
+                else
+                {
+                    // Draw original texture
+                    DrawEntityToTarget(entity);
+                }
+            }
+
+            Main.spriteBatch.End();
+
+            // Apply shader to combine outline and fill (don't clear processed target here)
+            gD.SetRenderTarget(processedRenderTarget);
+
+            Effect outline = OvermorrowModFile.Instance.Outline.Value;
+            if (outline != null)
+            {
+                outline.Parameters["PixelSize"].SetValue(new Vector2(1f / RTwidth, 1f / RTheight));
+                outline.Parameters["OutlineColor"].SetValue(group.OutlineColor.ToVector4());
+                outline.Parameters["FillColor"].SetValue(group.FillColor.ToVector4());
+                outline.Parameters["UseFillColor"].SetValue(group.UseFillColor);
+
+                Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, RasterizerState.CullNone, outline);
+
+                // Set both textures for the shader
+                gD.Textures[0] = outlineRenderTarget;
+                gD.Textures[1] = fillRenderTarget;
+
+                Main.spriteBatch.Draw(outlineRenderTarget, Vector2.Zero, Color.White);
+                Main.spriteBatch.End();
+            }
+        }
+
+        private void DrawEntityToTarget(Entity entity)
+        {
+            Texture2D texture = GetEntityTexture(entity);
+            if (texture == null) return;
+
+            Vector2 position = entity.Center - Main.screenPosition;
+            Vector2 origin = texture.Size() / 2f;
+            float rotation = entity switch
+            {
+                NPC npc => npc.rotation,
+                Projectile proj => proj.rotation,
+                _ => 0f
+            };
+            float scale = entity switch
+            {
+                NPC npc => npc.scale,
+                Projectile proj => proj.scale,
+                _ => 1f
+            };
+
+            Main.spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, scale, SpriteEffects.None, 0f);
+        }
+
+        private void DrawEntityWithCustomTexture(Entity entity, Texture2D customTexture)
+        {
+            Vector2 position = entity.Center - Main.screenPosition;
+            Vector2 origin = customTexture.Size() / 2f;
+            float rotation = entity switch
+            {
+                NPC npc => npc.rotation,
+                Projectile proj => proj.rotation,
+                _ => 0f
+            };
+            float scale = entity switch
+            {
+                NPC npc => npc.scale,
+                Projectile proj => proj.scale,
+                _ => 1f
+            };
+
+            Main.spriteBatch.Draw(customTexture, position, null, Color.White, rotation, origin, scale, SpriteEffects.None, 0f);
+        }
+
+        private void DrawEntityWithSolidColor(Entity entity, Color color)
+        {
+            Texture2D pixelTexture = TextureAssets.MagicPixel.Value;
+            Vector2 position = entity.Center - Main.screenPosition;
+            float scale = entity switch
+            {
+                NPC npc => npc.scale,
+                Projectile proj => proj.scale,
+                _ => 1f
+            };
+
+            // Draw a colored rectangle matching the entity's size
+            Rectangle bounds = entity.Hitbox;
+            Vector2 size = new Vector2(bounds.Width, bounds.Height) * scale;
+            Vector2 origin = size / 2f;
+
+            Main.spriteBatch.Draw(pixelTexture, position, null, color, 0f, Vector2.Zero, size, SpriteEffects.None, 0f);
+        }
+
+        private Texture2D GetEntityTexture(Entity entity)
+        {
+            return entity switch
+            {
+                NPC npc when npc.type > 0 && npc.type < Terraria.ID.NPCID.Count => TextureAssets.Npc[npc.type].Value,
+                Projectile proj when proj.ModProjectile != null => ModContent.Request<Texture2D>(proj.ModProjectile.Texture).Value,
+                _ => null
+            };
         }
 
         private bool ShouldDrawOutline(Entity entity)
@@ -170,14 +320,13 @@ namespace OvermorrowMod.Core.RenderTargets
             };
         }
 
-        private IOutlineEntity GetOutlineInterface(Entity entity)
+        private class EntityGroup
         {
-            return entity switch
-            {
-                NPC npc => npc.ModNPC as IOutlineEntity,
-                Projectile proj => proj.ModProjectile as IOutlineEntity,
-                _ => null
-            };
+            public List<(Entity entity, IOutlineEntity outlineEntity)> Entities { get; set; }
+            public Color OutlineColor { get; set; }
+            public Color FillColor { get; set; }
+            public Texture2D FillTexture { get; set; }
+            public bool UseFillColor { get; set; }
         }
     }
 }
