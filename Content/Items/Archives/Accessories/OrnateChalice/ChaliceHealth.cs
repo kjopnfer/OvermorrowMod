@@ -51,7 +51,10 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         public override bool PreDraw(ref Color lightColor)
         {
             //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, 0.05f, SpriteEffects.None, 0);
+            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, 0.75f, SpriteEffects.None, 0);
+           
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveProjectiles + Name).Value;
+            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
             return false;
         }
@@ -64,9 +67,12 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             int tilesX = (screenWidth / backgroundTexture.Width) + 2;
             int tilesY = (screenHeight / backgroundTexture.Height) + 2;
 
+            // Parallax factor - lower values = slower background movement
+            float parallaxFactor = 0.5f; // Background moves at half camera speed
+
             Vector2 offset = new Vector2(
-                Main.screenPosition.X % backgroundTexture.Width,
-                Main.screenPosition.Y % backgroundTexture.Height
+                (Main.screenPosition.X * parallaxFactor) % backgroundTexture.Width,
+                (Main.screenPosition.Y * parallaxFactor) % backgroundTexture.Height
             );
 
             for (int x = -1; x < tilesX; x++)
@@ -94,7 +100,16 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 (float)Math.Cos(time * 0.7f) * 120f
             );
 
-            spriteBatch.Draw(texture, entity.Center - Main.screenPosition + driftOffset, frame, Color.White, 0f, frame.Size() / 2, 1f, SpriteEffects.None, 0);
+            // Add a small parallax offset to the drift itself
+            float parallaxAmount = 20f; // Small offset amount
+            Vector2 parallaxDrift = new Vector2(
+                (float)Math.Sin(time * 0.3f) * parallaxAmount,
+                (float)Math.Cos(time * 0.2f) * parallaxAmount
+            );
+
+            Vector2 ratPosition = entity.Center - Main.screenPosition + driftOffset + parallaxDrift;
+
+            spriteBatch.Draw(texture, ratPosition, frame, Color.White, 0f, frame.Size() / 2, 1f, SpriteEffects.None, 0);
         }
     }
 }

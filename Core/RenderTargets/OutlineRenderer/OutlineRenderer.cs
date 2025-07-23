@@ -272,7 +272,7 @@ namespace OvermorrowMod.Core.RenderTargets
 
         private void DrawEntityToTarget(Entity entity)
         {
-            Texture2D texture = GetEntityTexture(entity);
+            /*Texture2D texture = GetEntityTexture(entity);
             if (texture == null) return;
 
             Vector2 position = entity.Center - Main.screenPosition;
@@ -288,9 +288,39 @@ namespace OvermorrowMod.Core.RenderTargets
                 NPC npc => npc.scale,
                 Projectile proj => proj.scale,
                 _ => 1f
-            };
+            };*/
 
-            Main.spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, scale, SpriteEffects.None, 0f);
+            switch (entity)
+            {
+                case NPC npc:
+                    //if (npc.ModNPC is ModNPC modNPC)
+                        //modNPC.PreDraw(Main.spriteBatch, Main.screenPosition, npc.GetAlpha(Color.White));
+
+                    Main.instance.DrawNPC(npc.whoAmI, false);
+                    break;
+                case Projectile projectile:
+                    // None of these work. I don't know why. Guess we can't do animated projectiles?
+                    //if (projectile.ModProjectile is ModProjectile modProjectile)
+                    //{
+                    //    Color color = Color.White;
+                    //    modProjectile.PreDraw(ref color);
+                    //}
+
+                    //Main.instance.DrawProj(projectile.whoAmI);
+
+                    Texture2D texture = GetEntityTexture(entity);
+                    if (texture == null) return;
+
+                    Vector2 position = entity.Center - Main.screenPosition;
+                    Vector2 origin = texture.Size() / 2f;
+                    float rotation = projectile.rotation;
+                    float scale = projectile.scale;
+
+                    Main.spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, scale, SpriteEffects.None, 0f);
+                    break;
+            }
+
+            //Main.spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, scale, SpriteEffects.None, 0f);
         }
 
         private void DrawEntityWithCustomTexture(Entity entity, Texture2D customTexture)
