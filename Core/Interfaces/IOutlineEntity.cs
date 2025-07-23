@@ -49,26 +49,15 @@ namespace OvermorrowMod.Core.Interfaces
         Texture2D FillTexture { get; }
 
         /// <summary>
-        /// Optional custom drawing function for complete control over the fill content.
-        /// This function is called when rendering the fill layer and allows you to draw anything you want.
-        /// The shader will then use this rendered content as the fill that gets revealed through entity shapes.
-        /// 
-        /// Parameters:
-        /// - SpriteBatch: The spriteBatch to draw with (already begun with appropriate settings)
-        /// - GraphicsDevice: The graphics device for advanced operations
-        /// - int screenWidth: Width of the render target
-        /// - int screenHeight: Height of the render target
-        /// - Entity entity: The entity being drawn (for position, scale, etc.)
-        /// 
-        /// Return null to use FillTexture, FillColor, or original sprite instead.
-        /// 
-        /// Example uses:
-        /// - Animated textures with custom frame logic
-        /// - Scrolling backgrounds with custom speed/direction
-        /// - Procedural patterns
-        /// - Multi-layered effects
-        /// - Particle effects
+        /// Draws shared content for the entire group (backgrounds, environments, etc.)
+        /// Called once per group, not per entity.
         /// </summary>
-        Action<SpriteBatch, GraphicsDevice, int, int, Entity> CustomDrawFunction { get; }
+        Action<SpriteBatch, GraphicsDevice, int, int> SharedGroupDrawFunction { get; }
+
+        /// <summary>
+        /// Draws individual content for this specific entity (animated sprites, particles, etc.)
+        /// Called once per entity, can use entity position/properties for positioning.
+        /// </summary>
+        Action<SpriteBatch, GraphicsDevice, Entity> IndividualEntityDrawFunction { get; }
     }
 }

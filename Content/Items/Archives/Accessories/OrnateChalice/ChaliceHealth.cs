@@ -20,7 +20,8 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         public bool UseFillColor => true;
         public Texture2D FillTexture => ModContent.Request<Texture2D>(AssetDirectory.MapBackgrounds + "GrandArchives").Value;
         public Color? FillColor => Color.Black;
-        public Action<SpriteBatch, GraphicsDevice, int, int, Entity> CustomDrawFunction => DrawStaticBackgroundFill;
+        public Action<SpriteBatch, GraphicsDevice, int, int> SharedGroupDrawFunction => DrawSharedBackground;
+        public Action<SpriteBatch, GraphicsDevice, Entity> IndividualEntityDrawFunction => DrawEntityRat;
 
         public override void SetStaticDefaults()
         {
@@ -55,17 +56,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             return false;
         }
 
-        private void DrawStaticBackgroundFill(SpriteBatch spriteBatch, GraphicsDevice gD, int screenWidth, int screenHeight, Entity entity)
+        private void DrawSharedBackground(SpriteBatch spriteBatch, GraphicsDevice gD, int screenWidth, int screenHeight)
         {
+            // Draw the continuous tiled background once for the entire group
             Texture2D backgroundTexture = ModContent.Request<Texture2D>(AssetDirectory.MapBackgrounds + "GrandArchives").Value;
 
-            if (backgroundTexture == null) return;
-
-            // Calculate how many tiles we need to cover the screen
             int tilesX = (screenWidth / backgroundTexture.Width) + 2;
             int tilesY = (screenHeight / backgroundTexture.Height) + 2;
 
-            // Use screen position to offset the background pattern
             Vector2 offset = new Vector2(
                 Main.screenPosition.X % backgroundTexture.Width,
                 Main.screenPosition.Y % backgroundTexture.Height
@@ -79,28 +77,23 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     spriteBatch.Draw(backgroundTexture, position, Color.White);
                 }
             }
+        }
 
-            int xFrame = 0;
-            float animationSpeed = 12f;
-            int totalFrames = 9;
-            int yFrame = (int)((Main.GameUpdateCount / 6) % totalFrames);
+        private void DrawEntityRat(SpriteBatch spriteBatch, GraphicsDevice gD, Entity entity)
+        {
+            // Draw the animated rat specific to this entity
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "ArchiveRat").Value;
 
-            // Random drift calculation
-            float time = Main.GameUpdateCount * 0.02f + entity.whoAmI * 0.5f; // Use entity's whoAmI for unique offset
+            int yFrame = (int)((Main.GameUpdateCount / 6) % 9);
+            var frame = new Rectangle(0, yFrame * (texture.Height / 9), texture.Width / 10, texture.Height / 9);
+
+            // Entity-specific positioning with drift
+            float time = Main.GameUpdateCount * 0.02f + entity.whoAmI * 0.5f;
             Vector2 driftOffset = new Vector2(
-                (float)Math.Sin(time) * 120f,                    // Horizontal drift with 8 pixel amplitude
-                (float)Math.Cos(time * 0.7f) * 120f              // Vertical drift with 6 pixel amplitude, different frequency
+                (float)Math.Sin(time) * 120f,
+                (float)Math.Cos(time * 0.7f) * 120f
             );
 
-            // Add some random jitter every 60 ticks
-            if (Main.GameUpdateCount % 60 == 0)
-            {
-                Vector2 randomJitter = Main.rand.NextVector2Circular(3f, 3f);
-                driftOffset += randomJitter;
-            }
-
-            var frame = new Rectangle(xFrame * (texture.Width / 10), yFrame * (texture.Height / 9), texture.Width / 10, texture.Height / 9);
             spriteBatch.Draw(texture, entity.Center - Main.screenPosition + driftOffset, frame, Color.White, 0f, frame.Size() / 2, 1f, SpriteEffects.None, 0);
         }
     }

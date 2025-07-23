@@ -161,12 +161,12 @@ namespace OvermorrowMod.Core.RenderTargets
             {
                 var fillGroups = entityTypeGroup.GroupBy(x => new
                 {
-                    HasCustomDraw = x.outlineEntity.CustomDrawFunction != null,
+                    HasSharedGroupDraw = x.outlineEntity.SharedGroupDrawFunction != null,
+                    HasIndividualEntityDraw = x.outlineEntity.IndividualEntityDrawFunction != null,
                     HasFillTexture = x.outlineEntity.FillTexture != null,
                     HasFillColor = x.outlineEntity.FillColor.HasValue,
                     FillTexture = x.outlineEntity.FillTexture?.Name ?? "",
                     FillColor = x.outlineEntity.FillColor ?? Color.Transparent,
-                    CustomDrawFunctionHash = x.outlineEntity.CustomDrawFunction?.GetHashCode() ?? 0
                 });
 
                 foreach (var fillGroup in fillGroups)
@@ -177,8 +177,9 @@ namespace OvermorrowMod.Core.RenderTargets
                         OutlineColor = entityTypeGroup.Key.OutlineColor,
                         FillColor = fillGroup.Key.FillColor,
                         FillTexture = fillGroup.First().outlineEntity.FillTexture,
-                        UseFillColor = fillGroup.Key.HasFillColor && !fillGroup.Key.HasFillTexture && !fillGroup.Key.HasCustomDraw,
-                        CustomDrawFunction = fillGroup.First().outlineEntity.CustomDrawFunction
+                        UseFillColor = fillGroup.Key.HasFillColor && !fillGroup.Key.HasFillTexture && !fillGroup.Key.HasSharedGroupDraw && !fillGroup.Key.HasIndividualEntityDraw,
+                        SharedGroupDrawFunction = fillGroup.First().outlineEntity.SharedGroupDrawFunction,
+                        IndividualEntityDrawFunction = fillGroup.First().outlineEntity.IndividualEntityDrawFunction,
                     });
                 }
             }
@@ -203,13 +204,24 @@ namespace OvermorrowMod.Core.RenderTargets
             gD.SetRenderTarget(fillRenderTarget);
             gD.Clear(Color.Transparent);
 
-            if (group.CustomDrawFunction != null)
+            var firstEntity = group.Entities[0].outlineEntity;
+            if (firstEntity.SharedGroupDrawFunction != null)
             {
                 Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
 
+                // Draw shared background if it exists
+                if (firstEntity.SharedGroupDrawFunction != null)
+                {
+                    firstEntity.SharedGroupDrawFunction(Main.spriteBatch, gD, RTwidth, RTheight);
+                }
+
+
                 foreach (var (entity, outlineEntity) in group.Entities)
                 {
-                    group.CustomDrawFunction(Main.spriteBatch, gD, RTwidth, RTheight, entity);
+                    if (outlineEntity.IndividualEntityDrawFunction != null)
+                    {
+                        outlineEntity.IndividualEntityDrawFunction(Main.spriteBatch, gD, entity);
+                    }
                 }
 
                 Main.spriteBatch.End();
