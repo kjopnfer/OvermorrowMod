@@ -12,7 +12,7 @@ namespace OvermorrowMod.Core.RenderTargets
     class OutlineRenderer : ILoadable
     {
         public static RenderTarget2D outlineRenderTarget;
-        public static RenderTarget2D fillRenderTarget; // New: for custom fill textures
+        public static RenderTarget2D fillRenderTarget;
         public static RenderTarget2D processedRenderTarget;
 
         public float Priority => 1.1f;
@@ -75,7 +75,6 @@ namespace OvermorrowMod.Core.RenderTargets
             int RTwidth = Main.screenWidth;
             int RTheight = Main.screenHeight;
 
-            // Initialize render targets
             InitializeRenderTargets(gD, RTwidth, RTheight);
 
             var validProjectiles = Main.projectile.Where(proj => proj.active && ShouldDrawOutline(proj)).ToList();
@@ -87,14 +86,11 @@ namespace OvermorrowMod.Core.RenderTargets
                 return;
             }
 
-            // Clear the processed render target once at the start
             gD.SetRenderTarget(processedRenderTarget);
             gD.Clear(Color.Transparent);
 
-            // Group entities by their fill type for optimal rendering
-            var entityGroups = GroupEntitiesByFillType(validProjectiles, validNPCs);
+            var entityGroups = GroupEntitiesByOutlineGroup(validProjectiles, validNPCs);
 
-            // Render each group
             foreach (var group in entityGroups)
             {
                 RenderEntityGroup(gD, group, RTwidth, RTheight);
@@ -132,11 +128,9 @@ namespace OvermorrowMod.Core.RenderTargets
             gD.Clear(Color.Transparent);
         }
 
-        private List<EntityGroup> GroupEntitiesByFillType(List<Projectile> projectiles, List<NPC> npcs)
+        private List<EntityGroup> GroupEntitiesByOutlineGroup(List<Projectile> projectiles, List<NPC> npcs)
         {
             var groups = new List<EntityGroup>();
-
-            // Group all entities by their fill configuration
             var allEntities = new List<(Entity entity, IOutlineEntity outlineEntity)>();
 
             foreach (var proj in projectiles)
@@ -151,26 +145,42 @@ namespace OvermorrowMod.Core.RenderTargets
                     allEntities.Add((npc, outlineEntity));
             }
 
-            // Group by fill type and properties
-            var grouped = allEntities.GroupBy(x => new
+            // Group by entity type to allow outline merging for same entity types
+            var groupedByEntityType = allEntities.GroupBy(x => new
             {
-                HasFillTexture = x.outlineEntity.FillTexture != null,
-                HasFillColor = x.outlineEntity.FillColor.HasValue,
-                FillTexture = x.outlineEntity.FillTexture?.Name ?? "",
-                FillColor = x.outlineEntity.FillColor ?? Color.Transparent,
+                EntityType = x.entity switch
+                {
+                    Projectile proj => $"Projectile_{proj.type}",
+                    NPC npc => $"NPC_{npc.type}",
+                    _ => "Unknown"
+                },
                 OutlineColor = x.outlineEntity.OutlineColor
             });
 
-            foreach (var group in grouped)
+            foreach (var entityTypeGroup in groupedByEntityType)
             {
-                groups.Add(new EntityGroup
+                var fillGroups = entityTypeGroup.GroupBy(x => new
                 {
-                    Entities = group.ToList(),
-                    OutlineColor = group.Key.OutlineColor,
-                    FillColor = group.Key.FillColor,
-                    FillTexture = group.First().outlineEntity.FillTexture,
-                    UseFillColor = group.Key.HasFillColor && !group.Key.HasFillTexture
+                    HasCustomDraw = x.outlineEntity.CustomDrawFunction != null,
+                    HasFillTexture = x.outlineEntity.FillTexture != null,
+                    HasFillColor = x.outlineEntity.FillColor.HasValue,
+                    FillTexture = x.outlineEntity.FillTexture?.Name ?? "",
+                    FillColor = x.outlineEntity.FillColor ?? Color.Transparent,
+                    CustomDrawFunctionHash = x.outlineEntity.CustomDrawFunction?.GetHashCode() ?? 0
                 });
+
+                foreach (var fillGroup in fillGroups)
+                {
+                    groups.Add(new EntityGroup
+                    {
+                        Entities = fillGroup.ToList(),
+                        OutlineColor = entityTypeGroup.Key.OutlineColor,
+                        FillColor = fillGroup.Key.FillColor,
+                        FillTexture = fillGroup.First().outlineEntity.FillTexture,
+                        UseFillColor = fillGroup.Key.HasFillColor && !fillGroup.Key.HasFillTexture && !fillGroup.Key.HasCustomDraw,
+                        CustomDrawFunction = fillGroup.First().outlineEntity.CustomDrawFunction
+                    });
+                }
             }
 
             return groups;
@@ -178,7 +188,6 @@ namespace OvermorrowMod.Core.RenderTargets
 
         private void RenderEntityGroup(GraphicsDevice gD, EntityGroup group, int RTwidth, int RTheight)
         {
-            // Render outline shapes to outline target
             gD.SetRenderTarget(outlineRenderTarget);
             gD.Clear(Color.Transparent);
 
@@ -191,24 +200,36 @@ namespace OvermorrowMod.Core.RenderTargets
 
             Main.spriteBatch.End();
 
-            // Render fill content to fill target
             gD.SetRenderTarget(fillRenderTarget);
             gD.Clear(Color.Transparent);
 
-            if (group.FillTexture != null)
+            if (group.CustomDrawFunction != null)
             {
-                // For custom textures, draw the FULL texture as a continuous background
-                // This creates the "window" effect where entities reveal parts of a larger texture
-                DrawContinuousBackground(gD, group.FillTexture, RTwidth, RTheight);
+                Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
+
+                foreach (var (entity, outlineEntity) in group.Entities)
+                {
+                    group.CustomDrawFunction(Main.spriteBatch, gD, RTwidth, RTheight, entity);
+                }
+
+                Main.spriteBatch.End();
+            }
+            else if (group.FillTexture != null)
+            {
+                // For FillTexture, draw each entity individually with that texture
+                Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
+                foreach (var (entity, outlineEntity) in group.Entities)
+                {
+                    DrawEntityWithCustomTexture(entity, group.FillTexture);
+                }
+                Main.spriteBatch.End();
             }
             else if (group.UseFillColor)
             {
-                // For solid colors, fill the entire render target
                 gD.Clear(group.FillColor);
             }
             else
             {
-                // For original textures, draw each entity individually
                 Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
                 foreach (var (entity, outlineEntity) in group.Entities)
                 {
@@ -217,7 +238,6 @@ namespace OvermorrowMod.Core.RenderTargets
                 Main.spriteBatch.End();
             }
 
-            // Apply shader to combine outline and fill (don't clear processed target here)
             gD.SetRenderTarget(processedRenderTarget);
 
             Effect outline = OvermorrowModFile.Instance.Outline.Value;
@@ -230,51 +250,11 @@ namespace OvermorrowMod.Core.RenderTargets
 
                 Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, RasterizerState.CullNone, outline);
 
-                // Set both textures for the shader
                 gD.Textures[0] = outlineRenderTarget;
                 gD.Textures[1] = fillRenderTarget;
 
                 Main.spriteBatch.Draw(outlineRenderTarget, Vector2.Zero, Color.White);
                 Main.spriteBatch.End();
-            }
-        }
-
-        /// <summary>
-        /// Draws a continuous background texture that can be revealed through entity shapes.
-        /// This creates a "portal" or "window" effect where the background appears continuous across all entities.
-        /// </summary>
-        private void DrawContinuousBackground(GraphicsDevice gD, Texture2D backgroundTexture, int screenWidth, int screenHeight)
-        {
-            Main.spriteBatch.Begin(default, BlendState.AlphaBlend, SamplerState.LinearWrap, default, default, default);
-
-            DrawStaticBackground(backgroundTexture, screenWidth, screenHeight);
-
-            Main.spriteBatch.End();
-        }
-
-        /// <summary>
-        /// Draws a static background that doesn't move with the camera.
-        /// Creates a "window" effect where moving entities reveal different parts of the background.
-        /// </summary>
-        private void DrawStaticBackground(Texture2D texture, int screenWidth, int screenHeight)
-        {
-            // Calculate how many tiles we need to cover the screen
-            int tilesX = (screenWidth / texture.Width) + 2;
-            int tilesY = (screenHeight / texture.Height) + 2;
-
-            // Use screen position to offset the background pattern
-            Vector2 offset = new Vector2(
-                Main.screenPosition.X % texture.Width,
-                Main.screenPosition.Y % texture.Height
-            );
-
-            for (int x = -1; x < tilesX; x++)
-            {
-                for (int y = -1; y < tilesY; y++)
-                {
-                    Vector2 position = new Vector2(x * texture.Width, y * texture.Height) - offset;
-                    Main.spriteBatch.Draw(texture, position, Color.White);
-                }
             }
         }
 
@@ -321,25 +301,6 @@ namespace OvermorrowMod.Core.RenderTargets
             Main.spriteBatch.Draw(customTexture, position, null, Color.White, rotation, origin, scale, SpriteEffects.None, 0f);
         }
 
-        private void DrawEntityWithSolidColor(Entity entity, Color color)
-        {
-            Texture2D pixelTexture = TextureAssets.MagicPixel.Value;
-            Vector2 position = entity.Center - Main.screenPosition;
-            float scale = entity switch
-            {
-                NPC npc => npc.scale,
-                Projectile proj => proj.scale,
-                _ => 1f
-            };
-
-            // Draw a colored rectangle matching the entity's size
-            Rectangle bounds = entity.Hitbox;
-            Vector2 size = new Vector2(bounds.Width, bounds.Height) * scale;
-            Vector2 origin = size / 2f;
-
-            Main.spriteBatch.Draw(pixelTexture, position, null, color, 0f, Vector2.Zero, size, SpriteEffects.None, 0f);
-        }
-
         private Texture2D GetEntityTexture(Entity entity)
         {
             return entity switch
@@ -358,15 +319,6 @@ namespace OvermorrowMod.Core.RenderTargets
                 Projectile proj when proj.ModProjectile is IOutlineEntity outline => outline.ShouldDrawOutline,
                 _ => false
             };
-        }
-
-        private class EntityGroup
-        {
-            public List<(Entity entity, IOutlineEntity outlineEntity)> Entities { get; set; }
-            public Color OutlineColor { get; set; }
-            public Color FillColor { get; set; }
-            public Texture2D FillTexture { get; set; }
-            public bool UseFillColor { get; set; }
         }
     }
 }
