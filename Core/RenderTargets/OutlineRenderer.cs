@@ -195,26 +195,27 @@ namespace OvermorrowMod.Core.RenderTargets
             gD.SetRenderTarget(fillRenderTarget);
             gD.Clear(Color.Transparent);
 
-            Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
-
-            foreach (var (entity, outlineEntity) in group.Entities)
+            if (group.FillTexture != null)
             {
-                if (group.FillTexture != null)
+                // For custom textures, draw the FULL texture as a continuous background
+                // This creates the "window" effect where entities reveal parts of a larger texture
+                DrawContinuousBackground(gD, group.FillTexture, RTwidth, RTheight);
+            }
+            else if (group.UseFillColor)
+            {
+                // For solid colors, fill the entire render target
+                gD.Clear(group.FillColor);
+            }
+            else
+            {
+                // For original textures, draw each entity individually
+                Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
+                foreach (var (entity, outlineEntity) in group.Entities)
                 {
-                    DrawEntityWithCustomTexture(entity, group.FillTexture);
-                }
-                else if (group.UseFillColor)
-                {
-                    DrawEntityWithSolidColor(entity, group.FillColor);
-                }
-                else
-                {
-                    // Draw original texture
                     DrawEntityToTarget(entity);
                 }
+                Main.spriteBatch.End();
             }
-
-            Main.spriteBatch.End();
 
             // Apply shader to combine outline and fill (don't clear processed target here)
             gD.SetRenderTarget(processedRenderTarget);
@@ -235,6 +236,45 @@ namespace OvermorrowMod.Core.RenderTargets
 
                 Main.spriteBatch.Draw(outlineRenderTarget, Vector2.Zero, Color.White);
                 Main.spriteBatch.End();
+            }
+        }
+
+        /// <summary>
+        /// Draws a continuous background texture that can be revealed through entity shapes.
+        /// This creates a "portal" or "window" effect where the background appears continuous across all entities.
+        /// </summary>
+        private void DrawContinuousBackground(GraphicsDevice gD, Texture2D backgroundTexture, int screenWidth, int screenHeight)
+        {
+            Main.spriteBatch.Begin(default, BlendState.AlphaBlend, SamplerState.LinearWrap, default, default, default);
+
+            DrawStaticBackground(backgroundTexture, screenWidth, screenHeight);
+
+            Main.spriteBatch.End();
+        }
+
+        /// <summary>
+        /// Draws a static background that doesn't move with the camera.
+        /// Creates a "window" effect where moving entities reveal different parts of the background.
+        /// </summary>
+        private void DrawStaticBackground(Texture2D texture, int screenWidth, int screenHeight)
+        {
+            // Calculate how many tiles we need to cover the screen
+            int tilesX = (screenWidth / texture.Width) + 2;
+            int tilesY = (screenHeight / texture.Height) + 2;
+
+            // Use screen position to offset the background pattern
+            Vector2 offset = new Vector2(
+                Main.screenPosition.X % texture.Width,
+                Main.screenPosition.Y % texture.Height
+            );
+
+            for (int x = -1; x < tilesX; x++)
+            {
+                for (int y = -1; y < tilesY; y++)
+                {
+                    Vector2 position = new Vector2(x * texture.Width, y * texture.Height) - offset;
+                    Main.spriteBatch.Draw(texture, position, Color.White);
+                }
             }
         }
 

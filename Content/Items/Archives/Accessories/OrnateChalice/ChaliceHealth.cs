@@ -12,7 +12,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
     public class ChaliceHealth : ModProjectile, IOutlineEntity
     {
-        public override string Texture => AssetDirectory.ArchiveProjectiles + Name;
+        public override string Texture => /*AssetDirectory.ArchiveProjectiles + Name*/AssetDirectory.Textures + "twirl_01";
 
         public bool ShouldDrawOutline => true;
         public Color OutlineColor => Color.Teal;
@@ -32,23 +32,24 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         public override void OnSpawn(IEntitySource source)
         {
             //baseScale = Main.rand.NextFloat(f, 2f);
-            baseScale = 2f;
+            baseScale = 3f;
             Projectile.scale = baseScale;
         }
 
         public override void AI()
         {
-            float pulsateSpeed = 0.08f;
-            float pulsateAmount = 0.3f;
+            Projectile.rotation -= 0.02f;
+            //float pulsateSpeed = 0.08f;
+            //float pulsateAmount = 0.3f;
 
-            float pulsate = 1f + (float)Math.Sin(Projectile.timeLeft * pulsateSpeed) * pulsateAmount;
-            Projectile.scale = baseScale * pulsate;
+            //float pulsate = 1f + (float)Math.Sin(Projectile.timeLeft * pulsateSpeed) * pulsateAmount;
+            //Projectile.scale = baseScale * pulsate;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, 0.05f, SpriteEffects.None, 0);
+            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
+            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, 0.05f, SpriteEffects.None, 0);
 
             return false;
         }
