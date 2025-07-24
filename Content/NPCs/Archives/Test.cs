@@ -21,11 +21,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public Color OutlineColor => Color.Red;
 
-        public Color? FillColor => null;
+        public Color? FillColor => Color.Black;
 
         public Texture2D FillTexture => null;
 
-        public Action<SpriteBatch, GraphicsDevice, int, int> SharedGroupDrawFunction => DrawSharedBackground;
+        public Action<SpriteBatch, GraphicsDevice, int, int> SharedGroupDrawFunction => null;
 
         public Action<SpriteBatch, GraphicsDevice, Entity> IndividualEntityDrawFunction => null;
 

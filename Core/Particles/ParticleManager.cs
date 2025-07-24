@@ -1,11 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
-using OvermorrowMod.Core;
+using OvermorrowMod.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Particles
 {
@@ -28,6 +27,21 @@ namespace OvermorrowMod.Core.Particles
             NextIndex = -1;
             ActiveParticles = -1;
             particles = null;
+        }
+
+        public static List<ParticleInstance> GetActiveParticles()
+        {
+            var activeParticles = new List<ParticleInstance>();
+
+            for (int i = 0; i < particles.Length; i++)
+            {
+                if (particles[i] != null && particles[i].cParticle != null)
+                {
+                    activeParticles.Add(particles[i]);
+                }
+            }
+
+            return activeParticles;
         }
 
         public static void UpdateParticles()
@@ -67,6 +81,9 @@ namespace OvermorrowMod.Core.Particles
             {
                 // Skip particles that use additive blending
                 if (particle == null || particle.drawLayer != layer || particle.UseAdditiveBlending) continue;
+
+                // Don't draw the Outline Particles since this blocks out the ones below it
+                if (particle.cParticle is IOutlineEntity outlineEntity && outlineEntity.ShouldDrawOutline) continue;
 
                 // Temporarily set the particle's position to the gravity-aware position for drawing
                 Vector2 originalPosition = particle.position;

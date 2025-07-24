@@ -1,12 +1,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
@@ -16,31 +17,46 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         public override string Texture => AssetDirectory.ArchiveProjectiles + Name;
 
         public bool ShouldDrawOutline => true;
-        public Color OutlineColor => Color.Teal;
+        public Color OutlineColor => Color.DarkRed;
         public bool UseFillColor => true;
-        public Texture2D FillTexture => ModContent.Request<Texture2D>(AssetDirectory.MapBackgrounds + "GrandArchives").Value;
+        public Texture2D FillTexture => null;
         public Color? FillColor => Color.Black;
-        public Action<SpriteBatch, GraphicsDevice, int, int> SharedGroupDrawFunction => DrawSharedBackground;
-        public Action<SpriteBatch, GraphicsDevice, Entity> IndividualEntityDrawFunction => DrawEntityRat;
+        public Action<SpriteBatch, GraphicsDevice, int, int> SharedGroupDrawFunction => null;
+        public Action<SpriteBatch, GraphicsDevice, Entity> IndividualEntityDrawFunction => null;
 
         public override void SetStaticDefaults()
         {
             Projectile.width = Projectile.height = 28;
             Projectile.timeLeft = ModUtils.SecondsToTicks(5);
-            Projectile.tileCollide = false;
+            Projectile.tileCollide = true;
         }
 
         private float baseScale;
         public override void OnSpawn(IEntitySource source)
         {
             //baseScale = Main.rand.NextFloat(f, 2f);
-            baseScale = 12f;
+            baseScale = Main.rand.NextFloat(0.2f, 0.6f);
             Projectile.scale = baseScale;
         }
 
         public override void AI()
         {
+            Projectile.velocity.Y += 0.025f;
             Projectile.rotation -= 0.02f;
+
+            var outlineParticle = new OutlineParticle(AssetDirectory.ArchiveProjectiles + Name, 16, 16)
+            {
+                ShouldDrawOutline = true,
+                OutlineColor = Color.Purple,
+                FillColor = Color.Black,
+                MaxLifetime = ModUtils.SecondsToTicks(1)
+            };
+
+            ParticleManager.CreateParticleDirect(outlineParticle, Projectile.Center, -Vector2.Normalize(Projectile.velocity), Color.White, 1f, Main.rand.NextFloat(0.2f, 0.5f));
+
+
+            if (Projectile.Hitbox.Intersects(Main.LocalPlayer.Hitbox))
+                Projectile.Kill();
             //float pulsateSpeed = 0.08f;
             //float pulsateAmount = 0.3f;
 
@@ -52,7 +68,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         {
             //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
             //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, 0.75f, SpriteEffects.None, 0);
-           
+
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveProjectiles + Name).Value;
             //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 

@@ -14,6 +14,10 @@ namespace OvermorrowMod.Common.Particles
 
         public float rotationAmount = 0f;
         public int intensity = 1;
+
+        public virtual int Width { get; protected set; } = 16;
+        public virtual int Height { get; protected set; } = 16;
+
         public virtual void OnSpawn() { }
         public virtual void Update() { }
         public virtual string Texture { get; protected set; } = AssetDirectory.Empty;

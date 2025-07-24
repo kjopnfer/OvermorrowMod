@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Particles;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -79,8 +80,9 @@ namespace OvermorrowMod.Core.RenderTargets
 
             var validProjectiles = Main.projectile.Where(proj => proj.active && ShouldDrawOutline(proj)).ToList();
             var validNPCs = Main.npc.Where(npc => npc.active && ShouldDrawOutline(npc)).ToList();
+            var validParticles = GetValidOutlineParticles();
 
-            if (validProjectiles.Count == 0 && validNPCs.Count == 0)
+            if (validProjectiles.Count == 0 && validNPCs.Count == 0 && validParticles.Count == 0)
             {
                 ClearRenderTargets(gD);
                 return;
@@ -89,7 +91,7 @@ namespace OvermorrowMod.Core.RenderTargets
             gD.SetRenderTarget(processedRenderTarget);
             gD.Clear(Color.Transparent);
 
-            var entityGroups = GroupEntitiesByOutlineGroup(validProjectiles, validNPCs);
+            var entityGroups = GroupEntitiesByOutlineGroup(validProjectiles, validNPCs, validParticles);
 
             foreach (var group in entityGroups)
             {
@@ -128,7 +130,7 @@ namespace OvermorrowMod.Core.RenderTargets
             gD.Clear(Color.Transparent);
         }
 
-        private List<EntityGroup> GroupEntitiesByOutlineGroup(List<Projectile> projectiles, List<NPC> npcs)
+        private List<EntityGroup> GroupEntitiesByOutlineGroup(List<Projectile> projectiles, List<NPC> npcs, List<(Entity entity, IOutlineEntity outlineEntity)> particles)
         {
             var groups = new List<EntityGroup>();
             var allEntities = new List<(Entity entity, IOutlineEntity outlineEntity)>();
@@ -145,6 +147,8 @@ namespace OvermorrowMod.Core.RenderTargets
                     allEntities.Add((npc, outlineEntity));
             }
 
+            allEntities.AddRange(particles);
+
             // Group by entity type to allow outline merging for same entity types
             var groupedByEntityType = allEntities.GroupBy(x => new
             {
@@ -152,6 +156,7 @@ namespace OvermorrowMod.Core.RenderTargets
                 {
                     Projectile proj => $"Projectile_{proj.type}",
                     NPC npc => $"NPC_{npc.type}",
+                    ParticleEntityWrapper particle => $"Particle_{particle.GetOutlineEntity().GetType().Name}",
                     _ => "Unknown"
                 },
                 OutlineColor = x.outlineEntity.OutlineColor
@@ -228,7 +233,7 @@ namespace OvermorrowMod.Core.RenderTargets
             }
             else if (group.FillTexture != null)
             {
-                // For FillTexture, draw each entity individually with that texture
+                // Draw each entity individually with that texture
                 Main.spriteBatch.Begin(default, BlendState.AlphaBlend, Main.DefaultSamplerState, default, default, default);
                 foreach (var (entity, outlineEntity) in group.Entities)
                 {
@@ -272,30 +277,16 @@ namespace OvermorrowMod.Core.RenderTargets
 
         private void DrawEntityToTarget(Entity entity)
         {
-            /*Texture2D texture = GetEntityTexture(entity);
-            if (texture == null) return;
-
-            Vector2 position = entity.Center - Main.screenPosition;
-            Vector2 origin = texture.Size() / 2f;
-            float rotation = entity switch
-            {
-                NPC npc => npc.rotation,
-                Projectile proj => proj.rotation,
-                _ => 0f
-            };
-            float scale = entity switch
-            {
-                NPC npc => npc.scale,
-                Projectile proj => proj.scale,
-                _ => 1f
-            };*/
-
             switch (entity)
             {
+                case ParticleEntityWrapper particleWrapper:
+                    var particle = particleWrapper.GetParticleInstance();
+                    if (particle?.cParticle != null)
+                    {
+                        particle.cParticle.Draw(Main.spriteBatch);
+                    }
+                    break;
                 case NPC npc:
-                    //if (npc.ModNPC is ModNPC modNPC)
-                        //modNPC.PreDraw(Main.spriteBatch, Main.screenPosition, npc.GetAlpha(Color.White));
-
                     Main.instance.DrawNPC(npc.whoAmI, false);
                     break;
                 case Projectile projectile:
@@ -306,7 +297,7 @@ namespace OvermorrowMod.Core.RenderTargets
                     //    modProjectile.PreDraw(ref color);
                     //}
 
-                    //Main.instance.DrawProj(projectile.whoAmI);
+                    Main.instance.DrawProj(projectile.whoAmI);
 
                     Texture2D texture = GetEntityTexture(entity);
                     if (texture == null) return;
@@ -321,6 +312,24 @@ namespace OvermorrowMod.Core.RenderTargets
             }
 
             //Main.spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, scale, SpriteEffects.None, 0f);
+        }
+
+        private List<(Entity entity, IOutlineEntity outlineEntity)> GetValidOutlineParticles()
+        {
+            var validParticles = new List<(Entity entity, IOutlineEntity outlineEntity)>();
+            var activeParticles = ParticleManager.GetActiveParticles();
+
+            foreach (var particleInstance in activeParticles)
+            {
+                if (particleInstance?.cParticle is IOutlineEntity outlineParticle && outlineParticle.ShouldDrawOutline)
+                {
+                    var wrapper = new ParticleEntityWrapper(particleInstance, outlineParticle);
+                    wrapper.UpdateFromParticle();
+                    validParticles.Add((wrapper, outlineParticle));
+                }
+            }
+
+            return validParticles;
         }
 
         private void DrawEntityWithCustomTexture(Entity entity, Texture2D customTexture)
