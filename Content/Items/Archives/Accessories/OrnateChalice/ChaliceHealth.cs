@@ -1,37 +1,29 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    public class ChaliceHealth : ModProjectile, IOutlineEntity
+    public class ChaliceHealth : ModProjectile
     {
         public override string Texture => AssetDirectory.ArchiveProjectiles + Name;
-
-        public bool ShouldDrawOutline => true;
-        public Color OutlineColor => Color.DarkRed;
-        public bool UseFillColor => true;
-        public Texture2D FillTexture => null;
-        public Color? FillColor => Color.Black;
-        public Action<SpriteBatch, GraphicsDevice, int, int> SharedGroupDrawFunction => null;
-        public Action<SpriteBatch, GraphicsDevice, Entity> IndividualEntityDrawFunction => null;
-
         public override void SetStaticDefaults()
         {
             Projectile.width = Projectile.height = 28;
             Projectile.timeLeft = ModUtils.SecondsToTicks(5);
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 1;
         }
 
         private float baseScale;
+        int homingDelay = 12;
         public override void OnSpawn(IEntitySource source)
         {
             //baseScale = Main.rand.NextFloat(f, 2f);
@@ -39,93 +31,101 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             Projectile.scale = baseScale;
         }
 
+        public ref float AICounter => ref Projectile.ai[0];
+
         public override void AI()
         {
-            Projectile.velocity.Y += 0.025f;
-            Projectile.rotation -= 0.02f;
+            Projectile.tileCollide = false;
+            if (AICounter++ > homingDelay)
+            {
+                Vector2 toPlayer = Main.LocalPlayer.Center - Projectile.Center;
+                Vector2 directionToPlayer = Vector2.Normalize(toPlayer);
 
+                // Turn resistance
+                Vector2 currentDirection = Vector2.Normalize(Projectile.velocity);
+
+                // Reduce turn resistance when closer to player
+                float distanceToPlayer = toPlayer.Length();
+                float baseTurnRate = 0.1f;
+                float closeTurnRate = 0.3f;
+                float closeDistance = 200f; // Distance at which it becomes more responsive
+
+                // Lerp rates based on distance
+                float turnRate = MathHelper.Lerp( 0.3f, baseTurnRate, Math.Min(distanceToPlayer / closeDistance, 1f));
+
+                Vector2 newDirection = Vector2.Lerp(currentDirection, directionToPlayer, turnRate);
+
+                float baseSpeed = 4f;
+                float timeActive = AICounter - homingDelay;
+                float speedIncrease = timeActive * 0.05f; // Increase by 0.05 per tick
+                float speed = baseSpeed + speedIncrease;
+
+                speed = Math.Min(speed, 12f);
+
+                Projectile.velocity = newDirection * speed;
+
+                if (Projectile.Hitbox.Intersects(Main.LocalPlayer.Hitbox))
+                    Projectile.Kill();
+            }
+
+            DrawParticles();
+            Projectile.rotation -= 0.02f;
+        }
+
+        public virtual void DrawParticles()
+        {
+            float scale = Main.rand.NextFloat(0.2f, 0.5f);
             var outlineParticle = new OutlineParticle(AssetDirectory.ArchiveProjectiles + Name, 16, 16)
             {
                 ShouldDrawOutline = true,
-                OutlineColor = Color.Purple,
-                FillColor = Color.Black,
+                OutlineColor = new Color(66, 57, 44),
+                FillColor = new Color(177, 18, 24),
                 MaxLifetime = ModUtils.SecondsToTicks(1)
             };
+            ParticleManager.CreateParticleDirect(outlineParticle, Projectile.Center, -Vector2.Normalize(Projectile.velocity), Color.White, 1f, scale);
 
-            ParticleManager.CreateParticleDirect(outlineParticle, Projectile.Center, -Vector2.Normalize(Projectile.velocity), Color.White, 1f, Main.rand.NextFloat(0.2f, 0.5f));
+            outlineParticle = new OutlineParticle(AssetDirectory.ArchiveProjectiles + Name, 16, 16)
+            {
+                ShouldDrawOutline = true,
+                OutlineColor = new Color(220, 20, 26),
+                FillColor = new Color(255, 107, 114),
+                MaxLifetime = ModUtils.SecondsToTicks(1)
+            };
+            ParticleManager.CreateParticleDirect(outlineParticle, Projectile.Center, -Vector2.Normalize(Projectile.velocity), Color.White, 1f, scale * 0.4f);
 
-
-            if (Projectile.Hitbox.Intersects(Main.LocalPlayer.Hitbox))
-                Projectile.Kill();
-            //float pulsateSpeed = 0.08f;
-            //float pulsateAmount = 0.3f;
-
-            //float pulsate = 1f + (float)Math.Sin(Projectile.timeLeft * pulsateSpeed) * pulsateAmount;
-            //Projectile.scale = baseScale * pulsate;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, 0.75f, SpriteEffects.None, 0);
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveProjectiles + Name).Value;
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
             return false;
         }
+    }
 
-        private void DrawSharedBackground(SpriteBatch spriteBatch, GraphicsDevice gD, int screenWidth, int screenHeight)
+    public class ChaliceMana : ChaliceHealth
+    {
+        public override string Texture => AssetDirectory.ArchiveProjectiles + "ChaliceHealth";
+
+        public override void DrawParticles()
         {
-            // Draw the continuous tiled background once for the entire group
-            Texture2D backgroundTexture = ModContent.Request<Texture2D>(AssetDirectory.MapBackgrounds + "GrandArchives").Value;
-
-            int tilesX = (screenWidth / backgroundTexture.Width) + 2;
-            int tilesY = (screenHeight / backgroundTexture.Height) + 2;
-
-            // Parallax factor - lower values = slower background movement
-            float parallaxFactor = 0.5f; // Background moves at half camera speed
-
-            Vector2 offset = new Vector2(
-                (Main.screenPosition.X * parallaxFactor) % backgroundTexture.Width,
-                (Main.screenPosition.Y * parallaxFactor) % backgroundTexture.Height
-            );
-
-            for (int x = -1; x < tilesX; x++)
+            float scale = Main.rand.NextFloat(0.2f, 0.5f);
+            var outlineParticle = new OutlineParticle(AssetDirectory.ArchiveProjectiles + "ChaliceHealth", 16, 16)
             {
-                for (int y = -1; y < tilesY; y++)
-                {
-                    Vector2 position = new Vector2(x * backgroundTexture.Width, y * backgroundTexture.Height) - offset;
-                    spriteBatch.Draw(backgroundTexture, position, Color.White);
-                }
-            }
-        }
+                ShouldDrawOutline = true,
+                OutlineColor = new Color(11, 17, 62),
+                FillColor = new Color(62, 85, 246),
+                MaxLifetime = ModUtils.SecondsToTicks(1)
+            };
+            ParticleManager.CreateParticleDirect(outlineParticle, Projectile.Center, -Vector2.Normalize(Projectile.velocity), Color.White, 1f, scale);
 
-        private void DrawEntityRat(SpriteBatch spriteBatch, GraphicsDevice gD, Entity entity)
-        {
-            // Draw the animated rat specific to this entity
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "ArchiveRat").Value;
-
-            int yFrame = (int)((Main.GameUpdateCount / 6) % 9);
-            var frame = new Rectangle(0, yFrame * (texture.Height / 9), texture.Width / 10, texture.Height / 9);
-
-            // Entity-specific positioning with drift
-            float time = Main.GameUpdateCount * 0.02f + entity.whoAmI * 0.5f;
-            Vector2 driftOffset = new Vector2(
-                (float)Math.Sin(time) * 120f,
-                (float)Math.Cos(time * 0.7f) * 120f
-            );
-
-            // Add a small parallax offset to the drift itself
-            float parallaxAmount = 20f; // Small offset amount
-            Vector2 parallaxDrift = new Vector2(
-                (float)Math.Sin(time * 0.3f) * parallaxAmount,
-                (float)Math.Cos(time * 0.2f) * parallaxAmount
-            );
-
-            Vector2 ratPosition = entity.Center - Main.screenPosition + driftOffset + parallaxDrift;
-
-            spriteBatch.Draw(texture, ratPosition, frame, Color.White, 0f, frame.Size() / 2, 1f, SpriteEffects.None, 0);
+            var innerOutlineParticle = new OutlineParticle(AssetDirectory.ArchiveProjectiles + "ChaliceHealth", 16, 16)
+            {
+                ShouldDrawOutline = true,
+                OutlineColor = new Color(105, 136, 255),
+                FillColor = new Color(180, 207, 255),
+                MaxLifetime = ModUtils.SecondsToTicks(1)
+            };
+            ParticleManager.CreateParticleDirect(innerOutlineParticle, Projectile.Center, -Vector2.Normalize(Projectile.velocity), Color.White, 1f, scale * 0.4f);
         }
     }
 }

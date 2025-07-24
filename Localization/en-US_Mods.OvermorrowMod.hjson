@@ -89,13 +89,13 @@ Buffs: {
 	}
 
 	ChaliceHealth: {
-		DisplayName: Chalice Health
-		Description: Mods.OvermorrowMod.Buffs.ChaliceHealth.Description
+		DisplayName: Super Health Regeneration
+		Description: Massively increased health regeneration
 	}
 
 	ChaliceMana: {
-		DisplayName: Chalice Mana
-		Description: Mods.OvermorrowMod.Buffs.ChaliceMana.Description
+		DisplayName: Super Mana Regeneration
+		Description: Massively increased mana regeneration
 	}
 }
 
@@ -678,4 +678,5 @@ Projectiles: {
 	PracticeTargetIconFail.DisplayName: Practice Target Icon Fail
 	ScabbardStrike.DisplayName: Scabbard Strike
 	ChaliceHealth.DisplayName: Chalice Health
+	ChaliceMana.DisplayName: Chalice Mana
 }

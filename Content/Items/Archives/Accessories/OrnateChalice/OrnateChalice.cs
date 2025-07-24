@@ -1,11 +1,12 @@
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items;
 using OvermorrowMod.Common.Tooltips;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items.Accessories;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -68,6 +69,18 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 {
                     player.AddBuff(ModContent.BuffType<Buffs.ChaliceHealth>(), ModUtils.SecondsToTicks(5));
                     GetInstance<OrnateChalice>(player).ChaliceCounter = ModUtils.SecondsToTicks(40);
+
+                    int projectileCount = Main.rand.Next(6, 10);
+                    for (int i = 0; i < projectileCount; i++)
+                    {
+                        float randomAngle = Main.rand.NextFloat(0f, MathHelper.TwoPi);
+
+                        Vector2 velocity = new Vector2((float)Math.Cos(randomAngle), (float)Math.Sin(randomAngle));
+                        float speed = Main.rand.NextFloat(2f, 6f);
+                        velocity *= speed;
+
+                        Projectile.NewProjectile(null, player.Center, velocity, ModContent.ProjectileType<ChaliceHealth>(), 0, 0, player.whoAmI);
+                    }
                 }
             );
 
@@ -75,8 +88,20 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 condition: (player) => GetInstance<OrnateChalice>(player).ChaliceCounter <= 0,
                 effect: (player) =>
                 {
-                    player.AddBuff(ModContent.BuffType<ChaliceMana>(), ModUtils.SecondsToTicks(5));
+                    player.AddBuff(ModContent.BuffType<Buffs.ChaliceMana>(), ModUtils.SecondsToTicks(5));
                     GetInstance<OrnateChalice>(player).ChaliceCounter = ModUtils.SecondsToTicks(40);
+
+                    int projectileCount = Main.rand.Next(6, 10);
+                    for (int i = 0; i < projectileCount; i++)
+                    {
+                        float randomAngle = Main.rand.NextFloat(0f, MathHelper.TwoPi);
+
+                        Vector2 velocity = new Vector2((float)Math.Cos(randomAngle), (float)Math.Sin(randomAngle));
+                        float speed = Main.rand.NextFloat(2f, 6f);
+                        velocity *= speed;
+
+                        Projectile.NewProjectile(null, player.Center, velocity, ModContent.ProjectileType<ChaliceMana>(), 0, 0, player.whoAmI);
+                    }
                 }
             );
         }

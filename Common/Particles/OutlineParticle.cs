@@ -37,9 +37,18 @@ namespace OvermorrowMod.Common.Particles
             }
         }
 
+        private float initialScale;
+        public override void OnSpawn()
+        {
+            base.OnSpawn();
+            initialScale = particle.scale;
+        }
+
         public override void Update()
         {
             base.Update();
+
+            particle.scale = MathHelper.Lerp(initialScale, 0f, (float)particle.activeTime / MaxLifetime);
 
             if (FadeOut && particle.activeTime > MaxLifetime * 0.7f)
             {
