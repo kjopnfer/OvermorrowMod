@@ -6,6 +6,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -15,9 +16,9 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    public class TaintedAthame : ModProjectile
+    public class HammerSwing : ModProjectile
     {
-        public override string Texture => AssetDirectory.ArchiveProjectiles + Name;
+        public override string Texture => AssetDirectory.ArchiveItems + "ArcanistsHammer";
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 54;
@@ -28,6 +29,8 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             Projectile.DamageType = DamageClass.Melee;
         }
 
+        public override bool? CanDamage() => canDamage;
+
         public override void OnSpawn(IEntitySource source)
         {
             Player owner = Main.player[Projectile.owner];
@@ -36,28 +39,28 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public ref float AICounter => ref Projectile.ai[0];
         public ref float SpinDirection => ref Projectile.ai[1];
+
+        bool canDamage = true;
         public override void AI()
         {
-            Projectile.damage = 50;
-            Projectile.CritChance = 100;
-
             Player player = Main.player[Projectile.owner];
             if (!player.active)
                 Projectile.Kill();
 
+            Projectile.damage = player.statDefense;
             Projectile.timeLeft = 5;
 
             const float fadeInTime = 30f;
             const float rotationTime = 60f;
             const float decelerationTime = 60f;
 
+
             AICounter++;
-            int yOffset = -100;
-            // Fade in
+            int yOffset = -120;
+
             if (AICounter <= fadeInTime)
             {
                 Projectile.Opacity = AICounter / fadeInTime;
-
                 Vector2 offset = new Vector2(0, yOffset);
                 Projectile.Center = player.Center + offset;
                 Projectile.rotation = Projectile.DirectionTo(player.Center).ToRotation();
@@ -72,7 +75,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             if (adjustedCounter < rotationTime)
             {
                 // Normal spin phase
-                float baseRotation = MathHelper.Lerp(0, 360, EasingUtils.EaseInExpo(adjustedCounter / rotationTime));
+                float baseRotation = MathHelper.Lerp(0, 180, EasingUtils.EaseInBack(adjustedCounter / rotationTime));
                 rotation = baseRotation * SpinDirection;
                 Projectile.Opacity = 1f;
             }
@@ -82,10 +85,12 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 float decelerationProgress = Math.Min((adjustedCounter - rotationTime) / decelerationTime, 1f);
 
                 float extendedProgress = EasingUtils.EaseOutQuart(decelerationProgress);
-                float baseRotation = MathHelper.Lerp(360, 720, extendedProgress);
+                float baseRotation = MathHelper.Lerp(180, 540, extendedProgress);
                 rotation = baseRotation * SpinDirection;
 
                 Projectile.Opacity = 1f - decelerationProgress;
+                if (decelerationProgress > 0.4f)
+                    canDamage = false;
 
                 if (decelerationProgress >= 1f)
                 {
@@ -125,58 +130,50 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             UpdateTrailPositions();
         }
 
-        private HashSet<int> UniqueHits = new HashSet<int>();
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            UniqueHits.Add(target.whoAmI);
+            var hitboxHeight = 140;
+            Vector2 swordStart = Projectile.Center;
+            Vector2 swordEnd = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);
 
-            Color color = new Color(137, 15, 78);
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
-            for (int _ = 0; _ < 16; _++)
+            Vector2 hitPoint = Vector2.Lerp(swordStart, swordEnd,
+                MathHelper.Clamp(Vector2.Dot(target.Center - swordStart, swordEnd - swordStart) /
+                Vector2.DistanceSquared(swordStart, swordEnd), 0f, 1f));
+
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D circleTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05", AssetRequestMode.ImmediateLoad).Value;
+
+            Color color = new Color(60, 71, 255);
+            for (int i = 0; i < 12; i++)
             {
-                float randomScale = Main.rand.NextFloat(0.025f, 0.045f);
-                var time = ModUtils.SecondsToTicks(Main.rand.NextFloat(0.5f, 1.2f));
-                Vector2 randomVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.7f, 0.9f);
-                Vector2 randomOffset = Main.rand.NextVector2Circular(16f, 16f);
-                var lightSpark = new Circle(texture, time, true, false)
-                {
-                    endColor = Color.Black,
-                    floatUp = true,
-                    doWaveMotion = false,
-                    intensity = 3
-                };
+                float randomScale = Main.rand.NextFloat(0.15f, 0.3f);
+                Vector2 randomVelocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(6, 8);
 
-                ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center + randomOffset, randomVelocity, color, 1f, randomScale, 0f, useAdditiveBlending: false);
+                var lightSpark = new Spark(sparkTexture, 0f, false, 0f)
+                {
+                    endColor = new Color(108, 108, 224)
+                };
+                ParticleManager.CreateParticleDirect(lightSpark, hitPoint, randomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
             }
+
+            var impact = new Circle(circleTexture, ModUtils.SecondsToTicks(0.5f), false, false)
+            {
+                endColor = new Color(108, 108, 224),
+                intensity = 3
+            };
+
+            float randomScale2 = Main.rand.NextFloat(0.45f, 0.65f);
+            ParticleManager.CreateParticleDirect(impact, target.Center, Vector2.Zero, color, 0.5f, randomScale2, MathHelper.Pi, useAdditiveBlending: true);
+
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SourceDamage += target.defense;
         }
 
         public override void OnKill(int timeLeft)
         {
-            if (UniqueHits.Count < 2)
-            {
-                Player player = Main.player[Projectile.owner];
-                Color color = new(137, 15, 78);
-
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
-                for (int _ = 0; _ < 16; _++)
-                {
-                    float randomScale = Main.rand.NextFloat(0.025f, 0.045f);
-                    var time = ModUtils.SecondsToTicks(Main.rand.NextFloat(0.5f, 1.2f));
-                    Vector2 randomVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.7f, 0.9f);
-                    Vector2 randomOffset = Main.rand.NextVector2Circular(16f, 16f);
-                    var lightSpark = new Circle(texture, time, true, false)
-                    {
-                        endColor = Color.Black,
-                        floatUp = true,
-                        doWaveMotion = false,
-                        intensity = 3
-                    };
-
-                    ParticleManager.CreateParticleDirect(lightSpark, player.Center + randomOffset, randomVelocity, color, 1f, randomScale, 0f, useAdditiveBlending: false);
-                }
-
-                player.Hurt(PlayerDeathReason.ByProjectile(player.whoAmI, Projectile.whoAmI), 30, Projectile.direction);
-            }
         }
 
         private List<Vector2> Positions = new List<Vector2>();
@@ -223,8 +220,8 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 pos2Bottom -= Main.screenPosition;
 
                 float alpha = MathHelper.Lerp(2f, 0f, MathHelper.Clamp(EasingUtils.EaseInQuad(prog1), 0, 1f)) * Projectile.Opacity;
-                Color color1 = Color.Lerp(new Color(137, 15, 78), Color.Black, EasingUtils.EaseOutQuint(prog1)) * alpha;
-                Color color2 = Color.Lerp(new Color(137, 15, 78), Color.Black, EasingUtils.EaseOutQuint(prog2)) * alpha;
+                Color color1 = Color.Lerp(new Color(31, 44, 255), Color.Black, EasingUtils.EaseOutQuint(prog1)) * alpha;
+                Color color2 = Color.Lerp(new Color(31, 44, 255), Color.Black, EasingUtils.EaseOutQuint(prog2)) * alpha;
 
                 float segmentSize = segmentSpacing / (float)(Positions.Count - 1);
                 float startOffset = segmentSize * i;
@@ -276,7 +273,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trailTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
+            Texture2D trailTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Smoke").Value;
 
             const float fadeInTime = 30f;
             const float rotationTime = 60f;
@@ -309,8 +306,9 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             }
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-            Vector2 origin = new(texture.Width / 2, texture.Height / 2);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation + MathHelper.PiOver2, origin, 1f, SpriteEffects.None, 1);
+            Vector2 offset = new Vector2(0, -22).RotatedBy(Projectile.rotation);
+            Vector2 origin = new(texture.Width / 2, 0);
+            Main.spriteBatch.Draw(texture, Projectile.Center + offset - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation - MathHelper.PiOver4, origin, 1f, SpriteEffects.FlipHorizontally, 1);
 
             return false;
         }

@@ -150,12 +150,16 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 Vector2 RandomVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(9, 11);
                 Color color = new Color(149, 149, 239);
 
-                var lightSpark = new Spark(sparkTexture, 0f, false, 0f);
-                lightSpark.endColor = new Color(108, 108, 224);
+                var lightSpark = new Spark(sparkTexture, 0f, false, 0f)
+                {
+                    endColor = new Color(108, 108, 224)
+                };
                 ParticleManager.CreateParticleDirect(lightSpark, hitPoint, RandomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
 
-                var impact = new Circle(circleTexture, ModUtils.SecondsToTicks(0.5f), false, false);
-                impact.endColor = new Color(108, 108, 224);
+                var impact = new Circle(circleTexture, ModUtils.SecondsToTicks(0.5f), false, false)
+                {
+                    endColor = new Color(108, 108, 224)
+                };
 
                 randomScale = Main.rand.NextFloat(0.25f, 0.45f);
                 ParticleManager.CreateParticleDirect(impact, target.Center, Vector2.Zero, color, 0.5f, randomScale, MathHelper.Pi, useAdditiveBlending: true);

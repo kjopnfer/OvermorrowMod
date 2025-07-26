@@ -100,6 +100,15 @@ Buffs: {
 }
 
 TooltipEntities: {
+	ArcanistsHammer: {
+		DisplayName: Arcanists Hammer
+
+		Description: {
+			Line0: + Has damage equal to your defense
+			Line1: + {Keyword:Strike} Gain additional damage equal to the defense of the target
+		}
+	}
+
 	ChaliceHealth: {
 		DisplayName: Super Health Regeneration
 		Description.Line0: + Gain 16 health per second
@@ -614,6 +623,17 @@ Items: {
 			'''
 		Flavor: An old forgotten ritual dagger tainted by dark energies
 	}
+
+	ArcanistsHammer: {
+		DisplayName: Arcanists Hammer
+		Tooltip:
+			'''
+			{Keyword:Strike}:
+			- On close range hit, 20% chance to spawn an <Projectile:Arcanists Hammer>
+			- Can only be activated once every 2 seconds
+			'''
+		Flavor: A remnant of the Architect Wars, when builders and destroyers were the same caste.
+	}
 }
 
 NPCs: {
@@ -703,4 +723,5 @@ Projectiles: {
 	ChaliceMana.DisplayName: Chalice Mana
 	MalevolentDagger.DisplayName: Malevolent Dagger
 	TaintedAthame.DisplayName: Tainted Athame
+	HammerSwing.DisplayName: Hammer Swing
 }
