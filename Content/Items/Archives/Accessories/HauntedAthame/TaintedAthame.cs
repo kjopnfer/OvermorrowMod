@@ -50,22 +50,42 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 Projectile.Kill();
 
             Projectile.timeLeft = 5;
-            float rotationTime = 60;
+
+            const float fadeInTime = 30f;
+            const float rotationTime = 60f;
+            const float decelerationTime = 60f;
+
+            AICounter++;
+
+            // Fade in phase (0-30 ticks)
+            if (AICounter <= fadeInTime)
+            {
+                Projectile.Opacity = AICounter / fadeInTime;
+                // Stay at starting position during fade in
+                Vector2 offset = new Vector2(0, -80);
+                Projectile.Center = player.Center + offset;
+                Projectile.rotation = Projectile.DirectionTo(player.Center).ToRotation();
+
+                UpdateTrailPositions();
+                return; // Exit early, don't do rotation logic yet
+            }
+
+            // Adjust counter for the main logic (subtract fade in time)
+            float adjustedCounter = AICounter - fadeInTime;
 
             float rotation;
 
-            if (AICounter < rotationTime)
+            if (adjustedCounter < rotationTime)
             {
                 // Normal spin phase
-                float baseRotation = MathHelper.Lerp(0, 360, EasingUtils.EaseInExpo(AICounter / rotationTime));
+                float baseRotation = MathHelper.Lerp(0, 360, EasingUtils.EaseInExpo(adjustedCounter / rotationTime));
                 rotation = baseRotation * SpinDirection;
                 Projectile.Opacity = 1f;
             }
             else
             {
                 // Deceleration phase
-                float decelerationTime = 60f;
-                float decelerationProgress = Math.Min((AICounter - rotationTime) / decelerationTime, 1f);
+                float decelerationProgress = Math.Min((adjustedCounter - rotationTime) / decelerationTime, 1f);
 
                 float extendedProgress = EasingUtils.EaseOutQuart(decelerationProgress);
                 float baseRotation = MathHelper.Lerp(360, 720, extendedProgress);
@@ -80,11 +100,12 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 }
             }
 
-            Vector2 offset = new Vector2(0, -80).RotatedBy(MathHelper.ToRadians(rotation));
-            Projectile.Center = player.Center + offset;
+            Vector2 positionOffset = new Vector2(0, -100).RotatedBy(MathHelper.ToRadians(rotation));
+            Projectile.Center = player.Center + positionOffset;
             Projectile.rotation = Projectile.DirectionTo(player.Center).ToRotation();
 
-            if (AICounter == 0)
+            // Only spawn initial particles after fade in is complete
+            if (adjustedCounter == 0)
             {
                 Color color = new Color(137, 15, 78);
 
@@ -107,7 +128,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 }
             }
 
-            AICounter++;
             UpdateTrailPositions();
         }
 
@@ -264,23 +284,29 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         {
             Texture2D trailTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
 
-            // Only draw trail during the fast spinning portions
-            float rotationTime = 80;
-            float decelerationTime = 60f;
+            const float fadeInTime = 30f;
+            const float rotationTime = 60f;
+            const float decelerationTime = 60f;
 
             bool shouldDrawTrail = false;
 
-            if (AICounter < rotationTime)
+            // Only draw trail after fade in is complete
+            if (AICounter > fadeInTime)
             {
-                // Only draw after initial acceleration
-                float spinProgress = AICounter / rotationTime;
-                shouldDrawTrail = spinProgress > 0.2f; // Start drawing after 20% of spin
-            }
-            else
-            {
-                // Only draw before final slowdown
-                float decelerationProgress = (AICounter - rotationTime) / decelerationTime;
-                shouldDrawTrail = decelerationProgress < 0.8f; // Stop drawing at 80% of deceleration
+                float adjustedCounter = AICounter - fadeInTime;
+
+                if (adjustedCounter < rotationTime)
+                {
+                    // Only draw after initial acceleration
+                    float spinProgress = adjustedCounter / rotationTime;
+                    shouldDrawTrail = spinProgress > 0.2f;
+                }
+                else
+                {
+                    // Only draw before final slowdow
+                    float decelerationProgress = (adjustedCounter - rotationTime) / decelerationTime;
+                    shouldDrawTrail = decelerationProgress < 0.8f;
+                }
             }
 
             if (shouldDrawTrail)
