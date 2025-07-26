@@ -178,6 +178,16 @@ TooltipEntities: {
 		}
 	}
 
+	TaintedAthame: {
+		DisplayName: Tainted Athame
+
+		Description: {
+			Line0: + On spawn, rotates around your player twice
+			Line1: + This projectile has 100% critical strike chance
+			Line2: - If you have damaged less than 2 unique enemies with this projectile, deal 30 damage to self
+		}
+	}
+
 	WarriorsResolve: {
 		DisplayName: Warrior's Resolve
 
@@ -592,6 +602,18 @@ Items: {
 			'''
 		Flavor: Old draconic script etched around the rim translates to 'seriously, don't mix these.'
 	}
+
+	HauntedAthame: {
+		DisplayName: Haunted Athame
+		Tooltip:
+			'''
+			{Keyword:Retaliate}:
+			- Spawn a <Projectile:Tainted Athame> that spins around you
+			- If less than 2 unique enemies are hit with this, lose 30 health
+			- This effect cannot be activated again for 2 seconds
+			'''
+		Flavor: An old forgotten ritual dagger tainted by dark energies
+	}
 }
 
 NPCs: {
@@ -679,4 +701,6 @@ Projectiles: {
 	ScabbardStrike.DisplayName: Scabbard Strike
 	ChaliceHealth.DisplayName: Chalice Health
 	ChaliceMana.DisplayName: Chalice Mana
+	MalevolentDagger.DisplayName: Malevolent Dagger
+	TaintedAthame.DisplayName: Tainted Athame
 }
