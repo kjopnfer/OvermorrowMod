@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
 using System.IO;
@@ -71,7 +70,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 ActivateAllShadows();
             }
 
-            Projectile.rotation = MathHelper.Lerp(MathHelper.ToRadians(240) * Owner.direction, 0, progress);
+            Projectile.rotation = MathHelper.Lerp(MathHelper.ToRadians(240) * Owner.direction, 0, EasingUtils.EaseOutBack(progress));
             //Projectile.rotation += 0.4f;
             Owner.SetCompositeArmFront(true, stretch, -MathHelper.PiOver2 * Owner.direction);
             //Owner.SetCompositeArmFront(true, stretch, MathHelper.Lerp(MathHelper.ToRadians(15), -MathHelper.PiOver2, progress) * Owner.direction);

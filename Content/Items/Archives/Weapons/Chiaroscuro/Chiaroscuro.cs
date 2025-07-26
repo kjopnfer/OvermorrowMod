@@ -76,7 +76,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         public override bool AltFunctionUse(Player player)
         {
             int shadowCount = Main.projectile.Count(p => p.active && p.type == ModContent.ProjectileType<ChiaroscuroShadow>() && p.owner == player.whoAmI);
-            return !player.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()) || shadowCount > 0;
+            return !player.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()) && shadowCount > 0;
         }
 
         public override bool MeleePrefix()

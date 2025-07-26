@@ -35,10 +35,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void AI()
         {
+            Player player = Main.player[Projectile.owner];
+            if (!player.active)
+                Projectile.Kill();
+
             Projectile.tileCollide = false;
             if (AICounter++ > homingDelay)
             {
-                Vector2 toPlayer = Main.LocalPlayer.Center - Projectile.Center;
+                Vector2 toPlayer = player.Center - Projectile.Center;
                 Vector2 directionToPlayer = Vector2.Normalize(toPlayer);
 
                 // Turn resistance
@@ -64,7 +68,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
                 Projectile.velocity = newDirection * speed;
 
-                if (Projectile.Hitbox.Intersects(Main.LocalPlayer.Hitbox))
+                if (Projectile.Hitbox.Intersects(player.Hitbox))
                     Projectile.Kill();
             }
 
