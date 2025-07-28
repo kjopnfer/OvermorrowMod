@@ -105,7 +105,7 @@ TooltipEntities: {
 
 		Description: {
 			Line0: + Has damage equal to your defense
-			Line1: + {Keyword:Strike} Gain additional damage equal to the defense of the target
+			Line1: + Deals additional damage equal to the defense of the target hit
 		}
 	}
 
@@ -117,15 +117,6 @@ TooltipEntities: {
 	ChaliceMana: {
 		DisplayName: Super Mana Regeneration
 		Description.Line0: + Gain 16 mana per second
-	}
-
-	Shadowbrand: {
-		DisplayName: Shadowbrand
-
-		Description: {
-			Line0: + Minions deal an additional 5 summon tag damage
-			Line1: + On target death, spawn 2 <Projectile:Black Echoes>
-		}
 	}
 
 	BlackEchoes: {
@@ -158,12 +149,30 @@ TooltipEntities: {
 		}
 	}
 
+	FaeOrb: {
+		DisplayName: Fae Orb
+
+		Description: {
+			Line0: + Chases down the nearest enemy, restoring 1 health on hit
+			Line1: + This projectile benefits from summon tag damage
+		}
+	}
+
 	FocusedBlade: {
 		DisplayName: Sharpened Intent
 
 		Description: {
 			Line0: + {Keyword:Strike}: Your next {Type:True Melee} hit gains doubled damage and 100% crit chance
 			Line1: + On {Keyword:Strike}, clear this buff. You cannot regain this buff for 5 seconds.
+		}
+	}
+
+	Shadowbrand: {
+		DisplayName: Shadowbrand
+
+		Description: {
+			Line0: + Minions deal an additional 5 summon tag damage
+			Line1: + On target death, spawn 2 <Projectile:Black Echoes>
 		}
 	}
 
@@ -634,6 +643,17 @@ Items: {
 			'''
 		Flavor: A remnant of the Architect Wars, when builders and destroyers were the same caste.
 	}
+
+	AntlerWand: {
+		DisplayName: Antler Wand
+		Tooltip:
+			'''
+			+2 max minions
+			Your max health is decreased by 60
+			Every 5 seconds, spawn a <Projectile:Fae Orb> for each minion you control
+			'''
+		Flavor: placeholder
+	}
 }
 
 NPCs: {
@@ -724,4 +744,5 @@ Projectiles: {
 	MalevolentDagger.DisplayName: Malevolent Dagger
 	TaintedAthame.DisplayName: Tainted Athame
 	HammerSwing.DisplayName: Hammer Swing
+	WandOrb.DisplayName: Fae Orb
 }

@@ -55,7 +55,7 @@ namespace OvermorrowMod.Common.Utilities
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && !npc.townNPC && npc.life > 0)
+                if (npc.active && !npc.townNPC && npc.life > 0 && npc.CanBeChasedBy())
                 {
                     if (Vector2.Distance(npc.Center, position) <= maxDistance)
                         return true;
@@ -72,7 +72,7 @@ namespace OvermorrowMod.Common.Utilities
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && !npc.townNPC && npc.life > 0 && !npc.friendly)
+                if (npc.active && !npc.townNPC && npc.life > 0 && !npc.friendly && npc.CanBeChasedBy())
                 {
                     float distance = Vector2.Distance(entity.Center, npc.Center);
                     if (distance < nearestDistance)
