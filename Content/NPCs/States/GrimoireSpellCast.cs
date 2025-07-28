@@ -55,9 +55,9 @@ namespace OvermorrowMod.Content.NPCs
             //Main.NewText("exiting spell", Color.Red);
         }
 
-        float flySpeedX = 2;
+        private float flySpeedX = 2;
         float flySpeedY = 0;
-        int distanceFromGround = 180;
+        private int distanceFromGround = 180;
         public override void Update()
         {
             OvermorrowNPC.AICounter++;

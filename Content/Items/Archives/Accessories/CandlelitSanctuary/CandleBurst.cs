@@ -37,9 +37,11 @@ namespace OvermorrowMod.Content.Items.Archives
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_02", AssetRequestMode.ImmediateLoad).Value;
 
-            Color color = new Color(108, 108, 224);
-            var lightOrb = new Circle(texture, ModUtils.SecondsToTicks(0.7f), canGrow: true, useSineFade: true);
-            lightOrb.rotationAmount = 0.05f;
+            Color color = new(108, 108, 224);
+            var lightOrb = new Circle(texture, ModUtils.SecondsToTicks(0.7f), canGrow: true, useSineFade: true)
+            {
+                rotationAmount = 0.05f
+            };
 
             float orbScale = 0.5f;
             ParticleManager.CreateParticleDirect(lightOrb, Projectile.Center, Vector2.Zero, color, 1f, orbScale, 0.2f, useAdditiveBlending: true);

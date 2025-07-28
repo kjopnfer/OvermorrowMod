@@ -156,7 +156,7 @@ namespace OvermorrowMod.Content.NPCs
                 if (OvermorrowNPC.TargetingModule.MiscTargetPosition.HasValue)
                 {
                     Vector2 targetPosition = OvermorrowNPC.TargetingModule.MiscTargetPosition.Value;
-                    NPC.direction = NPC.GetDirection(targetPosition);
+                    NPC.direction = NPC.GetDirectionFrom(targetPosition);
                     Vector2 distance = NPC.Move(targetPosition, 0.2f, maxSpeed, 8f);
 
                     if (distance.X <= ModUtils.TilesToPixels(1))

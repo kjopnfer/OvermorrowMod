@@ -151,12 +151,12 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             float glintScale = baseGlint * 0.6f;
             float glintOpacity = baseGlint;
 
-            Color color = new Color(108, 108, 224);
+            Color color = new(108, 108, 224);
             Texture2D texStar = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_08").Value;
             Texture2D texCircle = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
 
             float offsetY = MathHelper.SmoothStep(-90f, -120f, MathHelper.Clamp(AICounter - 15f, 0, 15f) / 15f);
-            Vector2 offset = new Vector2(-5 * Owner.direction, offsetY);
+            Vector2 offset = new(-5 * Owner.direction, offsetY);
 
             if (AICounter > 20) glintScale = 0;
             for (int i = 0; i < 2; i++)

@@ -105,7 +105,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             foreach (var (scale, alpha, color) in glowLayers)
             {
-                Main.spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
             }
         }
     }
@@ -251,7 +251,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             foreach (var (scale, alpha, color) in glowLayers)
             {
-                Main.spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(circle, center, null, color * alpha, 0f, origin, scale, SpriteEffects.None, 0f);
             }
         }
     }

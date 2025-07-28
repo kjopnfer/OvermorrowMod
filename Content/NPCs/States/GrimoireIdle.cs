@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.NPCs
                 {
 
                     Vector2 targetPosition = OvermorrowNPC.TargetingModule.MiscTargetPosition.Value;
-                    NPC.direction = NPC.GetDirection(targetPosition);
+                    NPC.direction = NPC.GetDirectionFrom(targetPosition);
                     float xDistance = Math.Abs(NPC.Center.X - targetPosition.X);
 
                     BasicFly.HandleHorizontalMovement(OvermorrowNPC, ref flySpeedX);

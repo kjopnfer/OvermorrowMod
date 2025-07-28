@@ -22,14 +22,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             var line = Language.GetTextValue(LocalizationPath.TooltipEntities + "ArcanistsHammer" + ".Description.Line0");
             var line2 = Language.GetTextValue(LocalizationPath.TooltipEntities + "ArcanistsHammer" + ".Description.Line1");
 
-            return new List<TooltipEntity>() {
+            return [
                 new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.Tooltips + "ArcanistsHammer").Value,
                     title,
                     [line, line2],
                     0f,
                     ProjectileTooltipType.Projectile,
                     DamageClass.Melee),
-            };
+            ];
         }
 
         public override string Texture => AssetDirectory.ArchiveItems + Name;
@@ -57,14 +57,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                         return false;
 
                     float distance = Vector2.Distance(player.Center, npc.Center);
-                    return GetInstance<ArcanistsHammer>(player).HammerDelay <= 0 && distance <= ModUtils.TilesToPixels(8);
+                    return GetInstance<ArcanistsHammer>(player).HammerDelay <= 0 && distance <= ModUtils.TilesToPixels(15);
                 },
                 effect: (player, npc, hitInfo, damage) =>
                 {
                     //GetInstance<ArcanistsHammer>(player).HammerDelay = ModUtils.SecondsToTicks(5);
                     GetInstance<ArcanistsHammer>(player).HammerDelay = ModUtils.SecondsToTicks(2);
 
-                    var item = ItemLoader.GetItem(ModContent.ItemType<HauntedAthame>()).Item;
+                    var item = ItemLoader.GetItem(ModContent.ItemType<ArcanistsHammer>()).Item;
                     Projectile.NewProjectile(player.GetSource_Accessory(item), player.Center, Vector2.Zero, ModContent.ProjectileType<HammerSwing>(), 50, 2f, player.whoAmI);
                 }
             );

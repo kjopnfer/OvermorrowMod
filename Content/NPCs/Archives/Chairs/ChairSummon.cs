@@ -80,7 +80,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (TargetingModule.HasTarget())
             {
                 Vector2 targetPosition = TargetingModule.Target.Center;
-                NPC.direction = NPC.GetDirection(targetPosition);
+                NPC.direction = NPC.GetDirectionFrom(targetPosition);
             }
 
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);

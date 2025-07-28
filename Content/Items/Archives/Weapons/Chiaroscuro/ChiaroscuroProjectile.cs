@@ -96,11 +96,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(90)) * Main.rand.Next(10, 12);
                     Color color = new Color(108, 108, 224);
 
-                    var lightRay = new Circle(sparkTexture, ModUtils.SecondsToTicks(0.6f), true, false);
-                    lightRay.endColor = new Color(108, 108, 224);
-                    lightRay.floatUp = false;
-                    lightRay.AnchorEntity = Owner;
-                    lightRay.AnchorOffset = new Vector2(0, -20).RotatedBy(Projectile.rotation);
+                    var lightRay = new Circle(sparkTexture, ModUtils.SecondsToTicks(0.6f), true, false)
+                    {
+                        endColor = new Color(108, 108, 224),
+                        floatUp = false,
+                        AnchorEntity = Owner,
+                        AnchorOffset = new Vector2(0, -20).RotatedBy(Projectile.rotation)
+                    };
                     ParticleManager.CreateParticleDirect(lightRay, Projectile.Center, RandomVelocity, color * 0.5f, 0.5f, randomScale, Projectile.rotation, 0f, useAdditiveBlending: true);
                 }
             }
@@ -110,8 +112,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 if (Main.rand.NextBool(3))
                 {
                     randomScale = Main.rand.NextFloat(1f, 1.75f);
-                    Vector2 randomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(90)) * Main.rand.Next(10, 12);
-                    Color color = new Color(108, 108, 224);
+                    Color color = new(108, 108, 224);
 
                     float randomPosition = Main.rand.NextFloat(0.2f, 0.9f); // Don't spawn too close to ends
                     Vector2 sparkPosition = Vector2.Lerp(bladeStart, bladeEnd, randomPosition);
@@ -120,6 +121,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
                     var lightSpark = new Spark(sparkTexture, 0f, false, 0f);
                     lightSpark.endColor = new Color(108, 108, 224);
+                    Vector2 randomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(90)) * Main.rand.Next(10, 12);
                     randomVelocity = -Vector2.Normalize(Projectile.velocity) * Main.rand.Next(1, 2);
                     ParticleManager.CreateParticleDirect(lightSpark, sparkPosition, randomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
                 }
@@ -183,8 +185,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     if (Main.projectile[i].active && Main.projectile[i].type == ModContent.ProjectileType<ChiaroscuroShadow>() &&
                         Main.projectile[i].owner == Projectile.owner)
                     {
-                        var shadow = Main.projectile[i].ModProjectile as ChiaroscuroShadow;
-                        if (shadow != null && shadow.AIState == (int)ChiaroscuroShadow.AIStates.Invisible && shadow.AttackTarget == null)
+                        if (Main.projectile[i].ModProjectile is ChiaroscuroShadow shadow && shadow.AIState == (int)ChiaroscuroShadow.AIStates.Invisible && shadow.AttackTarget == null)
                         {
                             shadow.SetAttackTarget(target);
                             //break; // Only set one shadow to attack
@@ -245,7 +246,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Vector2 off = new Vector2(swordOffset, -20).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
 
             Texture2D effect = ModContent.Request<Texture2D>(AssetDirectory.Textures + "slash_01").Value;
-            Color color = new Color(108, 108, 224);
+            Color color = new(108, 108, 224);
 
             float stabOffset = MathHelper.Lerp(-50, 30, EasingUtils.EaseOutCirc(progress));
             float slashAlpha = normalizedTime > animationDuration ? MathHelper.Lerp(1f, 0f, (normalizedTime - animationDuration) / (1f - animationDuration)) : 1f;

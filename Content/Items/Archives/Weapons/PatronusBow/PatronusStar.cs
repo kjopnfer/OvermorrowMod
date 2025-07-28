@@ -2,10 +2,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using Terraria;
-using Terraria.ModLoader;
 using System;
+using Terraria;
 using Terraria.DataStructures;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         /// Distance that the stars detect eah other.
         /// </summary>
         private float separationDistance = ModUtils.TilesToPixels(6);
- 
+
         /// <summary>
         /// The strength in which the stars drift away from each other when close.
         /// Higher values create stronger push.

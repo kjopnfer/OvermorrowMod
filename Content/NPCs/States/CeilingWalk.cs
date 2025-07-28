@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.NPCs
                 }
             }
 
-            NPC.direction = NPC.GetDirection(OvermorrowNPC.TargetingModule.Target);
+            NPC.direction = NPC.GetDirectionFrom(OvermorrowNPC.TargetingModule.Target);
 
             Vector2 distance = NPC.MoveCeiling(
                 OvermorrowNPC.TargetingModule.Target.Center,

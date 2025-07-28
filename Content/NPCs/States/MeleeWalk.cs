@@ -34,7 +34,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Update()
         {
-            NPC.direction = NPC.GetDirection(OvermorrowNPC.TargetingModule.Target);
+            NPC.direction = NPC.GetDirectionFrom(OvermorrowNPC.TargetingModule.Target);
             Vector2 distance = NPC.Move(OvermorrowNPC.TargetingModule.Target.Center, moveSpeed, maxSpeed, 8f);
 
             if (OvermorrowNPC is ClockworkSpider)

@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         }
 
         private float baseScale;
-        int homingDelay = 12;
+        private readonly int _homingDelay = 12;
         public override void OnSpawn(IEntitySource source)
         {
             //baseScale = Main.rand.NextFloat(f, 2f);
@@ -32,7 +32,6 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
         }
 
         public ref float AICounter => ref Projectile.ai[0];
-
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
@@ -40,7 +39,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 Projectile.Kill();
 
             Projectile.tileCollide = false;
-            if (AICounter++ > homingDelay)
+            if (AICounter++ > _homingDelay)
             {
                 Vector2 toPlayer = player.Center - Projectile.Center;
                 Vector2 directionToPlayer = Vector2.Normalize(toPlayer);
@@ -51,16 +50,15 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 // Reduce turn resistance when closer to player
                 float distanceToPlayer = toPlayer.Length();
                 float baseTurnRate = 0.1f;
-                float closeTurnRate = 0.3f;
                 float closeDistance = 200f; // Distance at which it becomes more responsive
 
                 // Lerp rates based on distance
-                float turnRate = MathHelper.Lerp( 0.3f, baseTurnRate, Math.Min(distanceToPlayer / closeDistance, 1f));
+                float turnRate = MathHelper.Lerp(0.3f, baseTurnRate, Math.Min(distanceToPlayer / closeDistance, 1f));
 
                 Vector2 newDirection = Vector2.Lerp(currentDirection, directionToPlayer, turnRate);
 
                 float baseSpeed = 4f;
-                float timeActive = AICounter - homingDelay;
+                float timeActive = AICounter - _homingDelay;
                 float speedIncrease = timeActive * 0.05f; // Increase by 0.05 per tick
                 float speed = baseSpeed + speedIncrease;
 
