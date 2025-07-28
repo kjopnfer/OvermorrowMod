@@ -50,6 +50,42 @@ namespace OvermorrowMod.Common.Utilities
             return false;
         }
 
+        public static bool HasNearbyNPCs(Vector2 position, float maxDistance)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.active && !npc.townNPC && npc.life > 0)
+                {
+                    if (Vector2.Distance(npc.Center, position) <= maxDistance)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        public static NPC FindNearestNPC(this Entity entity)
+        {
+            NPC nearestNPC = null;
+            float nearestDistance = float.MaxValue;
+
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.active && !npc.townNPC && npc.life > 0 && !npc.friendly)
+                {
+                    float distance = Vector2.Distance(entity.Center, npc.Center);
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestNPC = npc;
+                    }
+                }
+            }
+
+            return nearestNPC;
+        }
+
         /// <summary>
         /// Determines the direction (-1 or 1) of the target entity relative to the source entity.
         /// Returns 1 if the target is to the right, -1 if to the left.
@@ -57,7 +93,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <param name="source">The entity determining the direction.</param>
         /// <param name="target">The entity whose position is compared.</param>
         /// <returns>-1 if the target is to the left, 1 if to the right.</returns>
-        public static int GetDirection(this Entity source, Entity target)
+        public static int GetDirectionFrom(this Entity source, Entity target)
         {
             return target.Center.X > source.Center.X ? 1 : -1;
         }
@@ -69,7 +105,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <param name="source">The entity determining the direction.</param>
         /// <param name="position">The world position to compare.</param>
         /// <returns>-1 if the position is to the left, 1 if to the right.</returns>
-        public static int GetDirection(this Entity source, Vector2 position)
+        public static int GetDirectionFrom(this Entity source, Vector2 position)
         {
             return position.X > source.Center.X ? 1 : -1;
         }
