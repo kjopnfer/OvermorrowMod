@@ -654,6 +654,11 @@ Items: {
 			'''
 		Flavor: Comes with a lifetime supply of magical assistance and a modest reduction in lifetime.
 	}
+
+	CarvingKnife: {
+		DisplayName: Carving Knife
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -745,4 +750,6 @@ Projectiles: {
 	TaintedAthame.DisplayName: Tainted Athame
 	HammerSwing.DisplayName: Hammer Swing
 	WandOrb.DisplayName: Fae Orb
+	CarvingKnife_Held.DisplayName: Carving Knife_ Held
+	CarvingKnife_Thrown.DisplayName: Carving Knife_ Thrown
 }

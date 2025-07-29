@@ -187,7 +187,7 @@ namespace OvermorrowMod.Common.Items.Daggers
             Main.spriteBatch.Reload(BlendState.Additive);
 
             // Draw glow ring
-            Texture2D ringTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "RingSolid").Value;
+            Texture2D ringTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01").Value;
             Main.spriteBatch.Draw(ringTexture, Projectile.Center - Main.screenPosition, null,
                 IdleColor * glowAlpha, Projectile.rotation, ringTexture.Size() / 2f, 0.1f, SpriteEffects.None, 1);
 

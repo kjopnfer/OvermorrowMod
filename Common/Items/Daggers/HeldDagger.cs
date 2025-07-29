@@ -271,7 +271,7 @@ namespace OvermorrowMod.Common.Items.Daggers
                 swingAngle = MathHelper.Lerp(15, -45, EasingUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
             }
 
-            if (AICounter >= backTime + forwardTime + holdTime)
+            if (AICounter >= Math.Floor(backTime + forwardTime + holdTime))
             {
                 ExecuteThrow();
             }
