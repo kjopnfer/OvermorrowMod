@@ -86,6 +86,14 @@ namespace OvermorrowMod.Common.Utilities
             return nearestNPC;
         }
 
+        public static bool CheckEntityBottomSlopeCollision(this Entity entity)
+        {
+            Tile bottomLeftTile = Main.tile[(int)entity.Hitbox.BottomLeft().X / 16, (int)entity.Hitbox.BottomLeft().Y / 16];
+            Tile bottomRightTile = Main.tile[(int)entity.Hitbox.BottomRight().X / 16, (int)entity.Hitbox.BottomRight().Y / 16];
+
+            return (bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType]);
+        }
+
         /// <summary>
         /// Determines the direction (-1 or 1) of the target entity relative to the source entity.
         /// Returns 1 if the target is to the right, -1 if to the left.
