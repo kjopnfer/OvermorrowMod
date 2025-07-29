@@ -652,7 +652,7 @@ Items: {
 			Your max health is decreased by 60
 			Every 5 seconds, spawn a <Projectile:Fae Orb> for each minion you control
 			'''
-		Flavor: placeholder
+		Flavor: Comes with a lifetime supply of magical assistance and a modest reduction in lifetime.
 	}
 }
 
