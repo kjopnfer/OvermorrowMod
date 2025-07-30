@@ -60,7 +60,10 @@ namespace OvermorrowMod.Common.Items.Daggers
                 // Create off-hand dagger if dual wielding
                 if (isDualWielding)
                 {
-                    Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
+                    Projectile offHand = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
+
+                    // Offset the off-hand dagger's AI counter to create stagger
+                    offHand.ai[2] = -5f; // Start 5 ticks behind
                 }
             }
 
@@ -84,7 +87,6 @@ namespace OvermorrowMod.Common.Items.Daggers
             }
             else
             {
-                // Single dagger - darken if thrown
                 Color color = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < 1 ? drawColor : Color.Black;
                 spriteBatch.Draw(texture, position, frame, color, 0f, origin, scale, SpriteEffects.None, 1);
             }

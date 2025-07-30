@@ -36,7 +36,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             return new DaggerBuilder()
                 .WithComboSequence(DaggerAttack.Slash)
-                .WithSlashTiming(12f, 8f, 6f)
+                .WithSlashTiming(12f, 12f, 20f)
                 .WithSpeedMultiplier(1.1f)
                 .WithDamageMultiplier(1f)
                 .WithThrowVelocity(12f)

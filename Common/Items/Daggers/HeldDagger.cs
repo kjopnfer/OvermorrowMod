@@ -62,7 +62,7 @@ namespace OvermorrowMod.Common.Items.Daggers
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 120;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.localNPCHitCooldown = 10;
 
             SafeSetDefaults();
         }
@@ -354,17 +354,37 @@ namespace OvermorrowMod.Common.Items.Daggers
         private void CompleteAttack()
         {
             // Record hit and advance combo if this was a successful attack
-            if (inSwingState && ComboIndex != (int)DaggerAttack.Throw)
+            //if (inSwingState && ComboIndex != (int)DaggerAttack.Throw)
+            //{
+            //    daggerPlayer.AdvanceCombo(currentStats.ComboSequence);
+            //}
+            // For combo attacks, check if player wants to continue
+            if (ComboIndex != (int)DaggerAttack.Throw)
             {
-                daggerPlayer.AdvanceCombo(currentStats.ComboSequence);
+                // If player is still trying to attack, continue seamlessly
+                if (player.controlUseItem)
+                {
+                    // Reset animation state for next attack
+                    float dualWieldOffset = DualWieldFlag == 1 ? -5f : 0f;
+                    AICounter = dualWieldOffset;
+                    
+                    HoldCounter = 0;
+                    swingAngle = 0;
+                    justReleasedWeapon = false;
+                    inSwingState = false;
+
+                    // Advance combo (handles single or multi-attack sequences)
+                    daggerPlayer.AdvanceCombo(currentStats.ComboSequence);
+
+                    // Reset item timing
+                    player.itemTime = player.HeldItem.useTime;
+                    player.itemAnimation = player.HeldItem.useAnimation;
+
+                    return; // Continue attacking seamlessly
+                }
             }
 
-            AICounter = 0;
-            HoldCounter = 0;
-            swingAngle = 0;
-            justReleasedWeapon = false;
-            inSwingState = false;
-
+            // Kill projectile when player stops attacking or after throws
             Projectile.Kill();
         }
 
@@ -532,6 +552,10 @@ namespace OvermorrowMod.Common.Items.Daggers
             float scaleFactor = DualWieldFlag == 1 ? 0.9f * currentStats.DualWieldDamageMultiplier : 1f;
 
             SetWeaponDrawing(ref spritePositionOffset, ref dualWieldOffset, ref rotationOffset, ref scaleFactor);
+            if (ComboIndex == (int)DaggerAttack.Throw && HoldCounter > 0)
+            {
+                DrawThrowTrajectory();
+            }
 
             if (IsChargedThrow && currentStats.ShowChargeEffect)
             {
@@ -548,6 +572,44 @@ namespace OvermorrowMod.Common.Items.Daggers
                 Main.spriteBatch.Draw(texture, Projectile.Center + spritePositionOffset - Main.screenPosition, null,
                     lightColor, Projectile.rotation + rotationOffset, texture.Size() / 2f,
                     Projectile.scale * scaleFactor * currentStats.ScaleMultiplier, spriteEffects, 1);
+            }
+        }
+
+        private void DrawThrowTrajectory()
+        {
+            Vector2 startPos = Projectile.Center;
+            Vector2 throwVelocity = Vector2.Normalize(Projectile.DirectionTo(Main.MouseWorld)) * currentStats.ThrowVelocity;
+
+            // Allow modifiers to adjust trajectory prediction
+            DaggerModifierHandler.ModifyThrowVelocity(this, player, ref throwVelocity, ChargeProgress);
+
+            Vector2 currentPos = startPos;
+            Vector2 currentVel = throwVelocity;
+
+            float alpha = IsChargedThrow ? 1f : 0.5f;
+            Color trajectoryColor = Color.Lerp(Color.Gray, currentStats.ThrowTrailColor, ChargeProgress);
+
+            // Draw trajectory points
+            for (int i = 0; i < 60; i++)
+            {
+                Vector2 nextPos = currentPos + currentVel;
+
+                // Apply physics simulation
+                currentVel.X *= 0.99f; // Air resistance
+                if (i > 6) currentVel.Y += 0.25f; // Gravity after initial throw
+
+                // Draw trajectory dot
+                float dotAlpha = alpha * (1f - i / 30f); // Fade out over distance
+                Vector2 screenPos = currentPos - Main.screenPosition;
+
+                Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenPos, new Rectangle(0, 0, 2, 2),
+                    trajectoryColor * dotAlpha, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+
+                currentPos = nextPos;
+
+                //// Stop if trajectory goes off screen or hits ground level
+                //if (currentPos.Y > Main.worldSurface * 16 || !Main.screenPosition.WithinRange(currentPos, Main.screenWidth + 100))
+                //    break;
             }
         }
 
