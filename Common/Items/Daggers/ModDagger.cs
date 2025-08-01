@@ -16,6 +16,7 @@ namespace OvermorrowMod.Common.Items.Daggers
         where HeldProjectile : HeldDagger
         where ThrownProjectile : ThrownDagger
     {
+        // For some reason this doesn't work to apply the tooltip?
         public WeaponType WeaponType => WeaponType.Dagger;
         public virtual void SafeSetDefaults() { }
 

@@ -670,7 +670,7 @@ Items: {
 			- Retrieving the knife after a {Keyword:Strike} grants <Buff:Invisibility> for 4 seconds
 			While under <Buff:Invisibility>, gain 15% increased movement speed
 			'''
-		Flavor:	Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
+		Flavor: Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
 	}
 }
 
@@ -765,4 +765,7 @@ Projectiles: {
 	WandOrb.DisplayName: Fae Orb
 	CarvingKnife_Held.DisplayName: Carving Knife_ Held
 	CarvingKnife_Thrown.DisplayName: Carving Knife_ Thrown
+	CurvedDiagonalSlash.DisplayName: Curved Diagonal Slash
+	AnimatedRing.DisplayName: Animated Ring
+	PrimitiveRing.DisplayName: Primitive Ring
 }

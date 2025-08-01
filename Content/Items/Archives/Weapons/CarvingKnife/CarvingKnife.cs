@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items.Daggers;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Items.Daggers;
 using Terraria;
 using Terraria.ID;
@@ -9,8 +11,11 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
-    public class CarvingKnife : ModDagger<CarvingKnife_Held, CarvingKnife_Thrown>
+    public class CarvingKnife : ModDagger<CarvingKnife_Held, CarvingKnife_Thrown>, IWeaponClassification
     {
+        // I don't know why this doesn't apply to the item automatically
+        public WeaponType WeaponType => WeaponType.Dagger;
+
         public override string Texture => AssetDirectory.ArchiveItems + Name;
         public override void SafeSetDefaults()
         {
