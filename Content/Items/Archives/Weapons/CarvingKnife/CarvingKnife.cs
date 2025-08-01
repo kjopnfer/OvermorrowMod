@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items.Daggers;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Items.Daggers;
 using Terraria;
 using Terraria.ID;
@@ -86,5 +87,33 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
         public override int ParentItem => ModContent.ItemType<CarvingKnife>();
         public override Color IdleColor => Color.Gray;
+
+        private bool _hitNPC = false;
+        public override void OnPickup()
+        {
+            if (_hitNPC)
+                owner.AddBuff(BuffID.Invisibility, ModUtils.SecondsToTicks(4));
+        }
+
+        public override void OnThrownDaggerHit()
+        {
+            _hitNPC = true;
+        }
+    }
+
+    public class CarvingKnifePlayer : ModPlayer
+    {
+        public override void PostUpdateMiscEffects()
+        {
+            if (Player.HasBuff(BuffID.Invisibility) && Player.HeldItem.type == ModContent.ItemType<CarvingKnife>())
+            {
+                Player.moveSpeed += 0.15f;
+            }
+        }
+
+        public override void PostUpdate()
+        {
+
+        }
     }
 }

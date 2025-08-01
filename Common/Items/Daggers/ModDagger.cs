@@ -63,7 +63,7 @@ namespace OvermorrowMod.Common.Items.Daggers
                     Projectile offHand = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
 
                     // Offset the off-hand dagger's AI counter to create stagger
-                    offHand.ai[2] = -5f; // Start 5 ticks behind
+                    offHand.ai[2] = -3f; // Start 5 ticks behind
                 }
             }
 
@@ -96,17 +96,6 @@ namespace OvermorrowMod.Common.Items.Daggers
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            // Add dual wield info
-            tooltips.Add(new TooltipLine(Mod, "DualWield", "Can be dual wielded")
-            {
-                OverrideColor = Color.Orange
-            });
-
-            // Add throw info  
-            tooltips.Add(new TooltipLine(Mod, "Throwing", "Right click to throw")
-            {
-                OverrideColor = Color.Yellow
-            });
         }
 
         public override bool ConsumeItem(Player player)

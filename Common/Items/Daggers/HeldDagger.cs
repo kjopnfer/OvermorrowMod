@@ -365,7 +365,7 @@ namespace OvermorrowMod.Common.Items.Daggers
                 if (player.controlUseItem)
                 {
                     // Reset animation state for next attack
-                    float dualWieldOffset = DualWieldFlag == 1 ? -5f : 0f;
+                    float dualWieldOffset = DualWieldFlag == 1 ? -3f : 0f;
                     AICounter = dualWieldOffset;
                     
                     HoldCounter = 0;
@@ -590,16 +590,17 @@ namespace OvermorrowMod.Common.Items.Daggers
             Color trajectoryColor = Color.Lerp(Color.Gray, currentStats.ThrowTrailColor, ChargeProgress);
 
             // Draw trajectory points
-            for (int i = 0; i < 60; i++)
+            int trajectoryPoints = 60;
+            for (int i = 0; i < trajectoryPoints; i++)
             {
                 Vector2 nextPos = currentPos + currentVel;
 
                 // Apply physics simulation
-                currentVel.X *= 0.99f; // Air resistance
+                currentVel.X *= 0.99f;
                 if (i > 6) currentVel.Y += 0.25f; // Gravity after initial throw
 
-                // Draw trajectory dot
-                float dotAlpha = alpha * (1f - i / 30f); // Fade out over distance
+                float fadeScale = trajectoryPoints * 0.75f;
+                float dotAlpha = alpha * (1f - i / fadeScale); // Fade out over distance
                 Vector2 screenPos = currentPos - Main.screenPosition;
 
                 Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenPos, new Rectangle(0, 0, 2, 2),

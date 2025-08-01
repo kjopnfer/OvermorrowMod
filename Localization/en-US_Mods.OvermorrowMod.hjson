@@ -285,6 +285,11 @@ Keywords: {
 		Description: Activates while below 20% health
 	}
 
+	DualWield: {
+		DisplayName: Dual Wield
+		Description: Two of this item can be stacked, upgrading its attacks.
+	}
+
 	Execute: {
 		DisplayName: Execute
 		Description: Triggers after killing an enemy with this item
@@ -657,7 +662,15 @@ Items: {
 
 	CarvingKnife: {
 		DisplayName: Carving Knife
-		Tooltip: ""
+		Tooltip:
+			'''
+			{Keyword:DualWield}
+			{Keyword:Secondary}:
+			- Throw the knife towards the cursor
+			- Retrieving the knife after a {Keyword:Strike} grants <Buff:Invisibility> for 4 seconds
+			While under <Buff:Invisibility>, gain 15% increased movement speed
+			'''
+		Flavor:	Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
 	}
 }
 

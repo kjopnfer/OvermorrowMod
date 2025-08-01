@@ -16,21 +16,17 @@ namespace OvermorrowMod.Common.Items.Daggers
         public WeaponType WeaponType => WeaponType.Dagger;
         public override string Texture => AssetDirectory.Empty;
 
-        // Required overrides for derived thrown daggers
         public abstract int ParentItem { get; }
-
-        // Virtual properties that can be overridden
         public virtual Color IdleColor => Color.Orange;
+
         protected virtual bool canBePickedUp => true;
         protected virtual bool canShowDagger => true;
 
-        // Enhanced properties using the stats system
         protected DaggerStats parentStats;
         protected Player owner => Main.player[Projectile.owner];
 
         public override bool? CanDamage() => !groundCollided;
 
-        // Focus shot from the new system
         public bool isFocusShot = false;
 
         public sealed override void SetDefaults()
