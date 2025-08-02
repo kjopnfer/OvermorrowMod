@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 
 namespace OvermorrowMod.Common.InverseKinematics
@@ -8,6 +9,7 @@ namespace OvermorrowMod.Common.InverseKinematics
     {
         public Vector2 BasePosition { get; set; }
         public InverseKinematicSegment[] Segments;
+
         public InverseKinematicLimb(float x, float y, int numSegments, float[] segmentLengths, float initialAngle, Texture2D[] segmentTextures, Vector2[] origins = null)
         {
             if (segmentLengths.Length != numSegments || (origins != null && origins.Length != numSegments))
@@ -81,5 +83,4 @@ namespace OvermorrowMod.Common.InverseKinematics
             return Segments[Segments.Length - 1].B;
         }
     }
-
 }
