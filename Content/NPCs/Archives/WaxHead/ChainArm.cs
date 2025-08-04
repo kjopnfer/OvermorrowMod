@@ -54,12 +54,21 @@ namespace OvermorrowMod.Content.NPCs
 
             Vector2 straightElbow = Vector2.Lerp(anchorPoint, handJoint, 0.45f);
             Vector2 perpendicular = new Vector2(-directionToPlayer.Y, directionToPlayer.X);
-            BendOffset = MathHelper.Lerp(0f, -40f, 0f);
-            elbowJoint = straightElbow + perpendicular * BendOffset;
+            //BendOffset = MathHelper.Lerp(0f, -40f, 0f);
+            Vector2 backwardDirection = -directionToPlayer; // Toward shoulder
+            float backwardAmount = Math.Abs(BendOffset) * 0.5f; // 30% of bend amount
 
-            //Dust.NewDust(anchorPoint, 1, 1, DustID.Torch);
-            //Dust.NewDust(elbowJoint, 1, 1, DustID.RedTorch);
-            //Dust.NewDust(handJoint, 1, 1, DustID.BlueTorch);
+            elbowJoint = straightElbow + perpendicular * BendOffset + backwardDirection * backwardAmount;
+            handJoint = handJoint + perpendicular * -BendOffset * 2;
+
+            int shoulder = Dust.NewDust(anchorPoint, 1, 1, DustID.Torch);
+            Main.dust[shoulder].noGravity = true;
+
+            int elbow = Dust.NewDust(elbowJoint, 1, 1, DustID.RedTorch);
+            Main.dust[elbow].noGravity = true;
+
+            int hand = Dust.NewDust(handJoint, 1, 1, DustID.BlueTorch);
+            Main.dust[hand].noGravity = true;
         }
 
         public Vector2 GetHandPosition()

@@ -77,6 +77,11 @@ namespace OvermorrowMod.Common.Utilities
             }
         }
 
+        public static float EaseOutExpo(float x)
+        {
+            return x == 1f ? 1f : 1f - (float)Math.Pow(2f, -10f * x);
+        }
+
         public static float EaseInExpo(float x)
         {
             return (float)(x == 0f ? 0f : Math.Pow(2f, 10f * x - 10f));
