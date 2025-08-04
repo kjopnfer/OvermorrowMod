@@ -698,6 +698,8 @@ NPCs: {
 	DoorLock.DisplayName: Door Lock
 	SimplePathfindingNPC.DisplayName: Simple Pathfinding N P C
 	PathfindingNPC.DisplayName: Pathfinding N P C
+	ChainArm.DisplayName: Chain Arm
+	Waxhead.DisplayName: Waxhead
 }
 
 Bestiary: {

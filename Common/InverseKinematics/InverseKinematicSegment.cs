@@ -55,8 +55,10 @@ namespace OvermorrowMod.Common.InverseKinematics
             Texture2D pixel = TextureAssets.MagicPixel.Value;
             if (Texture == null)
                 Texture = pixel;
+
             float rotation = Angle;
             Rectangle rect = new Rectangle(0, 0, 1, 1);
+
             // the sprite is probably placed in the wrong direction, the origin of the sprite should be in the middle of the 
             // left side rectangle and not to the right of it completely
             spriteBatch.Draw(
@@ -70,8 +72,10 @@ namespace OvermorrowMod.Common.InverseKinematics
                 SpriteEffects.None,
                 0f
             );
+
             Vector2 textureSize = new Vector2(Texture.Width, Texture.Height);
             Rectangle boxRect = new Rectangle((int)(A.X - Main.screenPosition.X), (int)(A.Y - Main.screenPosition.Y), (int)textureSize.X, (int)Length);
+
             // Draw a simple rectangle around the texture (debugging purpose)
             spriteBatch.Draw(
                 texture: pixel,

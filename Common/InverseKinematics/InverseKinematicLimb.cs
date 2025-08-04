@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.InverseKinematics;
 using System;
 using Terraria;
 
@@ -20,7 +21,7 @@ namespace OvermorrowMod.Common.InverseKinematics
             BasePosition = new Vector2(x, y);
             Segments = new InverseKinematicSegment[numSegments];
 
-            // Default origins and offsets if not provided
+            // Default origins if not provided
             origins = origins ?? new Vector2[numSegments]; // Default to Vector2.Zero
 
             // Create the first segment at the base
@@ -57,6 +58,7 @@ namespace OvermorrowMod.Common.InverseKinematics
             // Recalculate positions starting from the base
             Segments[0].A = BasePosition;
             Segments[0].Recalculate();
+
             for (int i = 1; i < Segments.Length; i++)
             {
                 Segments[i].A = Segments[i - 1].B;
