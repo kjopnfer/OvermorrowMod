@@ -32,10 +32,18 @@ namespace OvermorrowMod.Content.NPCs
         private Vector2 handJoint;
         public override void OnSpawn(IEntitySource source)
         {
-            upperArmTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassArm1").Value;
-            forearmTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassArm2").Value;
+            upperArmTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassArm1", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            forearmTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassArm2", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+
+            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ChainBall>(), 0, 0, Main.myPlayer, NPC.whoAmI);
         }
 
+        private float _bendOffset;
+        public float BendOffset
+        {
+            get => _bendOffset;
+            set => _bendOffset = MathHelper.Clamp(value, -40f, 40f);
+        }
         public override void AI()
         {
             anchorPoint = NPC.Center;
@@ -46,13 +54,27 @@ namespace OvermorrowMod.Content.NPCs
 
             Vector2 straightElbow = Vector2.Lerp(anchorPoint, handJoint, 0.45f);
             Vector2 perpendicular = new Vector2(-directionToPlayer.Y, directionToPlayer.X);
-            float bendOffset = MathHelper.Lerp(0f, -40f, 0f);
-            elbowJoint = straightElbow + perpendicular * bendOffset;
+            BendOffset = MathHelper.Lerp(0f, -40f, 0f);
+            elbowJoint = straightElbow + perpendicular * BendOffset;
 
-            // Debug dust at joints
             //Dust.NewDust(anchorPoint, 1, 1, DustID.Torch);
             //Dust.NewDust(elbowJoint, 1, 1, DustID.RedTorch);
             //Dust.NewDust(handJoint, 1, 1, DustID.BlueTorch);
+        }
+
+        public Vector2 GetHandPosition()
+        {
+            return handJoint;
+        }
+
+        public float GetForearmAngle()
+        {
+            return (handJoint - elbowJoint).ToRotation();
+        }
+
+        public Vector2 GetArmDirection()
+        {
+            return Vector2.Normalize(Main.LocalPlayer.Center - anchorPoint);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -67,7 +89,7 @@ namespace OvermorrowMod.Content.NPCs
 
             spriteBatch.Draw(upperArmTexture, anchorScreen, null, drawColor, upperArmAngle - MathHelper.PiOver2, new Vector2(upperArmTexture.Width / 2f, 0), 1f, SpriteEffects.None, 0f);
             spriteBatch.Draw(forearmTexture, elbowScreen, null, drawColor, forearmAngle - MathHelper.PiOver2, new Vector2(forearmTexture.Width / 2f, 0), 1f, SpriteEffects.None, 0f);
-            
+
             return false;
         }
     }
