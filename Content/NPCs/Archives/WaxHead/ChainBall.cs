@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -14,11 +15,13 @@ namespace OvermorrowMod.Content.NPCs
     public class ChainBall : ModProjectile
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + "WaxheadFlail";
+        public override bool? CanDamage() => CurrentState == ChainState.Extending || CurrentState == ChainState.Retracting;
 
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 60;
-            Projectile.friendly = true;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
             Projectile.tileCollide = false;
             Projectile.timeLeft = ModUtils.SecondsToTicks(300);
             Projectile.penetrate = -1;
@@ -72,7 +75,7 @@ namespace OvermorrowMod.Content.NPCs
                 Projectile.Kill();
             Projectile.timeLeft = 5;
 
-            if (npc.ModNPC is ChainArm arm)
+            if (npc.ModNPC is Waxhead arm)
             {
                 // Get a position that lerps between elbow and hand
                 float recoilProgress = recoilTimer > 0 ? recoilTimer / recoilDuration : 0f;
@@ -113,19 +116,19 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        private Vector2 GetForearmAnchor(ChainArm arm)
+        private Vector2 GetForearmAnchor(Waxhead arm)
         {
             float recoilProgress = recoilTimer > 0 ? recoilTimer / recoilDuration : 0f;
             float lerpValue = MathHelper.Lerp(1f, 0.7f, recoilProgress);
             return Vector2.Lerp(arm.ElbowJoint, arm.HandJoint, lerpValue);
         }
 
-        private void HandleWaitingState(ChainArm arm)
+        private void HandleWaitingState(Waxhead arm)
         {
             float offsetDistance = MathHelper.Lerp(8f, 0f, Math.Abs(arm.BendOffset / 40f));
             Vector2 forearmDirection = new Vector2((float)Math.Cos(arm.GetForearmAngle()), (float)Math.Sin(arm.GetForearmAngle()));
             //Projectile.Center = arm.GetHandPosition() + forearmDirection * offsetDistance;
-    
+
             Vector2 forearmMidpoint = GetForearmAnchor(arm);
             Projectile.Center = forearmMidpoint + forearmDirection * offsetDistance;
 
@@ -140,7 +143,7 @@ namespace OvermorrowMod.Content.NPCs
 
         private float recoilDuration = 60f;
         private float recoilMaxBend = -40f;
-        private void HandleRecoil(ChainArm arm, float maxBend, float duration)
+        private void HandleRecoil(Waxhead arm, float maxBend, float duration)
         {
             if (recoilTimer > 0)
             {
@@ -156,7 +159,7 @@ namespace OvermorrowMod.Content.NPCs
 
         private bool hasBeenShot = false;
         private float recoilTimer = 0f;
-        private void HandleExtendingState(ChainArm arm)
+        private void HandleExtendingState(Waxhead arm)
         {
             if (!hasBeenShot)
             {
@@ -166,11 +169,11 @@ namespace OvermorrowMod.Content.NPCs
 
                 recoilTimer = 60f;
                 recoilDuration = 60f;
-                recoilMaxBend = -20f;
+                recoilMaxBend = 20f * arm.NPC.direction;
             }
 
             //UpdateBallPhysics(arm.GetHandPosition());
-       
+
             Vector2 forearmMidpoint = GetForearmAnchor(arm);
             UpdateBallPhysics(forearmMidpoint);
 
@@ -205,7 +208,7 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        private void HandleRetractingState(ChainArm arm)
+        private void HandleRetractingState(Waxhead arm)
         {
             if (stateTimer == 1f)
             {
@@ -216,7 +219,7 @@ namespace OvermorrowMod.Content.NPCs
             float offsetDistance = MathHelper.Lerp(8f, 0f, Math.Abs(arm.BendOffset / 40f));
             Vector2 forearmDirection = new Vector2((float)Math.Cos(arm.GetForearmAngle()), (float)Math.Sin(arm.GetForearmAngle()));
             //Vector2 targetPosition = arm.GetHandPosition() + forearmDirection * offsetDistance;
-            
+
             Vector2 targetPosition = GetForearmAnchor(arm) + forearmDirection * offsetDistance;
 
             Projectile.Center = Vector2.Lerp(retractStartPosition, targetPosition, progress);
@@ -230,7 +233,7 @@ namespace OvermorrowMod.Content.NPCs
 
                 recoilTimer = 20f;
                 recoilDuration = 20f;
-                recoilMaxBend = -20f;
+                recoilMaxBend = 20f * arm.NPC.direction;
             }
         }
 
@@ -255,7 +258,7 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.Center += ballVelocity;
         }
 
-        private void DrawChain(ChainArm arm)
+        private void DrawChain(Waxhead arm)
         {
             if (CurrentState == ChainState.Waiting) return; // No chain when waiting
 
@@ -282,7 +285,7 @@ namespace OvermorrowMod.Content.NPCs
         public override bool PreDraw(ref Color lightColor)
         {
             NPC npc = Main.npc[ParentID];
-            if (npc.active && npc.ModNPC is ChainArm arm)
+            if (npc.active && npc.ModNPC is Waxhead arm)
             {
                 DrawChain(arm);
             }
