@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -21,17 +22,23 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.tileCollide = false;
             Projectile.timeLeft = ModUtils.SecondsToTicks(300);
             Projectile.penetrate = -1;
+            Projectile.hide = true;
+        }
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            behindNPCs.Add(index);
         }
 
         private Vector2 ballVelocity;
-        private enum ChainState
+        public enum ChainState
         {
             Waiting = 0,
             Extending = 1,
             Extended = 2,
             Retracting = 3
         }
-        private ChainState currentState = ChainState.Waiting;
+        public ChainState CurrentState { get; private set; } = ChainState.Waiting;
         private float stateTimer = 0f;
 
         private float waitTime = ModUtils.SecondsToTicks(3);
@@ -67,11 +74,19 @@ namespace OvermorrowMod.Content.NPCs
 
             if (npc.ModNPC is ChainArm arm)
             {
+                // Get a position that lerps between elbow and hand
+                float recoilProgress = recoilTimer > 0 ? recoilTimer / recoilDuration : 0f;
+                float lerpValue = MathHelper.Lerp(1f, 0.6f, recoilProgress);
+                Vector2 forearmMidpoint = GetForearmAnchor(arm);
+
+                int forearmMid = Dust.NewDust(forearmMidpoint, 1, 1, DustID.GreenTorch);
+                Main.dust[forearmMid].noGravity = true;
+
                 HandleRecoil(arm, recoilMaxBend, recoilDuration);
 
                 stateTimer++;
 
-                switch (currentState)
+                switch (CurrentState)
                 {
                     case ChainState.Waiting:
                         HandleWaitingState(arm);
@@ -87,27 +102,38 @@ namespace OvermorrowMod.Content.NPCs
                         break;
                 }
 
-                if (currentState == ChainState.Waiting || currentState == ChainState.Retracting)
+                if (CurrentState == ChainState.Waiting || CurrentState == ChainState.Retracting)
                 {
                     Projectile.rotation = arm.GetForearmAngle();
                 }
-                else if (currentState == ChainState.Extending && ballVelocity.LengthSquared() > 0.1f)
+                else if (CurrentState == ChainState.Extending && ballVelocity.LengthSquared() > 0.1f)
                 {
                     Projectile.rotation = ballVelocity.ToRotation();
                 }
             }
         }
 
+        private Vector2 GetForearmAnchor(ChainArm arm)
+        {
+            float recoilProgress = recoilTimer > 0 ? recoilTimer / recoilDuration : 0f;
+            float lerpValue = MathHelper.Lerp(1f, 0.7f, recoilProgress);
+            return Vector2.Lerp(arm.ElbowJoint, arm.HandJoint, lerpValue);
+        }
+
         private void HandleWaitingState(ChainArm arm)
         {
             float offsetDistance = MathHelper.Lerp(8f, 0f, Math.Abs(arm.BendOffset / 40f));
             Vector2 forearmDirection = new Vector2((float)Math.Cos(arm.GetForearmAngle()), (float)Math.Sin(arm.GetForearmAngle()));
-            Projectile.Center = arm.GetHandPosition() + forearmDirection * offsetDistance;
+            //Projectile.Center = arm.GetHandPosition() + forearmDirection * offsetDistance;
+    
+            Vector2 forearmMidpoint = GetForearmAnchor(arm);
+            Projectile.Center = forearmMidpoint + forearmDirection * offsetDistance;
+
             ballVelocity = Vector2.Zero;
 
             if (stateTimer >= waitTime)
             {
-                currentState = ChainState.Extending;
+                CurrentState = ChainState.Extending;
                 stateTimer = 0f;
             }
         }
@@ -134,31 +160,35 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (!hasBeenShot)
             {
-                Vector2 fireDirection = Vector2.Normalize(Main.LocalPlayer.Center - Projectile.Center);
+                Vector2 fireDirection = Vector2.Normalize(arm.HandJoint - arm.ElbowJoint);
                 ballVelocity = fireDirection * 30f;
                 hasBeenShot = true;
 
                 recoilTimer = 60f;
                 recoilDuration = 60f;
-                recoilMaxBend = -40f;
+                recoilMaxBend = -20f;
             }
 
-            UpdateBallPhysics(arm.GetHandPosition());
+            //UpdateBallPhysics(arm.GetHandPosition());
+       
+            Vector2 forearmMidpoint = GetForearmAnchor(arm);
+            UpdateBallPhysics(forearmMidpoint);
 
             Point tileCheck = Projectile.Center.ToTileCoordinates();
             if (WorldGen.SolidTile(tileCheck.X, tileCheck.Y))
             {
-                currentState = ChainState.Extended;
+                CurrentState = ChainState.Extended;
                 stateTimer = 0f;
                 ballVelocity = Vector2.Zero;
                 return;
             }
 
-            Vector2 chainVector = Projectile.Center - arm.GetHandPosition();
+            //Vector2 chainVector = Projectile.Center - arm.GetHandPosition();
+            Vector2 chainVector = Projectile.Center - GetForearmAnchor(arm);
             float currentDistance = chainVector.Length();
             if (currentDistance >= maxChainLength)
             {
-                currentState = ChainState.Retracting;
+                CurrentState = ChainState.Retracting;
                 stateTimer = 0f;
                 ballVelocity = Vector2.Zero;
             }
@@ -170,7 +200,7 @@ namespace OvermorrowMod.Content.NPCs
 
             if (stateTimer >= extendedWaitTime)
             {
-                currentState = ChainState.Retracting;
+                CurrentState = ChainState.Retracting;
                 stateTimer = 0f;
             }
         }
@@ -185,20 +215,22 @@ namespace OvermorrowMod.Content.NPCs
             float progress = Math.Min(stateTimer / retractTime, 1f);
             float offsetDistance = MathHelper.Lerp(8f, 0f, Math.Abs(arm.BendOffset / 40f));
             Vector2 forearmDirection = new Vector2((float)Math.Cos(arm.GetForearmAngle()), (float)Math.Sin(arm.GetForearmAngle()));
-            Vector2 targetPosition = arm.GetHandPosition() + forearmDirection * offsetDistance;
+            //Vector2 targetPosition = arm.GetHandPosition() + forearmDirection * offsetDistance;
+            
+            Vector2 targetPosition = GetForearmAnchor(arm) + forearmDirection * offsetDistance;
 
             Projectile.Center = Vector2.Lerp(retractStartPosition, targetPosition, progress);
             ballVelocity = Vector2.Zero;
 
             if (progress >= 1f)
             {
-                currentState = ChainState.Waiting;
+                CurrentState = ChainState.Waiting;
                 stateTimer = 0f;
                 hasBeenShot = false;
 
-                recoilTimer = 90f;
-                recoilDuration = 90f;
-                recoilMaxBend = -40f;
+                recoilTimer = 20f;
+                recoilDuration = 20f;
+                recoilMaxBend = -20f;
             }
         }
 
@@ -225,10 +257,10 @@ namespace OvermorrowMod.Content.NPCs
 
         private void DrawChain(ChainArm arm)
         {
-            if (currentState == ChainState.Waiting) return; // No chain when waiting
+            if (CurrentState == ChainState.Waiting) return; // No chain when waiting
 
             Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadChain").Value;
-            Vector2 chainDirection = Projectile.Center - arm.GetHandPosition();
+            Vector2 chainDirection = Projectile.Center - GetForearmAnchor(arm);
             float chainDistance = chainDirection.Length();
             float chainRotation = chainDirection.ToRotation();
             int chainSegmentHeight = chainTexture.Height;
@@ -237,7 +269,7 @@ namespace OvermorrowMod.Content.NPCs
             for (int i = 0; i < numSegments; i++)
             {
                 float progress = (float)i / numSegments;
-                Vector2 segmentPosition = Vector2.Lerp(arm.GetHandPosition(), Projectile.Center, progress);
+                Vector2 segmentPosition = Vector2.Lerp(GetForearmAnchor(arm), Projectile.Center, progress);
                 Vector2 segmentScreenPos = segmentPosition - Main.screenPosition;
                 Rectangle sourceRect = new Rectangle(0, 0, chainTexture.Width, chainSegmentHeight);
                 Vector2 origin = new Vector2(chainTexture.Width / 2f, 0);
