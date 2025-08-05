@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
-            behindNPCs.Add(index);
+            behindNPCsAndTiles.Add(index);
         }
 
         private Vector2 ballVelocity;

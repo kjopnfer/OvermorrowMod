@@ -54,28 +54,28 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (ballID == -1) return;
 
-            Main.NewText("spawn");
-
             ChainBall chainBall = Main.projectile[ballID].ModProjectile as ChainBall;
+
+            AnchorPoint = NPC.Center;
+
             if (chainBall.CurrentState == ChainBall.ChainState.Waiting)
             {
-                AnchorPoint = NPC.Center;
-
                 Vector2 targetDirection = Vector2.Normalize(Main.LocalPlayer.Center - AnchorPoint);
                 currentDirection = Vector2.Lerp(currentDirection, targetDirection, 0.05f);
                 currentDirection = Vector2.Normalize(currentDirection);
-
-                float armLength = 130f;
-                HandJoint = AnchorPoint + currentDirection * armLength;
-
-                Vector2 straightElbow = Vector2.Lerp(AnchorPoint, HandJoint, 0.45f);
-                Vector2 perpendicular = new Vector2(-currentDirection.Y, currentDirection.X);
-                Vector2 backwardDirection = -currentDirection;
-                float backwardAmount = Math.Abs(BendOffset) * 0.5f;
-
-                ElbowJoint = straightElbow + perpendicular * BendOffset + backwardDirection * backwardAmount;
-                HandJoint = HandJoint + perpendicular * -BendOffset * 2;
             }
+
+            // Always calculate arm positions using current direction and bend offset
+            float armLength = 130f;
+            HandJoint = AnchorPoint + currentDirection * armLength;
+
+            Vector2 straightElbow = Vector2.Lerp(AnchorPoint, HandJoint, 0.45f);
+            Vector2 perpendicular = new Vector2(-currentDirection.Y, currentDirection.X);
+            Vector2 backwardDirection = -currentDirection;
+            float backwardAmount = Math.Abs(BendOffset) * 0.5f;
+
+            ElbowJoint = straightElbow + perpendicular * BendOffset + backwardDirection * backwardAmount;
+            HandJoint = HandJoint + perpendicular * -BendOffset * 2;
 
             int shoulder = Dust.NewDust(AnchorPoint, 1, 1, DustID.Torch);
             Main.dust[shoulder].noGravity = true;
