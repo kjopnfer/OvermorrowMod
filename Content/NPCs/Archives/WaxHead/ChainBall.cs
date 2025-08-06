@@ -25,12 +25,10 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.tileCollide = false;
             Projectile.timeLeft = ModUtils.SecondsToTicks(300);
             Projectile.penetrate = -1;
-            //Projectile.hide = true;
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
-            //behindNPCsAndTiles.Add(index);
         }
 
         private Vector2 ballVelocity;

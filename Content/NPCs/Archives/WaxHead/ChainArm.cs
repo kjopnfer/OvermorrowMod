@@ -60,26 +60,28 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 [12] = -46
             };
 
-            int yOffset = frameOffsets.TryGetValue(yFrame, out int offset) ? offset : -54;
-            AnchorPoint = NPC.Center + new Vector2(-12 * NPC.direction, yOffset);
+            int yOffset = frameOffsets.TryGetValue(yFrame, out int offset) ? offset - 12 : -54;
+            AnchorPoint = NPC.Center + new Vector2(-8 * NPC.direction, yOffset);
 
+            Vector2 targetDirection;
+            if (CurrentState == WaxheadState.Idle)
+            {
+                // Point downward during idle
+                Vector2 idleTargetPosition = AnchorPoint + new Vector2(0, 200f);
+                targetDirection = Vector2.Normalize(idleTargetPosition - AnchorPoint);
+            }
+            else // Attack state
+            {
+                targetDirection = Vector2.Normalize(Main.LocalPlayer.Center - AnchorPoint);
+            }
+
+            // Only update direction slowly when ChainBall is waiting, but always calculate the target
             if (chainBall.CurrentState == ChainBall.ChainState.Waiting)
             {
-                Vector2 targetDirection;
-
-                // Choose target based on Waxhead state
-                if (CurrentState == WaxheadState.Idle)
-                {
-                    targetDirection = Vector2.Normalize(idleTarget - AnchorPoint);
-                }
-                else // Attack state
-                {
-                    targetDirection = Vector2.Normalize(Main.LocalPlayer.Center - AnchorPoint);
-                }
-
                 currentDirection = Vector2.Lerp(currentDirection, targetDirection, 0.05f);
-                currentDirection = Vector2.Normalize(currentDirection);
             }
+
+            currentDirection = Vector2.Normalize(currentDirection);
 
             float armLength = 130f;
             HandJoint = AnchorPoint + currentDirection * armLength;
@@ -90,7 +92,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float backwardAmount = Math.Abs(BendOffset) * 0.5f;
 
             ElbowJoint = straightElbow + perpendicular * BendOffset + backwardDirection * backwardAmount;
-            HandJoint = HandJoint + perpendicular * -BendOffset * 2;
+            HandJoint += perpendicular * -BendOffset * 2;
         }
 
         private void DrawChainArmDebugDust()

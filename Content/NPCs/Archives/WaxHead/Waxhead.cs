@@ -22,9 +22,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public WaxheadState CurrentState { get; private set; } = WaxheadState.Idle;
-        private float stateTimer = 0f;
-        private float idleTime = ModUtils.SecondsToTicks(2f); // 2 seconds idle
-        private float attackTime = ModUtils.SecondsToTicks(5f); // 5 seconds attack
+        private ref float AICounter => ref NPC.ai[0];
+        private float idleTime = ModUtils.SecondsToTicks(4f);
+        private float attackTime = ModUtils.SecondsToTicks(5f);
         private Vector2 idleTarget;
 
         public override void SetDefaults()
@@ -58,26 +58,23 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void HandleStateLogic()
         {
-            stateTimer++;
+            AICounter++;
 
             switch (CurrentState)
             {
                 case WaxheadState.Idle:
-                    // Set idle target point downwards
-                    idleTarget = NPC.Center + new Vector2(0, 200f);
-
-                    if (stateTimer >= idleTime)
+                    if (AICounter >= idleTime)
                     {
                         CurrentState = WaxheadState.Attack;
-                        stateTimer = 0f;
+                        AICounter = 0f;
                     }
                     break;
 
                 case WaxheadState.Attack:
-                    if (stateTimer >= attackTime)
+                    if (AICounter >= attackTime)
                     {
                         CurrentState = WaxheadState.Idle;
-                        stateTimer = 0f;
+                        AICounter = 0f;
                     }
                     break;
             }
@@ -97,7 +94,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             return false;
         }
 
-        // Frame animation code
         int xFrame = 0;
         int yFrame = 0;
 
