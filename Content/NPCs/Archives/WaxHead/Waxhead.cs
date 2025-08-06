@@ -14,15 +14,27 @@ namespace OvermorrowMod.Content.NPCs.Archives
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
+
+        public enum WaxheadState
+        {
+            Idle = 0,
+            Attack = 1
+        }
+
+        public WaxheadState CurrentState { get; private set; } = WaxheadState.Idle;
+        private float stateTimer = 0f;
+        private float idleTime = ModUtils.SecondsToTicks(2f); // 2 seconds idle
+        private float attackTime = ModUtils.SecondsToTicks(5f); // 5 seconds attack
+        private Vector2 idleTarget;
+
         public override void SetDefaults()
         {
             NPC.width = 80;
             NPC.height = 300;
-            NPC.lifeMax = 30;
+            NPC.lifeMax = 3000;
             NPC.aiStyle = -1;
             NPC.defense = 16;
             NPC.damage = 48;
-            NPC.lifeMax = 3000;
             NPC.knockBackResist = 0f;
             NPC.noGravity = false;
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
@@ -39,8 +51,36 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.Move(Main.LocalPlayer.Center, 0.1f, 2f, 1f);
             NPC.direction = NPC.GetDirectionFrom(Main.LocalPlayer);
 
+            HandleStateLogic();
             UpdateChainArm();
             DrawChainArmDebugDust();
+        }
+
+        private void HandleStateLogic()
+        {
+            stateTimer++;
+
+            switch (CurrentState)
+            {
+                case WaxheadState.Idle:
+                    // Set idle target point downwards
+                    idleTarget = NPC.Center + new Vector2(0, 200f);
+
+                    if (stateTimer >= idleTime)
+                    {
+                        CurrentState = WaxheadState.Attack;
+                        stateTimer = 0f;
+                    }
+                    break;
+
+                case WaxheadState.Attack:
+                    if (stateTimer >= attackTime)
+                    {
+                        CurrentState = WaxheadState.Idle;
+                        stateTimer = 0f;
+                    }
+                    break;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -57,14 +97,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             return false;
         }
 
-        // Keep your existing frame code
+        // Frame animation code
         int xFrame = 0;
         int yFrame = 0;
+
         private void SetFrame()
         {
             xFrame = 1;
             if (NPC.frameCounter++ % 6 == 0)
-            //if (NPC.frameCounter++ % 20 == 0)
             {
                 yFrame++;
                 if (yFrame >= 13) yFrame = 0;

@@ -25,12 +25,12 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.tileCollide = false;
             Projectile.timeLeft = ModUtils.SecondsToTicks(300);
             Projectile.penetrate = -1;
-            Projectile.hide = true;
+            //Projectile.hide = true;
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
-            behindNPCsAndTiles.Add(index);
+            //behindNPCsAndTiles.Add(index);
         }
 
         private Vector2 ballVelocity;
@@ -141,7 +141,7 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
-        private float recoilDuration = 60f;
+        public float recoilDuration = 60f;
         private float recoilMaxBend = -40f;
         private void HandleRecoil(Waxhead arm, float maxBend, float duration)
         {
@@ -158,7 +158,7 @@ namespace OvermorrowMod.Content.NPCs
         }
 
         private bool hasBeenShot = false;
-        private float recoilTimer = 0f;
+        public float recoilTimer = 0f;
         private void HandleExtendingState(Waxhead arm)
         {
             if (!hasBeenShot)
@@ -284,11 +284,11 @@ namespace OvermorrowMod.Content.NPCs
 
         public override bool PreDraw(ref Color lightColor)
         {
-            NPC npc = Main.npc[ParentID];
-            if (npc.active && npc.ModNPC is Waxhead arm)
-            {
-                DrawChain(arm);
-            }
+            //NPC npc = Main.npc[ParentID];
+            //if (npc.active && npc.ModNPC is Waxhead arm)
+            //{
+            //    DrawChain(arm);
+            //}
 
             Texture2D ballTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadFlail").Value;
             Vector2 ballScreenPos = Projectile.Center - Main.screenPosition;

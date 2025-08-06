@@ -65,7 +65,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             if (chainBall.CurrentState == ChainBall.ChainState.Waiting)
             {
-                Vector2 targetDirection = Vector2.Normalize(Main.LocalPlayer.Center - AnchorPoint);
+                Vector2 targetDirection;
+
+                // Choose target based on Waxhead state
+                if (CurrentState == WaxheadState.Idle)
+                {
+                    targetDirection = Vector2.Normalize(idleTarget - AnchorPoint);
+                }
+                else // Attack state
+                {
+                    targetDirection = Vector2.Normalize(Main.LocalPlayer.Center - AnchorPoint);
+                }
+
                 currentDirection = Vector2.Lerp(currentDirection, targetDirection, 0.05f);
                 currentDirection = Vector2.Normalize(currentDirection);
             }
@@ -94,10 +105,53 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Main.dust[hand].noGravity = true;
         }
 
+        private void DrawChain(SpriteBatch spriteBatch, ChainBall chainBall)
+        {
+            if (chainBall.CurrentState == ChainBall.ChainState.Waiting) return; // No chain when waiting
+
+            Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadChain").Value;
+            Vector2 forearmAnchor = GetForearmAnchor(chainBall);
+            Vector2 chainDirection = chainBall.Projectile.Center - forearmAnchor;
+            float chainDistance = chainDirection.Length();
+            float chainRotation = chainDirection.ToRotation();
+            int chainSegmentHeight = chainTexture.Height;
+            int numSegments = (int)(chainDistance / chainSegmentHeight) + 1;
+
+            for (int i = 0; i < numSegments; i++)
+            {
+                float progress = (float)i / numSegments;
+                Vector2 segmentPosition = Vector2.Lerp(forearmAnchor, chainBall.Projectile.Center, progress);
+                Vector2 segmentScreenPos = segmentPosition - Main.screenPosition;
+                Rectangle sourceRect = new Rectangle(0, 0, chainTexture.Width, chainSegmentHeight);
+                Vector2 origin = new Vector2(chainTexture.Width / 2f, 0);
+
+                spriteBatch.Draw(chainTexture, segmentScreenPos, sourceRect, Color.White,
+                    chainRotation + MathHelper.PiOver2, origin, 1f, SpriteEffects.None, 0f);
+            }
+        }
+
+        private Vector2 GetForearmAnchor(ChainBall chainBall)
+        {
+            float recoilProgress = chainBall.recoilTimer > 0 ? chainBall.recoilTimer / chainBall.recoilDuration : 0f;
+            float lerpValue = MathHelper.Lerp(1f, 0.7f, recoilProgress);
+            return Vector2.Lerp(ElbowJoint, HandJoint, lerpValue);
+        }
+
         private void DrawChainArm(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (upperArmTexture == null || forearmTexture == null) return;
 
+            // Draw the chain first (behind the arm)
+            if (ballID != -1 && Main.projectile[ballID].active)
+            {
+                ChainBall chainBall = Main.projectile[ballID].ModProjectile as ChainBall;
+                if (chainBall != null)
+                {
+                    DrawChain(spriteBatch, chainBall);
+                }
+            }
+
+            // Then draw the arm parts
             Vector2 anchorScreen = AnchorPoint - Main.screenPosition;
             Vector2 elbowScreen = ElbowJoint - Main.screenPosition;
 
