@@ -29,6 +29,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public Vector2 ElbowJoint { get; private set; }
         public Vector2 HandJoint { get; private set; }
 
+        private float currentAngle = 0f;
+        private int spinDirection = 1;
         private void InitializeChainArm(IEntitySource source)
         {
             upperArmTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "BrassArm1", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -60,18 +62,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 [12] = -46
             };
 
-            int yOffset = frameOffsets.TryGetValue(yFrame, out int offset) ? offset - 12 : -54;
+            int yOffset = frameOffsets.TryGetValue(yFrame, out int offset) ? offset - 4 : -54;
             AnchorPoint = NPC.Center + new Vector2(-8 * NPC.direction, yOffset);
 
-            Vector2 targetDirection;
             if (CurrentState == WaxheadState.Idle)
             {
-                //BendOffset = 10 * NPC.direction;
-
-                // Base direction pointing downward
-                Vector2 baseDirection = new Vector2(0, 1);
-
-                // Apply the swinging offset
+                // Calculate target angle for idle animation
                 var frameAngles = new Dictionary<int, float>
                 {
                     [0] = 120,
@@ -90,36 +86,64 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 };
                 float frameAngle = frameAngles.TryGetValue(yFrame, out float angle) ? angle : 130;
 
-                // Flip angle for right-facing direction
                 if (NPC.direction == 1)
                     frameAngle = 180f - frameAngle;
 
                 float targetAngle = MathHelper.ToRadians(frameAngle);
-                targetDirection = new Vector2((float)Math.Cos(targetAngle), (float)Math.Sin(targetAngle));
-            }
-            else // Attack state
-            {
-                targetDirection = Vector2.Normalize(Main.LocalPlayer.Center - AnchorPoint);
-            }
 
-            // Only update direction slowly when ChainBall is waiting, but always calculate the target
-            if (chainBall.CurrentState == ChainBall.ChainState.Waiting)
-            {
-                // Controls the rotation rate
-                float lerpSpeed;
-                if (CurrentState == WaxheadState.Idle)
+                // Smoothly rotate towards target angle
+                if (chainBall.CurrentState == ChainBall.ChainState.Waiting)
                 {
-                    lerpSpeed = 0.08f;
+                    currentAngle = MathHelper.Lerp(currentAngle, targetAngle, 0.08f);
+                }
+            }
+            else if (CurrentState == WaxheadState.SpinAttack)
+            {
+                AnchorPoint += new Vector2(4 * NPC.direction, 2);
+                float totalSpinTime = attackTime * 2;
+                float windupTime = totalSpinTime * 0.25f;
+                float mainSpinTime = totalSpinTime * 0.5f;
+                float winddownTime = totalSpinTime * 0.25f;
+
+                float spinSpeed = 0.2f;
+
+                if (AICounter == 1)
+                    spinDirection = NPC.direction;
+
+
+                if (AICounter <= windupTime)
+                {
+                    float windupProgress = AICounter / windupTime;
+                    float currentSpinSpeed = spinSpeed * windupProgress * windupProgress;
+                    currentAngle += currentSpinSpeed * spinDirection;
+                }
+                else if (AICounter <= windupTime + mainSpinTime)
+                {
+                    currentAngle += spinSpeed * spinDirection;
                 }
                 else
                 {
-                    lerpSpeed = 0.05f;
+                    float winddownProgress = (AICounter - windupTime - mainSpinTime) / winddownTime;
+                    float slowdownFactor = 1f - (winddownProgress * winddownProgress);
+                    float currentSpinSpeed = spinSpeed * slowdownFactor;
+                    currentAngle += currentSpinSpeed * spinDirection;
                 }
 
-                currentDirection = Vector2.Lerp(currentDirection, targetDirection, lerpSpeed);
+                // Normalize angle to prevent spinning issues when transitioning to other states
+                currentAngle = MathHelper.WrapAngle(currentAngle);
+            }
+            else // Attack state
+            {
+                float targetAngle = (Main.LocalPlayer.Center - AnchorPoint).ToRotation();
+
+                if (chainBall.CurrentState == ChainBall.ChainState.Waiting)
+                {
+                    currentAngle = MathHelper.Lerp(currentAngle, targetAngle, 0.05f);
+                }
             }
 
-            currentDirection = Vector2.Normalize(currentDirection);
+            // Convert angle to direction for all calculations
+            currentDirection = new Vector2((float)Math.Cos(currentAngle), (float)Math.Sin(currentAngle));
 
             float armLength = 130f;
             HandJoint = AnchorPoint + currentDirection * armLength;
@@ -200,7 +224,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float forearmAngle = (HandJoint - ElbowJoint).ToRotation();
 
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            spriteBatch.Draw(upperArmTexture, anchorScreen, null, drawColor, upperArmAngle - MathHelper.PiOver2, new Vector2(upperArmTexture.Width / 2f, 0), 1f, spriteEffects, 0f);
+            spriteBatch.Draw(upperArmTexture, anchorScreen, null, drawColor, upperArmAngle - MathHelper.PiOver2, new Vector2(upperArmTexture.Width / 2f, 8), 1f, spriteEffects, 0f);
             spriteBatch.Draw(forearmTexture, elbowScreen, null, drawColor, forearmAngle - MathHelper.PiOver2, new Vector2(forearmTexture.Width / 2f, 0), 1f, spriteEffects, 0f);
         }
 

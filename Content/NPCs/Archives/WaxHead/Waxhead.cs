@@ -18,7 +18,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public enum WaxheadState
         {
             Idle = 0,
-            Attack = 1
+            Attack = 1,
+            SpinAttack = 2
         }
 
         public WaxheadState CurrentState { get; private set; } = WaxheadState.Idle;
@@ -48,7 +49,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
-            NPC.Move(Main.LocalPlayer.Center, 0.1f, 2f, 1f);
+            NPC.Move(Main.LocalPlayer.Center, 0.2f, 2f, 1f);
             NPC.direction = NPC.GetDirectionFrom(Main.LocalPlayer);
 
             HandleStateLogic();
@@ -65,14 +66,35 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case WaxheadState.Idle:
                     if (AICounter >= idleTime)
                     {
-                        CurrentState = WaxheadState.Attack;
-                        //CurrentState = WaxheadState.Idle;
+                        if (Main.rand.NextBool())
+                        {
+                            CurrentState = WaxheadState.Attack;
+                        }
+                        else
+                        {
+                            CurrentState = WaxheadState.SpinAttack;
+                        }
+
+                        CurrentState = WaxheadState.SpinAttack;
                         AICounter = 0f;
                     }
                     break;
 
                 case WaxheadState.Attack:
                     if (AICounter >= attackTime)
+                    {
+                        CurrentState = WaxheadState.Idle;
+                        AICounter = 0f;
+                    }
+                    break;
+
+                case WaxheadState.SpinAttack:
+                    float totalSpinTime = attackTime * 2;
+                    float windupTime = totalSpinTime * 0.25f;
+                    float mainSpinTime = totalSpinTime * 0.5f;
+                    float winddownTime = totalSpinTime * 0.25f;
+
+                    if (AICounter >= totalSpinTime)
                     {
                         CurrentState = WaxheadState.Idle;
                         AICounter = 0f;
