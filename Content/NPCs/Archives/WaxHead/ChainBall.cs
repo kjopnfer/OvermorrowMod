@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs
     public class ChainBall : ModProjectile
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + "WaxheadFlail";
-        public override bool? CanDamage() => CurrentState == ChainState.Extending || CurrentState == ChainState.Retracting;
+        public override bool? CanDamage() => CurrentState == ChainState.Extending || CurrentState == ChainState.Retracting || CurrentState == ChainState.Spinning;
 
         public override void SetDefaults()
         {
@@ -37,8 +37,10 @@ namespace OvermorrowMod.Content.NPCs
             Waiting = 0,
             Extending = 1,
             Extended = 2,
-            Retracting = 3
+            Retracting = 3,
+            Spinning = 4
         }
+
         public ChainState CurrentState { get; private set; } = ChainState.Waiting;
         private float stateTimer = 0f;
 
@@ -101,9 +103,12 @@ namespace OvermorrowMod.Content.NPCs
                     case ChainState.Retracting:
                         HandleRetractingState(arm);
                         break;
+                    case ChainState.Spinning:
+                        HandleSpinningState(arm);
+                        break;
                 }
 
-                if (CurrentState == ChainState.Waiting || CurrentState == ChainState.Retracting)
+                if (CurrentState == ChainState.Waiting || CurrentState == ChainState.Retracting || CurrentState == ChainState.Spinning)
                 {
                     Projectile.rotation = arm.GetForearmAngle();
                 }
@@ -130,6 +135,14 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.Center = forearmMidpoint + forearmDirection * offsetDistance;
 
             ballVelocity = Vector2.Zero;
+
+            // Check for spin attack
+            if (arm.CurrentState == Waxhead.WaxheadState.SpinAttack)
+            {
+                CurrentState = ChainState.Spinning;
+                stateTimer = 0f;
+                return;
+            }
 
             // Only fire if Waxhead is in attack state
             if (stateTimer >= waitTime && arm.CurrentState == Waxhead.WaxheadState.Attack)
@@ -238,6 +251,56 @@ namespace OvermorrowMod.Content.NPCs
                 recoilTimer = 20f;
                 recoilDuration = 20f;
                 recoilMaxBend = 20f * arm.NPC.direction;
+            }
+        }
+
+        private void HandleSpinningState(Waxhead arm)
+        {
+            float totalSpinTime = ModUtils.SecondsToTicks(5) * 2;
+            float windupTime = totalSpinTime * 0.25f;
+            float mainSpinTime = totalSpinTime * 0.5f;
+            float winddownTime = totalSpinTime * 0.25f;
+            float extensionDistance = ModUtils.TilesToPixels(10);
+            float currentExtension = 0f;
+
+            if (arm.AICounter <= windupTime)
+            {
+                // Windup: keep ball close
+                currentExtension = 0f;
+            }
+            else if (arm.AICounter <= windupTime + mainSpinTime)
+            {
+                // Main spin: quickly extend the ball with easing in first few frames
+                float extensionTime = 45f; // Extend over 15 frames instead of entire main spin
+                float timeSinceMainSpin = arm.AICounter - windupTime;
+
+                if (timeSinceMainSpin <= extensionTime)
+                {
+                    float mainSpinProgress = timeSinceMainSpin / extensionTime;
+                    currentExtension = extensionDistance * EasingUtils.EaseInBack(mainSpinProgress);
+                }
+                else
+                {
+                    // Stay fully extended for rest of main spin
+                    currentExtension = extensionDistance;
+                }
+            }
+            else
+            {
+                // Winddown: smoothly retract the ball with easing
+                float winddownProgress = (arm.AICounter - windupTime - mainSpinTime) / winddownTime;
+                currentExtension = extensionDistance * (1f - EasingUtils.EaseOutBack(winddownProgress));
+            }
+
+            Vector2 forearmDirection = new Vector2((float)Math.Cos(arm.GetForearmAngle()), (float)Math.Sin(arm.GetForearmAngle()));
+            Vector2 forearmMidpoint = GetForearmAnchor(arm);
+            Projectile.Center = forearmMidpoint + forearmDirection * currentExtension;
+            ballVelocity = Vector2.Zero;
+            // Return to waiting when spin attack ends
+            if (arm.CurrentState != Waxhead.WaxheadState.SpinAttack)
+            {
+                CurrentState = ChainState.Waiting;
+                stateTimer = 0f;
             }
         }
 

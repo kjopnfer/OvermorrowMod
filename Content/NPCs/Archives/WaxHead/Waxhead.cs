@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         }
 
         public WaxheadState CurrentState { get; private set; } = WaxheadState.Idle;
-        private ref float AICounter => ref NPC.ai[0];
+        public ref float AICounter => ref NPC.ai[0];
         private float idleTime = ModUtils.SecondsToTicks(4f);
         private float attackTime = ModUtils.SecondsToTicks(5f);
         private Vector2 idleTarget;
@@ -75,7 +75,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                             CurrentState = WaxheadState.SpinAttack;
                         }
 
-                        CurrentState = WaxheadState.SpinAttack;
                         AICounter = 0f;
                     }
                     break;
