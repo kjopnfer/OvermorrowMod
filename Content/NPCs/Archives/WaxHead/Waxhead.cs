@@ -66,6 +66,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     if (AICounter >= idleTime)
                     {
                         CurrentState = WaxheadState.Attack;
+                        //CurrentState = WaxheadState.Idle;
                         AICounter = 0f;
                     }
                     break;
@@ -105,6 +106,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 yFrame++;
                 if (yFrame >= 13) yFrame = 0;
             }
+            //yFrame = 12;
         }
 
         public override void FindFrame(int frameHeight)

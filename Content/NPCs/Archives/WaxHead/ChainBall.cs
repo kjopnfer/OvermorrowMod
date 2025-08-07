@@ -80,8 +80,8 @@ namespace OvermorrowMod.Content.NPCs
                 float lerpValue = MathHelper.Lerp(1f, 0.6f, recoilProgress);
                 Vector2 forearmMidpoint = GetForearmAnchor(arm);
 
-                int forearmMid = Dust.NewDust(forearmMidpoint, 1, 1, DustID.GreenTorch);
-                Main.dust[forearmMid].noGravity = true;
+                //int forearmMid = Dust.NewDust(forearmMidpoint, 1, 1, DustID.GreenTorch);
+                //Main.dust[forearmMid].noGravity = true;
 
                 HandleRecoil(arm, recoilMaxBend, recoilDuration);
 
@@ -125,16 +125,22 @@ namespace OvermorrowMod.Content.NPCs
         {
             float offsetDistance = MathHelper.Lerp(8f, 0f, Math.Abs(arm.BendOffset / 40f));
             Vector2 forearmDirection = new Vector2((float)Math.Cos(arm.GetForearmAngle()), (float)Math.Sin(arm.GetForearmAngle()));
-            //Projectile.Center = arm.GetHandPosition() + forearmDirection * offsetDistance;
 
             Vector2 forearmMidpoint = GetForearmAnchor(arm);
             Projectile.Center = forearmMidpoint + forearmDirection * offsetDistance;
 
             ballVelocity = Vector2.Zero;
 
-            if (stateTimer >= waitTime)
+            // Only fire if Waxhead is in attack state
+            if (stateTimer >= waitTime && arm.CurrentState == Waxhead.WaxheadState.Attack)
             {
                 CurrentState = ChainState.Extending;
+                stateTimer = 0f;
+            }
+
+            // Reset timer if not in attack state to prevent immediate firing when switching states
+            if (arm.CurrentState != Waxhead.WaxheadState.Attack)
+            {
                 stateTimer = 0f;
             }
         }

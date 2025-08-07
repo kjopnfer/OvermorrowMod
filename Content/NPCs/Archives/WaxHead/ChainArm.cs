@@ -66,9 +66,36 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Vector2 targetDirection;
             if (CurrentState == WaxheadState.Idle)
             {
-                // Point downward during idle
-                Vector2 idleTargetPosition = AnchorPoint + new Vector2(0, 200f);
-                targetDirection = Vector2.Normalize(idleTargetPosition - AnchorPoint);
+                //BendOffset = 10 * NPC.direction;
+
+                // Base direction pointing downward
+                Vector2 baseDirection = new Vector2(0, 1);
+
+                // Apply the swinging offset
+                var frameAngles = new Dictionary<int, float>
+                {
+                    [0] = 120,
+                    [1] = 100,
+                    [2] = 90,
+                    [3] = 80,
+                    [4] = 70,
+                    [5] = 60,
+                    [6] = 50,
+                    [7] = 70,
+                    [8] = 80,
+                    [9] = 90,
+                    [10] = 100,
+                    [11] = 120,
+                    [12] = 130,
+                };
+                float frameAngle = frameAngles.TryGetValue(yFrame, out float angle) ? angle : 130;
+
+                // Flip angle for right-facing direction
+                if (NPC.direction == 1)
+                    frameAngle = 180f - frameAngle;
+
+                float targetAngle = MathHelper.ToRadians(frameAngle);
+                targetDirection = new Vector2((float)Math.Cos(targetAngle), (float)Math.Sin(targetAngle));
             }
             else // Attack state
             {
@@ -78,7 +105,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
             // Only update direction slowly when ChainBall is waiting, but always calculate the target
             if (chainBall.CurrentState == ChainBall.ChainState.Waiting)
             {
-                currentDirection = Vector2.Lerp(currentDirection, targetDirection, 0.05f);
+                // Controls the rotation rate
+                float lerpSpeed;
+                if (CurrentState == WaxheadState.Idle)
+                {
+                    lerpSpeed = 0.08f;
+                }
+                else
+                {
+                    lerpSpeed = 0.05f;
+                }
+
+                currentDirection = Vector2.Lerp(currentDirection, targetDirection, lerpSpeed);
             }
 
             currentDirection = Vector2.Normalize(currentDirection);
@@ -97,6 +135,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void DrawChainArmDebugDust()
         {
+            return;
             int shoulder = Dust.NewDust(AnchorPoint, 1, 1, DustID.Torch);
             Main.dust[shoulder].noGravity = true;
 
