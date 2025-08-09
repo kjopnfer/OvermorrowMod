@@ -768,4 +768,5 @@ Projectiles: {
 	CurvedDiagonalSlash.DisplayName: Curved Diagonal Slash
 	AnimatedRing.DisplayName: Animated Ring
 	PrimitiveRing.DisplayName: Primitive Ring
+	TestSlashProjectile.DisplayName: Test Slash Projectile
 }
