@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Test
             int segments = 30;
             Color slashColor = Color.White;
 
-            slashVertices = SlashMeshGenerator.GenerateSlashMesh(slashPath, slashWidth, segments, slashColor);
+            slashVertices = SlashMeshGenerator.GenerateSlashMesh(slashPath, slashWidth, segments, slashColor, SpriteEffects.FlipVertically);
         }
 
         public override bool PreDraw(ref Color lightColor)

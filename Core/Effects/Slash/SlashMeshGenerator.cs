@@ -12,14 +12,15 @@ namespace OvermorrowMod.Core.Effects.Slash
     public static class SlashMeshGenerator
     {
         /// <summary>
-        /// Generates vertices for a triangle strip that follows a slash path
+        /// Generates vertices for a triangle list that follows a slash path
         /// </summary>
         /// <param name="path">The slash path to follow</param>
         /// <param name="width">Width of the slash</param>
         /// <param name="segments">Number of segments to divide the path into</param>
         /// <param name="color">Color to apply to all vertices</param>
-        /// <returns>List of vertices ready for triangle strip rendering</returns>
-        public static List<VertexPositionColorTexture> GenerateSlashMesh(SlashPath path, float width, int segments, Color color)
+        /// <param name="spriteEffects">Texture flipping options</param>
+        /// <returns>List of vertices for rendering</returns>
+        public static List<VertexPositionColorTexture> GenerateSlashMesh(SlashPath path, float width, int segments, Color color, SpriteEffects spriteEffects = SpriteEffects.None)
         {
             var vertices = new List<VertexPositionColorTexture>();
 
@@ -50,20 +51,36 @@ namespace OvermorrowMod.Core.Effects.Slash
                 pos2Top -= Main.screenPosition;
                 pos2Bottom -= Main.screenPosition;
 
-                // UV coordinates
+                // Calculate UV coordinates with sprite effects
                 float u1 = t1;
                 float u2 = t2;
+                float vTop = 0f;
+                float vBottom = 1f;
+
+                // Handle horizontal flip (flips along the arc direction)
+                if ((spriteEffects & SpriteEffects.FlipHorizontally) == SpriteEffects.FlipHorizontally)
+                {
+                    u1 = 1f - u1;
+                    u2 = 1f - u2;
+                }
+
+                // Handle vertical flip (flips across the width)
+                if ((spriteEffects & SpriteEffects.FlipVertically) == SpriteEffects.FlipVertically)
+                {
+                    vTop = 1f;
+                    vBottom = 0f;
+                }
 
                 // Create two triangles for this segment (6 vertices total)
                 // Triangle 1: pos1Top, pos1Bottom, pos2Top
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Top.X, pos1Top.Y, 0f), color, new Vector2(u1, 0f)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, 1f)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, 0f)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Top.X, pos1Top.Y, 0f), color, new Vector2(u1, vTop)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, vBottom)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, vTop)));
 
                 // Triangle 2: pos2Top, pos1Bottom, pos2Bottom
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, 0f)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, 1f)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Bottom.X, pos2Bottom.Y, 0f), color, new Vector2(u2, 1f)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, vTop)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, vBottom)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Bottom.X, pos2Bottom.Y, 0f), color, new Vector2(u2, vBottom)));
             }
 
             return vertices;
@@ -77,7 +94,7 @@ namespace OvermorrowMod.Core.Effects.Slash
         /// <param name="segments">Number of segments to divide the path into</param>
         /// <param name="color">Color to apply to all vertices</param>
         /// <returns>List of vertices ready for triangle strip rendering</returns>
-        public static List<VertexPositionColorTexture> GenerateSlashMeshWithCurve(SlashPath path, Func<float, float> widthCurve, int segments, Color color)
+        public static List<VertexPositionColorTexture> GenerateSlashMeshWithCurve(SlashPath path, Func<float, float> widthCurve, int segments, Color color, SpriteEffects spriteEffects = SpriteEffects.None)
         {
             var vertices = new List<VertexPositionColorTexture>();
 
