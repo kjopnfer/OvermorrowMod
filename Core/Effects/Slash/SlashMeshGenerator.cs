@@ -12,22 +12,28 @@ namespace OvermorrowMod.Core.Effects.Slash
     public static class SlashMeshGenerator
     {
         /// <summary>
-        /// Generates vertices for a triangle list that follows a slash path
+        /// Generates vertices for a triangle list that follows a slash path with tapering support
         /// </summary>
         /// <param name="path">The slash path to follow</param>
         /// <param name="width">Width of the slash</param>
         /// <param name="segments">Number of segments to divide the path into</param>
         /// <param name="color">Color to apply to all vertices</param>
         /// <param name="spriteEffects">Texture flipping options</param>
+        /// <param name="startTaper">Width at start (0 = sharp point, 1 = full width)</param>
+        /// <param name="endTaper">Width at end (0 = sharp point, 1 = full width)</param>
+        /// <param name="taperLength">How much of slash length used for tapering each end (0-1)</param>
         /// <returns>List of vertices for rendering</returns>
-        public static List<VertexPositionColorTexture> GenerateSlashMesh(SlashPath path, float width, int segments, Color color, SpriteEffects spriteEffects = SpriteEffects.None)
+        public static List<VertexPositionColorTexture> GenerateSlashMesh(SlashPath path, float width, int segments, Color color, SpriteEffects spriteEffects = SpriteEffects.None, float startTaper = 1f, float endTaper = 1f, float taperLength = 0.2f, float offset = 0f)
         {
             var vertices = new List<VertexPositionColorTexture>();
-
             for (int i = 0; i < segments; i++)
             {
                 float t1 = (float)i / (float)segments;
                 float t2 = (float)(i + 1) / (float)segments;
+
+                // Calculate width with tapering
+                float width1 = width * CalculateTaperFactor(t1, startTaper, endTaper, taperLength);
+                float width2 = width * CalculateTaperFactor(t2, startTaper, endTaper, taperLength);
 
                 // Get positions and directions at both points
                 Vector2 pos1 = path.GetPointAt(t1);
@@ -39,11 +45,14 @@ namespace OvermorrowMod.Core.Effects.Slash
                 Vector2 perpendicular1 = new Vector2(-direction1.Y, direction1.X);
                 Vector2 perpendicular2 = new Vector2(-direction2.Y, direction2.X);
 
-                // Create top and bottom points for both positions
-                Vector2 pos1Top = pos1 + (perpendicular1 * width * 0.5f);
-                Vector2 pos1Bottom = pos1 - (perpendicular1 * width * 0.5f);
-                Vector2 pos2Top = pos2 + (perpendicular2 * width * 0.5f);
-                Vector2 pos2Bottom = pos2 - (perpendicular2 * width * 0.5f);
+                // Create top and bottom points for both positions (using calculated widths)
+                Vector2 centerOffset1 = perpendicular1 * offset; // Add this line
+                Vector2 centerOffset2 = perpendicular2 * offset; // Add this line
+
+                Vector2 pos1Top = pos1 + centerOffset1 + (perpendicular1 * width1 * 0.5f);
+                Vector2 pos1Bottom = pos1 + centerOffset1 - (perpendicular1 * width1 * 0.5f);
+                Vector2 pos2Top = pos2 + centerOffset2 + (perpendicular2 * width2 * 0.5f);
+                Vector2 pos2Bottom = pos2 + centerOffset2 - (perpendicular2 * width2 * 0.5f);
 
                 // Convert to screen space
                 pos1Top -= Main.screenPosition;
@@ -76,13 +85,11 @@ namespace OvermorrowMod.Core.Effects.Slash
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Top.X, pos1Top.Y, 0f), color, new Vector2(u1, vTop)));
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, vBottom)));
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, vTop)));
-
                 // Triangle 2: pos2Top, pos1Bottom, pos2Bottom
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, vTop)));
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, vBottom)));
                 vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Bottom.X, pos2Bottom.Y, 0f), color, new Vector2(u2, vBottom)));
             }
-
             return vertices;
         }
 
@@ -128,6 +135,46 @@ namespace OvermorrowMod.Core.Effects.Slash
             }
 
             return vertices;
+        }
+
+        /// <summary>
+        /// Calculates the width multiplier for a given position along the slash based on taper settings.
+        /// 
+        /// How tapering works:
+        /// - First [taperLength] portion: transitions from startTaper to 1.0 (full width)
+        /// - Middle portion: always 1.0 (full width)  
+        /// - Last [taperLength] portion: transitions from 1.0 to endTaper
+        /// 
+        /// Common patterns:
+        /// - Sharp start: startTaper=0f, endTaper=1f, taperLength=0.2f
+        /// - Sharp end: startTaper=1f, endTaper=0f, taperLength=0.2f  
+        /// - Sharp both: startTaper=0f, endTaper=0f, taperLength=0.3f
+        /// - No taper: startTaper=1f, endTaper=1f, taperLength=any
+        /// </summary>
+        /// <param name="t">Position along slash (0 to 1)</param>
+        /// <param name="startTaper">Width multiplier at start (0-1)</param>
+        /// <param name="endTaper">Width multiplier at end (0-1)</param>
+        /// <param name="taperLength">Length of taper regions (0-1)</param>
+        /// <returns>Width multiplier for this position</returns>
+        public static float CalculateTaperFactor(float t, float startTaper, float endTaper, float taperLength)
+        {
+            if (t <= taperLength)
+            {
+                // Start taper region: transition from startTaper to full width
+                float taperProgress = t / taperLength;
+                return MathHelper.Lerp(startTaper, 1f, taperProgress);
+            }
+            else if (t >= 1f - taperLength)
+            {
+                // End taper region: transition from full width to endTaper
+                float taperProgress = (1f - t) / taperLength;
+                return MathHelper.Lerp(endTaper, 1f, taperProgress);
+            }
+            else
+            {
+                // Middle region: always full width
+                return 1f;
+            }
         }
 
         /// <summary>

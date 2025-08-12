@@ -89,7 +89,7 @@ namespace OvermorrowMod.Core.Effects.Slash
             // Generate vertices based on whether the layer has a custom width curve
             if (layer.WidthCurve != null)
             {
-                // Create a wrapper function that applies both base width and layer scaling
+                // Use the existing curve method (no tapering for custom curves)
                 System.Func<float, float> combinedCurve = (t) => layer.GetWidth(BaseWidth, t);
 
                 vertices = SlashMeshGenerator.GenerateSlashMeshWithCurve(
@@ -102,7 +102,7 @@ namespace OvermorrowMod.Core.Effects.Slash
             }
             else
             {
-                // Use constant width
+                // Use constant width with layer's taper settings
                 float layerWidth = layer.GetWidth(BaseWidth);
 
                 vertices = SlashMeshGenerator.GenerateSlashMesh(
@@ -110,7 +110,11 @@ namespace OvermorrowMod.Core.Effects.Slash
                     layerWidth,
                     Segments,
                     layer.FinalColor,
-                    layer.SpriteEffects
+                    layer.SpriteEffects,
+                    layer.StartTaper,
+                    layer.EndTaper,
+                    layer.TaperLength,
+                    layer.Offset
                 );
             }
 
@@ -121,9 +125,6 @@ namespace OvermorrowMod.Core.Effects.Slash
             }
         }
 
-        /// <summary>
-        /// Updates the slash path (useful for animated slashes)
-        /// </summary>
         public void UpdatePath(SlashPath newPath)
         {
             Path = newPath;

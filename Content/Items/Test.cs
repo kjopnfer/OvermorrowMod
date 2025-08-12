@@ -1,9 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Effects.Slash;
+using System;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Test
@@ -12,62 +13,192 @@ namespace OvermorrowMod.Content.Items.Test
     {
         public override string Texture => AssetDirectory.Empty;
 
+        int totalTime = 25;
         public override void SetDefaults()
         {
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = totalTime; // 2 seconds
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
         }
 
         private SlashRenderer slashRenderer;
+        private SlashPath fullSlashPath;
         private bool initialized = false;
+
+        // Timing variables - customize these for different effects
+        private int drawDuration = 20; // Ticks to draw the full slash
+        private int totalDuration = 80; // Ticks before fading starts
+        private int fadeDuration = 40;  // Ticks to fade out
 
         public override void AI()
         {
             if (!initialized)
             {
-                InitializeLayeredSlash();
+                InitializeSlash();
                 initialized = true;
             }
+
+            // Update the slash based on timing
+            UpdateSlash();
         }
 
-        private void InitializeLayeredSlash()
+        private void InitializeSlash()
         {
+            // Create the full slash path
             Vector2 center = Projectile.Center;
-            float radiusX = 80f;
-            float radiusY = 80f;
-            float ellipseRotation = Projectile.rotation + MathHelper.PiOver4;
-            float startAngle = -MathHelper.PiOver2;
-            float endAngle = MathHelper.PiOver2 * 2;
+            float radiusX = Main.rand.Next(8, 12) * 10f;
+            float radiusY = Main.rand.Next(4, 9) * 10f;
+            float ellipseRotation = Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(0, 10) * 10);
+            float startAngle = MathHelper.PiOver2 * 2;
+            float endAngle = -MathHelper.PiOver2;
+            if (Main.rand.NextBool())
+            {
+                (startAngle, endAngle) = (endAngle, startAngle);
+            }
 
-            SlashPath path = new SlashPath(center, radiusX, radiusY, ellipseRotation, startAngle, endAngle);
+            fullSlashPath = new SlashPath(center, radiusX, radiusY, ellipseRotation, startAngle, endAngle);
 
-            slashRenderer = new SlashRenderer(path, baseWidth: 35f, segments: 40);
-            SetupSlashLayers();
+            // Create the renderer
+            slashRenderer = new SlashRenderer(fullSlashPath, baseWidth: 35f, segments: 40);
+
+            // Set up layers
+            SetupLayers();
         }
 
-        private void SetupSlashLayers()
+        private void SetupLayers()
         {
-            Texture2D baseTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "SwordTrails/Blob").Value;
-            slashRenderer.AddLayer(new SlashLayer(
-                baseTexture,
-                new Color(50, 100, 255),
-                widthScale: 1f,
-                opacity: 1f,
-                BlendState.AlphaBlend
-            ));
+            Texture2D dissolvedTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Blurred").Value;
+            Texture2D laserTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Edge").Value;
+            Texture2D supportTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
 
-            Texture2D highlightTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "SwordTrails/Dissolved").Value;
-            slashRenderer.AddLayer(new SlashLayer(
-                highlightTexture,
-                new Color(255, 255, 200),
-                widthScale: 1f,
-                opacity: 0.8f,
-                BlendState.Additive
-            ));
+            // Sharp sword-like slash
+            slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, Color.LightBlue, 1f, 1f)
+            {
+                Opacity = 0.8f,
+                WidthScale = 1f,
+                StartTaper = 0f,
+                EndTaper = 1f,
+                TaperLength = 0.5f  // Start taper lasts 20% of slash length,
+            });
+
+            slashRenderer.AddLayer(new SlashLayer(laserTexture, Color.White, 1f, 1f)
+            {
+                StartTaper = 0f,
+                EndTaper = 1f,
+                TaperLength = 0.5f,
+                BlendState = BlendState.Additive,
+                SpriteEffects = SpriteEffects.FlipHorizontally
+
+            });
+
+            slashRenderer.AddLayer(new SlashLayer(supportTexture, Color.White, 1f, 1f)
+            {
+                Opacity = 1f,
+                WidthScale = 2f,
+                StartTaper = 0f,
+                EndTaper = 1f,
+                TaperLength = 0.5f,
+                SpriteEffects = SpriteEffects.FlipVertically,
+                Offset = -15
+            });
+
+            // Highlight layer - thin, bright, additive
+            //slashRenderer.AddLayer(new SlashLayer(
+            //    laserTexture,
+            //    Color.White,
+            //    widthScale: 1f,
+            //    opacity: 1f,
+            //    BlendState.Additive,
+            //    SpriteEffects.FlipHorizontally
+            //));
+        }
+
+        private float drawPhase = 0.25f;
+        private float holdPhase = 0.33f;
+        private float fadePhase = 0.42f;
+
+        private void UpdateSlash()
+        {
+            int elapsedTicks = totalTime - Projectile.timeLeft;
+            float progress = elapsedTicks / (float)totalTime; // Overall progress (0 to 1)
+
+            // Calculate each phase
+            float drawProgress = 0f;
+            float fadeProgress = 0f;
+
+            if (progress <= drawPhase)
+            {
+                // Drawing phase
+                drawProgress = progress / drawPhase;
+            }
+            else if (progress <= drawPhase + holdPhase)
+            {
+                // Hold phase - drawing complete, no fade yet
+                drawProgress = 1f;
+                fadeProgress = 0f;
+            }
+            else
+            {
+                // Fade phase
+                drawProgress = 1f;
+                float fadeStart = drawPhase + holdPhase;
+                fadeProgress = (progress - fadeStart) / fadePhase;
+                fadeProgress = Math.Min(fadeProgress, 1f);
+            }
+
+            // Update the slash path and properties
+            UpdateSlashPath(drawProgress);
+            UpdateLayerProperties(drawProgress, fadeProgress);
+        }
+
+        private void UpdateSlashPath(float drawProgress)
+        {
+            if (drawProgress >= 1f)
+            {
+                // Full slash drawn
+                slashRenderer.Path = fullSlashPath;
+                return;
+            }
+
+            // Create partial slash path
+            float totalAngleSpan = fullSlashPath.EndAngle - fullSlashPath.StartAngle;
+            float currentAngleSpan = totalAngleSpan * EasingUtils.EaseOutQuint(drawProgress);
+
+            SlashPath partialPath = new SlashPath(
+                fullSlashPath.Center,
+                fullSlashPath.RadiusX,
+                fullSlashPath.RadiusY,
+                fullSlashPath.EllipseRotation,
+                fullSlashPath.StartAngle,
+                fullSlashPath.StartAngle + currentAngleSpan
+            );
+
+            slashRenderer.UpdatePath(partialPath);
+        }
+
+        private void UpdateLayerProperties(float drawProgress, float fadeProgress)
+        {
+            float baseOpacity = 1f - fadeProgress;
+
+            for (int i = 0; i < slashRenderer.Layers.Count; i++)
+            {
+                var layer = slashRenderer.Layers[i];
+
+                if (i == 0) // Main layer
+                {
+                    layer.Opacity = baseOpacity;
+                }
+                else if (i == 1) // Highlight layer
+                {
+                    float intensity = drawProgress < 1f ? 1.5f : 1f;
+                    layer.Opacity = intensity * baseOpacity;
+                }
+
+                slashRenderer.Layers[i] = layer;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -75,9 +206,6 @@ namespace OvermorrowMod.Content.Items.Test
             if (initialized && slashRenderer != null)
             {
                 slashRenderer.Draw(Main.spriteBatch);
-
-                // debug visualization
-                // SlashDebugRenderer.DrawPath(Main.spriteBatch, slashRenderer.Path, segments: 30);
             }
 
             return false;
