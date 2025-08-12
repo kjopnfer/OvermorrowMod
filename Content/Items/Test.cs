@@ -22,6 +22,9 @@ namespace OvermorrowMod.Content.Items.Test
             Projectile.timeLeft = totalTime; // 2 seconds
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 60;
         }
 
         private SlashRenderer slashRenderer;
@@ -35,6 +38,7 @@ namespace OvermorrowMod.Content.Items.Test
 
         public override void AI()
         {
+            Projectile.damage = 30;
             if (!initialized)
             {
                 InitializeSlash();
@@ -45,9 +49,46 @@ namespace OvermorrowMod.Content.Items.Test
             UpdateSlash();
         }
 
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            int elapsedTicks = totalTime - Projectile.timeLeft;
+            float progress = elapsedTicks / (float)totalTime;
+
+            if (progress > drawPhase + holdPhase || !initialized || slashRenderer == null)
+                return false;
+
+            // Get the current slash path
+            SlashPath currentPath = slashRenderer.Path;
+            float slashWidth = slashRenderer.BaseWidth;
+
+            // Sample points along the slash to check for collision
+            int samplePoints = 30;
+
+            for (int i = 0; i <= samplePoints; i++)
+            {
+                float t = i / (float)samplePoints;
+                Vector2 slashPoint = currentPath.GetPointAt(t);
+                Vector2 direction = currentPath.GetDirectionAt(t);
+                Vector2 perpendicular = new Vector2(-direction.Y, direction.X);
+
+                // Create a rectangle at this point along the slash
+                Rectangle slashSegment = new Rectangle(
+                    (int)(slashPoint.X - slashWidth * 0.5f),
+                    (int)(slashPoint.Y - slashWidth * 0.5f),
+                    (int)slashWidth,
+                    (int)slashWidth
+                );
+
+                // Check if this segment intersects the target
+                if (slashSegment.Intersects(targetHitbox))
+                    return true;
+            }
+
+            return false;
+        }
+
         private void InitializeSlash()
         {
-            // Create the full slash path
             Vector2 center = Projectile.Center;
             float radiusX = Main.rand.Next(8, 12) * 10f;
             float radiusY = Main.rand.Next(4, 9) * 10f;
@@ -61,10 +102,7 @@ namespace OvermorrowMod.Content.Items.Test
 
             fullSlashPath = new SlashPath(center, radiusX, radiusY, ellipseRotation, startAngle, endAngle);
 
-            // Create the renderer
             slashRenderer = new SlashRenderer(fullSlashPath, baseWidth: 35f, segments: 40);
-
-            // Set up layers
             SetupLayers();
         }
 
@@ -94,16 +132,16 @@ namespace OvermorrowMod.Content.Items.Test
 
             });
 
-            slashRenderer.AddLayer(new SlashLayer(supportTexture, Color.White, 1f, 1f)
-            {
-                Opacity = 1f,
-                WidthScale = 2f,
-                StartTaper = 0f,
-                EndTaper = 1f,
-                TaperLength = 0.5f,
-                SpriteEffects = SpriteEffects.FlipVertically,
-                Offset = -15
-            });
+            //slashRenderer.AddLayer(new SlashLayer(supportTexture, Color.White, 1f, 1f)
+            //{
+            //    Opacity = 1f,
+            //    WidthScale = 2f,
+            //    StartTaper = 0f,
+            //    EndTaper = 1f,
+            //    TaperLength = 0.5f,
+            //    SpriteEffects = SpriteEffects.FlipVertically,
+            //    Offset = -15
+            //});
 
             // Highlight layer - thin, bright, additive
             //slashRenderer.AddLayer(new SlashLayer(
