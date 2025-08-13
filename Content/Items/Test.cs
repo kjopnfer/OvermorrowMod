@@ -14,7 +14,8 @@ namespace OvermorrowMod.Content.Items.Test
     {
         public override string Texture => AssetDirectory.Empty;
 
-        int totalTime = 22;
+        private int totalTime = 22;
+        private int swingDirection = 1;
         public override void SetDefaults()
         {
             Projectile.width = 1;
@@ -33,12 +34,15 @@ namespace OvermorrowMod.Content.Items.Test
 
         public override void OnSpawn(IEntitySource source)
         {
+            swingDirection = Main.MouseWorld.X < Main.LocalPlayer.Center.X ? -1 : 1;
+
             InitializeSlash();
         }
 
         public override void AI()
         {
             Main.LocalPlayer.heldProj = Projectile.whoAmI;
+            Main.LocalPlayer.ChangeDir(swingDirection);
             Projectile.Center = Main.LocalPlayer.MountedCenter;
 
             Projectile.damage = 30;
@@ -117,9 +121,23 @@ namespace OvermorrowMod.Content.Items.Test
             float radiusX = Main.rand.Next(8, 10) * 5f;
             float radiusY = Main.rand.Next(4, 9) * 5f;
             float ellipseRotation = Main.LocalPlayer.Center.DirectionTo(Main.MouseWorld).ToRotation();
+            // Flip the ellipse rotation for left swings
+            if (swingDirection == -1)
+            {
+                ellipseRotation += MathHelper.Pi;
+            }
 
             float startAngle = MathHelper.PiOver2 * 2;
             float endAngle = -MathHelper.PiOver2;
+
+            // Flip angles for left direction
+            if (swingDirection == -1)
+            {
+                startAngle = MathHelper.Pi - startAngle;
+                endAngle = MathHelper.Pi - endAngle;
+                (startAngle, endAngle) = (endAngle, startAngle);
+            }
+
             if (Main.rand.NextBool())
             {
                 swingForward = false;
@@ -138,10 +156,10 @@ namespace OvermorrowMod.Content.Items.Test
             Texture2D laserTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Edge").Value;
             Texture2D supportTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
 
-            float opacity = 0.6f;
+            float opacity = 0.3f;
 
             // Sharp sword-like slash
-            slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, Color.LightBlue * opacity, 1f, 1f)
+            slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, Color.LightBlue * opacity * 0.5f, 1f, 1f)
             {
                 Opacity = 0.5f,
                 WidthScale = 0.5f,
