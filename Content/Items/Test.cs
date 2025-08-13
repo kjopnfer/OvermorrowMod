@@ -6,8 +6,6 @@ using OvermorrowMod.Core.Effects.Slash;
 using System;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Test
@@ -16,13 +14,13 @@ namespace OvermorrowMod.Content.Items.Test
     {
         public override string Texture => AssetDirectory.Empty;
 
-        int totalTime = 20;
+        int totalTime = 22;
         public override void SetDefaults()
         {
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
-            Projectile.timeLeft = totalTime; // 2 seconds
+            Projectile.timeLeft = totalTime;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
@@ -32,28 +30,20 @@ namespace OvermorrowMod.Content.Items.Test
 
         private SlashRenderer slashRenderer;
         private SlashPath fullSlashPath;
-        //private bool initialized = false;
 
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
             InitializeSlash();
         }
 
         public override void AI()
         {
             Main.LocalPlayer.heldProj = Projectile.whoAmI;
+            Projectile.Center = Main.LocalPlayer.MountedCenter;
+
             Projectile.damage = 30;
-            Projectile.rotation += 0.05f;
 
             UpdateSlash();
-
-            if (slashRenderer != null)
-            {
-                float currentDrawAngle = GetCurrentDrawingAngle();
-                Projectile.rotation = currentDrawAngle + MathHelper.Pi;
-                Main.LocalPlayer.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, currentDrawAngle + MathHelper.Pi);
-            }
         }
 
         private float GetCurrentDrawingAngle()
@@ -61,15 +51,21 @@ namespace OvermorrowMod.Content.Items.Test
             int elapsedTicks = totalTime - Projectile.timeLeft;
             float progress = elapsedTicks / (float)totalTime;
 
-            // Calculate current drawing progress
-            float drawProgress = 0f;
-            if (progress <= drawPhase)
+            // During windup, use starting position
+            if (progress <= windupPhase)
             {
-                drawProgress = progress / drawPhase;
+                return slashRenderer.Path.GetDirectionAt(0f).ToRotation();
+            }
+
+            // Calculate drawing progress (excluding windup)
+            float drawProgress = 0f;
+            if (progress <= windupPhase + drawPhase)
+            {
+                drawProgress = (progress - windupPhase) / drawPhase;
             }
             else
             {
-                drawProgress = 1f; // Fully drawn
+                drawProgress = 1f;
             }
 
             float easedProgress = EasingUtils.EaseOutQuint(drawProgress);
@@ -83,7 +79,8 @@ namespace OvermorrowMod.Content.Items.Test
             int elapsedTicks = totalTime - Projectile.timeLeft;
             float progress = elapsedTicks / (float)totalTime;
 
-            if (progress > drawPhase + holdPhase || slashRenderer == null)
+            // Only damage during draw and hold phases (not windup, follow-through, or fade)
+            if (progress <= windupPhase || progress > windupPhase + drawPhase + holdPhase || slashRenderer == null)
                 return false;
 
             SlashPath currentPath = slashRenderer.Path;
@@ -119,7 +116,6 @@ namespace OvermorrowMod.Content.Items.Test
             Vector2 center = Main.LocalPlayer.MountedCenter;
             float radiusX = Main.rand.Next(8, 10) * 5f;
             float radiusY = Main.rand.Next(4, 9) * 5f;
-            //float ellipseRotation = Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(0, 4) * 10);
             float ellipseRotation = Main.LocalPlayer.Center.DirectionTo(Main.MouseWorld).ToRotation();
 
             float startAngle = MathHelper.PiOver2 * 2;
@@ -151,7 +147,7 @@ namespace OvermorrowMod.Content.Items.Test
                 WidthScale = 0.5f,
                 StartTaper = 0f,
                 EndTaper = 1f,
-                TaperLength = 0.5f  // Start taper lasts 20% of slash length,
+                TaperLength = 0.5f
             });
 
             slashRenderer.AddLayer(new SlashLayer(laserTexture, Color.White * opacity, 1f, 1f)
@@ -163,64 +159,52 @@ namespace OvermorrowMod.Content.Items.Test
                 TaperLength = 0.5f,
                 BlendState = BlendState.Additive,
                 SpriteEffects = SpriteEffects.FlipHorizontally
-
             });
-
-            //slashRenderer.AddLayer(new SlashLayer(supportTexture, Color.White, 1f, 1f)
-            //{
-            //    Opacity = 1f,
-            //    WidthScale = 2f,
-            //    StartTaper = 0f,
-            //    EndTaper = 1f,
-            //    TaperLength = 0.5f,
-            //    SpriteEffects = SpriteEffects.FlipVertically,
-            //    Offset = -15
-            //});
-
-            // Highlight layer - thin, bright, additive
-            //slashRenderer.AddLayer(new SlashLayer(
-            //    laserTexture,
-            //    Color.White,
-            //    widthScale: 1f,
-            //    opacity: 1f,
-            //    BlendState.Additive,
-            //    SpriteEffects.FlipHorizontally
-            //));
         }
 
-        private float drawPhase = 0.25f;
-        private float holdPhase = 0.33f;
-        private float fadePhase = 0.42f;
+        private float windupPhase = 0.25f;    // 25% windup (increased for prominence)
+        private float drawPhase = 0.35f;      // 35% drawing  
+        private float holdPhase = 0.15f;      // 15% hold
+        private float fadePhase = 0.25f;      // 25% fade (no follow-through phase)
 
         private void UpdateSlash()
         {
             int elapsedTicks = totalTime - Projectile.timeLeft;
-            float progress = elapsedTicks / (float)totalTime; // Overall progress (0 to 1)
+            float progress = elapsedTicks / (float)totalTime;
 
             // Calculate each phase
+            float windupProgress = 0f;
             float drawProgress = 0f;
             float fadeProgress = 0f;
 
-            if (progress <= drawPhase)
+            if (progress <= windupPhase)
+            {
+                // Wind-up phase
+                windupProgress = progress / windupPhase;
+            }
+            else if (progress <= windupPhase + drawPhase)
             {
                 // Drawing phase
-                drawProgress = progress / drawPhase;
+                windupProgress = 1f; // Windup complete
+                drawProgress = (progress - windupPhase) / drawPhase;
             }
-            else if (progress <= drawPhase + holdPhase)
+            else if (progress <= windupPhase + drawPhase + holdPhase)
             {
-                // Hold phase - drawing complete, no fade yet
+                // Hold phase
+                windupProgress = 1f;
                 drawProgress = 1f;
-                fadeProgress = 0f;
             }
             else
             {
                 // Fade phase
+                windupProgress = 1f;
                 drawProgress = 1f;
-                float fadeStart = drawPhase + holdPhase;
+                float fadeStart = windupPhase + drawPhase + holdPhase;
                 fadeProgress = (progress - fadeStart) / fadePhase;
                 fadeProgress = Math.Min(fadeProgress, 1f);
             }
 
+            // Update slash position
             Vector2 newCenter = Main.LocalPlayer.MountedCenter;
             fullSlashPath = new SlashPath(
                 newCenter,
@@ -246,6 +230,30 @@ namespace OvermorrowMod.Content.Items.Test
 
             UpdateSlashPath(drawProgress);
             UpdateLayerProperties(drawProgress, fadeProgress);
+            UpdateArmAnimation(windupProgress, drawProgress);
+        }
+
+        private void UpdateArmAnimation(float windupProgress, float drawProgress)
+        {
+            if (slashRenderer == null) return;
+
+            float currentDrawAngle = GetCurrentDrawingAngle();
+            float baseAngle = currentDrawAngle + MathHelper.Pi;
+
+            // Calculate arm adjustment based on phase
+            float armAdjustment = 0f;
+
+            if (windupProgress < 1f)
+            {
+                // Wind-up: pull back more prominently (opposite direction)
+                float windupAmount = EasingUtils.EaseInOutQuad(windupProgress);
+                armAdjustment = MathHelper.Lerp(swingForward ? -1.6f : 1.6f, 0f, windupAmount); // -0.6 radians back (more prominent)
+            }
+            // No follow-through phase - arm stays at normal position after drawing
+
+            float finalAngle = baseAngle + armAdjustment;
+            Projectile.rotation = finalAngle;
+            Main.LocalPlayer.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, finalAngle);
         }
 
         private void UpdateSlashPath(float drawProgress)
