@@ -29,6 +29,12 @@ namespace OvermorrowMod.Core.Effects.Slash
         /// </summary>
         public List<SlashLayer> Layers { get; private set; }
 
+        /// <summary>
+        /// Current fade progress for the slash (0 = no fade, 1 = full fade)
+        /// </summary>
+        public float FadeProgress { get; set; } = 0f;
+
+
         public SlashRenderer()
         {
             Layers = new List<SlashLayer>();
@@ -102,23 +108,22 @@ namespace OvermorrowMod.Core.Effects.Slash
             }
             else
             {
-                // Use constant width with layer's taper settings
                 float layerWidth = layer.GetWidth(BaseWidth);
 
                 vertices = SlashMeshGenerator.GenerateSlashMesh(
                     Path,
                     layerWidth,
                     Segments,
-                    layer.FinalColor,
+                    layer.FinalColor * layer.Opacity,
                     layer.SpriteEffects,
                     layer.StartTaper,
                     layer.EndTaper,
                     layer.TaperLength,
-                    layer.Offset
+                    layer.Offset,
+                    FadeProgress
                 );
             }
 
-            // Draw this layer
             if (vertices.Count > 0)
             {
                 PrimitiveRenderer.Draw(spriteBatch, vertices, layer.Texture, layer.BlendState);

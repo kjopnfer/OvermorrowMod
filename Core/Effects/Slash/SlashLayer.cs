@@ -105,7 +105,7 @@ namespace OvermorrowMod.Core.Effects.Slash
             WidthCurve = widthCurve;
             StartTaper = 1f;  // Default: no tapering
             EndTaper = 1f;    // Default: no tapering
-            TaperLength = 0.2f; // Default: 20% taper length
+            TaperLength = 0.2f;
         }
 
         /// <summary>

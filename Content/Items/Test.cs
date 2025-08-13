@@ -5,6 +5,9 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Effects.Slash;
 using System;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Test
@@ -13,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Test
     {
         public override string Texture => AssetDirectory.Empty;
 
-        int totalTime = 25;
+        int totalTime = 20;
         public override void SetDefaults()
         {
             Projectile.width = 1;
@@ -29,24 +32,50 @@ namespace OvermorrowMod.Content.Items.Test
 
         private SlashRenderer slashRenderer;
         private SlashPath fullSlashPath;
-        private bool initialized = false;
+        //private bool initialized = false;
 
-        // Timing variables - customize these for different effects
-        private int drawDuration = 20; // Ticks to draw the full slash
-        private int totalDuration = 80; // Ticks before fading starts
-        private int fadeDuration = 40;  // Ticks to fade out
+        public override void OnSpawn(IEntitySource source)
+        {
+            base.OnSpawn(source);
+            InitializeSlash();
+        }
 
         public override void AI()
         {
+            Main.LocalPlayer.heldProj = Projectile.whoAmI;
             Projectile.damage = 30;
-            if (!initialized)
+            Projectile.rotation += 0.05f;
+
+            UpdateSlash();
+
+            if (slashRenderer != null)
             {
-                InitializeSlash();
-                initialized = true;
+                float currentDrawAngle = GetCurrentDrawingAngle();
+                Projectile.rotation = currentDrawAngle + MathHelper.Pi;
+                Main.LocalPlayer.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, currentDrawAngle + MathHelper.Pi);
+            }
+        }
+
+        private float GetCurrentDrawingAngle()
+        {
+            int elapsedTicks = totalTime - Projectile.timeLeft;
+            float progress = elapsedTicks / (float)totalTime;
+
+            // Calculate current drawing progress
+            float drawProgress = 0f;
+            if (progress <= drawPhase)
+            {
+                drawProgress = progress / drawPhase;
+            }
+            else
+            {
+                drawProgress = 1f; // Fully drawn
             }
 
-            // Update the slash based on timing
-            UpdateSlash();
+            float easedProgress = EasingUtils.EaseOutQuint(drawProgress);
+            Vector2 currentDrawDirection = slashRenderer.Path.GetDirectionAt(easedProgress);
+
+            return currentDrawDirection.ToRotation();
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -54,10 +83,9 @@ namespace OvermorrowMod.Content.Items.Test
             int elapsedTicks = totalTime - Projectile.timeLeft;
             float progress = elapsedTicks / (float)totalTime;
 
-            if (progress > drawPhase + holdPhase || !initialized || slashRenderer == null)
+            if (progress > drawPhase + holdPhase || slashRenderer == null)
                 return false;
 
-            // Get the current slash path
             SlashPath currentPath = slashRenderer.Path;
             float slashWidth = slashRenderer.BaseWidth;
 
@@ -71,7 +99,6 @@ namespace OvermorrowMod.Content.Items.Test
                 Vector2 direction = currentPath.GetDirectionAt(t);
                 Vector2 perpendicular = new Vector2(-direction.Y, direction.X);
 
-                // Create a rectangle at this point along the slash
                 Rectangle slashSegment = new Rectangle(
                     (int)(slashPoint.X - slashWidth * 0.5f),
                     (int)(slashPoint.Y - slashWidth * 0.5f),
@@ -79,7 +106,6 @@ namespace OvermorrowMod.Content.Items.Test
                     (int)slashWidth
                 );
 
-                // Check if this segment intersects the target
                 if (slashSegment.Intersects(targetHitbox))
                     return true;
             }
@@ -87,16 +113,20 @@ namespace OvermorrowMod.Content.Items.Test
             return false;
         }
 
+        bool swingForward = true;
         private void InitializeSlash()
         {
-            Vector2 center = Projectile.Center;
-            float radiusX = Main.rand.Next(8, 12) * 10f;
-            float radiusY = Main.rand.Next(4, 9) * 10f;
-            float ellipseRotation = Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(0, 10) * 10);
+            Vector2 center = Main.LocalPlayer.MountedCenter;
+            float radiusX = Main.rand.Next(8, 10) * 5f;
+            float radiusY = Main.rand.Next(4, 9) * 5f;
+            //float ellipseRotation = Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(0, 4) * 10);
+            float ellipseRotation = Main.LocalPlayer.Center.DirectionTo(Main.MouseWorld).ToRotation();
+
             float startAngle = MathHelper.PiOver2 * 2;
             float endAngle = -MathHelper.PiOver2;
             if (Main.rand.NextBool())
             {
+                swingForward = false;
                 (startAngle, endAngle) = (endAngle, startAngle);
             }
 
@@ -112,20 +142,24 @@ namespace OvermorrowMod.Content.Items.Test
             Texture2D laserTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Edge").Value;
             Texture2D supportTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
 
+            float opacity = 0.6f;
+
             // Sharp sword-like slash
-            slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, Color.LightBlue, 1f, 1f)
+            slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, Color.LightBlue * opacity, 1f, 1f)
             {
-                Opacity = 0.8f,
-                WidthScale = 1f,
+                Opacity = 0.5f,
+                WidthScale = 0.5f,
                 StartTaper = 0f,
                 EndTaper = 1f,
                 TaperLength = 0.5f  // Start taper lasts 20% of slash length,
             });
 
-            slashRenderer.AddLayer(new SlashLayer(laserTexture, Color.White, 1f, 1f)
+            slashRenderer.AddLayer(new SlashLayer(laserTexture, Color.White * opacity, 1f, 1f)
             {
+                Opacity = 0.5f,
                 StartTaper = 0f,
                 EndTaper = 1f,
+                WidthScale = 0.5f,
                 TaperLength = 0.5f,
                 BlendState = BlendState.Additive,
                 SpriteEffects = SpriteEffects.FlipHorizontally
@@ -187,7 +221,29 @@ namespace OvermorrowMod.Content.Items.Test
                 fadeProgress = Math.Min(fadeProgress, 1f);
             }
 
-            // Update the slash path and properties
+            Vector2 newCenter = Main.LocalPlayer.MountedCenter;
+            fullSlashPath = new SlashPath(
+                newCenter,
+                fullSlashPath.RadiusX,
+                fullSlashPath.RadiusY,
+                fullSlashPath.EllipseRotation,
+                fullSlashPath.StartAngle,
+                fullSlashPath.EndAngle
+            );
+
+            if (slashRenderer.Path.Center != newCenter)
+            {
+                SlashPath currentPath = slashRenderer.Path;
+                slashRenderer.UpdatePath(new SlashPath(
+                    newCenter,
+                    currentPath.RadiusX,
+                    currentPath.RadiusY,
+                    currentPath.EllipseRotation,
+                    currentPath.StartAngle,
+                    currentPath.EndAngle
+                ));
+            }
+
             UpdateSlashPath(drawProgress);
             UpdateLayerProperties(drawProgress, fadeProgress);
         }
@@ -219,7 +275,8 @@ namespace OvermorrowMod.Content.Items.Test
 
         private void UpdateLayerProperties(float drawProgress, float fadeProgress)
         {
-            float baseOpacity = 1f - fadeProgress;
+            // Set the fade progress on the renderer
+            slashRenderer.FadeProgress = fadeProgress;
 
             for (int i = 0; i < slashRenderer.Layers.Count; i++)
             {
@@ -227,12 +284,16 @@ namespace OvermorrowMod.Content.Items.Test
 
                 if (i == 0) // Main layer
                 {
-                    layer.Opacity = baseOpacity;
+                    layer.Opacity = 1f; // Let vertex colors handle the fade
                 }
                 else if (i == 1) // Highlight layer
                 {
                     float intensity = drawProgress < 1f ? 1.5f : 1f;
-                    layer.Opacity = intensity * baseOpacity;
+                    layer.Opacity = intensity;
+                }
+                else if (i == 2) // Support layer
+                {
+                    layer.Opacity = 1f; // Let vertex colors handle the fade
                 }
 
                 slashRenderer.Layers[i] = layer;
@@ -241,11 +302,23 @@ namespace OvermorrowMod.Content.Items.Test
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (initialized && slashRenderer != null)
+            if (slashRenderer != null)
             {
                 slashRenderer.Draw(Main.spriteBatch);
             }
 
+            // These need to be here otherwise the player arm gets drawn additively for some reason
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            SpriteEffects spriteEffects = swingForward ? SpriteEffects.FlipVertically : SpriteEffects.None;
+            var rotationOffset = swingForward ? MathHelper.ToRadians(40) : MathHelper.ToRadians(140);
+            Vector2 off = new Vector2(swingForward ? -55 : -10, 0).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveItems + "CarvingKnife").Value;
+            Vector2 drawOrigin = swingForward ? new Vector2(texture.Width, texture.Height) : new Vector2(0, texture.Height);
+
+            Main.spriteBatch.Draw(texture, Main.LocalPlayer.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, Color.White, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
             return false;
         }
     }

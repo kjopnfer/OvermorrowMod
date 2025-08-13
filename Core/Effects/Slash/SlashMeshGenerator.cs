@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -23,7 +24,7 @@ namespace OvermorrowMod.Core.Effects.Slash
         /// <param name="endTaper">Width at end (0 = sharp point, 1 = full width)</param>
         /// <param name="taperLength">How much of slash length used for tapering each end (0-1)</param>
         /// <returns>List of vertices for rendering</returns>
-        public static List<VertexPositionColorTexture> GenerateSlashMesh(SlashPath path, float width, int segments, Color color, SpriteEffects spriteEffects = SpriteEffects.None, float startTaper = 1f, float endTaper = 1f, float taperLength = 0.2f, float offset = 0f)
+        public static List<VertexPositionColorTexture> GenerateSlashMesh(SlashPath path, float width, int segments, Color color, SpriteEffects spriteEffects = SpriteEffects.None, float startTaper = 1f, float endTaper = 1f, float taperLength = 0.2f, float offset = 0f, float fadeProgress = 0f)
         {
             var vertices = new List<VertexPositionColorTexture>();
             for (int i = 0; i < segments; i++)
@@ -80,15 +81,20 @@ namespace OvermorrowMod.Core.Effects.Slash
                     vBottom = 0f;
                 }
 
+                float fadeAmount = EasingUtils.EaseOutQuint(fadeProgress);
+                Color color1 = color * (1f - ((1f - t1) * fadeProgress));
+                Color color2 = color * (1f - ((1f - t2) * fadeProgress));
+
                 // Create two triangles for this segment (6 vertices total)
                 // Triangle 1: pos1Top, pos1Bottom, pos2Top
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Top.X, pos1Top.Y, 0f), color, new Vector2(u1, vTop)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, vBottom)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, vTop)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Top.X, pos1Top.Y, 0f), color1, new Vector2(u1, vTop)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color1, new Vector2(u1, vBottom)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color2, new Vector2(u2, vTop)));
+
                 // Triangle 2: pos2Top, pos1Bottom, pos2Bottom
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color, new Vector2(u2, vTop)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color, new Vector2(u1, vBottom)));
-                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Bottom.X, pos2Bottom.Y, 0f), color, new Vector2(u2, vBottom)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Top.X, pos2Top.Y, 0f), color2, new Vector2(u2, vTop)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos1Bottom.X, pos1Bottom.Y, 0f), color1, new Vector2(u1, vBottom)));
+                vertices.Add(new VertexPositionColorTexture(new Vector3(pos2Bottom.X, pos2Bottom.Y, 0f), color2, new Vector2(u2, vBottom)));
             }
             return vertices;
         }
