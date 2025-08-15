@@ -672,6 +672,11 @@ Items: {
 			'''
 		Flavor: Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
 	}
+
+	CarvingKnifeNew: {
+		DisplayName: Carving Knife New
+		Tooltip: ""
+	}
 }
 
 NPCs: {

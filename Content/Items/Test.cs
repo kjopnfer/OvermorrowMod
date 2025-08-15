@@ -2,8 +2,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items.Archives.Weapons;
 using OvermorrowMod.Core.Effects.Slash;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -15,7 +17,7 @@ namespace OvermorrowMod.Content.Items.Test
         public override string Texture => AssetDirectory.Empty;
 
         private int totalTime = 22;
-        private int swingDirection = 1;
+        private int playerDirection = 1;
         public override void SetDefaults()
         {
             Projectile.width = 1;
@@ -31,23 +33,107 @@ namespace OvermorrowMod.Content.Items.Test
 
         private SlashRenderer slashRenderer;
         private SlashPath fullSlashPath;
+        private Vector2 baseOffset;
 
+        Player player => Main.player[Projectile.owner];
+        public ref float SwingDirection => ref Projectile.ai[0];
+        public ref float OffhandFlag => ref Projectile.ai[1];
+        private bool swingForward => SwingDirection == 1;
         public override void OnSpawn(IEntitySource source)
         {
-            swingDirection = Main.MouseWorld.X < Main.LocalPlayer.Center.X ? -1 : 1;
+            CarvingKnifeNew item = player.HeldItem.ModItem as CarvingKnifeNew;
+            if (OffhandFlag == 1)
+            {
+                SwingDirection = item.ComboCount == 3 ? -SwingDirection : SwingDirection;
+                if (item.ComboCount != 3) totalTime += 3;
+            }
+
+            if (item.ComboCount == 3)
+            {
+                Projectile.CritChance += 100;
+                Projectile.damage = (int)(Projectile.damage * 1.5f);
+            }
+
+            playerDirection = Main.MouseWorld.X < player.Center.X ? -1 : 1;
 
             InitializeSlash();
         }
 
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            if (OffhandFlag == 1)
+            {
+                Projectile.hide = true;
+                behindProjectiles.Add(index);
+            }
+        }
+
         public override void AI()
         {
-            Main.LocalPlayer.heldProj = Projectile.whoAmI;
-            Main.LocalPlayer.ChangeDir(swingDirection);
-            Projectile.Center = Main.LocalPlayer.MountedCenter;
+            if (OffhandFlag != 1)
+                player.heldProj = Projectile.whoAmI;
 
-            Projectile.damage = 30;
+            player.ChangeDir(playerDirection);
+            Projectile.Center = player.MountedCenter;
 
             UpdateSlash();
+        }
+
+        private void InitializeSlash()
+        {
+            CarvingKnifeNew item = player.HeldItem.ModItem as CarvingKnifeNew;
+
+            Vector2 center = player.MountedCenter;
+            float radiusX = Main.rand.Next(8, 10) * 5f;
+            float radiusY = Main.rand.Next(4, 9) * 5f;
+            float ellipseRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation();
+            //if (item.ComboCount == 3)
+            //    Main.NewText(radiusX + " , " + radiusY);
+            if (item.ComboCount == 3)
+            {
+                radiusX = 40f;
+                radiusY = OffhandFlag == 1 ? 45f : 20f;
+            }
+
+            if (OffhandFlag == 1 && item.ComboCount < 3)
+            {
+                ellipseRotation += MathHelper.ToRadians(45f * playerDirection);
+
+                radiusX *= 0.7f;
+                radiusY *= 0.9f;
+
+                Vector2 mouseDirection = player.Center.DirectionTo(Main.MouseWorld);
+                baseOffset = new Vector2(-mouseDirection.Y, mouseDirection.X) * -5f * playerDirection;
+            }
+
+            center += baseOffset;
+
+            // Flip the ellipse rotation for left swings
+            if (playerDirection == -1)
+            {
+                ellipseRotation += MathHelper.Pi;
+            }
+
+            float startAngle = MathHelper.PiOver2 * 2;
+            float endAngle = -MathHelper.PiOver2;
+
+            // Flip angles for left direction
+            if (playerDirection == -1)
+            {
+                startAngle = MathHelper.Pi - startAngle;
+                endAngle = MathHelper.Pi - endAngle;
+                (startAngle, endAngle) = (endAngle, startAngle);
+            }
+
+            if (!swingForward)
+            {
+                (startAngle, endAngle) = (endAngle, startAngle);
+            }
+
+            fullSlashPath = new SlashPath(center, radiusX, radiusY, ellipseRotation, startAngle, endAngle);
+
+            slashRenderer = new SlashRenderer(fullSlashPath, baseWidth: 35f, segments: 40);
+            SetupLayers();
         }
 
         private float GetCurrentDrawingAngle()
@@ -114,41 +200,6 @@ namespace OvermorrowMod.Content.Items.Test
             return false;
         }
 
-        bool swingForward = true;
-        private void InitializeSlash()
-        {
-            Vector2 center = Main.LocalPlayer.MountedCenter;
-            float radiusX = Main.rand.Next(8, 10) * 5f;
-            float radiusY = Main.rand.Next(4, 9) * 5f;
-            float ellipseRotation = Main.LocalPlayer.Center.DirectionTo(Main.MouseWorld).ToRotation();
-            // Flip the ellipse rotation for left swings
-            if (swingDirection == -1)
-            {
-                ellipseRotation += MathHelper.Pi;
-            }
-
-            float startAngle = MathHelper.PiOver2 * 2;
-            float endAngle = -MathHelper.PiOver2;
-
-            // Flip angles for left direction
-            if (swingDirection == -1)
-            {
-                startAngle = MathHelper.Pi - startAngle;
-                endAngle = MathHelper.Pi - endAngle;
-                (startAngle, endAngle) = (endAngle, startAngle);
-            }
-
-            if (Main.rand.NextBool())
-            {
-                swingForward = false;
-                (startAngle, endAngle) = (endAngle, startAngle);
-            }
-
-            fullSlashPath = new SlashPath(center, radiusX, radiusY, ellipseRotation, startAngle, endAngle);
-
-            slashRenderer = new SlashRenderer(fullSlashPath, baseWidth: 35f, segments: 40);
-            SetupLayers();
-        }
 
         private void SetupLayers()
         {
@@ -157,8 +208,6 @@ namespace OvermorrowMod.Content.Items.Test
             Texture2D supportTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
 
             float opacity = 0.3f;
-
-            // Sharp sword-like slash
             slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, Color.LightBlue * opacity * 0.5f, 1f, 1f)
             {
                 Opacity = 0.5f,
@@ -180,30 +229,27 @@ namespace OvermorrowMod.Content.Items.Test
             });
         }
 
-        private float windupPhase = 0.25f;    // 25% windup (increased for prominence)
-        private float drawPhase = 0.35f;      // 35% drawing  
-        private float holdPhase = 0.15f;      // 15% hold
-        private float fadePhase = 0.25f;      // 25% fade (no follow-through phase)
+        private float windupPhase = 0.25f;
+        private float drawPhase = 0.35f;
+        private float holdPhase = 0.15f;
+        private float fadePhase = 0.25f;
 
         private void UpdateSlash()
         {
             int elapsedTicks = totalTime - Projectile.timeLeft;
             float progress = elapsedTicks / (float)totalTime;
 
-            // Calculate each phase
             float windupProgress = 0f;
             float drawProgress = 0f;
             float fadeProgress = 0f;
 
             if (progress <= windupPhase)
             {
-                // Wind-up phase
                 windupProgress = progress / windupPhase;
             }
             else if (progress <= windupPhase + drawPhase)
             {
-                // Drawing phase
-                windupProgress = 1f; // Windup complete
+                windupProgress = 1f;
                 drawProgress = (progress - windupPhase) / drawPhase;
             }
             else if (progress <= windupPhase + drawPhase + holdPhase)
@@ -222,8 +268,8 @@ namespace OvermorrowMod.Content.Items.Test
                 fadeProgress = Math.Min(fadeProgress, 1f);
             }
 
-            // Update slash position
-            Vector2 newCenter = Main.LocalPlayer.MountedCenter;
+
+            Vector2 newCenter = player.MountedCenter + baseOffset;
             fullSlashPath = new SlashPath(
                 newCenter,
                 fullSlashPath.RadiusX,
@@ -233,11 +279,12 @@ namespace OvermorrowMod.Content.Items.Test
                 fullSlashPath.EndAngle
             );
 
+            Vector2 offsetCenter = player.MountedCenter + baseOffset;
             if (slashRenderer.Path.Center != newCenter)
             {
                 SlashPath currentPath = slashRenderer.Path;
                 slashRenderer.UpdatePath(new SlashPath(
-                    newCenter,
+                    offsetCenter,
                     currentPath.RadiusX,
                     currentPath.RadiusY,
                     currentPath.EllipseRotation,
@@ -267,11 +314,14 @@ namespace OvermorrowMod.Content.Items.Test
                 float windupAmount = EasingUtils.EaseInOutQuad(windupProgress);
                 armAdjustment = MathHelper.Lerp(swingForward ? -1.6f : 1.6f, 0f, windupAmount); // -0.6 radians back (more prominent)
             }
-            // No follow-through phase - arm stays at normal position after drawing
 
             float finalAngle = baseAngle + armAdjustment;
             Projectile.rotation = finalAngle;
-            Main.LocalPlayer.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, finalAngle);
+            //player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, finalAngle);
+            if (OffhandFlag == 1)
+                player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, finalAngle);
+            else
+                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, finalAngle);
         }
 
         private void UpdateSlashPath(float drawProgress)
@@ -310,7 +360,7 @@ namespace OvermorrowMod.Content.Items.Test
 
                 if (i == 0) // Main layer
                 {
-                    layer.Opacity = 1f; // Let vertex colors handle the fade
+                    layer.Opacity = 1f;
                 }
                 else if (i == 1) // Highlight layer
                 {
@@ -319,7 +369,7 @@ namespace OvermorrowMod.Content.Items.Test
                 }
                 else if (i == 2) // Support layer
                 {
-                    layer.Opacity = 1f; // Let vertex colors handle the fade
+                    layer.Opacity = 1f;
                 }
 
                 slashRenderer.Layers[i] = layer;
@@ -344,7 +394,7 @@ namespace OvermorrowMod.Content.Items.Test
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveItems + "CarvingKnife").Value;
             Vector2 drawOrigin = swingForward ? new Vector2(texture.Width, texture.Height) : new Vector2(0, texture.Height);
 
-            Main.spriteBatch.Draw(texture, Main.LocalPlayer.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, Color.White, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(texture, player.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, lightColor, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
             return false;
         }
     }
