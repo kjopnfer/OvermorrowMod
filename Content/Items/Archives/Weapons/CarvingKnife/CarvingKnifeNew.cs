@@ -6,6 +6,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
@@ -32,6 +34,37 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Item.shoot = ModContent.ProjectileType<TestSlashProjectile>();
         }
 
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = TextureAssets.Item[Item.type].Value;
+
+            Main.GetItemDrawFrame(Item.type, out var itemTexture, out var itemFrame);
+            Vector2 drawOrigin = itemFrame.Size() / 2f;
+            Vector2 drawPosition = Item.Bottom - Main.screenPosition - new Vector2(0, drawOrigin.Y);
+
+            // Draw back dagger (flipped)
+            spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.FlipHorizontally, 1);
+
+            // Draw front daggerS
+            spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.None, 1);
+
+            return false;
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            Texture2D texture = TextureAssets.Item[Item.type].Value;
+
+            // Draw back dagger (flipped)
+            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
+
+            // Draw front dagger
+            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.None, 1);
+
+            return false;
+        }
+
         public int ComboCount { get; private set; } = 0;
         int slashDirection = 1;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -39,13 +72,20 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
                 return false;
 
+            int offhand = 1;
+
             slashDirection = -slashDirection;
             if (ComboCount == 3)
+            {
                 slashDirection = player.direction == 1 ? -1 : 1;
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
-
-            int offhand = 1;
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
+            }
+            else
+            {
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
+            }
 
             ComboCount++;
             if (ComboCount > 3)
