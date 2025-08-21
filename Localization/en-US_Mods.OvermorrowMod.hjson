@@ -774,4 +774,5 @@ Projectiles: {
 	AnimatedRing.DisplayName: Animated Ring
 	PrimitiveRing.DisplayName: Primitive Ring
 	TestSlashProjectile.DisplayName: Test Slash Projectile
+	CarvingKnifeThrownNew.DisplayName: Carving Knife Thrown New
 }

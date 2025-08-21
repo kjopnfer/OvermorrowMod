@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
+using OvermorrowMod.Core.Items.Daggers;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
@@ -24,7 +25,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Item.useStyle = ItemUseStyleID.HiddenAnimation;
 
             Item.knockBack = 2;
-            Item.shootSpeed = 5f;
+            Item.shootSpeed = 10f;
             Item.autoReuse = true;
             Item.damage = 13;
             Item.DamageType = DamageClass.Melee;
@@ -34,6 +35,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Item.shoot = ModContent.ProjectileType<TestSlashProjectile>();
         }
 
+        public override bool AltFunctionUse(Player player) => true; // Always allow right click, the HeldDagger will check CanThrow
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
@@ -72,24 +74,32 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
                 return false;
 
-            int offhand = 1;
-
-            slashDirection = -slashDirection;
-            if (ComboCount == 3)
+            if (player.altFunctionUse == 2)
             {
-                slashDirection = player.direction == 1 ? -1 : 1;
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
+                // Right click for throwing
+                Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<CarvingKnifeThrownNew>(), damage, knockback, player.whoAmI, 0f);
             }
             else
             {
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
-            }
+                int offhand = 1;
 
-            ComboCount++;
-            if (ComboCount > 3)
-                ComboCount = 0;
+                slashDirection = -slashDirection;
+                if (ComboCount == 3)
+                {
+                    slashDirection = player.direction == 1 ? -1 : 1;
+                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
+                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
+                }
+                else
+                {
+                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
+                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
+                }
+
+                ComboCount++;
+                if (ComboCount > 3)
+                    ComboCount = 0;
+            }
 
             return false;
         }

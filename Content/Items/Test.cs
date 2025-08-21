@@ -428,7 +428,6 @@ namespace OvermorrowMod.Content.Items.Test
                 slashRenderer.Draw(Main.spriteBatch);
             }
 
-            
             SpriteEffects spriteEffects = swingForward ? SpriteEffects.FlipVertically : SpriteEffects.None;
             var rotationOffset = swingForward ? MathHelper.ToRadians(40) : MathHelper.ToRadians(140);
             Vector2 off = new Vector2(swingForward ? -55 : -10, 0).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
