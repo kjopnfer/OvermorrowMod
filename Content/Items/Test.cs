@@ -87,8 +87,7 @@ namespace OvermorrowMod.Content.Items.Test
             float radiusX = Main.rand.Next(8, 10) * 5f;
             float radiusY = Main.rand.Next(4, 9) * 5f;
             float ellipseRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation();
-            //if (item.ComboCount == 3)
-            //    Main.NewText(radiusX + " , " + radiusY);
+
             if (item.ComboCount == 3)
             {
                 radiusX = 40f;
@@ -310,14 +309,14 @@ namespace OvermorrowMod.Content.Items.Test
 
             if (windupProgress < 1f)
             {
-                // Wind-up: pull back more prominently (opposite direction)
+                // Pull back more prominently on windup (opposite direction)
                 float windupAmount = EasingUtils.EaseInOutQuad(windupProgress);
                 armAdjustment = MathHelper.Lerp(swingForward ? -1.6f : 1.6f, 0f, windupAmount); // -0.6 radians back (more prominent)
             }
 
             float finalAngle = baseAngle + armAdjustment;
             Projectile.rotation = finalAngle;
-            //player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, finalAngle);
+
             if (OffhandFlag == 1)
                 player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, finalAngle);
             else
@@ -376,6 +375,52 @@ namespace OvermorrowMod.Content.Items.Test
             }
         }
 
+        private void DrawIntersectionSlash(float progress)
+        {
+            Vector2 offset = new Vector2(50 * playerDirection, 0);
+            Vector2 center = player.MountedCenter + offset.RotatedBy(fullSlashPath.EllipseRotation);
+            Texture2D slashTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
+
+            float alpha = 0f;
+            float scaleX = 1f;
+            float midDrawPhase = windupPhase + drawPhase * 0.5f; // Midpoint of draw phase
+
+            if (progress <= midDrawPhase)
+            {
+                alpha = 0f;
+                scaleX = 0f;
+            }
+            else if (progress <= windupPhase + drawPhase)
+            {
+                // Fade in from midpoint to end of draw phase
+                float fadeInProgress = (progress - midDrawPhase) / (drawPhase * 0.5f);
+                alpha = fadeInProgress * 0.8f;
+                scaleX = fadeInProgress;
+            }
+            else if (progress <= windupPhase + drawPhase + holdPhase * 0.3f)
+            {
+                alpha = 0.8f;
+                scaleX = 1f;
+            }
+            else
+            {
+                float fadeStart = windupPhase + drawPhase + holdPhase * 0.3f;
+                float remainingTime = 1f - fadeStart;
+                float fadeProgress = (progress - fadeStart) / remainingTime;
+                alpha = (1f - fadeProgress) * 0.8f;
+                scaleX = 1f - fadeProgress;
+            }
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Main.spriteBatch.Draw(slashTexture, center - Main.screenPosition, null, Color.White * alpha, fullSlashPath.EllipseRotation + MathHelper.PiOver4, slashTexture.Size() * 0.5f, new Vector2(0.05f * scaleX, 0.35f), SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(slashTexture, center - Main.screenPosition, null, Color.White * alpha, fullSlashPath.EllipseRotation + -MathHelper.PiOver4, slashTexture.Size() * 0.5f, new Vector2(0.05f * scaleX, 0.25f), SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             if (slashRenderer != null)
@@ -383,10 +428,7 @@ namespace OvermorrowMod.Content.Items.Test
                 slashRenderer.Draw(Main.spriteBatch);
             }
 
-            // These need to be here otherwise the player arm gets drawn additively for some reason
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
+            
             SpriteEffects spriteEffects = swingForward ? SpriteEffects.FlipVertically : SpriteEffects.None;
             var rotationOffset = swingForward ? MathHelper.ToRadians(40) : MathHelper.ToRadians(140);
             Vector2 off = new Vector2(swingForward ? -55 : -10, 0).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
@@ -395,6 +437,20 @@ namespace OvermorrowMod.Content.Items.Test
             Vector2 drawOrigin = swingForward ? new Vector2(texture.Width, texture.Height) : new Vector2(0, texture.Height);
 
             Main.spriteBatch.Draw(texture, player.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, lightColor, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
+
+            CarvingKnifeNew item = player.HeldItem.ModItem as CarvingKnifeNew;
+            if (item.ComboCount == 0 && OffhandFlag != 1) // Only draw once from main hand
+            {
+                int elapsedTicks = totalTime - Projectile.timeLeft;
+                float progress = elapsedTicks / (float)totalTime;
+                DrawIntersectionSlash(progress);
+            }
+
+            // These need to be here otherwise the player arm gets drawn additively for some reason
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+
             return false;
         }
     }
