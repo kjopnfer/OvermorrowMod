@@ -1,14 +1,12 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.Test;
-using Terraria.DataStructures;
+using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Linq;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using OvermorrowMod.Core.Items.Daggers;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
@@ -32,10 +30,18 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.shoot = ModContent.ProjectileType<TestSlashProjectile>();
+            Item.shoot = ModContent.ProjectileType<CarvingKnifeThrownNew>();
         }
 
-        public override bool AltFunctionUse(Player player) => true; // Always allow right click, the HeldDagger will check CanThrow
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            // Only allow one swing at a time
+            //if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
+            //    return false;
+
+            Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f);
+            return false;
+        }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
@@ -45,10 +51,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Vector2 drawOrigin = itemFrame.Size() / 2f;
             Vector2 drawPosition = Item.Bottom - Main.screenPosition - new Vector2(0, drawOrigin.Y);
 
-            // Draw back dagger (flipped)
             spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.FlipHorizontally, 1);
-
-            // Draw front daggerS
             spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.None, 1);
 
             return false;
@@ -58,48 +61,8 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             Texture2D texture = TextureAssets.Item[Item.type].Value;
 
-            // Draw back dagger (flipped)
             spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
-
-            // Draw front dagger
             spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.None, 1);
-
-            return false;
-        }
-
-        public int ComboCount { get; private set; } = 0;
-        int slashDirection = 1;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
-                return false;
-
-            if (player.altFunctionUse == 2)
-            {
-                // Right click for throwing
-                Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<CarvingKnifeThrownNew>(), damage, knockback, player.whoAmI, 0f);
-            }
-            else
-            {
-                int offhand = 1;
-
-                slashDirection = -slashDirection;
-                if (ComboCount == 3)
-                {
-                    slashDirection = player.direction == 1 ? -1 : 1;
-                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
-                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
-                }
-                else
-                {
-                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection);
-                    Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, slashDirection, offhand);
-                }
-
-                ComboCount++;
-                if (ComboCount > 3)
-                    ComboCount = 0;
-            }
 
             return false;
         }
