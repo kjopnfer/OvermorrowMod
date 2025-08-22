@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,6 +39,10 @@ namespace OvermorrowMod.Content.Items.Archives
         private float swingAngle = 0;
         private Vector2 storedPosition;
         private int initialDirection = 0;
+        private bool groundCollided = false;
+        private Vector2 oldPosition;
+
+        public override bool? CanDamage() => AIState == 1 && !groundCollided;
 
         private float GetBackTime() => 15f;
         private float GetForwardTime() => 4f;
@@ -79,6 +84,10 @@ namespace OvermorrowMod.Content.Items.Archives
                     }
                     Projectile.width = Projectile.height = 32;
                     break;
+                case 2:
+                    AICounter++;
+                    HandleGroundPhase();
+                    break;
             }
         }
 
@@ -89,12 +98,11 @@ namespace OvermorrowMod.Content.Items.Archives
             float holdTime = GetHoldTime();
             float totalAnimTime = backTime + forwardTime + holdTime;
 
-            // Release point - middle of the forward swing (adjust this value)
-            float releaseTime = backTime + (forwardTime * 0.9f); // 60% through the forward swing
+            float releaseTime = backTime + (forwardTime * 0.9f);
 
             Vector2 mousePosition = Main.MouseWorld;
-            Projectile.spriteDirection = initialDirection; // Use stored direction
-            Owner.direction = initialDirection; // Use stored direction
+            Projectile.spriteDirection = initialDirection;
+            Owner.direction = initialDirection;
 
             if (AICounter <= backTime)
             {
@@ -112,16 +120,13 @@ namespace OvermorrowMod.Content.Items.Archives
             float weaponRotation = Owner.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -initialDirection;
             Projectile.rotation = weaponRotation;
 
-            // Position projectile at the player's hand position with offset
             Vector2 armPosition = Owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
             armPosition.Y += Owner.gfxOffY;
 
-            // Adjust knife offset based on initial direction
             Vector2 knifeOffset = new Vector2(16, -8 * initialDirection);
             Vector2 rotatedOffset = knifeOffset.RotatedBy(Projectile.rotation);
             Projectile.Center = armPosition + rotatedOffset;
 
-            // Release the knife at the optimal point, not at the end
             if (AICounter >= releaseTime)
             {
                 storedPosition = Projectile.Center;
@@ -145,6 +150,51 @@ namespace OvermorrowMod.Content.Items.Archives
                 Projectile.velocity.Y += 0.25f;
         }
 
+        private void HandleGroundPhase()
+        {
+            Projectile.velocity.X *= 0.97f;
+
+            if (AICounter == 60f)
+            {
+                Projectile.velocity.X *= 0.01f;
+                oldPosition = Projectile.Center;
+            }
+
+            float rotationFactor = MathHelper.Lerp(0.48f, 0f, Utils.Clamp(AICounter, 0, 60f) / 60f);
+            Projectile.rotation += rotationFactor * (Projectile.velocity.X > 0 ? 1 : -1);
+            Projectile.velocity.Y *= 0.96f;
+
+            if (AICounter > 60f)
+            {
+                Projectile.tileCollide = false;
+                float floatProgress = (AICounter - 60f) / 40f;
+                Projectile.Center = Vector2.Lerp(oldPosition, oldPosition + Vector2.UnitY * 24, (float)Math.Sin(floatProgress));
+            }
+
+            if (Owner.Hitbox.Intersects(Projectile.Hitbox))
+            {
+                Projectile.Kill();
+            }
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            if (!groundCollided && Projectile.velocity.Y > 0)
+            {
+                groundCollided = true;
+                Projectile.velocity.X *= 0.5f;
+                Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
+                Projectile.timeLeft = 600;
+                AIState = 2;
+                AICounter = 0;
+            }
+            else
+            {
+                Projectile.velocity *= -0.5f;
+            }
+            return false;
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveItems + "CarvingKnife").Value;
@@ -161,6 +211,8 @@ namespace OvermorrowMod.Content.Items.Archives
                 if (initialDirection == -1)
                     drawRotation = Projectile.rotation + MathHelper.ToRadians(90);
             }
+
+            // add shine when throwing
 
             SpriteEffects spriteEffects = initialDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
