@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Items.Test;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -32,14 +33,44 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
             Item.shoot = ModContent.ProjectileType<CarvingKnifeThrownNew>();
         }
+        public override bool AltFunctionUse(Player player) => true; // Always allow right click, the HeldDagger will check CanThrow
+
+        public int ComboCount { get; private set; } = 0;
+        int slashDirection = 1;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // Only allow one swing at a time
-            //if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == type))
-            //    return false;
+            if (player.altFunctionUse == 2)
+            {
+                // Right click for throwing
+                Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<CarvingKnifeThrownNew>(), damage, knockback, player.whoAmI, 0f);
+            }
+            else
+            {
+                // Left click for combo slash attacks
+                if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ModContent.ProjectileType<TestSlashProjectile>()))
+                    return false;
 
-            Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f);
+                int offhand = 1;
+
+                slashDirection = -slashDirection;
+                if (ComboCount == 3)
+                {
+                    slashDirection = player.direction == 1 ? -1 : 1;
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection);
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
+                }
+                else
+                {
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection);
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
+                }
+
+                ComboCount++;
+                if (ComboCount > 3)
+                    ComboCount = 0;
+            }
+
             return false;
         }
 
