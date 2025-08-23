@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
             AICounter++;
             int yOffset = -120;
-
+            canDamage = false;
             if (AICounter <= fadeInTime)
             {
                 Projectile.Opacity = AICounter / fadeInTime;
@@ -78,6 +78,8 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 float baseRotation = MathHelper.Lerp(0, 180, EasingUtils.EaseInBack(adjustedCounter / rotationTime));
                 rotation = baseRotation * SpinDirection;
                 Projectile.Opacity = 1f;
+
+                canDamage = true;
             }
             else
             {

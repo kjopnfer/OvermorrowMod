@@ -4,7 +4,10 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Items.Archives.Weapons;
+using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Effects.Slash;
+using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -162,6 +165,106 @@ namespace OvermorrowMod.Content.Items.Test
             Vector2 currentDrawDirection = slashRenderer.Path.GetDirectionAt(easedProgress);
 
             return currentDrawDirection.ToRotation();
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Find the collision point on the slash path
+            Vector2 strikePoint = GetStrikePoint(target);
+            Vector2 tangentDirection = GetTangentAtPoint(strikePoint);
+
+            float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
+
+            for (int i = 0; i < Main.rand.Next(2, 4); i++)
+            {
+                randomScale = Main.rand.NextFloat(0.1f, 0.25f);
+
+                // Create particles tangent to the strike point
+                float tangentSpread = MathHelper.ToRadians(45);
+                float randomAngle = Main.rand.NextFloat(-tangentSpread * 0.5f, tangentSpread * 0.5f);
+                Vector2 particleDirection = tangentDirection.RotatedBy(randomAngle);
+                Vector2 particleVelocity = particleDirection * Main.rand.NextFloat(2f, 4f);
+
+                var lightSpark = new Spark(sparkTexture, maxTime: 30, false, 0f)
+                {
+                    endColor = Color.White
+                };
+                ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity * 2, Color.White, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
+            }
+        }
+
+        private Vector2 GetStrikePoint(NPC target)
+        {
+            if (slashRenderer?.Path == null)
+                return Projectile.Center;
+
+            SlashPath currentPath = slashRenderer.Path;
+            Vector2 targetCenter = target.Center;
+            Vector2 closestPoint = currentPath.GetPointAt(0f);
+            float closestDistance = Vector2.DistanceSquared(targetCenter, closestPoint);
+
+            // Sample along the slash path to find the closest point to the target
+            int samplePoints = 50;
+            for (int i = 0; i <= samplePoints; i++)
+            {
+                float t = i / (float)samplePoints;
+                Vector2 pathPoint = currentPath.GetPointAt(t);
+                float distance = Vector2.DistanceSquared(targetCenter, pathPoint);
+
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestPoint = pathPoint;
+                }
+            }
+
+            return closestPoint;
+        }
+
+        private Vector2 GetTangentAtPoint(Vector2 strikePoint)
+        {
+            if (slashRenderer?.Path == null)
+                return Vector2.UnitX;
+
+            SlashPath currentPath = slashRenderer.Path;
+
+            // Instead of finding the closest point, let's use the current slash progress
+            int elapsedTicks = totalTime - Projectile.timeLeft;
+            float progress = elapsedTicks / (float)totalTime;
+
+            // Calculate current drawing progress
+            float drawProgress = 0f;
+            if (progress > windupPhase && progress <= windupPhase + drawPhase)
+            {
+                drawProgress = (progress - windupPhase) / drawPhase;
+            }
+            else if (progress > windupPhase + drawPhase)
+            {
+                drawProgress = 1f;
+            }
+
+            // Use the current progress to get the tangent direction
+            float easedProgress = EasingUtils.EaseOutQuint(drawProgress);
+            Vector2 tangent = currentPath.GetDirectionAt(easedProgress);
+
+            // Account for both swing direction and player direction
+            if (!swingForward)
+            {
+                tangent = -tangent;
+            }
+
+            // Also account for player direction (left vs right facing)
+            if (playerDirection == -1)
+            {
+                tangent = -tangent;
+            }
+            else
+            {
+                tangent = -tangent;
+            }
+
+            return tangent;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
