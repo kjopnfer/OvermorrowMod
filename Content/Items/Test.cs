@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Items.Archives.Weapons;
 using OvermorrowMod.Core.Effects.Slash;
 using System;
@@ -439,7 +440,7 @@ namespace OvermorrowMod.Content.Items.Test
             Main.spriteBatch.Draw(texture, player.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, lightColor, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
 
             CarvingKnifeNew item = player.HeldItem.ModItem as CarvingKnifeNew;
-            if (item.ComboCount == 0 && OffhandFlag != 1) // Only draw once from main hand
+            if (item.ComboCount == 0 && OffhandFlag != 1 && player.ownedProjectileCounts[ModContent.ProjectileType<TestSlashProjectile>()] == 2) // Only draw once from main hand
             {
                 int elapsedTicks = totalTime - Projectile.timeLeft;
                 float progress = elapsedTicks / (float)totalTime;

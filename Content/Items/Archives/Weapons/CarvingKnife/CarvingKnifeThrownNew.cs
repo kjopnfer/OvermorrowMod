@@ -52,6 +52,7 @@ namespace OvermorrowMod.Content.Items.Archives
         public override void OnSpawn(IEntitySource source)
         {
             initialDirection = Main.MouseWorld.X < Owner.Center.X ? -1 : 1;
+            rotationRate = Main.rand.NextFloat(0.4f, 0.52f);
         }
 
         public override void AI()
@@ -143,10 +144,11 @@ namespace OvermorrowMod.Content.Items.Archives
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
         }
 
+        float rotationRate = 0.48f;
         private void HandleFlightPhase()
         {
             Projectile.velocity.X *= 0.99f;
-            Projectile.rotation += 0.48f * (Projectile.velocity.X > 0 ? 1 : -1);
+            Projectile.rotation += rotationRate * (Projectile.velocity.X > 0 ? 1 : -1);
 
             if (AICounter > 10)
                 Projectile.velocity.Y += 0.25f;

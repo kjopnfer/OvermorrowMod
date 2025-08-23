@@ -62,7 +62,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 int offhand = 1;
 
                 slashDirection = -slashDirection;
-                if (ComboCount == 3)
+                if (ComboCount == 3 && player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] != 1)
                 {
                     slashDirection = player.direction == 1 ? -1 : 1;
                     Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection);
@@ -71,12 +71,24 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 else
                 {
                     Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection);
-                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
+
+                    if (player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] != 1)
+                        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
                 }
 
                 ComboCount++;
-                if (ComboCount > 3)
-                    ComboCount = 0;
+
+                // Don't do the cross slash if we only have one dagger
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] == 1)
+                {
+                    if (ComboCount > 2)
+                        ComboCount = 0;
+                }
+                else
+                {
+                    if (ComboCount > 3)
+                        ComboCount = 0;
+                }
             }
 
             return false;
