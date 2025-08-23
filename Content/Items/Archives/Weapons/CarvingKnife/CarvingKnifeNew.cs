@@ -38,6 +38,14 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         public int ComboCount { get; private set; } = 0;
         int slashDirection = 1;
 
+        public override bool CanUseItem(Player player)
+        {
+            //return player.ownedProjectileCounts[ModContent.ProjectileType<HeldProjectile>()] <= 0 &&
+            //       player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < Item.stack;
+            return player.ownedProjectileCounts[ModContent.ProjectileType<TestSlashProjectile>()] <= 0 &&
+                  player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] < 2;
+        }
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
@@ -92,8 +100,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         {
             Texture2D texture = TextureAssets.Item[Item.type].Value;
 
-            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
-            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, scale, SpriteEffects.None, 1);
+            //Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] == 2 ? Color.Black : drawColor;
+            //Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] >= 1 ? Color.Black : drawColor;
+            Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] == 2 ? Color.Black : drawColor;
+            Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] >= 1 ? Color.Black : drawColor;
+
+            spriteBatch.Draw(texture, position, frame, backKnifeColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
+            spriteBatch.Draw(texture, position, frame, frontKnifeColor, 0f, origin, scale, SpriteEffects.None, 1);
 
             return false;
         }

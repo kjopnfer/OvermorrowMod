@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -48,16 +49,17 @@ namespace OvermorrowMod.Content.Items.Archives
         private float GetForwardTime() => 4f;
         private float GetHoldTime() => 4f;
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            initialDirection = Main.MouseWorld.X < Owner.Center.X ? -1 : 1;
+        }
+
         public override void AI()
         {
             switch (AIState)
             {
                 case 0:
                     AICounter++;
-                    if (AICounter == 1)
-                    {
-                        initialDirection = Main.MouseWorld.X < Owner.Center.X ? -1 : 1;
-                    }
 
                     Owner.heldProj = Projectile.whoAmI;
                     Owner.itemTime = Owner.itemAnimation = 2;
@@ -177,6 +179,51 @@ namespace OvermorrowMod.Content.Items.Archives
             }
         }
 
+        private void DrawSlashShine()
+        {
+            if (AIState != 1 || AICounter > 40) return;
+
+            float progress = AICounter / 40f;
+
+            // Position at knife tip
+            Vector2 knifeDirection = new Vector2(15, -15).RotatedBy(Projectile.rotation);
+            Vector2 center = Projectile.Center + knifeDirection;
+
+            Texture2D slashTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
+
+            float alpha = 0f;
+            float scaleX = 1f;
+
+            if (progress <= 0.2f)
+            {
+                // Fade in during first 20% of flight
+                alpha = (progress / 0.2f) * 0.8f;
+                scaleX = progress / 0.2f;
+            }
+            else if (progress <= 0.4f)
+            {
+                // Hold at full brightness
+                alpha = 1f;
+                scaleX = 1f;
+            }
+            else
+            {
+                // Fade out for remaining 60% of flight
+                float fadeProgress = (progress - 0.4f) / 0.6f;
+                alpha = (1f - fadeProgress) * 0.8f;
+                scaleX = 1f - fadeProgress;
+            }
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Main.spriteBatch.Draw(slashTexture, center - Main.screenPosition, null, Color.White * alpha, 0f + MathHelper.PiOver2, slashTexture.Size() * 0.5f, new Vector2(0.05f * scaleX, 0.35f), SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(slashTexture, center - Main.screenPosition, null, Color.White * alpha, 0f, slashTexture.Size() * 0.5f, new Vector2(0.05f * scaleX, 0.25f), SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             if (!groundCollided && Projectile.velocity.Y > 0)
@@ -212,11 +259,19 @@ namespace OvermorrowMod.Content.Items.Archives
                     drawRotation = Projectile.rotation + MathHelper.ToRadians(90);
             }
 
-            // add shine when throwing
+            float fadeAlpha = 1f;
+            if (Projectile.timeLeft < ModUtils.SecondsToTicks(1))
+            {
+                fadeAlpha = Projectile.timeLeft / (float)ModUtils.SecondsToTicks(1);
+            }
 
             SpriteEffects spriteEffects = initialDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Color fadeColor = lightColor * fadeAlpha;
 
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, drawRotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, fadeColor, drawRotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 0);
+
+            // add shine when throwing
+            DrawSlashShine();
             return false;
         }
     }
