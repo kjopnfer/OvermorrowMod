@@ -6,11 +6,11 @@ using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static SDL2.SDL;
 
 namespace OvermorrowMod.Content.Items.Archives
 {
@@ -39,6 +39,18 @@ namespace OvermorrowMod.Content.Items.Archives
             Projectile.localNPCHitCooldown = 15;
         }
 
+        public enum AIStates
+        {
+            ThrowAnimation,
+            Thrown,
+            Idle,
+            Impaled
+        }
+
+        public NPC ImpaledNPC { get; private set; } = null;
+        private Vector2 impaledOffset;
+        private float impaledRotation;
+
         public ref float AICounter => ref Projectile.ai[0];
         public ref float AIState => ref Projectile.ai[1];
 
@@ -48,7 +60,24 @@ namespace OvermorrowMod.Content.Items.Archives
         private bool groundCollided = false;
         private Vector2 oldPosition;
 
-        public override bool? CanDamage() => AIState == 1 && !groundCollided;
+        public override bool? CanDamage()
+        {
+            return AIState == (int)AIStates.Thrown && !groundCollided;
+        }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            // If already impaled, can't hit other NPCs
+            if (AIState == (int)AIStates.Impaled)
+                return false;
+
+            return base.CanHitNPC(target);
+        }
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            behindNPCs.Add(index);
+        }
 
         private float GetBackTime() => 15f;
         private float GetForwardTime() => 4f;
@@ -62,16 +91,17 @@ namespace OvermorrowMod.Content.Items.Archives
 
         public override void AI()
         {
-            switch (AIState)
+            Projectile.hide = false;
+            switch ((AIStates)AIState)
             {
-                case 0:
+                case AIStates.ThrowAnimation:
                     AICounter++;
 
                     Owner.heldProj = Projectile.whoAmI;
                     Owner.itemTime = Owner.itemAnimation = 2;
                     HandleThrowAnimation();
                     break;
-                case 1:
+                case AIStates.Thrown:
                     AICounter++;
                     if (AICounter == 1)
                     {
@@ -92,9 +122,15 @@ namespace OvermorrowMod.Content.Items.Archives
                     }
                     Projectile.width = Projectile.height = 32;
                     break;
-                case 2:
+                case AIStates.Idle:
                     AICounter++;
                     HandleGroundPhase();
+                    break;
+                case AIStates.Impaled:
+                    Projectile.hide = true;
+
+                    AICounter++;
+                    HandleImpaledState();
                     break;
             }
         }
@@ -141,7 +177,7 @@ namespace OvermorrowMod.Content.Items.Archives
                 if (initialDirection == -1)
                     storedPosition.X += -14;
 
-                AIState = 1;
+                AIState = (int)AIStates.Thrown;
                 AICounter = 0;
                 Owner.heldProj = -1;
             }
@@ -186,6 +222,44 @@ namespace OvermorrowMod.Content.Items.Archives
             }
         }
 
+        private void HandleImpaledState()
+        {
+            // Check if the impaled NPC is still valid
+            if (ImpaledNPC == null || !ImpaledNPC.active)
+            {
+                Projectile.Kill();
+                return;
+            }
+
+            // Stick to the NPC at the impaled position
+            Projectile.Center = ImpaledNPC.Center + impaledOffset;
+            Projectile.rotation = impaledRotation;
+
+            Projectile.velocity = Vector2.Zero;
+            Projectile.tileCollide = false;
+
+            // Wobble effect
+            if (AICounter < 30)
+            {
+                float wobbleAmount = (30 - AICounter) * 0.02f;
+                float wobble = (float)Math.Sin(AICounter * 0.3f) * wobbleAmount;
+                Projectile.rotation = impaledRotation + wobble;
+            }
+
+            // Damage over time while impaled
+            if (AICounter % 60 == 0 && AICounter > 60)
+            {
+                int damage = Projectile.damage / 3; // 33% of original damage
+                ImpaledNPC.SimpleStrikeNPC(damage, 0, false, 0f, null, false, 0f, true);
+            }
+
+            // Auto-remove after some time
+            if (AICounter > 300)
+            {
+                Projectile.Kill();
+            }
+        }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Vector2 strikePoint = Projectile.Center;
@@ -202,8 +276,6 @@ namespace OvermorrowMod.Content.Items.Archives
             for (int i = 0; i < sparkCount; i++)
             {
                 float randomScale = Main.rand.NextFloat(0.1f, 0.25f);
-
-                // Distribute sparks within the spread angle
                 float randomAngleOffset = Main.rand.NextFloat(-spreadAngle * 0.5f, spreadAngle * 0.5f);
                 float finalAngle = baseAngle + randomAngleOffset;
 
@@ -216,6 +288,22 @@ namespace OvermorrowMod.Content.Items.Archives
                 };
 
                 ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity, Color.White, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
+            }
+
+            // Only impale if the knife is not rotating
+            bool canImpale = AIState == (int)AIStates.Thrown && AICounter < 30;
+            if (canImpale)
+            {
+                ImpaledNPC = target;
+                if (ImpaledNPC != null)
+                {
+                    impaledOffset = Projectile.Center - ImpaledNPC.Center;
+                    impaledRotation = Projectile.rotation;
+
+                    AIState = (int)AIStates.Impaled;
+                    AICounter = 0;
+                    Projectile.timeLeft = 600;
+                }
             }
         }
 
@@ -244,7 +332,7 @@ namespace OvermorrowMod.Content.Items.Archives
 
         private void DrawSlashShine()
         {
-            if (AIState != 1 || AICounter > 40) return;
+            if (AIState != (int)AIStates.Thrown || AICounter > 40) return;
 
             float progress = AICounter / 40f;
 
@@ -295,7 +383,7 @@ namespace OvermorrowMod.Content.Items.Archives
                 Projectile.velocity.X *= 0.5f;
                 Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
                 Projectile.timeLeft = 600;
-                AIState = 2;
+                AIState = (int)AIStates.Idle;
                 AICounter = 0;
             }
             else
@@ -311,7 +399,7 @@ namespace OvermorrowMod.Content.Items.Archives
 
             float drawRotation = Projectile.rotation;
 
-            if (AIState == 0)
+            if (AIState == (int)AIStates.ThrowAnimation)
             {
                 float rotationOffset = initialDirection == 1 ? 45 : 135;
                 drawRotation = Projectile.rotation + MathHelper.ToRadians(rotationOffset);
@@ -323,8 +411,19 @@ namespace OvermorrowMod.Content.Items.Archives
             }
 
             float fadeAlpha = 1f;
-            if (Projectile.timeLeft < ModUtils.SecondsToTicks(1))
+            if (AIState == (int)AIStates.Impaled)
             {
+                float fadeTime = ModUtils.SecondsToTicks(2); // 2 seconds fade time
+                if (AICounter > 300 - fadeTime)
+                {
+                    float timeRemaining = 300 - AICounter;
+                    fadeAlpha = timeRemaining / fadeTime;
+                    fadeAlpha = MathHelper.Clamp(fadeAlpha, 0f, 1f);
+                }
+            }
+            else if (Projectile.timeLeft < ModUtils.SecondsToTicks(1))
+            {
+                // Normal fade for other states
                 fadeAlpha = Projectile.timeLeft / (float)ModUtils.SecondsToTicks(1);
             }
 

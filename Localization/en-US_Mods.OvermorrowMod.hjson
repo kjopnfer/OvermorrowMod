@@ -674,7 +674,7 @@ Items: {
 	}
 
 	CarvingKnifeNew: {
-		DisplayName: Carving Knife New
+		DisplayName: Carving Knife
 		Tooltip: ""
 	}
 }
