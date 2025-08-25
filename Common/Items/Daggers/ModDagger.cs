@@ -1,9 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Core.Interfaces;
-using OvermorrowMod.Core.Items;
+using OvermorrowMod.Common;
+using OvermorrowMod.Common.Items.Daggers;
 using OvermorrowMod.Core.Items.Daggers;
-using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -12,35 +12,23 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Items.Daggers
 {
-    public abstract class ModDagger<HeldProjectile, ThrownProjectile> : ModItem, IProjectileClassification
+    public abstract class ModDagger<HeldProjectile, ThrownProjectile> : ModItem
         where HeldProjectile : HeldDagger
         where ThrownProjectile : ThrownDagger
     {
-        // For some reason this doesn't work to apply the tooltip?
-        public WeaponType WeaponType => WeaponType.Dagger;
-        public virtual void SafeSetDefaults() { }
+        public override bool AltFunctionUse(Player player) => true;
 
-        protected bool isDualWielding => Item.stack == 2 && Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < 1;
+        public int ComboCount { get; private set; } = 0;
+        int slashDirection = 1;
+
+        protected virtual int MaxComboCount => 3;
+        protected virtual bool HasCrossSlash => true;
+        protected virtual int MaxThrownDaggers => 2;
 
         public override bool CanUseItem(Player player)
         {
             return player.ownedProjectileCounts[ModContent.ProjectileType<HeldProjectile>()] <= 0 &&
-                   player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < Item.stack;
-        }
-
-        public override bool AltFunctionUse(Player player) => true; // Always allow right click, the HeldDagger will check CanThrow
-
-        public sealed override void SetDefaults()
-        {
-            Item.useStyle = ItemUseStyleID.Thrust;
-            Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
-            Item.maxStack = 2;
-            Item.shoot = ModContent.ProjectileType<HeldProjectile>();
-
-            SafeSetDefaults();
+                  player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < MaxThrownDaggers;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -48,25 +36,57 @@ namespace OvermorrowMod.Common.Items.Daggers
             if (player.altFunctionUse == 2)
             {
                 // Right click for throwing
-                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, (int)DaggerAttack.Throw);
+                Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<ThrownProjectile>(), damage, knockback, player.whoAmI, 0f);
             }
             else
             {
-                // Normal attack - get current attack from combo sequence
-                var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
+                // Left click for combo slash attacks
+                if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ModContent.ProjectileType<HeldProjectile>()))
+                    return false;
 
-                // Create main hand dagger - it will automatically use the current combo index
-                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f);
+                int offhand = 1;
+                slashDirection = -slashDirection;
 
-                // Create off-hand dagger if dual wielding
-                if (isDualWielding)
+                bool isCrossSlash = HasCrossSlash && ComboCount == MaxComboCount &&
+                                  player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] != 1;
+
+                if (isCrossSlash)
                 {
-                    Projectile offHand = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-
-                    // Offset the off-hand dagger's AI counter to create stagger
-                    offHand.ai[2] = -3f; // Start 5 ticks behind
+                    slashDirection = player.direction == 1 ? -1 : 1;
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<HeldProjectile>(), damage, knockback, player.whoAmI, slashDirection);
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<HeldProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
                 }
+                else
+                {
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<HeldProjectile>(), damage, knockback, player.whoAmI, slashDirection);
+
+                    if (player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] != 1)
+                        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<HeldProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
+                }
+
+                ComboCount++;
+
+                // Reset combo count based on available daggers
+                int maxCombo = player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] == 1 ?
+                              (MaxComboCount - 1) : MaxComboCount;
+
+                if (ComboCount > maxCombo)
+                    ComboCount = 0;
             }
+
+            return false;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = TextureAssets.Item[Item.type].Value;
+
+            Main.GetItemDrawFrame(Item.type, out var itemTexture, out var itemFrame);
+            Vector2 drawOrigin = itemFrame.Size() / 2f;
+            Vector2 drawPosition = Item.Bottom - Main.screenPosition - new Vector2(0, drawOrigin.Y);
+
+            spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.FlipHorizontally, 1);
+            spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.None, 1);
 
             return false;
         }
@@ -75,34 +95,37 @@ namespace OvermorrowMod.Common.Items.Daggers
         {
             Texture2D texture = TextureAssets.Item[Item.type].Value;
 
-            if (Item.stack == 2)
-            {
-                // Draw dual wielded daggers with different colors based on thrown status
-                Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] == 2 ? Color.Black : drawColor;
-                Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] >= 1 ? Color.Black : drawColor;
+            Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] == MaxThrownDaggers ? Color.Black : drawColor;
+            Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] >= 1 ? Color.Black : drawColor;
 
-                // Draw back dagger (flipped)
-                spriteBatch.Draw(texture, position, frame, backKnifeColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
-                // Draw front dagger
-                spriteBatch.Draw(texture, position, frame, frontKnifeColor, 0f, origin, scale, SpriteEffects.None, 1);
-            }
-            else
-            {
-                Color color = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < 1 ? drawColor : Color.Black;
-                spriteBatch.Draw(texture, position, frame, color, 0f, origin, scale, SpriteEffects.None, 1);
-            }
+            spriteBatch.Draw(texture, position, frame, backKnifeColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
+            spriteBatch.Draw(texture, position, frame, frontKnifeColor, 0f, origin, scale, SpriteEffects.None, 1);
 
             return false;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        public override void SetDefaults()
         {
+            Item.width = 60;
+            Item.height = 102;
+            Item.useAnimation = 8;
+            Item.useTime = 8;
+            Item.rare = ItemRarityID.Blue;
+            Item.useStyle = ItemUseStyleID.HiddenAnimation;
+
+            Item.knockBack = 2;
+            Item.shootSpeed = 10f;
+            Item.autoReuse = true;
+            Item.damage = 13;
+            Item.DamageType = DamageClass.Melee;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+
+            Item.shoot = ModContent.ProjectileType<ThrownProjectile>();
+
+            SafeSetDefaults();
         }
 
-        public override bool ConsumeItem(Player player)
-        {
-            // Don't consume the item when using it
-            return false;
-        }
+        public virtual void SafeSetDefaults() { }
     }
 }

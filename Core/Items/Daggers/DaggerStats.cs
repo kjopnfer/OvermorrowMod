@@ -64,17 +64,88 @@ namespace OvermorrowMod.Core.Items.Daggers
         public Vector2 StabPositionOffset = Vector2.Zero;
         public Vector2 ThrowPositionOffset = new Vector2(10, 6);
 
-        // Advanced Properties
-        public bool CanComboReset = true;
-        public bool RequiresTargetForCombo = false;
-        public float LifeSteal = 0f;
-        public float PierceChance = 0f;
+        // Flight and Animation Timing Modifiers
+        public float FlightDurationMultiplier { get; set; } = 1f;
+        public float IdleDurationMultiplier { get; set; } = 1f;
+        public float ImpaleDurationMultiplier { get; set; } = 1f;
+        public float AnimationSpeedMultiplier { get; set; } = 1f;
+
+        // Physics Modifiers
+        public float GravityMultiplier { get; set; } = 1f;
+        public float AirResistanceMultiplier { get; set; } = 1f;
+        public float GroundFrictionMultiplier { get; set; } = 1f;
+
+        // Special Effects
+        public bool ImpalingEnabled { get; set; } = true;
+        public float ImpaleDamageMultiplier { get; set; } = 0.33f; // 33% of original damage
+        public int ImpaleDamageInterval { get; set; } = 60; // Ticks between DOT damage
+
+        // Visual and Audio
+        public Color? OverrideIdleColor { get; set; } = null;
+        public Color? OverrideTrailColor { get; set; } = null;
+        public SoundStyle? OverrideHitSound { get; set; } = null;
+
+        // Combo Extensions
+        public int MaxComboExtension { get; set; } = 0; // Add extra combo attacks
+        public bool CrossSlashEnabled { get; set; } = true;
+
+        // Return Behavior
+        public bool AutoReturn { get; set; } = false;
+        public float ReturnSpeed { get; set; } = 15f;
+        public bool PierceOnReturn { get; set; } = false;
 
         public DaggerStats Clone()
         {
             var clone = (DaggerStats)this.MemberwiseClone();
             clone.ComboSequence = new List<DaggerAttack>(this.ComboSequence);
             return clone;
+        }
+    }
+
+    public static class DaggerStatsExtensions
+    {
+        /// <summary>
+        /// Applies timing modifications to animation values
+        /// </summary>
+        public static float ModifyTiming(this DaggerStats stats, float baseValue)
+        {
+            return baseValue / stats.AnimationSpeedMultiplier;
+        }
+
+        /// <summary>
+        /// Applies duration modifications to flight/idle/impale durations
+        /// </summary>
+        public static int ModifyFlightDuration(this DaggerStats stats, int baseDuration)
+        {
+            return (int)(baseDuration * stats.FlightDurationMultiplier);
+        }
+
+        public static int ModifyIdleDuration(this DaggerStats stats, int baseDuration)
+        {
+            return (int)(baseDuration * stats.IdleDurationMultiplier);
+        }
+
+        public static int ModifyImpaleDuration(this DaggerStats stats, int baseDuration)
+        {
+            return (int)(baseDuration * stats.ImpaleDurationMultiplier);
+        }
+
+        /// <summary>
+        /// Applies physics modifications
+        /// </summary>
+        public static float ModifyGravity(this DaggerStats stats, float baseGravity)
+        {
+            return baseGravity * stats.GravityMultiplier;
+        }
+
+        public static float ModifyAirResistance(this DaggerStats stats, float baseResistance)
+        {
+            return MathHelper.Lerp(1f, baseResistance, stats.AirResistanceMultiplier);
+        }
+
+        public static float ModifyGroundFriction(this DaggerStats stats, float baseFriction)
+        {
+            return MathHelper.Lerp(1f, baseFriction, stats.GroundFrictionMultiplier);
         }
     }
 }

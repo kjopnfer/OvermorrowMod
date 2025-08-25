@@ -1,126 +1,138 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.Test;
-using System.Linq;
+using OvermorrowMod.Common.Items.Daggers;
+using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
-    public class CarvingKnifeNew : ModItem
+    public class CarvingKnifeNew : ModDagger<CarvingKnifeSlashNew, CarvingKnifeThrownNew>
     {
         public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
-        public override void SetDefaults()
+
+        // Override default settings from the base template
+        protected override int MaxComboCount => 3;
+        protected override bool HasCrossSlash => true;
+        protected override int MaxThrownDaggers => 2;
+
+        public override void SafeSetDefaults()
         {
-            Item.width = 60;
-            Item.height = 102;
+            Item.damage = 13;
+            Item.knockBack = 2;
             Item.useAnimation = 8;
             Item.useTime = 8;
             Item.rare = ItemRarityID.Blue;
-            Item.useStyle = ItemUseStyleID.HiddenAnimation;
-
-            Item.knockBack = 2;
             Item.shootSpeed = 10f;
-            Item.autoReuse = true;
-            Item.damage = 13;
-            Item.DamageType = DamageClass.Melee;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-
-            Item.shoot = ModContent.ProjectileType<CarvingKnifeThrownNew>();
         }
-        public override bool AltFunctionUse(Player player) => true; // Always allow right click, the HeldDagger will check CanThrow
+    }
 
-        public int ComboCount { get; private set; } = 0;
-        int slashDirection = 1;
+    public class CarvingKnifeSlashNew : HeldDagger
+    {
+        public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
 
-        public override bool CanUseItem(Player player)
+        // Customize the slash behavior
+        public override Color SlashColor => Color.Orange;
+        public override int SlashDuration => 20;
+        public override float SlashRange => 80f;
+
+        protected override void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //return player.ownedProjectileCounts[ModContent.ProjectileType<HeldProjectile>()] <= 0 &&
-            //       player.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] < Item.stack;
-            return player.ownedProjectileCounts[ModContent.ProjectileType<TestSlashProjectile>()] <= 0 &&
-                  player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] < 2;
+            // Add custom hit effects or behaviors here
+            // Example: Apply debuffs, special damage calculations, etc.
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        protected override void CreateSlashHitEffects(Vector2 hitPosition)
         {
-            if (player.altFunctionUse == 2)
+            // Default CarvingKnife slash particle effects
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+
+            for (int i = 0; i < 6; i++)
             {
-                // Right click for throwing
-                Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<CarvingKnifeThrownNew>(), damage, knockback, player.whoAmI, 0f);
+                float randomScale = Main.rand.NextFloat(0.1f, 0.25f);
+                Vector2 particleVelocity = Main.rand.NextVector2Circular(8f, 8f);
+
+                var spark = new Spark(sparkTexture, maxTime: 20, false, 0f)
+                {
+                    endColor = SlashColor
+                };
+
+                ParticleManager.CreateParticleDirect(spark, hitPosition, particleVelocity, SlashColor, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
             }
-            else
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // Custom drawing logic for the slash effect
+            // You can implement visual slash effects here
+            return false; // Return false to prevent default drawing
+        }
+    }
+
+    public class CarvingKnifeThrownNew : ThrownDagger
+    {
+        public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
+
+        // Customize throwing behavior
+        public override Color IdleColor => Color.White;
+        public override Color TrailColor => Color.Orange;
+        public override bool CanImpale => true;
+        public override SoundStyle? HitSound => SoundID.Dig;
+
+        // Customize animation timings
+        protected override float BaseBackTime => 15f;
+        protected override float BaseForwardTime => 4f;
+        protected override float BaseHoldTime => 4f;
+
+        protected override void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Custom hit behavior
+            // Example: Special effects, damage over time, etc.
+        }
+
+        protected override void CreateThrownHitEffects(Vector2 strikePoint)
+        {
+            // Default CarvingKnife thrown hit particle effects
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+
+            Vector2 knifeDirection = Vector2.Normalize(Projectile.velocity);
+            Vector2 oppositeDirection = -knifeDirection;
+            float baseAngle = oppositeDirection.ToRotation();
+            float spreadAngle = MathHelper.ToRadians(135);
+
+            for (int i = 0; i < 8; i++)
             {
-                // Left click for combo slash attacks
-                if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ModContent.ProjectileType<TestSlashProjectile>()))
-                    return false;
+                float randomScale = Main.rand.NextFloat(0.1f, 0.25f);
+                float randomAngleOffset = Main.rand.NextFloat(-spreadAngle * 0.5f, spreadAngle * 0.5f);
+                float finalAngle = baseAngle + randomAngleOffset;
 
-                int offhand = 1;
+                Vector2 particleDirection = new Vector2((float)System.Math.Cos(finalAngle), (float)System.Math.Sin(finalAngle));
+                Vector2 particleVelocity = particleDirection * Main.rand.Next(3, 9);
 
-                slashDirection = -slashDirection;
-                if (ComboCount == 3 && player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] != 1)
+                var lightSpark = new Spark(sparkTexture, maxTime: 20, false, 0f)
                 {
-                    slashDirection = player.direction == 1 ? -1 : 1;
-                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection);
-                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
-                }
-                else
-                {
-                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection);
+                    endColor = TrailColor
+                };
 
-                    if (player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] != 1)
-                        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<TestSlashProjectile>(), damage, knockback, player.whoAmI, slashDirection, offhand);
-                }
-
-                ComboCount++;
-
-                // Don't do the cross slash if we only have one dagger
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] == 1)
-                {
-                    if (ComboCount > 2)
-                        ComboCount = 0;
-                }
-                else
-                {
-                    if (ComboCount > 3)
-                        ComboCount = 0;
-                }
+                ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity, TrailColor, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
             }
-
-            return false;
         }
 
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        protected override void OnDaggerImpale(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Texture2D texture = TextureAssets.Item[Item.type].Value;
-
-            Main.GetItemDrawFrame(Item.type, out var itemTexture, out var itemFrame);
-            Vector2 drawOrigin = itemFrame.Size() / 2f;
-            Vector2 drawPosition = Item.Bottom - Main.screenPosition - new Vector2(0, drawOrigin.Y);
-
-            spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.FlipHorizontally, 1);
-            spriteBatch.Draw(texture, drawPosition, null, lightColor, 0f, drawOrigin, scale, SpriteEffects.None, 1);
-
-            return false;
+            // Custom impaling behavior
+            // Example: Apply bleeding debuff, special visual effects
+            target.AddBuff(BuffID.Bleeding, 300);
         }
 
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        protected override void OnImpaleDamage(NPC target, int damage)
         {
-            Texture2D texture = TextureAssets.Item[Item.type].Value;
-
-            //Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] == 2 ? Color.Black : drawColor;
-            //Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<ThrownProjectile>()] >= 1 ? Color.Black : drawColor;
-            Color backKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] == 2 ? Color.Black : drawColor;
-            Color frontKnifeColor = Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<CarvingKnifeThrownNew>()] >= 1 ? Color.Black : drawColor;
-
-            spriteBatch.Draw(texture, position, frame, backKnifeColor, 0f, origin, scale, SpriteEffects.FlipHorizontally, 1);
-            spriteBatch.Draw(texture, position, frame, frontKnifeColor, 0f, origin, scale, SpriteEffects.None, 1);
-
-            return false;
+            // Called every time the impaled dagger deals damage over time
+            // Example: Heal player, create particles, etc.
         }
     }
 }
