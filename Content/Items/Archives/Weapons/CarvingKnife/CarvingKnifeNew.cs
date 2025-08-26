@@ -33,43 +33,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
     public class CarvingKnifeSlashNew : HeldDagger
     {
-        public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
+        public override Color SlashColor => Color.LightBlue;
 
-        // Customize the slash behavior
-        public override Color SlashColor => Color.Orange;
-        public override int SlashDuration => 20;
-        public override float SlashRange => 80f;
-
-        protected override void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone)
+        protected override string GetDaggerTexture()
         {
-            // Add custom hit effects or behaviors here
-            // Example: Apply debuffs, special damage calculations, etc.
-        }
-
-        protected override void CreateSlashHitEffects(Vector2 hitPosition)
-        {
-            // Default CarvingKnife slash particle effects
-            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
-
-            for (int i = 0; i < 6; i++)
-            {
-                float randomScale = Main.rand.NextFloat(0.1f, 0.25f);
-                Vector2 particleVelocity = Main.rand.NextVector2Circular(8f, 8f);
-
-                var spark = new Spark(sparkTexture, maxTime: 20, false, 0f)
-                {
-                    endColor = SlashColor
-                };
-
-                ParticleManager.CreateParticleDirect(spark, hitPosition, particleVelocity, SlashColor, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
-            }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            // Custom drawing logic for the slash effect
-            // You can implement visual slash effects here
-            return false; // Return false to prevent default drawing
+            return AssetDirectory.ArchiveItems + "CarvingKnife";
         }
     }
 
@@ -79,7 +47,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         // Customize throwing behavior
         public override Color IdleColor => Color.White;
-        public override Color TrailColor => Color.Orange;
+        public override Color TrailColor => Color.White;
         public override bool CanImpale => true;
         public override SoundStyle? HitSound => SoundID.Dig;
 

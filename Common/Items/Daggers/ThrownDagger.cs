@@ -414,7 +414,7 @@ namespace OvermorrowMod.Common.Items.Daggers
             if (!groundCollided) return;
 
             float activeAlpha = MathHelper.Lerp(0f, 1f, Utils.Clamp(Projectile.timeLeft, 0, 60f) / 60f);
-            float glowAlpha = 0.65f * activeAlpha;
+            float glowAlpha = 0.55f * activeAlpha;
 
             Main.spriteBatch.Reload(BlendState.Additive);
 
