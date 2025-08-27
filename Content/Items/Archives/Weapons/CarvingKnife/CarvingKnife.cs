@@ -11,11 +11,10 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
-    public class CarvingKnifeNew : ModDagger<CarvingKnifeSlashNew, CarvingKnifeThrownNew>
+    public class CarvingKnife : ModDagger<CarvingKnifeSlash, CarvingKnifeThrown>
     {
         public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
 
-        // Override default settings from the base template
         protected override int MaxComboCount => 3;
         protected override bool HasCrossSlash => true;
         protected override int MaxThrownDaggers => 2;
@@ -31,7 +30,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         }
     }
 
-    public class CarvingKnifeSlashNew : HeldDagger
+    public class CarvingKnifeSlash : HeldDagger
     {
         public override Color SlashColor => Color.LightBlue;
 
@@ -41,30 +40,27 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         }
     }
 
-    public class CarvingKnifeThrownNew : ThrownDagger
+    public class CarvingKnifeThrown : ThrownDagger
     {
         public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
 
-        // Customize throwing behavior
         public override Color IdleColor => Color.White;
         public override Color TrailColor => Color.White;
         public override bool CanImpale => true;
         public override SoundStyle? HitSound => SoundID.Dig;
 
-        // Customize animation timings
         protected override float BaseBackTime => 15f;
         protected override float BaseForwardTime => 4f;
         protected override float BaseHoldTime => 4f;
 
+        private bool hasHitNPC = false;
         protected override void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // Custom hit behavior
-            // Example: Special effects, damage over time, etc.
+            hasHitNPC = true;
         }
 
         protected override void CreateThrownHitEffects(Vector2 strikePoint)
         {
-            // Default CarvingKnife thrown hit particle effects
             Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
 
             Vector2 knifeDirection = Vector2.Normalize(Projectile.velocity);
@@ -90,17 +86,16 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             }
         }
 
+        protected override void OnDaggerPickup()
+        {
+        }
+
         protected override void OnDaggerImpale(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // Custom impaling behavior
-            // Example: Apply bleeding debuff, special visual effects
-            target.AddBuff(BuffID.Bleeding, 300);
         }
 
         protected override void OnImpaleDamage(NPC target, int damage)
         {
-            // Called every time the impaled dagger deals damage over time
-            // Example: Heal player, create particles, etc.
         }
     }
 }

@@ -45,7 +45,7 @@ namespace OvermorrowMod.Content.Items.Test
         private bool swingForward => SwingDirection == 1;
         public override void OnSpawn(IEntitySource source)
         {
-            CarvingKnifeNew item = player.HeldItem.ModItem as CarvingKnifeNew;
+            CarvingKnife item = player.HeldItem.ModItem as CarvingKnife;
             if (OffhandFlag == 1)
             {
                 SwingDirection = item.ComboCount == 3 ? -SwingDirection : SwingDirection;
@@ -85,7 +85,7 @@ namespace OvermorrowMod.Content.Items.Test
 
         private void InitializeSlash()
         {
-            CarvingKnifeNew item = player.HeldItem.ModItem as CarvingKnifeNew;
+            CarvingKnife item = player.HeldItem.ModItem as CarvingKnife;
 
             Vector2 center = player.MountedCenter;
             float radiusX = Main.rand.Next(8, 10) * 5f;
@@ -542,7 +542,7 @@ namespace OvermorrowMod.Content.Items.Test
 
             Main.spriteBatch.Draw(texture, player.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, lightColor, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
 
-            CarvingKnifeNew item = player.HeldItem.ModItem as CarvingKnifeNew;
+            CarvingKnife item = player.HeldItem.ModItem as CarvingKnife;
             if (item.ComboCount == 0 && OffhandFlag != 1 && player.ownedProjectileCounts[ModContent.ProjectileType<TestSlashProjectile>()] == 2) // Only draw once from main hand
             {
                 int elapsedTicks = totalTime - Projectile.timeLeft;

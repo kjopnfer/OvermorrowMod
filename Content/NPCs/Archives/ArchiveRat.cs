@@ -443,7 +443,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         {
             npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 20));
-            //npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CarvingKnife>(), chanceDenominator: 20));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CarvingKnife>(), chanceDenominator: 20));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 10));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneBlue>(), chanceDenominator: 5));
         }

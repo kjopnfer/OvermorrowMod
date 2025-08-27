@@ -11,6 +11,7 @@ using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
@@ -20,8 +21,9 @@ namespace OvermorrowMod.Common.Items.Daggers
     {
         public override string Texture => AssetDirectory.Empty;
 
-        // Virtual properties for easy customization
         public virtual Color SlashColor => Color.White;
+        public virtual SoundStyle? SlashSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerSlash");
+
         public virtual int TotalTime => 22;
 
         private int totalTime;
@@ -145,11 +147,10 @@ namespace OvermorrowMod.Common.Items.Daggers
             SetupLayers();
         }
 
-        // Override this to customize slash layers
         protected virtual void SetupLayers()
         {
-            Texture2D dissolvedTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Blurred").Value;
-            Texture2D laserTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Edge").Value;
+            Texture2D dissolvedTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Blurred", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D laserTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Edge", AssetRequestMode.ImmediateLoad).Value;
 
             float opacity = 0.3f;
             slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, SlashColor * opacity * 0.5f, 1f, 1f)
@@ -213,10 +214,14 @@ namespace OvermorrowMod.Common.Items.Daggers
             DaggerModifierHandler.TriggerSlashHit(this, player, target, ref modifiers);
         }
 
-        // Override this for custom hit behavior
+        /// <summary>
+        /// Used for custom hit behavior.
+        /// </summary>
         protected virtual void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone) { }
 
-        // Override this for custom hit particles
+        /// <summary>
+        /// Used for custom hit particles
+        /// </summary>
         protected virtual void CreateSlashHitEffects(Vector2 strikePoint)
         {
             Vector2 tangentDirection = GetTangentAtPoint(strikePoint);
@@ -369,6 +374,12 @@ namespace OvermorrowMod.Common.Items.Daggers
             {
                 windupProgress = 1f;
                 drawProgress = (progress - windupPhase) / drawPhase;
+
+                if (drawProgress > 0f && elapsedTicks == (int)(windupPhase * totalTime) + 1)
+                {
+                    if (SlashSound.HasValue)
+                        SoundEngine.PlaySound(SlashSound.Value, player.Center);
+                }
             }
             else if (progress <= windupPhase + drawPhase + holdPhase)
             {
@@ -429,7 +440,7 @@ namespace OvermorrowMod.Common.Items.Daggers
             {
                 // Pull back more prominently on windup (opposite direction)
                 float windupAmount = EasingUtils.EaseInOutQuad(windupProgress);
-                armAdjustment = MathHelper.Lerp(swingForward ? -1.6f : 1.6f, 0f, windupAmount); // -0.6 radians back (more prominent)
+                armAdjustment = MathHelper.Lerp(swingForward ? -1.6f : 1.6f, 0f, windupAmount);
             }
 
             float finalAngle = baseAngle + armAdjustment;
@@ -493,7 +504,6 @@ namespace OvermorrowMod.Common.Items.Daggers
             }
         }
 
-        // Override this to return the dagger texture path
         protected virtual string GetDaggerTexture()
         {
             return AssetDirectory.ArchiveItems + "CarvingKnife";

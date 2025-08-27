@@ -18,13 +18,12 @@ namespace OvermorrowMod.Common.Items.Daggers
     {
         protected Player Owner => Main.player[Projectile.owner];
 
-        // Base properties - can be modified by accessories via DaggerStats
         public virtual Color IdleColor => Color.White;
         public virtual Color TrailColor => Color.Orange;
         public virtual bool CanImpale => true;
         public virtual SoundStyle? HitSound => null;
+        public virtual SoundStyle? ThrowSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerThrow");
 
-        // Properties that can be modified by accessories
         public int FlightDuration => GetModifiedFlightDuration();
         public int IdleDuration => GetModifiedIdleDuration();
         public int ImpaleDuration => GetModifiedImpaleDuration();
@@ -32,7 +31,6 @@ namespace OvermorrowMod.Common.Items.Daggers
         public float AirResistance => GetModifiedAirResistance();
         public float GroundFriction => GetModifiedGroundFriction();
 
-        // Base values - override these in derived classes
         protected virtual int BaseFlightDuration => 30;
         protected virtual int BaseIdleDuration => 600;
         protected virtual int BaseImpaleDuration => 300;
@@ -40,12 +38,10 @@ namespace OvermorrowMod.Common.Items.Daggers
         protected virtual float BaseAirResistance => 0.99f;
         protected virtual float BaseGroundFriction => 0.97f;
 
-        // Animation timing properties - can be modified by accessories
         protected float GetBackTime() => GetModifiedBackTime();
         protected float GetForwardTime() => GetModifiedForwardTime();
         protected float GetHoldTime() => GetModifiedHoldTime();
 
-        // Base timing values - override these in derived classes
         protected virtual float BaseBackTime => 15f;
         protected virtual float BaseForwardTime => 4f;
         protected virtual float BaseHoldTime => 4f;
@@ -195,6 +191,9 @@ namespace OvermorrowMod.Common.Items.Daggers
                 AICounter = 0;
                 Owner.heldProj = -1;
                 OnThrowRelease();
+
+                if (ThrowSound.HasValue)
+                    SoundEngine.PlaySound(ThrowSound.Value, Projectile.Center);
             }
 
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
@@ -260,6 +259,9 @@ namespace OvermorrowMod.Common.Items.Daggers
 
             if (Owner.Hitbox.Intersects(Projectile.Hitbox))
             {
+                SoundEngine.PlaySound(SoundID.Grab, Owner.Center);
+
+                OnDaggerPickup();
                 Projectile.Kill();
             }
         }
@@ -299,6 +301,12 @@ namespace OvermorrowMod.Common.Items.Daggers
             }
         }
 
+        protected virtual void OnDaggerPickup() { }
+
+        /// <summary>
+        /// Called every time the impaled dagger deals damage over time
+        /// Example: Heal player, create particles, etc.
+        /// </summary>
         protected virtual void OnImpaleDamage(NPC target, int damage) { }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -327,7 +335,16 @@ namespace OvermorrowMod.Common.Items.Daggers
             OnDaggerHit(target, hit, damageDone);
         }
 
+        /// <summary>
+        /// Used for custom hit behavior. Different from impaling.
+        /// Example: Special effects, damage over time, etc.
+        /// </summary>
         protected virtual void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone) { }
+
+        /// <summary>
+        /// Used for custom impaling behavior.
+        /// Example: Apply bleeding debuff, special visual effects
+        /// </summary>
         protected virtual void OnDaggerImpale(NPC target, NPC.HitInfo hit, int damageDone) { }
 
         protected virtual void CreateThrownHitEffects(Vector2 strikePoint)
