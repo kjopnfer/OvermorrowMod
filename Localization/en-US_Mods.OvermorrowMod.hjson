@@ -672,6 +672,11 @@ Items: {
 			'''
 		Flavor: Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
 	}
+
+	CarvingKnifeNew: {
+		DisplayName: Carving Knife
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -768,4 +773,9 @@ Projectiles: {
 	CurvedDiagonalSlash.DisplayName: Curved Diagonal Slash
 	AnimatedRing.DisplayName: Animated Ring
 	PrimitiveRing.DisplayName: Primitive Ring
+	TestSlashProjectile.DisplayName: Test Slash Projectile
+	CarvingKnifeThrownNew.DisplayName: Carving Knife Thrown New
+	CarvingKnifeThrown.DisplayName: Carving Knife Thrown
+	CarvingKnifeSlashNew.DisplayName: Carving Knife Slash New
+	CarvingKnifeSlash.DisplayName: Carving Knife Slash
 }

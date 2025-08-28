@@ -1,124 +1,101 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Items.Daggers;
-using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Core.Interfaces;
-using OvermorrowMod.Core.Items;
-using OvermorrowMod.Core.Items.Daggers;
+using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
-    public class CarvingKnife : ModDagger<CarvingKnife_Held, CarvingKnife_Thrown>, IWeaponClassification
-    {
-        // I don't know why this doesn't apply to the item automatically
-        public WeaponType WeaponType => WeaponType.Dagger;
-
-        public override string Texture => AssetDirectory.ArchiveItems + Name;
-        public override void SafeSetDefaults()
-        {
-            Item.damage = 10;
-            Item.knockBack = 2f;
-            Item.useAnimation = 12;
-            Item.useTime = 12;
-            Item.width = 32;
-            Item.height = 32;
-            Item.crit = 20;
-            Item.shootSpeed = 2.1f;
-            Item.rare = ItemRarityID.Green;
-            Item.value = Item.sellPrice(0, 0, 0, 10);
-        }
-    }
-
-    public class CarvingKnife_Held : HeldDagger
+    public class CarvingKnife : ModDagger<CarvingKnifeSlash, CarvingKnifeThrown>
     {
         public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
-        public override int ParentItem => ModContent.ItemType<CarvingKnife>();
-        public override int ThrownProjectile => ModContent.ProjectileType<CarvingKnife_Thrown>();
 
-        public override DaggerStats GetBaseDaggerStats()
-        {
-            return new DaggerBuilder()
-                .WithComboSequence(DaggerAttack.Slash)
-                .WithSlashTiming(12f, 12f, 20f)
-                .WithSpeedMultiplier(1.1f)
-                .WithDamageMultiplier(1f)
-                .WithThrowVelocity(12f)
-                .WithThrowDamageMultiplier(1.25f)
-                .Build();
-        }
+        protected override int MaxComboCount => 3;
+        protected override bool HasCrossSlash => true;
+        protected override int MaxThrownDaggers => 2;
 
         public override void SafeSetDefaults()
         {
-            base.SafeSetDefaults();
-        }
-
-        public override void SetWeaponDrawing(ref Vector2 spritePositionOffset, ref Vector2 dualWieldOffset, ref float rotationOffset, ref float scaleFactor)
-        {
-            switch (ComboIndex)
-            {
-                case (int)DaggerAttack.Throw:
-                    spritePositionOffset = new Vector2(32, -8 * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(120 * player.direction);
-                    break;
-                case (int)DaggerAttack.Slash:
-                    dualWieldOffset = DualWieldFlag == 1 ? new Vector2(6, -6) : Vector2.Zero;
-                    spritePositionOffset = new Vector2(8 + dualWieldOffset.X, (16 + dualWieldOffset.Y) * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
-                    break;
-            }
-        }
-
-        public override void SetDamageHitbox(Vector2 positionOffset, ref Vector2 hitboxOffset, ref Rectangle hitbox)
-        {
-            hitbox.Width = 35;
-            hitbox.Height = 35;
-
-            switch (ComboIndex)
-            {
-                default:
-                    hitboxOffset = new Vector2(25, -5 * player.direction).RotatedBy(Projectile.rotation);
-                    hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
-                    hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
-                    break;
-            }
+            Item.damage = 13;
+            Item.knockBack = 2;
+            Item.useAnimation = 8;
+            Item.useTime = 8;
+            Item.rare = ItemRarityID.Blue;
+            Item.shootSpeed = 10f;
         }
     }
 
-    public class CarvingKnife_Thrown : ThrownDagger
+    public class CarvingKnifeSlash : HeldDagger
+    {
+        public override Color SlashColor => Color.LightBlue;
+
+        protected override string GetDaggerTexture()
+        {
+            return AssetDirectory.ArchiveItems + "CarvingKnife";
+        }
+    }
+
+    public class CarvingKnifeThrown : ThrownDagger
     {
         public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";
-        public override int ParentItem => ModContent.ItemType<CarvingKnife>();
-        public override Color IdleColor => Color.Gray;
 
-        private bool _hitNPC = false;
-        public override void OnPickup()
+        public override Color IdleColor => Color.White;
+        public override Color TrailColor => Color.White;
+        public override bool CanImpale => true;
+        public override SoundStyle? HitSound => SoundID.Dig;
+
+        protected override float BaseBackTime => 15f;
+        protected override float BaseForwardTime => 4f;
+        protected override float BaseHoldTime => 4f;
+
+        private bool hasHitNPC = false;
+        protected override void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (_hitNPC)
-                owner.AddBuff(BuffID.Invisibility, ModUtils.SecondsToTicks(4));
+            hasHitNPC = true;
         }
 
-        public override void OnThrownDaggerHit()
+        protected override void CreateThrownHitEffects(Vector2 strikePoint)
         {
-            _hitNPC = true;
-        }
-    }
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
 
-    public class CarvingKnifePlayer : ModPlayer
-    {
-        public override void PostUpdateMiscEffects()
-        {
-            if (Player.HasBuff(BuffID.Invisibility) && Player.HeldItem.type == ModContent.ItemType<CarvingKnife>())
+            Vector2 knifeDirection = Vector2.Normalize(Projectile.velocity);
+            Vector2 oppositeDirection = -knifeDirection;
+            float baseAngle = oppositeDirection.ToRotation();
+            float spreadAngle = MathHelper.ToRadians(135);
+
+            for (int i = 0; i < 8; i++)
             {
-                Player.moveSpeed += 0.15f;
+                float randomScale = Main.rand.NextFloat(0.1f, 0.25f);
+                float randomAngleOffset = Main.rand.NextFloat(-spreadAngle * 0.5f, spreadAngle * 0.5f);
+                float finalAngle = baseAngle + randomAngleOffset;
+
+                Vector2 particleDirection = new Vector2((float)System.Math.Cos(finalAngle), (float)System.Math.Sin(finalAngle));
+                Vector2 particleVelocity = particleDirection * Main.rand.Next(3, 9);
+
+                var lightSpark = new Spark(sparkTexture, maxTime: 20, false, 0f)
+                {
+                    endColor = TrailColor
+                };
+
+                ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity, TrailColor, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
             }
         }
 
-        public override void PostUpdate()
+        protected override void OnDaggerPickup()
         {
+        }
 
+        protected override void OnDaggerImpale(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+        }
+
+        protected override void OnImpaleDamage(NPC target, int damage)
+        {
         }
     }
 }

@@ -1,301 +1,563 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Core.Interfaces;
-using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Items.Daggers;
+using ReLogic.Content;
 using System;
+using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Items.Daggers
 {
-    public abstract partial class ThrownDagger : ModProjectile, IProjectileClassification
+    public abstract class ThrownDagger : ModProjectile
     {
-        public WeaponType WeaponType => WeaponType.Dagger;
-        public override string Texture => AssetDirectory.Empty;
+        protected Player Owner => Main.player[Projectile.owner];
 
-        public abstract int ParentItem { get; }
-        public virtual Color IdleColor => Color.Orange;
+        public virtual Color IdleColor => Color.White;
+        public virtual Color TrailColor => Color.Orange;
+        public virtual bool CanImpale => true;
+        public virtual SoundStyle? HitSound => null;
+        public virtual SoundStyle? ThrowSound => SoundID.Item1 with { PitchVariance = 0.1f, MaxInstances = 0 };
 
-        protected virtual bool canBePickedUp => true;
-        protected virtual bool canShowDagger => true;
+        public int FlightDuration => GetModifiedFlightDuration();
+        public int IdleDuration => GetModifiedIdleDuration();
+        public int ImpaleDuration => GetModifiedImpaleDuration();
+        public float GravityStrength => GetModifiedGravityStrength();
+        public float AirResistance => GetModifiedAirResistance();
+        public float GroundFriction => GetModifiedGroundFriction();
 
-        protected DaggerStats parentStats;
-        protected Player owner => Main.player[Projectile.owner];
+        protected virtual int BaseFlightDuration => 30;
+        protected virtual int BaseIdleDuration => 600;
+        protected virtual int BaseImpaleDuration => 300;
+        protected virtual float BaseGravityStrength => 0.25f;
+        protected virtual float BaseAirResistance => 0.99f;
+        protected virtual float BaseGroundFriction => 0.97f;
 
-        public override bool? CanDamage() => !groundCollided;
+        protected float GetBackTime() => GetModifiedBackTime();
+        protected float GetForwardTime() => GetModifiedForwardTime();
+        protected float GetHoldTime() => GetModifiedHoldTime();
 
-        public bool isFocusShot = false;
+        protected virtual float BaseBackTime => 15f;
+        protected virtual float BaseForwardTime => 4f;
+        protected virtual float BaseHoldTime => 4f;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.HeldProjDoesNotUsePlayerGfxOffY[Type] = true;
+        }
 
         public sealed override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 2; // Small hitbox to prevent early ground collision
+            Projectile.width = Projectile.height = 2;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.aiStyle = -1;
             Projectile.penetrate = -1;
             Projectile.friendly = true;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = ModUtils.SecondsToTicks(6);
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 3;
+            Projectile.localNPCHitCooldown = 15;
 
             SafeSetDefaults();
         }
 
         public virtual void SafeSetDefaults() { }
 
+        public enum AIStates
+        {
+            ThrowAnimation,
+            Thrown,
+            Idle,
+            Impaled
+        }
+
+        public NPC ImpaledNPC { get; private set; } = null;
+        private Vector2 impaledOffset;
+        private float impaledRotation;
+
+        public ref float AICounter => ref Projectile.ai[0];
+        public ref float AIState => ref Projectile.ai[1];
+
+        private float swingAngle = 0;
+        private Vector2 storedPosition;
+        private int initialDirection = 0;
+        private bool groundCollided = false;
+        private Vector2 oldPosition;
+        private float rotationRate = 0.48f;
+
+        public override bool? CanDamage()
+        {
+            return AIState == (int)AIStates.Thrown && !groundCollided;
+        }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (AIState == (int)AIStates.Impaled)
+                return false;
+            return base.CanHitNPC(target);
+        }
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            behindNPCs.Add(index);
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            initialDirection = Main.MouseWorld.X < Owner.Center.X ? -1 : 1;
+            rotationRate = Main.rand.NextFloat(0.38f, 0.58f);
+            OnDaggerSpawn(source);
+        }
+
+        protected virtual void OnDaggerSpawn(IEntitySource source) { }
+
         public override void AI()
         {
-            // Get parent dagger stats for enhanced behavior
-            if (parentStats == null)
+            // Kill dagger if it's too far from the player
+            float maxDistance = ModUtils.TilesToPixels(75);
+            if (Vector2.Distance(Projectile.Center, Owner.Center) > maxDistance)
             {
-                // Try to get stats from a held dagger of the same type, or use defaults
-                parentStats = GetParentDaggerStats();
+                SoundEngine.PlaySound(SoundID.MaxMana);
+                Projectile.Kill();
+                return;
             }
 
-            // Handle slope collisions that don't trigger normal collision
-            if (Projectile.CheckEntityBottomSlopeCollision())
-                HandleCollisionBounce();
+            Projectile.hide = false;
 
-            // Initialize rotation from spawn
-            if (Projectile.ai[0] == 0)
+            switch ((AIStates)AIState)
             {
-                Projectile.rotation = Projectile.ai[1];
-                Projectile.ai[1] = 0;
+                case AIStates.ThrowAnimation:
+                    AICounter++;
+                    Owner.heldProj = Projectile.whoAmI;
+                    Owner.itemTime = Owner.itemAnimation = 2;
+                    HandleThrowAnimation();
+                    break;
+                case AIStates.Thrown:
+                    AICounter++;
+                    HandleThrownState();
+                    break;
+                case AIStates.Idle:
+                    AICounter++;
+                    HandleIdleState();
+                    break;
+                case AIStates.Impaled:
+                    Projectile.hide = true;
+                    AICounter++;
+                    HandleImpaledState();
+                    break;
             }
 
-            // Expand hitbox after initial throw phase
-            if (Projectile.ai[0] > 10)
-                Projectile.width = Projectile.height = 32;
+            if (Projectile.timeLeft == 1)
+                SoundEngine.PlaySound(SoundID.MaxMana);
+        }
 
-            if (!groundCollided)
+        private void HandleThrowAnimation()
+        {
+            float backTime = GetBackTime();
+            float forwardTime = GetForwardTime();
+            float holdTime = GetHoldTime();
+            float releaseTime = backTime + (forwardTime * 0.9f);
+
+            Vector2 mousePosition = Main.MouseWorld;
+            Projectile.spriteDirection = initialDirection;
+            Owner.direction = initialDirection;
+
+            // Calculate swing angle based on animation phase
+            if (AICounter <= backTime)
             {
-                HandleFlightPhase();
+                swingAngle = MathHelper.Lerp(0, 105, EasingUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+            }
+            else if (AICounter <= backTime + forwardTime)
+            {
+                swingAngle = MathHelper.Lerp(105, 15, EasingUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
             }
             else
             {
-                HandleGroundPhase();
+                swingAngle = MathHelper.Lerp(15, -45, EasingUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
             }
 
-            // Check for pickup by owner
-            if (groundCollided && canBePickedUp)
+            // Position dagger during throw animation
+            float weaponRotation = Owner.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -initialDirection;
+            Projectile.rotation = weaponRotation;
+
+            Vector2 armPosition = Owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
+            armPosition.Y += Owner.gfxOffY;
+
+            Vector2 knifeOffset = GetThrowOffset();
+            Vector2 rotatedOffset = knifeOffset.RotatedBy(Projectile.rotation);
+            Projectile.Center = armPosition + rotatedOffset;
+
+            if (AICounter >= releaseTime)
             {
-                CheckForPickup();
+                storedPosition = Projectile.Center;
+                if (initialDirection == -1)
+                    storedPosition.X += -14;
+
+                AIState = (int)AIStates.Thrown;
+                AICounter = 0;
+                Owner.heldProj = -1;
+                OnThrowRelease();
+
+                if (ThrowSound.HasValue)
+                {
+                    var sound = ThrowSound.Value;
+
+                    SoundEngine.PlaySound(sound, Projectile.Center);
+
+                }
             }
 
-            base.AI();
+            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
+        }
+
+        protected virtual Vector2 GetThrowOffset()
+        {
+            return new Vector2(16, -8 * initialDirection);
+        }
+
+        protected virtual void OnThrowRelease() { }
+
+        private void HandleThrownState()
+        {
+            if (AICounter == 1)
+            {
+                Projectile.Center = storedPosition;
+            }
+
+            if (AICounter > FlightDuration)
+            {
+                HandleFlightPhase();
+                Projectile.extraUpdates = 0;
+            }
+            else
+            {
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(50);
+                Projectile.extraUpdates = 1;
+            }
+            Projectile.width = Projectile.height = 32;
         }
 
         private void HandleFlightPhase()
         {
-            // Air resistance
-            Projectile.velocity.X *= 0.99f;
+            Projectile.velocity.X *= AirResistance;
+            rotationRate *= 0.98f; // Gradually slow rotation
+            Projectile.rotation += rotationRate * (Projectile.velocity.X > 0 ? 1 : -1);
 
-            // Spinning motion based on velocity direction
-            Projectile.rotation += 0.48f * (Projectile.velocity.X > 0 ? 1 : -1);
-
-            // Gravity after initial throw
-            if (Projectile.ai[0]++ > 10)
-                Projectile.velocity.Y += 0.25f;
+            if (AICounter > 10)
+                Projectile.velocity.Y += GravityStrength;
         }
 
-        private void HandleGroundPhase()
+        private void HandleIdleState()
         {
-            // Slow down horizontal movement
-            Projectile.velocity.X *= 0.97f;
+            Projectile.velocity.X *= GroundFriction;
 
-            // Landing stabilization
-            if (Projectile.ai[1] == 60f)
+            if (AICounter == 60f)
             {
                 Projectile.velocity.X *= 0.01f;
                 oldPosition = Projectile.Center;
             }
 
-            // Gradually reduce rotation
-            float rotationFactor = MathHelper.Lerp(0.48f, 0f, Utils.Clamp(Projectile.ai[1]++, 0, 60f) / 60f);
+            float rotationFactor = MathHelper.Lerp(0.48f, 0f, Utils.Clamp(AICounter, 0, 60f) / 60f);
             Projectile.rotation += rotationFactor * (Projectile.velocity.X > 0 ? 1 : -1);
-
-            // Reduce vertical bouncing
             Projectile.velocity.Y *= 0.96f;
 
-            // Floating animation after landing
-            if (Projectile.ai[1] > 60f)
+            if (AICounter > 60f)
             {
                 Projectile.tileCollide = false;
-                float floatProgress = (Projectile.ai[1] - 60f) / 40f;
+                float floatProgress = (AICounter - 60f) / 40f;
                 Projectile.Center = Vector2.Lerp(oldPosition, oldPosition + Vector2.UnitY * 24, (float)Math.Sin(floatProgress));
             }
-        }
 
-        private void CheckForPickup()
-        {
-            if (owner.Hitbox.Intersects(Projectile.Hitbox))
+            if (Owner.Hitbox.Intersects(Projectile.Hitbox))
             {
-                OnPickup();
+                SoundEngine.PlaySound(SoundID.Grab, Owner.Center);
+
+                OnDaggerPickup();
                 Projectile.Kill();
             }
         }
 
-        private DaggerStats GetParentDaggerStats()
+        private void HandleImpaledState()
         {
-            // Try to find an active held dagger to get stats from
-            for (int i = 0; i < Main.projectile.Length; i++)
+            if (ImpaledNPC == null || !ImpaledNPC.active)
             {
-                var proj = Main.projectile[i];
-                if (proj.active && proj.owner == Projectile.owner && proj.ModProjectile is HeldDagger heldDagger)
+                SoundEngine.PlaySound(SoundID.MaxMana);
+                Projectile.Kill();
+                return;
+            }
+
+            Projectile.Center = ImpaledNPC.Center + impaledOffset;
+            Projectile.rotation = impaledRotation;
+            Projectile.velocity = Vector2.Zero;
+            Projectile.tileCollide = false;
+
+            // Wobble effect
+            if (AICounter < 30)
+            {
+                float wobbleAmount = (30 - AICounter) * 0.02f;
+                float wobble = (float)Math.Sin(AICounter * 0.3f) * wobbleAmount;
+                Projectile.rotation = impaledRotation + wobble;
+            }
+
+            // Damage over time
+            if (AICounter % 60 == 0 && AICounter > 60)
+            {
+                int damage = Projectile.damage / 3;
+                ImpaledNPC.SimpleStrikeNPC(damage, 0, false, 0f, null, false, 0f, true);
+                OnImpaleDamage(ImpaledNPC, damage);
+            }
+
+            if (AICounter > ImpaleDuration)
+            {
+                SoundEngine.PlaySound(SoundID.MaxMana);
+                Projectile.Kill();
+            }
+        }
+
+        protected virtual void OnDaggerPickup() { }
+
+        /// <summary>
+        /// Called every time the impaled dagger deals damage over time
+        /// Example: Heal player, create particles, etc.
+        /// </summary>
+        protected virtual void OnImpaleDamage(NPC target, int damage) { }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            CreateThrownHitEffects(Projectile.Center);
+
+            if (HitSound.HasValue)
+                SoundEngine.PlaySound(HitSound.Value, Projectile.Center);
+
+            bool canImpale = CanImpale && AIState == (int)AIStates.Thrown && AICounter < FlightDuration;
+            if (canImpale)
+            {
+                ImpaledNPC = target;
+                if (ImpaledNPC != null)
                 {
-                    if (heldDagger.ParentItem == ParentItem)
-                        return heldDagger.GetBaseDaggerStats();
+                    impaledOffset = Projectile.Center - ImpaledNPC.Center;
+                    impaledRotation = Projectile.rotation;
+
+                    AIState = (int)AIStates.Impaled;
+                    AICounter = 0;
+                    Projectile.timeLeft = ImpaleDuration + 60;
+                    OnDaggerImpale(target, hit, damageDone);
                 }
             }
 
-            // Fallback to default stats
-            return new DaggerStats();
+            OnDaggerHit(target, hit, damageDone);
         }
 
-        public override bool PreDraw(ref Color lightColor)
+        /// <summary>
+        /// Used for custom hit behavior. Different from impaling.
+        /// Example: Special effects, damage over time, etc.
+        /// </summary>
+        protected virtual void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone) { }
+
+        /// <summary>
+        /// Used for custom impaling behavior.
+        /// Example: Apply bleeding debuff, special visual effects
+        /// </summary>
+        protected virtual void OnDaggerImpale(NPC target, NPC.HitInfo hit, int damageDone) { }
+
+        protected virtual void CreateThrownHitEffects(Vector2 strikePoint)
         {
-            if (!canShowDagger) return false;
-
-            DrawIdleEffects(lightColor);
-            DrawDaggerSprite(lightColor);
-
-            // Allow accessories to add effects to thrown daggers
-            var daggerPlayer = owner.GetModPlayer<DaggerPlayer>();
-            foreach (var drawEffect in daggerPlayer.ActiveDrawEffects)
-            {
-                drawEffect.DrawThrownDaggerEffects(this, owner, Main.spriteBatch);
-            }
-
-            return false;
         }
 
-        private void DrawIdleEffects(Color lightColor)
-        {
-            if (!groundCollided) return;
-
-            float activeAlpha = MathHelper.Lerp(0f, 1f, Utils.Clamp(Projectile.timeLeft, 0, 60f) / 60f);
-            float glowAlpha = 0.65f * activeAlpha;
-
-            Main.spriteBatch.Reload(BlendState.Additive);
-
-            // Draw glow ring
-            Texture2D ringTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01").Value;
-            Main.spriteBatch.Draw(ringTexture, Projectile.Center - Main.screenPosition, null,
-                IdleColor * glowAlpha, Projectile.rotation, ringTexture.Size() / 2f, 0.1f, SpriteEffects.None, 1);
-
-            // Draw sparkle effect
-            Texture2D starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05").Value;
-            Main.spriteBatch.Draw(starTexture, Projectile.Center - Main.screenPosition, null,
-                IdleColor * glowAlpha, Projectile.rotation, starTexture.Size() / 2f, 0.5f, SpriteEffects.None, 1);
-
-            // Enhanced effect for focus shots
-            if (isFocusShot)
-            {
-                Color focusColor = Color.Lerp(IdleColor, Color.White, 0.5f);
-                Main.spriteBatch.Draw(ringTexture, Projectile.Center - Main.screenPosition, null,
-                    focusColor * glowAlpha * 0.8f, Projectile.rotation + MathHelper.PiOver4, ringTexture.Size() / 2f, 0.15f, SpriteEffects.None, 1);
-            }
-
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
-        }
-
-        private void DrawDaggerSprite(Color lightColor)
-        {
-            Texture2D texture = TextureAssets.Item[ParentItem].Value;
-            SpriteEffects spriteEffects = Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
-
-            float activeAlpha = MathHelper.Lerp(0f, 1f, Utils.Clamp(Projectile.timeLeft, 0, 60f) / 60f);
-            Color drawColor = groundCollided ? Color.White : lightColor;
-
-            // Enhanced color for focus shots
-            if (isFocusShot && !groundCollided)
-            {
-                drawColor = Color.Lerp(drawColor, parentStats?.FlashColor ?? Color.White, 0.3f);
-            }
-
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null,
-                drawColor * activeAlpha, Projectile.rotation, texture.Size() / 2f,
-                Projectile.scale, spriteEffects, 1);
-        }
-
-        bool groundCollided = false;
-        Vector2 oldPosition;
-
-        public sealed override bool OnTileCollide(Vector2 oldVelocity)
+        public override bool OnTileCollide(Vector2 oldVelocity)
         {
             if (!groundCollided && Projectile.velocity.Y > 0)
             {
-                HandleCollisionBounce();
+                groundCollided = true;
+                Projectile.velocity.X *= 0.5f;
+                Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
+                Projectile.timeLeft = IdleDuration;
+                AIState = (int)AIStates.Idle;
+                AICounter = 0;
+                OnGroundHit(oldVelocity);
             }
             else
             {
                 Projectile.velocity *= -0.5f;
             }
+            return false;
+        }
+
+        protected virtual void OnGroundHit(Vector2 oldVelocity) { }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            float drawRotation = GetDrawRotation();
+            float fadeAlpha = GetFadeAlpha();
+            SpriteEffects spriteEffects = GetSpriteEffects();
+            Color fadeColor = lightColor * fadeAlpha;
+
+            DrawIdleEffects();
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, fadeColor, drawRotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 0);
+            DrawSlashShine();
 
             return false;
         }
 
-        /// <summary>
-        /// Called before the default bounce behavior. Return false to prevent bouncing.
-        /// </summary>
-        public virtual bool PreHandleCollisionBounce() { return true; }
-
-        private void HandleCollisionBounce()
+        protected virtual float GetDrawRotation()
         {
-            if (groundCollided || !PreHandleCollisionBounce()) return;
-
-            OnLanding();
-
-            groundCollided = true;
-            Projectile.velocity.X *= 0.5f;
-            Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
-
-            // Use stats system for recovery time
-            if (parentStats != null)
-                Projectile.timeLeft = parentStats.ThrowRecoveryTime;
+            if (AIState == (int)AIStates.ThrowAnimation)
+            {
+                float rotationOffset = initialDirection == 1 ? 45 : 135;
+                return Projectile.rotation + MathHelper.ToRadians(rotationOffset);
+            }
             else
-                Projectile.timeLeft = 600;
+            {
+                if (initialDirection == -1)
+                    return Projectile.rotation + MathHelper.ToRadians(90);
+                return Projectile.rotation;
+            }
         }
 
-        public sealed override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        protected virtual float GetFadeAlpha()
         {
-            // Apply modifiers from accessories
-            var modifiers = new NPC.HitModifiers();
-            var daggerPlayer = owner.GetModPlayer<DaggerPlayer>();
-            DaggerModifierHandler.TriggerThrownDaggerHit(this, owner, target, ref modifiers);
-
-            // Apply focus shot effects
-            if (isFocusShot)
+            if (AIState == (int)AIStates.Impaled)
             {
-                OnFocusShotHit(target, hit, damageDone);
+                float fadeTime = ModUtils.SecondsToTicks(2);
+                if (AICounter > ImpaleDuration - fadeTime)
+                {
+                    float timeRemaining = ImpaleDuration - AICounter;
+                    return MathHelper.Clamp(timeRemaining / fadeTime, 0f, 1f);
+                }
+            }
+            else if (Projectile.timeLeft < ModUtils.SecondsToTicks(1))
+            {
+                return Projectile.timeLeft / (float)ModUtils.SecondsToTicks(1);
+            }
+            return 1f;
+        }
+
+        protected virtual SpriteEffects GetSpriteEffects()
+        {
+            return initialDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        }
+
+        private void DrawIdleEffects()
+        {
+            if (!groundCollided) return;
+
+            float activeAlpha = MathHelper.Lerp(0f, 1f, Utils.Clamp(Projectile.timeLeft, 0, 60f) / 60f);
+            float glowAlpha = 0.55f * activeAlpha;
+
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D ringTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01").Value;
+            Main.spriteBatch.Draw(ringTexture, Projectile.Center - Main.screenPosition, null,
+                IdleColor * glowAlpha, Projectile.rotation, ringTexture.Size() / 2f, 0.1f, SpriteEffects.None, 1);
+
+            Texture2D starTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05").Value;
+            Main.spriteBatch.Draw(starTexture, Projectile.Center - Main.screenPosition, null,
+                IdleColor * glowAlpha, Projectile.rotation, starTexture.Size() / 2f, 0.5f, SpriteEffects.None, 1);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+
+        private void DrawSlashShine()
+        {
+            if (AIState != (int)AIStates.Thrown || AICounter > 40) return;
+
+            float progress = AICounter / 40f;
+            Vector2 knifeDirection = new Vector2(15, -15).RotatedBy(Projectile.rotation);
+            Vector2 center = Projectile.Center + knifeDirection;
+
+            Texture2D slashTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_06").Value;
+
+            float alpha = 0f;
+            float scaleX = 1f;
+
+            if (progress <= 0.2f)
+            {
+                alpha = (progress / 0.2f) * 0.8f;
+                scaleX = progress / 0.2f;
+            }
+            else if (progress <= 0.4f)
+            {
+                alpha = 1f;
+                scaleX = 1f;
+            }
+            else
+            {
+                float fadeProgress = (progress - 0.4f) / 0.6f;
+                alpha = (1f - fadeProgress) * 0.8f;
+                scaleX = 1f - fadeProgress;
             }
 
-            OnThrownDaggerHit();
-            base.OnHitNPC(target, hit, damageDone);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Main.spriteBatch.Draw(slashTexture, center - Main.screenPosition, null, TrailColor * alpha, 0f + MathHelper.PiOver2, slashTexture.Size() * 0.5f, new Vector2(0.05f * scaleX, 0.35f), SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(slashTexture, center - Main.screenPosition, null, TrailColor * alpha, 0f, slashTexture.Size() * 0.5f, new Vector2(0.05f * scaleX, 0.25f), SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
-        /// <summary>
-        /// Called when the thrown dagger hits any enemy.
-        /// </summary>
-        public virtual void OnThrownDaggerHit() { }
+        // Methods to get modified values from accessories
+        private int GetModifiedFlightDuration()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyFlightDuration(BaseFlightDuration);
+        }
 
-        /// <summary>
-        /// Called when a focus shot (charged throw) hits an enemy.
-        /// </summary>
-        public virtual void OnFocusShotHit(NPC target, NPC.HitInfo hit, int damageDone) { }
+        private int GetModifiedIdleDuration()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyIdleDuration(BaseIdleDuration);
+        }
 
-        /// <summary>
-        /// Called when the dagger lands on the ground.
-        /// </summary>
-        public virtual void OnLanding() { }
+        private int GetModifiedImpaleDuration()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyImpaleDuration(BaseImpaleDuration);
+        }
 
-        /// <summary>
-        /// Called when the player picks up the dagger.
-        /// </summary>
-        public virtual void OnPickup() { }
+        private float GetModifiedGravityStrength()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyGravity(BaseGravityStrength);
+        }
+
+        private float GetModifiedAirResistance()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyAirResistance(BaseAirResistance);
+        }
+
+        private float GetModifiedGroundFriction()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyGroundFriction(BaseGroundFriction);
+        }
+
+        private float GetModifiedBackTime()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyTiming(BaseBackTime);
+        }
+
+        private float GetModifiedForwardTime()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyTiming(BaseForwardTime);
+        }
+
+        private float GetModifiedHoldTime()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), Owner);
+            return stats.ModifyTiming(BaseHoldTime);
+        }
     }
 }

@@ -1,57 +1,29 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Items.Daggers;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items.Archives;
+using OvermorrowMod.Content.Items.Archives.Weapons;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Effects.Slash;
-using OvermorrowMod.Core.Items.Daggers;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.Items.Daggers
+namespace OvermorrowMod.Content.Items.Test
 {
-    public abstract class HeldDagger : ModProjectile
+    public class TestSlashProjectile : ModProjectile
     {
         public override string Texture => AssetDirectory.Empty;
 
-        // Properties that can be modified by accessories
-        public int TotalTime => GetModifiedTotalTime();
-        public Color SlashColor => GetModifiedSlashColor();
-        public SoundStyle? SlashSound => GetModifiedSlashSound();
-
-        // Base values - override these in derived classes
-        protected virtual int BaseTotalTime => 22;
-        protected virtual Color BaseSlashColor => Color.White;
-        protected virtual SoundStyle? BaseSlashSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerSlash")
-        {
-            Volume = 0.5f,
-            Pitch = 0.5f,
-            PitchVariance = 0.2f,
-            MaxInstances = 1,
-        };
-
-        private int totalTime;
+        private int totalTime = 22;
         private int playerDirection = 1;
-        private SlashRenderer slashRenderer;
-        private SlashPath fullSlashPath;
-        private Vector2 baseOffset;
-
-        Player player => Main.player[Projectile.owner];
-        public ref float SwingDirection => ref Projectile.ai[0];
-        public ref float OffhandFlag => ref Projectile.ai[1];
-        private bool swingForward => SwingDirection == 1;
-
         public override void SetDefaults()
         {
-            totalTime = TotalTime;
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -63,9 +35,17 @@ namespace OvermorrowMod.Common.Items.Daggers
             Projectile.localNPCHitCooldown = 60;
         }
 
+        private SlashRenderer slashRenderer;
+        private SlashPath fullSlashPath;
+        private Vector2 baseOffset;
+
+        Player player => Main.player[Projectile.owner];
+        public ref float SwingDirection => ref Projectile.ai[0];
+        public ref float OffhandFlag => ref Projectile.ai[1];
+        private bool swingForward => SwingDirection == 1;
         public override void OnSpawn(IEntitySource source)
         {
-            ModDaggerBase item = player.HeldItem.ModItem as ModDaggerBase;
+            CarvingKnife item = player.HeldItem.ModItem as CarvingKnife;
             if (OffhandFlag == 1)
             {
                 SwingDirection = item.ComboCount == 3 ? -SwingDirection : SwingDirection;
@@ -105,7 +85,7 @@ namespace OvermorrowMod.Common.Items.Daggers
 
         private void InitializeSlash()
         {
-            ModDaggerBase item = player.HeldItem.ModItem as ModDaggerBase;
+            CarvingKnife item = player.HeldItem.ModItem as CarvingKnife;
 
             Vector2 center = player.MountedCenter;
             float radiusX = Main.rand.Next(8, 10) * 5f;
@@ -159,33 +139,6 @@ namespace OvermorrowMod.Common.Items.Daggers
             SetupLayers();
         }
 
-        protected virtual void SetupLayers()
-        {
-            Texture2D dissolvedTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Blurred", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D laserTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Edge", AssetRequestMode.ImmediateLoad).Value;
-
-            float opacity = 0.3f;
-            slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, SlashColor * opacity * 0.5f, 1f, 1f)
-            {
-                Opacity = 0.5f,
-                WidthScale = 0.5f,
-                StartTaper = 0f,
-                EndTaper = 1f,
-                TaperLength = 0.5f
-            });
-
-            slashRenderer.AddLayer(new SlashLayer(laserTexture, Color.White * opacity, 1f, 1f)
-            {
-                Opacity = 0.5f,
-                StartTaper = 0f,
-                EndTaper = 1f,
-                WidthScale = 0.5f,
-                TaperLength = 0.5f,
-                BlendState = BlendState.Additive,
-                SpriteEffects = SpriteEffects.FlipHorizontally
-            });
-        }
-
         private float GetCurrentDrawingAngle()
         {
             int elapsedTicks = totalTime - Projectile.timeLeft;
@@ -218,30 +171,14 @@ namespace OvermorrowMod.Common.Items.Daggers
         {
             // Find the collision point on the slash path
             Vector2 strikePoint = GetStrikePoint(target);
-            CreateSlashHitEffects(strikePoint);
-            OnDaggerHit(target, hit, damageDone);
-
-            // Apply hit modifiers from accessories
-            var hitModifiers = new NPC.HitModifiers();
-            DaggerModifierHandler.TriggerSlashHit(this, player, target, ref hitModifiers);
-        }
-
-        /// <summary>
-        /// Used for custom hit behavior.
-        /// </summary>
-        protected virtual void OnDaggerHit(NPC target, NPC.HitInfo hit, int damageDone) { }
-
-        /// <summary>
-        /// Used for custom hit particles
-        /// </summary>
-        protected virtual void CreateSlashHitEffects(Vector2 strikePoint)
-        {
             Vector2 tangentDirection = GetTangentAtPoint(strikePoint);
+
+            float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
 
             for (int i = 0; i < Main.rand.Next(2, 4); i++)
             {
-                float randomScale = Main.rand.NextFloat(0.1f, 0.25f);
+                randomScale = Main.rand.NextFloat(0.1f, 0.25f);
 
                 // Create particles tangent to the strike point
                 float tangentSpread = MathHelper.ToRadians(45);
@@ -251,9 +188,9 @@ namespace OvermorrowMod.Common.Items.Daggers
 
                 var lightSpark = new Spark(sparkTexture, maxTime: 30, false, 0f)
                 {
-                    endColor = SlashColor
+                    endColor = Color.White
                 };
-                ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity * 2, SlashColor, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
+                ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity * 2, Color.White, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
             }
         }
 
@@ -349,6 +286,8 @@ namespace OvermorrowMod.Common.Items.Daggers
             {
                 float t = i / (float)samplePoints;
                 Vector2 slashPoint = currentPath.GetPointAt(t);
+                Vector2 direction = currentPath.GetDirectionAt(t);
+                Vector2 perpendicular = new Vector2(-direction.Y, direction.X);
 
                 Rectangle slashSegment = new Rectangle(
                     (int)(slashPoint.X - slashWidth * 0.5f),
@@ -362,6 +301,35 @@ namespace OvermorrowMod.Common.Items.Daggers
             }
 
             return false;
+        }
+
+
+        private void SetupLayers()
+        {
+            Texture2D dissolvedTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Blurred").Value;
+            Texture2D laserTexture = ModContent.Request<Texture2D>(AssetDirectory.SlashTrails + "Edge").Value;
+            Texture2D supportTexture = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Jagged").Value;
+
+            float opacity = 0.3f;
+            slashRenderer.AddLayer(new SlashLayer(dissolvedTexture, Color.LightBlue * opacity * 0.5f, 1f, 1f)
+            {
+                Opacity = 0.5f,
+                WidthScale = 0.5f,
+                StartTaper = 0f,
+                EndTaper = 1f,
+                TaperLength = 0.5f
+            });
+
+            slashRenderer.AddLayer(new SlashLayer(laserTexture, Color.White * opacity, 1f, 1f)
+            {
+                Opacity = 0.5f,
+                StartTaper = 0f,
+                EndTaper = 1f,
+                WidthScale = 0.5f,
+                TaperLength = 0.5f,
+                BlendState = BlendState.Additive,
+                SpriteEffects = SpriteEffects.FlipHorizontally
+            });
         }
 
         private float windupPhase = 0.25f;
@@ -386,12 +354,6 @@ namespace OvermorrowMod.Common.Items.Daggers
             {
                 windupProgress = 1f;
                 drawProgress = (progress - windupPhase) / drawPhase;
-
-                if (drawProgress > 0f && elapsedTicks == (int)(windupPhase * totalTime) + 1)
-                {
-                    if (SlashSound.HasValue && OffhandFlag != 1)
-                        SoundEngine.PlaySound(SlashSound.Value, player.Center);
-                }
             }
             else if (progress <= windupPhase + drawPhase + holdPhase)
             {
@@ -408,6 +370,7 @@ namespace OvermorrowMod.Common.Items.Daggers
                 fadeProgress = (progress - fadeStart) / fadePhase;
                 fadeProgress = Math.Min(fadeProgress, 1f);
             }
+
 
             Vector2 newCenter = player.MountedCenter + baseOffset;
             fullSlashPath = new SlashPath(
@@ -452,7 +415,7 @@ namespace OvermorrowMod.Common.Items.Daggers
             {
                 // Pull back more prominently on windup (opposite direction)
                 float windupAmount = EasingUtils.EaseInOutQuad(windupProgress);
-                armAdjustment = MathHelper.Lerp(swingForward ? -1.6f : 1.6f, 0f, windupAmount);
+                armAdjustment = MathHelper.Lerp(swingForward ? -1.6f : 1.6f, 0f, windupAmount); // -0.6 radians back (more prominent)
             }
 
             float finalAngle = baseAngle + armAdjustment;
@@ -516,11 +479,6 @@ namespace OvermorrowMod.Common.Items.Daggers
             }
         }
 
-        protected virtual string GetDaggerTexture()
-        {
-            return AssetDirectory.ArchiveItems + "CarvingKnife";
-        }
-
         private void DrawIntersectionSlash(float progress)
         {
             Vector2 offset = new Vector2(50 * playerDirection, 0);
@@ -574,17 +532,18 @@ namespace OvermorrowMod.Common.Items.Daggers
                 slashRenderer.Draw(Main.spriteBatch);
             }
 
+
             SpriteEffects spriteEffects = swingForward ? SpriteEffects.FlipVertically : SpriteEffects.None;
             var rotationOffset = swingForward ? MathHelper.ToRadians(40) : MathHelper.ToRadians(140);
             Vector2 off = new Vector2(swingForward ? -55 : -10, 0).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
 
-            Texture2D texture = ModContent.Request<Texture2D>(GetDaggerTexture()).Value;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveItems + "CarvingKnife").Value;
             Vector2 drawOrigin = swingForward ? new Vector2(texture.Width, texture.Height) : new Vector2(0, texture.Height);
 
             Main.spriteBatch.Draw(texture, player.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, lightColor, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
 
-            ModDaggerBase item = player.HeldItem.ModItem as ModDaggerBase;
-            if (item.ComboCount == 0 && OffhandFlag != 1 && player.ownedProjectileCounts[this.Type] == 2) // Only draw once from main hand
+            CarvingKnife item = player.HeldItem.ModItem as CarvingKnife;
+            if (item.ComboCount == 0 && OffhandFlag != 1 && player.ownedProjectileCounts[ModContent.ProjectileType<TestSlashProjectile>()] == 2) // Only draw once from main hand
             {
                 int elapsedTicks = totalTime - Projectile.timeLeft;
                 float progress = elapsedTicks / (float)totalTime;
@@ -595,26 +554,8 @@ namespace OvermorrowMod.Common.Items.Daggers
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
+
             return false;
-        }
-
-        // Methods to get modified values from accessories
-        private int GetModifiedTotalTime()
-        {
-            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), player);
-            return (int)(BaseTotalTime / stats.AnimationSpeedMultiplier);
-        }
-
-        private Color GetModifiedSlashColor()
-        {
-            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), player);
-            return stats.OverrideIdleColor ?? BaseSlashColor;
-        }
-
-        private SoundStyle? GetModifiedSlashSound()
-        {
-            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), player);
-            return stats.OverrideHitSound ?? BaseSlashSound;
         }
     }
 }

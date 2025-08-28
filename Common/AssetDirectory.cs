@@ -23,6 +23,7 @@ namespace OvermorrowMod.Common
         public const string Misc = Assets + "Sprites/Misc/";
         public const string Projectiles = Assets + "Sprites/Projectiles/";
         public const string Trails = Textures + "Trails/";
+        public const string SlashTrails = Textures + "SwordTrails/";
 
         public const string GunUI = UI + "Gun/";
         public const string Tooltips = UI + "Tooltips/";

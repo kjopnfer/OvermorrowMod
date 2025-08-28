@@ -6,7 +6,6 @@ namespace OvermorrowMod.Core.Items.Daggers
 {
     /// <summary>
     /// Handles the application of dagger modifiers from accessories to dagger stats and behavior.
-    /// Centralizes all modifier interactions for clean separation of concerns.
     /// </summary>
     public static class DaggerModifierHandler
     {
@@ -24,30 +23,6 @@ namespace OvermorrowMod.Core.Items.Daggers
             }
 
             return modifiedStats;
-        }
-
-        /// <summary>
-        /// Triggers charged throw events for all applicable modifiers.
-        /// </summary>
-        public static void TriggerChargedThrow(HeldDagger dagger, Player player, ThrownDagger thrownDagger)
-        {
-            var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
-            foreach (var modifier in daggerPlayer.ActiveModifiers)
-            {
-                modifier.OnChargedThrow(dagger, player, thrownDagger);
-            }
-        }
-
-        /// <summary>
-        /// Triggers stab hit events for all applicable modifiers.
-        /// </summary>
-        public static void TriggerStabHit(HeldDagger dagger, Player player, NPC target, ref NPC.HitModifiers modifiers)
-        {
-            var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
-            foreach (var modifier in daggerPlayer.ActiveModifiers)
-            {
-                modifier.OnStabHit(dagger, player, target, ref modifiers);
-            }
         }
 
         /// <summary>
@@ -111,10 +86,46 @@ namespace OvermorrowMod.Core.Items.Daggers
         }
 
         /// <summary>
+        /// Triggers cross slash events for all applicable modifiers.
+        /// </summary>
+        public static void TriggerCrossSlash(HeldDagger mainDagger, HeldDagger offDagger, Player player)
+        {
+            var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
+            foreach (var modifier in daggerPlayer.ActiveModifiers)
+            {
+                modifier.OnCrossSlash(mainDagger, offDagger, player);
+            }
+        }
+
+        /// <summary>
+        /// Triggers dagger impale events for all applicable modifiers.
+        /// </summary>
+        public static void TriggerDaggerImpale(ThrownDagger thrownDagger, Player player, NPC target)
+        {
+            var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
+            foreach (var modifier in daggerPlayer.ActiveModifiers)
+            {
+                modifier.OnDaggerImpale(thrownDagger, player, target);
+            }
+        }
+
+        /// <summary>
+        /// Triggers dagger thrown events for all applicable modifiers.
+        /// </summary>
+        public static void TriggerDaggerThrown(ThrownDagger thrownDagger, Player player, Vector2 throwVelocity)
+        {
+            var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
+            foreach (var modifier in daggerPlayer.ActiveModifiers)
+            {
+                modifier.OnDaggerThrown(thrownDagger, player, throwVelocity);
+            }
+        }
+
+        /// <summary>
         /// Checks if any modifier wants to override the default throw behavior.
         /// Returns true if default throwing should be prevented.
         /// </summary>
-        public static bool HandleSpecialThrow(HeldDagger dagger, Player player, Vector2 throwVelocity, ref Projectile thrownProjectile)
+        public static bool HandleSpecialThrow(ModDagger<HeldDagger, ThrownDagger> dagger, Player player, Vector2 throwVelocity, ref Projectile thrownProjectile)
         {
             var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
             foreach (var throwBehavior in daggerPlayer.ActiveThrowBehaviors)
@@ -128,12 +139,12 @@ namespace OvermorrowMod.Core.Items.Daggers
         /// <summary>
         /// Allows modifiers to adjust throw velocity before the dagger is launched.
         /// </summary>
-        public static void ModifyThrowVelocity(HeldDagger dagger, Player player, ref Vector2 velocity, float chargeProgress)
+        public static void ModifyThrowVelocity(ModDagger<HeldDagger, ThrownDagger> dagger, Player player, ref Vector2 velocity)
         {
             var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
             foreach (var throwBehavior in daggerPlayer.ActiveThrowBehaviors)
             {
-                throwBehavior.ModifyThrowVelocity(dagger, player, ref velocity, chargeProgress);
+                throwBehavior.ModifyThrowVelocity(dagger, player, ref velocity);
             }
         }
     }
