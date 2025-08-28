@@ -22,7 +22,7 @@ namespace OvermorrowMod.Common.Items.Daggers
         public virtual Color TrailColor => Color.Orange;
         public virtual bool CanImpale => true;
         public virtual SoundStyle? HitSound => null;
-        public virtual SoundStyle? ThrowSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerThrow");
+        public virtual SoundStyle? ThrowSound => SoundID.Item1 with { PitchVariance = 0.1f, MaxInstances = 0 };
 
         public int FlightDuration => GetModifiedFlightDuration();
         public int IdleDuration => GetModifiedIdleDuration();
@@ -193,7 +193,12 @@ namespace OvermorrowMod.Common.Items.Daggers
                 OnThrowRelease();
 
                 if (ThrowSound.HasValue)
-                    SoundEngine.PlaySound(ThrowSound.Value, Projectile.Center);
+                {
+                    var sound = ThrowSound.Value;
+
+                    SoundEngine.PlaySound(sound, Projectile.Center);
+
+                }
             }
 
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));

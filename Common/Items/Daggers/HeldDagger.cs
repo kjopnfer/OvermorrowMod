@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Items.Daggers
@@ -22,7 +23,13 @@ namespace OvermorrowMod.Common.Items.Daggers
         public override string Texture => AssetDirectory.Empty;
 
         public virtual Color SlashColor => Color.White;
-        public virtual SoundStyle? SlashSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerSlash");
+        public virtual SoundStyle? SlashSound => /*SoundID.Item1 with*/new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerSlash")
+        {
+            Volume = 0.5f,
+            Pitch = 0.5f,
+            PitchVariance = 0.2f,
+            MaxInstances = 1,
+        };
 
         public virtual int TotalTime => 22;
 
@@ -377,7 +384,7 @@ namespace OvermorrowMod.Common.Items.Daggers
 
                 if (drawProgress > 0f && elapsedTicks == (int)(windupPhase * totalTime) + 1)
                 {
-                    if (SlashSound.HasValue)
+                    if (SlashSound.HasValue && OffhandFlag != 1)
                         SoundEngine.PlaySound(SlashSound.Value, player.Center);
                 }
             }
