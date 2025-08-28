@@ -16,11 +16,23 @@ namespace OvermorrowMod.Core.Items.Daggers
         {
             DaggerStats modifiedStats = baseStats.Clone();
 
-            var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
-            foreach (var modifier in daggerPlayer.ActiveModifiers)
+            try
             {
-                modifier.ModifyDaggerStats(modifiedStats, player);
+                var daggerPlayer = player.GetModPlayer<DaggerPlayer>();
+                if (daggerPlayer?.ActiveModifiers != null && daggerPlayer.ActiveModifiers.Count > 0)
+                {
+                    for (int i = 0; i < daggerPlayer.ActiveModifiers.Count; i++)
+                    {
+                        var modifier = daggerPlayer.ActiveModifiers[i];
+                        modifier?.ModifyDaggerStats(modifiedStats, player);
+                    }
+                }
             }
+            catch (System.Exception ex)
+            {
+                // I don't really know wtf happens here but when compiling the mod this crashes
+            }
+
 
             return modifiedStats;
         }

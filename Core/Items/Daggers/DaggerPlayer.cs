@@ -57,6 +57,8 @@ namespace OvermorrowMod.Core.Items.Daggers
             // Check all accessory slots for dagger modifiers
             for (int i = 0; i < Player.armor.Length; i++)
             {
+                if (i >= Player.armor.Length) break; // Safety check
+
                 Item accessory = Player.armor[i];
                 if (accessory?.IsAir != false) continue;
 

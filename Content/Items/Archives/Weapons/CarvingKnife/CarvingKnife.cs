@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
     public class CarvingKnifeSlash : HeldDagger
     {
-        public override Color SlashColor => Color.LightBlue;
+        protected override Color BaseSlashColor => Color.LightBlue;
 
         protected override string GetDaggerTexture()
         {
