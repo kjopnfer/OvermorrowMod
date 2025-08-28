@@ -119,6 +119,15 @@ namespace OvermorrowMod.Common.Items.Daggers
 
         public override void AI()
         {
+            // Kill dagger if it's too far from the player
+            float maxDistance = ModUtils.TilesToPixels(75);
+            if (Vector2.Distance(Projectile.Center, Owner.Center) > maxDistance)
+            {
+                SoundEngine.PlaySound(SoundID.MaxMana);
+                Projectile.Kill();
+                return;
+            }
+
             Projectile.hide = false;
 
             switch ((AIStates)AIState)
@@ -143,6 +152,9 @@ namespace OvermorrowMod.Common.Items.Daggers
                     HandleImpaledState();
                     break;
             }
+
+            if (Projectile.timeLeft == 1)
+                SoundEngine.PlaySound(SoundID.MaxMana);
         }
 
         private void HandleThrowAnimation()
@@ -275,6 +287,7 @@ namespace OvermorrowMod.Common.Items.Daggers
         {
             if (ImpaledNPC == null || !ImpaledNPC.active)
             {
+                SoundEngine.PlaySound(SoundID.MaxMana);
                 Projectile.Kill();
                 return;
             }
@@ -302,6 +315,7 @@ namespace OvermorrowMod.Common.Items.Daggers
 
             if (AICounter > ImpaleDuration)
             {
+                SoundEngine.PlaySound(SoundID.MaxMana);
                 Projectile.Kill();
             }
         }
