@@ -22,16 +22,21 @@ namespace OvermorrowMod.Common.Items.Daggers
     {
         public override string Texture => AssetDirectory.Empty;
 
-        public virtual Color SlashColor => Color.White;
-        public virtual SoundStyle? SlashSound => /*SoundID.Item1 with*/new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerSlash")
+        // Properties that can be modified by accessories
+        public int TotalTime => GetModifiedTotalTime();
+        public Color SlashColor => GetModifiedSlashColor();
+        public SoundStyle? SlashSound => GetModifiedSlashSound();
+
+        // Base values - override these in derived classes
+        protected virtual int BaseTotalTime => 22;
+        protected virtual Color BaseSlashColor => Color.White;
+        protected virtual SoundStyle? BaseSlashSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerSlash")
         {
             Volume = 0.5f,
             Pitch = 0.5f,
             PitchVariance = 0.2f,
             MaxInstances = 1,
         };
-
-        public virtual int TotalTime => 22;
 
         private int totalTime;
         private int playerDirection = 1;
@@ -216,9 +221,9 @@ namespace OvermorrowMod.Common.Items.Daggers
             CreateSlashHitEffects(strikePoint);
             OnDaggerHit(target, hit, damageDone);
 
-            // Trigger modifier events
-            var modifiers = new NPC.HitModifiers();
-            DaggerModifierHandler.TriggerSlashHit(this, player, target, ref modifiers);
+            // Apply hit modifiers from accessories
+            var hitModifiers = new NPC.HitModifiers();
+            DaggerModifierHandler.TriggerSlashHit(this, player, target, ref hitModifiers);
         }
 
         /// <summary>
@@ -591,6 +596,25 @@ namespace OvermorrowMod.Common.Items.Daggers
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             return false;
+        }
+
+        // Methods to get modified values from accessories
+        private int GetModifiedTotalTime()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), player);
+            return (int)(BaseTotalTime / stats.AnimationSpeedMultiplier);
+        }
+
+        private Color GetModifiedSlashColor()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), player);
+            return stats.OverrideIdleColor ?? BaseSlashColor;
+        }
+
+        private SoundStyle? GetModifiedSlashSound()
+        {
+            var stats = DaggerModifierHandler.GetModifiedStats(new DaggerStats(), player);
+            return stats.OverrideHitSound ?? BaseSlashSound;
         }
     }
 }
