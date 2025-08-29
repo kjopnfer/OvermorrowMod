@@ -703,6 +703,7 @@ NPCs: {
 	DoorLock.DisplayName: Door Lock
 	SimplePathfindingNPC.DisplayName: Simple Pathfinding N P C
 	PathfindingNPC.DisplayName: Pathfinding N P C
+	HauntedChandelier.DisplayName: Haunted Chandelier
 }
 
 Bestiary: {

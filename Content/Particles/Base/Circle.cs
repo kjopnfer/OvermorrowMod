@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Particles
         private float timeAlive = 0f;
         private float maxTime;
         private float positionOffset;
-        private bool useSineFade;
+        public bool useSineFade;
         private bool canGrow;
         private float initialScale;
         private float initialAlpha;
