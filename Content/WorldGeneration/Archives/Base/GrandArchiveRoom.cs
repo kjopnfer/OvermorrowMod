@@ -2,10 +2,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Spawners;
 using OvermorrowMod.Content.Tiles.Archives;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -246,6 +248,16 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             }
         }
 
+        /// <summary>
+        /// Create a new HauntedChandelierSpawner that spawns a HauntedChandelier at the position.
+        /// </summary>
+        /// <param name="position">The tile coordinates that the ModTileEntity is created.</param>
+        public void PlaceHauntedChandelier(float x, float y)
+        {
+            int entityID = ModContent.GetInstance<HauntedChandelierSpawner>().Place((int)x, (int)y);
+            HauntedChandelierSpawner spawnPoint = TileEntity.ByID[entityID] as HauntedChandelierSpawner;
+            SpawnPoints.Add(spawnPoint);
+        }
 
         protected void PlaceLoungeArea(int x, int y, RoomID room)
         {

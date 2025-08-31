@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -17,7 +16,12 @@ namespace OvermorrowMod.Common.RoomManager
         /// <summary>
         /// The NPC that this spawn point should create.
         /// </summary>
-        public int NPCType { get; set; }
+        public virtual int NPCType { get; set; } = 0;
+
+        /// <summary>
+        /// The offset from the spawn point where the NPC should appear.
+        /// </summary>
+        protected virtual Vector2 SpawnOffset { get; set; } = Vector2.Zero;
 
         /// <summary>
         /// The NPC that this spawner is keeping track of.
@@ -70,7 +74,7 @@ namespace OvermorrowMod.Common.RoomManager
                 return;
             }
 
-            ChildNPC = NPC.NewNPCDirect(null, Position.ToWorldCoordinates(10, 28), NPCType);
+            ChildNPC = NPC.NewNPCDirect(null, Position.ToWorldCoordinates(10, 28) + SpawnOffset, NPCType);
 
             OvermorrowNPC modNPC = ChildNPC.ModNPC as OvermorrowNPC;
             modNPC.SpawnerID = ID;
@@ -105,7 +109,7 @@ namespace OvermorrowMod.Common.RoomManager
                         return true;
                     }
                 }
-            }   
+            }
 
             return false;
         }

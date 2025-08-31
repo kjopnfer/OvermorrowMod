@@ -496,7 +496,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 449, y + 130, ModContent.TileType<WaxSconceEven>());
             WorldGen.PlaceObject(x + 465, y + 130, ModContent.TileType<WaxSconce>());
 
-            WorldGen.PlaceObject(x + 449, y + 67, ModContent.TileType<WaxChandelier>());
+            //WorldGen.PlaceObject(x + 449, y + 67, ModContent.TileType<WaxChandelier>());
+            PlaceHauntedChandelier(x + 449, y + 67);
+
             WorldGen.PlaceObject(x + 322, y + 132, ModContent.TileType<Selfie>());
             WorldGen.PlaceObject(x + 572, y + 132, ModContent.TileType<ABriefRespite>());
 
@@ -713,7 +715,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             #region Bottom Right Side
             AddSpawnPoint(new Vector2(x + 747, y + 248), ModContent.NPCType<BlasterBook>());
-            AddSpawnPoint(new Vector2(x + 761, y + 246), ModContent.NPCType<BlasterBook>()); 
+            AddSpawnPoint(new Vector2(x + 761, y + 246), ModContent.NPCType<BlasterBook>());
             #endregion
         }
     }

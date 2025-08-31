@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
-using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
@@ -15,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
-    public class HauntedChandelier : ModNPC
+    public class HauntedChandelier : OvermorrowNPC
     {
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override void SetStaticDefaults()
@@ -24,13 +23,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             NPC.width = 104;
             NPC.height = 60;
             NPC.lifeMax = 1000;
             NPC.immortal = true;
-            NPC.damage = 40;
+            NPC.damage = 75;
             //NPC.hide = true;
             NPC.dontTakeDamage = true;
             NPC.noGravity = true;
@@ -38,6 +37,17 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.knockBackResist = 0;
             NPC.aiStyle = -1;
             NPC.ShowNameOnHover = false;
+        }
+
+        public override NPCTargetingConfig TargetingConfig()
+        {
+            NPCTargetingConfig config = new NPCTargetingConfig()
+            {
+                DisplayAggroIndicator = false,
+                AlertRange = null
+            };
+
+            return config;
         }
 
         public override void DrawBehind(int index)
@@ -67,12 +77,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private int detectionRange = 200;
         public override bool CanHitNPC(NPC target)
         {
-            return AIState != 4;
+            return AIState != 1 || AIState != 4;
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            return AIState != 4;
+            return AIState != 1 || AIState != 4;
         }
 
         public override void AI()
@@ -192,7 +202,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                         };
 
                         Vector2 position = NPC.Center + new Vector2(Main.rand.Next(-3, 3) * 16, 0);
-                        ParticleManager.CreateParticleDirect(lightSpark, position, randomVelocity, color, 1f, randomScale, MathHelper.PiOver2, useAdditiveBlending: true);
+                        ParticleManager.CreateParticleDirect(lightSpark, position, randomVelocity, color, 1f, randomScale, MathHelper.PiOver2, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
                     }
                 }
 
@@ -231,7 +241,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     NPC.rotation = 0f;
                     AIState = 0;
                     AICounter = 0;
-                    Cooldown = 60f;
+                    Cooldown = 120f;
                 }
             }
         }
@@ -252,7 +262,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 {
                     endColor = new Color(108, 108, 224)
                 };
-                ParticleManager.CreateParticleDirect(lightSpark, NPC.Bottom, randomVelocity, color, 1f, randomScale, 0f, useAdditiveBlending: true);
+                ParticleManager.CreateParticleDirect(lightSpark, NPC.Bottom, randomVelocity, color, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
             }
         }
 
@@ -297,7 +307,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             ParticleManager.CreateParticleDirect(emberParticle, position, velocity, Color.White * 0.45f, 1f, scale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadChain").Value;
 
