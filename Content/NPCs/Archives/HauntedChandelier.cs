@@ -1,9 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -46,6 +48,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
+        public ref float Cooldown => ref NPC.ai[2];
+
 
         private Vector2 originalPosition;
         public override void OnSpawn(IEntitySource source)
@@ -61,6 +65,16 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private float targetRotation = 0f;
 
         private int detectionRange = 200;
+        public override bool CanHitNPC(NPC target)
+        {
+            return AIState != 4;
+        }
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            return AIState != 4;
+        }
+
         public override void AI()
         {
             NPC.ShowNameOnHover = false;
@@ -85,8 +99,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float scale = 0.1f;
             Vector2 velocity = -Vector2.UnitY * 0.5f;
 
-            //var i2 = NPC.TopLeft.X - 12;
-            //var j = NPC.TopLeft.Y - 10;
             int interpolationSteps = Math.Max(1, (int)Math.Abs(NPC.velocity.Y));
             Vector2 stepVelocity = interpolationSteps > 1 ? NPC.velocity / interpolationSteps : Vector2.Zero;
 
@@ -130,11 +142,19 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             if (AIState == 0)
             {
-                if (nearestPlayer != null && nearestPlayer.Center.Y > NPC.Center.Y &&
-                    nearestPlayer.Center.X >= NPC.Hitbox.Left && nearestPlayer.Center.X <= NPC.Hitbox.Right)
+                if (Cooldown > 0)
                 {
-                    AIState = 1;
-                    AICounter = 0;
+                    Cooldown--;
+                }
+                else
+                {
+                    float leadingDistance = 48;
+                    if (nearestPlayer != null && nearestPlayer.Center.Y > NPC.Center.Y &&
+                        nearestPlayer.Center.X >= NPC.Hitbox.Left - leadingDistance && nearestPlayer.Center.X <= NPC.Hitbox.Right + leadingDistance)
+                    {
+                        AIState = 1;
+                        AICounter = 0;
+                    }
                 }
             }
             else if (AIState == 1)
@@ -155,11 +175,33 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 if (currentFallSpeed > maxFallSpeed)
                     currentFallSpeed = maxFallSpeed;
 
+                if (Main.rand.NextBool(2))
+                {
+                    float randomScale = Main.rand.NextFloat(0.025f, 0.075f);
+                    Color color = new Color(149, 149, 239);
+                    Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Vector2 randomVelocity = -Vector2.UnitY * Main.rand.Next(1, 4);
+
+                        var lightSpark = new Spark(sparkTexture, maxTime: Main.rand.Next(60, 80), true, 0f)
+                        {
+                            endColor = new Color(108, 108, 224),
+                            rotationOffset = MathHelper.PiOver2
+                        };
+
+                        Vector2 position = NPC.Center + new Vector2(Main.rand.Next(-3, 3) * 16, 0);
+                        ParticleManager.CreateParticleDirect(lightSpark, position, randomVelocity, color, 1f, randomScale, MathHelper.PiOver2, useAdditiveBlending: true);
+                    }
+                }
+
                 NPC.velocity.Y = currentFallSpeed;
                 Point bottomCenter = new Point((int)(NPC.Center.X / 16), (int)((NPC.Bottom.Y + currentFallSpeed) / 16));
                 Tile tile = Framing.GetTileSafely(bottomCenter.X, bottomCenter.Y);
                 if (tile.HasTile && Main.tileSolid[tile.TileType])
                 {
+                    SpawnImpactParticles();
                     NPC.Bottom = new Vector2(NPC.Center.X, bottomCenter.Y * 16);
                     AIState = 3;
                     AICounter = 0;
@@ -189,7 +231,28 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     NPC.rotation = 0f;
                     AIState = 0;
                     AICounter = 0;
+                    Cooldown = 60f;
                 }
+            }
+        }
+
+        private void SpawnImpactParticles()
+        {
+            float randomScale = Main.rand.NextFloat(10f, 20f);
+            Color color = new Color(149, 149, 239);
+            Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
+            for (int i = 0; i < 24; i++)
+            {
+                randomScale = Main.rand.NextFloat(2f, 7f);
+                float angle = Main.rand.NextFloat(MathHelper.ToRadians(-15), MathHelper.ToRadians(15));
+                if (Main.rand.NextBool())
+                    angle += MathHelper.Pi;
+                Vector2 randomVelocity = Vector2.UnitX.RotatedBy(angle) * Main.rand.Next(2, 12);
+                var lightSpark = new Spark(sparkTexture, maxTime: Main.rand.Next(15, 30), true, 0f)
+                {
+                    endColor = new Color(108, 108, 224)
+                };
+                ParticleManager.CreateParticleDirect(lightSpark, NPC.Bottom, randomVelocity, color, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
         }
 

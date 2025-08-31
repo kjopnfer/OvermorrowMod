@@ -11,8 +11,8 @@ namespace OvermorrowMod.Common.Particles
     {
         public OvermorrowModFile mod;
         public ParticleInstance particle;
-
         public float rotationAmount = 0f;
+        public float rotationOffset = 0f;
         public int intensity = 1;
 
         public virtual int Width { get; protected set; } = 16;
@@ -20,6 +20,7 @@ namespace OvermorrowMod.Common.Particles
 
         public virtual void OnSpawn() { }
         public virtual void Update() { }
+
         public virtual string Texture { get; protected set; } = AssetDirectory.Empty;
         public virtual bool ShouldUpdatePosition() => true;
 
@@ -29,7 +30,7 @@ namespace OvermorrowMod.Common.Particles
 
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
-                particle.color * particle.alpha, particle.rotation,
+                particle.color * particle.alpha, particle.rotation + rotationOffset,
                 new Vector2(texture.Width / 2, texture.Height / 2),
                 particle.scale, SpriteEffects.None, 0f);
         }

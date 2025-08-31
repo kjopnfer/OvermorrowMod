@@ -86,19 +86,19 @@ namespace OvermorrowMod.Content.Particles
         /// </summary>
         public Vector2 AnchorOffset { get; set; } = Vector2.Zero;
 
-        public Spark(Texture2D texture, float maxTime = 0f, bool rotateWithVelocity = false, float rotationDirection = 0f)
+        public Spark(Texture2D texture, float maxTime = 0f, bool rotateWithVelocity = false, float rotationDirection = 0f, float rotationOffset = 0f)
         {
             this.texture = texture;
             this.rotateWithVelocity = rotateWithVelocity;
             this.maxTime = maxTime > 0 ? maxTime : Main.rand.Next(4, 8) * 10;
             this.rotationDirection = rotationDirection;
+            this.rotationOffset = rotationOffset;
         }
 
         public override void OnSpawn()
         {
             this.initialScale = particle.scale;
 
-            particle.rotation += MathHelper.Pi / 2;
             particle.scale = 0f;
             particle.alpha = 0f;
 
@@ -114,7 +114,6 @@ namespace OvermorrowMod.Content.Particles
                 relativeOffset = particle.position - anchorPos;
                 lastAnchorPosition = anchorPos;
                 hasAnchor = true;
-
             }
         }
 
@@ -159,7 +158,10 @@ namespace OvermorrowMod.Content.Particles
                 particle.position += particle.velocity;
             }
 
-            particle.rotation = particle.velocity.ToRotation() + MathHelper.PiOver2;
+            if (rotateWithVelocity)
+            {
+                particle.rotation = particle.velocity.ToRotation();
+            }
 
             if (rotationDirection != 0f)
             {
@@ -217,9 +219,6 @@ namespace OvermorrowMod.Content.Particles
             // Use particle color with red lerp
             float progress = particle.activeTime / maxTime;
             Color drawColor = Color.Lerp(particle.color, endColor, progress);
-
-            float rotationOffset = (rotationDirection != 0f) ? MathHelper.PiOver2 :
-                                 (rotateWithVelocity ? MathHelper.PiOver2 : 0);
 
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null,
                 drawColor * particle.alpha,
