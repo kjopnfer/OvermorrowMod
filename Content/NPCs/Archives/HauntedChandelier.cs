@@ -71,7 +71,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private float gravity = 0.8f;
         private float retractSpeed = 4f;
 
-        private float maxLeanAngle = MathHelper.ToRadians(10f);
+        private float swingFrequency = 0.1f;
+        private float initialSwingAmplitude = 0f;
+        private float swingDamping = 0.65f;
 
         private float currentFallSpeed = 0f;
         private float targetRotation = 0f;
@@ -81,12 +83,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private int detectionRange = 200;
         public override bool CanHitNPC(NPC target)
         {
-            return AIState != 1 || AIState != 4;
+            return AIState != 1 && AIState != 4;
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            return AIState != 1 || AIState != 4;
+            return AIState != 1 && AIState != 4;
         }
 
         public override void AI()
@@ -179,6 +181,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 if (AICounter >= 15)
                 {
                     tiltDirection = Main.rand.NextBool() ? 1f : -1f;
+                    initialSwingAmplitude = maxTiltAngle;
                     AIState = 2;
                     AICounter = 0;
                 }
@@ -239,10 +242,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 if (Vector2.Distance(NPC.Center, originalPosition) > 10f)
                 {
                     Vector2 direction = Vector2.Normalize(originalPosition - NPC.Center);
-                    NPC.velocity = direction * retractSpeed;
+                    float baseSpeed = retractSpeed;
 
-                    float distanceProgress = 1f - (Vector2.Distance(NPC.Center, originalPosition) / Vector2.Distance(originalPosition, NPC.Center));
-                    NPC.rotation = MathHelper.Lerp(maxTiltAngle * tiltDirection, 0f, MathHelper.Clamp(AICounter / 60f, 0, 1f));
+                    float retractProgress = 1f - (Vector2.Distance(NPC.Center, originalPosition) / Vector2.Distance(NPC.Center, originalPosition));
+                    retractProgress = MathHelper.Clamp(retractProgress, 0f, 1f);
+
+                    float currentSwingAmplitude = initialSwingAmplitude * (float)Math.Pow(swingDamping, AICounter * 0.1f);
+                    float swingOffset = (float)Math.Sin(AICounter * swingFrequency) * currentSwingAmplitude * tiltDirection;
+
+                    NPC.rotation = swingOffset;
+
+                    Vector2 horizontalSwing = new Vector2((float)Math.Sin(AICounter * swingFrequency) * currentSwingAmplitude * tiltDirection * 80f, 0);
+                    NPC.velocity = direction * baseSpeed + horizontalSwing * 0.2f;
                 }
                 else
                 {
