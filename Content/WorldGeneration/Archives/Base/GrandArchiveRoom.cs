@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Spawners;
+using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Archives;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,7 +93,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             [new Color(138, 111, 48)] = ModContent.TileType<CastlePlatform>(),
             [new Color(74, 47, 33)] = ModContent.TileType<ArchiveWood>(),
             [new Color(150, 150, 150)] = -2,
-            [Color.Black] = -1
+            [Color.Black] = ModContent.TileType<DarknessBlock>()
         };
 
         protected override Dictionary<Color, int> WallMapping => new()
@@ -288,7 +289,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 23, y, cozyChairType);
 
-            WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
+            else
+                PlaceHauntedChandelier(x + 11, y - 25);
+
+            //WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
         }
 
         /// <summary>
