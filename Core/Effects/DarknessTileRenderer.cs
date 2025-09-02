@@ -47,7 +47,8 @@ namespace OvermorrowMod.Core.Effects
                             var target = new Rectangle((int)(i * 16 - Main.screenPosition.X) / 2, (int)(j * 16 - Main.screenPosition.Y) / 2, 8, 8);
 
                             Vector2 drawPos = new Vector2(i, j) * 16;
-                            spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPos - Main.screenPosition, new Rectangle(0, 0, 16, 16), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPos - Main.screenPosition, new Rectangle(0, 0, 16, 16), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                            spriteBatch.Draw(OvermorrowModFile.Instance.GradientRectangle.Value, drawPos - Main.screenPosition, new Rectangle(0, OvermorrowModFile.Instance.GradientRectangle.Value.Height / 3, 16, OvermorrowModFile.Instance.GradientRectangle.Value.Height), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
 
                             //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, target, new Rectangle(0 * 18, 0 * 18, 16, 16), Color.Black);
                         }
