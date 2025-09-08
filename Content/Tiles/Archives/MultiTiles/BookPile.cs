@@ -1,11 +1,9 @@
+using OvermorrowMod.Common;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ObjectData;
-using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.Enums;
-using Terraria.GameContent.Metadata;
-using OvermorrowMod.Common;
+using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {

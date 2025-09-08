@@ -76,12 +76,16 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
             TileUtils.TryFindModTileEntity<ArchiveDoor_TE>(bottomLeft.X, bottomLeft.Y, out door);
 
+            var tileSize = 18;
+            var numTilesX = 12;
+            var framePixelsX = (numTilesX - 1) * tileSize;
+
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name + "Animated").Value;
             var offset = 270 * (door.DoorFrame - 1);
-            for (int xFrame = 0; xFrame <= 198; xFrame += 18)
+            for (int xFrame = 0; xFrame <= 198; xFrame += tileSize)
             {
                 // Loop through all possible frame positions for y (0 to 240) in increments of 18
-                for (int yFrame = 0; yFrame <= 258; yFrame += 18)
+                for (int yFrame = 0; yFrame <= 258; yFrame += tileSize)
                 {
                     // Only draw frames that match the current TileFrameX and TileFrameY
                     if (tile.TileFrameX == xFrame && tile.TileFrameY == yFrame)
@@ -114,7 +118,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
         private int lockNPCIndex = -1;
         public NPC LockNPC => lockNPCIndex >= 0 && lockNPCIndex < Main.npc.Length && Main.npc[lockNPCIndex].active ? Main.npc[lockNPCIndex] : null;
 
-        // Face sprite
         private int FrameCounter = 0;
         public int DoorFrame = 1; // Goes from frame 0 to 6
         public Vector2 DoorPosition => Position.ToWorldCoordinates(16, 16);

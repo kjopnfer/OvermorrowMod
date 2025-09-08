@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives.Accessories;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Particles;
 using Terraria;
@@ -27,7 +28,7 @@ namespace OvermorrowMod.Content.Buffs
         {
             if (Main.gamePaused) return;
 
-            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/spotlight").Value;
+            Texture2D texture = OvermorrowModFile.Instance.SpotlightTexture.Value;
             int widthRange = npc.width + 8;
             int heightRange = npc.height - 4;
             int stepSize = 2;

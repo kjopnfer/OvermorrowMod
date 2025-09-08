@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core;
 using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.ID;
@@ -27,24 +28,9 @@ namespace OvermorrowMod.Content.Tiles
             if (Main.gamePaused) return;
 
             Tile tile = Framing.GetTileSafely(i, j);
-
-            // Only emit dust from the top tiles, and only if toggled on. This logic limits dust spawning under different conditions.
             if (tile.TileFrameY == 0 && Main.rand.NextBool(20))
             {
-                /*Dust dust = Dust.NewDustDirect(new Vector2(i * 16 + 2, j * 16 - 4), 4, 8, DustID.Ebonwood, 0f, 0f, 100);
-                if (tile.TileFrameX == 0)
-                    dust.position.X += Main.rand.Next(8);
-
-                if (tile.TileFrameX == 36)
-                    dust.position.X -= Main.rand.Next(8);
-
-                dust.noGravity = true;
-                dust.alpha += Main.rand.Next(100);
-                dust.velocity *= 0.2f;
-                dust.velocity.Y -= 0.5f + Main.rand.Next(10) * 0.1f;
-                dust.fadeIn = 0.5f + Main.rand.Next(10) * 0.1f;*/
-
-                Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/spotlight").Value;
+                Texture2D texture = OvermorrowModFile.Instance.SpotlightTexture.Value;
                 int widthRange = 16 + 8;
                 int heightRange = 16 - 4;
                 int stepSize = 2;

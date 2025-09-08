@@ -549,6 +549,32 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="doorID">The ID of this door.</param>
+        /// <param name="pairedDoor">The ID of the other door that this will teleport to.</param>
+        protected void PlaceAndConfigureChest(int x, int y, int itemID)
+        {
+            // Place the door and get the placed entity
+            var chestEntity = TileUtils.PlaceTileWithEntity<BigChest, BigChest_TE>(x, y);
+
+            // Configure the door and its paired door ID
+            if (chestEntity != null)
+            {
+                chestEntity.ChestItem = itemID;
+
+                // Send the necessary network data for multiplayer
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    NetMessage.SendData(MessageID.TileEntityPlacement, -1, -1, null, x, y, ModContent.TileEntityType<BigChest_TE>(), 0f, 0, 0, 0);
+                    NetMessage.SendTileSquare(-1, x, y, 2);
+                }
+            }
+        }
+
 
         protected void PlaceLongTableAndChairs(int x, int y, RoomID room)
         {
