@@ -56,15 +56,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             //Main.instance.DrawCacheNPCsBehindNonSolidTiles.Add(index);
         }
 
-        public enum AIStates
-        {
-            Idle = 0,
-            Shake = 1,
-            Falling = 2,
-            Grounded = 3,
-            Retracting = 4
-        }
-
         public ref float AIState => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
         public ref float Cooldown => ref NPC.ai[2];
@@ -79,26 +70,25 @@ namespace OvermorrowMod.Content.NPCs.Archives
         private float maxFallSpeed = 16f;
         private float gravity = 0.8f;
         private float retractSpeed = 4f;
-        private float maxLeanAngle = MathHelper.ToRadians(15f);
+
+        private float swingFrequency = 0.1f;
+        private float initialSwingAmplitude = 0f;
+        private float swingDamping = 0.65f;
+
         private float currentFallSpeed = 0f;
         private float targetRotation = 0f;
-        private float maxTiltAngle = MathHelper.ToRadians(25f);
-
-        private AIStates CurrentAIState
-        {
-            get => (AIStates)AIState;
-            set => AIState = (float)value;
-        }
+        private float maxTiltAngle = MathHelper.ToRadians(10f);
+        private float tiltDirection = 1f;
 
         private int detectionRange = 200;
         public override bool CanHitNPC(NPC target)
         {
-            return CurrentAIState != AIStates.Shake && CurrentAIState != AIStates.Retracting;
+            return AIState != 1 && AIState != 4;
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            return CurrentAIState != AIStates.Shake && CurrentAIState != AIStates.Retracting;
+            return AIState != 1 && AIState != 4;
         }
 
         public override void AI()
@@ -126,7 +116,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Vector2 velocity = -Vector2.UnitY * 0.5f;
 
             int interpolationSteps = Math.Max(1, (int)Math.Abs(NPC.velocity.Y));
-            Vector2 stepVelocity = interpolationSteps > 1 ? NPC.velocity / interpolationSteps : Vector2.Zero;
+            Vector2 stepVelocity = interpolationSteps > 1 ? NPC.velocity * 2 / interpolationSteps : Vector2.Zero;
 
             for (int step = 0; step <= interpolationSteps; step++)
             {
@@ -158,8 +148,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             if (AIState == 0 || AIState == 4)
             {
-                if (AIState == 0)
-                    Lighting.AddLight(NPC.Center, 0.9f, 0.675f, 0f);
+                Lighting.AddLight(NPC.Center, 0.9f, 0.675f, 0f);
             }
             else
             {
@@ -191,6 +180,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
                 if (AICounter >= 15)
                 {
+                    tiltDirection = Main.rand.NextBool() ? 1f : -1f;
+                    initialSwingAmplitude = maxTiltAngle;
                     AIState = 2;
                     AICounter = 0;
                 }
@@ -202,7 +193,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     currentFallSpeed = maxFallSpeed;
 
                 float fallProgress = currentFallSpeed / maxFallSpeed;
-                NPC.rotation = maxTiltAngle * fallProgress;
+                NPC.rotation = maxTiltAngle * fallProgress * tiltDirection;
 
                 if (Main.rand.NextBool(2))
                 {
@@ -232,36 +223,44 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 {
                     SpawnImpactParticles();
                     NPC.Bottom = new Vector2(NPC.Center.X, bottomCenter.Y * 16);
-                    CurrentAIState = AIStates.Grounded;
+                    AIState = 3;
                     AICounter = 0;
                     NPC.velocity.Y = 0;
                     currentFallSpeed = 0f;
                 }
             }
-            else if (CurrentAIState == AIStates.Grounded)
+            else if (AIState == 3)
             {
                 if (AICounter >= 120)
                 {
-                    CurrentAIState = AIStates.Retracting;
+                    AIState = 4;
                     AICounter = 0;
                 }
             }
-            else if (CurrentAIState == AIStates.Retracting)
+            else if (AIState == 4)
             {
                 if (Vector2.Distance(NPC.Center, originalPosition) > 10f)
                 {
                     Vector2 direction = Vector2.Normalize(originalPosition - NPC.Center);
-                    NPC.velocity = direction * retractSpeed;
+                    float baseSpeed = retractSpeed;
 
-                    float distanceProgress = 1f - (Vector2.Distance(NPC.Center, originalPosition) / Vector2.Distance(originalPosition, NPC.Center));
-                    NPC.rotation = MathHelper.Lerp(maxTiltAngle, 0f, AICounter / 60f);
+                    float retractProgress = 1f - (Vector2.Distance(NPC.Center, originalPosition) / Vector2.Distance(NPC.Center, originalPosition));
+                    retractProgress = MathHelper.Clamp(retractProgress, 0f, 1f);
+
+                    float currentSwingAmplitude = initialSwingAmplitude * (float)Math.Pow(swingDamping, AICounter * 0.1f);
+                    float swingOffset = (float)Math.Sin(AICounter * swingFrequency) * currentSwingAmplitude * tiltDirection;
+
+                    NPC.rotation = swingOffset;
+
+                    Vector2 horizontalSwing = new Vector2((float)Math.Sin(AICounter * swingFrequency) * currentSwingAmplitude * tiltDirection * 80f, 0);
+                    NPC.velocity = direction * baseSpeed + horizontalSwing * 0.2f;
                 }
                 else
                 {
                     NPC.Center = originalPosition;
                     NPC.velocity = Vector2.Zero;
                     NPC.rotation = 0f;
-                    CurrentAIState = AIStates.Idle;
+                    AIState = 0;
                     AICounter = 0;
                     Cooldown = 120f;
                 }
@@ -290,8 +289,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void CreateEmberParticle(Vector2 position, Vector2 velocity, float scale)
         {
-            if (AIState == 4)
-                return;
+            //if (AIState == 4)
+            //    return;
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
 
             Vector2 rotatedPosition = position;
             if (NPC.rotation != 0f)
@@ -301,14 +301,19 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 rotatedPosition = NPC.Center + offset;
             }
 
-            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
+            if (AIState == 4)
+            {
+                Vector2 velocityOffset = NPC.velocity;
+                rotatedPosition += velocityOffset;
+            }
+
 
             var emberParticle = new Circle(texture, 0f, useSineFade: true)
             {
                 endColor = Color.DarkRed
             };
 
-            velocity = velocity.RotatedBy(Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
+            velocity = velocity.RotatedBy(NPC.rotation + Main.rand.NextFloat(MathHelper.ToRadians(-5), MathHelper.ToRadians(5)));
 
             Color color = Color.DarkOrange;
             if (AIState == 1 || AIState == 2 || AIState == 3)
@@ -326,10 +331,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             if (AIState == 4)
             {
-                emberParticle = new Circle(texture, 15f, useSineFade: true)
+                emberParticle = new Circle(texture, 8f, useSineFade: true)
                 {
                     endColor = Color.DarkRed
                 };
+
+                Vector2 upwardDraft = new Vector2(0, -2f);
+                velocity += upwardDraft;
+                velocity.X += Main.rand.NextFloat(-0.8f, 0.8f);
+                scale *= 0.7f;
             }
 
             ParticleManager.CreateParticleDirect(emberParticle, rotatedPosition, velocity, color, 1f, scale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
@@ -341,7 +351,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
             Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadChain").Value;
 
             Vector2 chainStart = originalPosition - new Vector2(0, 24) - Main.screenPosition;
-            Vector2 chainEnd = NPC.Center - Main.screenPosition;
+            Vector2 topOffset = new Vector2(0, -NPC.height / 2);
+            topOffset = topOffset.RotatedBy(NPC.rotation);
+            Vector2 chainEnd = NPC.Center + topOffset - Main.screenPosition;
             Vector2 chainVector = chainEnd - chainStart;
             float chainLength = chainVector.Length();
             Vector2 chainDirection = Vector2.Normalize(chainVector);
@@ -349,7 +361,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float chainScale = 0.6f;
             float scaledChainHeight = chainTexture.Height * chainScale;
             int chainSegments = (int)(chainLength / scaledChainHeight);
-            for (int i = 0; i < chainSegments; i++)
+            for (int i = 0; i <= chainSegments; i++)
             {
                 Vector2 segmentPosition = chainStart + (chainDirection * scaledChainHeight * i);
                 Vector2 worldPosition = segmentPosition + Main.screenPosition;
