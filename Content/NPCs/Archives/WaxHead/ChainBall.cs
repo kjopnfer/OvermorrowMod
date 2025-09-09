@@ -75,6 +75,8 @@ namespace OvermorrowMod.Content.NPCs
                 Projectile.Kill();
             Projectile.timeLeft = 5;
 
+            //Lighting.AddLight(Projectile.Center, new Vector3(1f, 0.4f, 0.1f) * 0.35f);
+
             if (npc.ModNPC is Waxhead arm)
             {
                 // Get a position that lerps between elbow and hand
@@ -325,30 +327,6 @@ namespace OvermorrowMod.Content.NPCs
             Projectile.Center += ballVelocity;
         }
 
-        private void DrawChain(Waxhead arm)
-        {
-            if (CurrentState == ChainState.Waiting) return; // No chain when waiting
-
-            Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadChain").Value;
-            Vector2 chainDirection = Projectile.Center - GetForearmAnchor(arm);
-            float chainDistance = chainDirection.Length();
-            float chainRotation = chainDirection.ToRotation();
-            int chainSegmentHeight = chainTexture.Height;
-            int numSegments = (int)(chainDistance / chainSegmentHeight) + 1;
-
-            for (int i = 0; i < numSegments; i++)
-            {
-                float progress = (float)i / numSegments;
-                Vector2 segmentPosition = Vector2.Lerp(GetForearmAnchor(arm), Projectile.Center, progress);
-                Vector2 segmentScreenPos = segmentPosition - Main.screenPosition;
-                Rectangle sourceRect = new Rectangle(0, 0, chainTexture.Width, chainSegmentHeight);
-                Vector2 origin = new Vector2(chainTexture.Width / 2f, 0);
-
-                Main.spriteBatch.Draw(chainTexture, segmentScreenPos, sourceRect, Color.White,
-                    chainRotation + MathHelper.PiOver2, origin, 1f, SpriteEffects.None, 0f);
-            }
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             //NPC npc = Main.npc[ParentID];
@@ -359,7 +337,7 @@ namespace OvermorrowMod.Content.NPCs
 
             Texture2D ballTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadFlail").Value;
             Vector2 ballScreenPos = Projectile.Center - Main.screenPosition;
-            Main.spriteBatch.Draw(ballTexture, ballScreenPos, null, Color.White, Projectile.rotation + MathHelper.PiOver2, ballTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(ballTexture, ballScreenPos, null, lightColor, Projectile.rotation + MathHelper.PiOver2, ballTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
             return false;
         }
     }

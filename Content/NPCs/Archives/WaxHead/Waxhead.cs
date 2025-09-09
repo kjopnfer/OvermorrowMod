@@ -3,6 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Particles;
+using ReLogic.Content;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -49,7 +53,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
-            NPC.Move(Main.LocalPlayer.Center, 0.2f, 2f, 1f);
+            NPC.Move(Main.LocalPlayer.Center, 0.2f, 1.6f, 1f);
             NPC.direction = NPC.GetDirectionFrom(Main.LocalPlayer);
 
             HandleStateLogic();
@@ -59,6 +63,28 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void HandleStateLogic()
         {
+            var frameOffsets = new Dictionary<int, int>
+            {
+                [0] = -48,
+                [1] = -56,
+                [2] = -64,
+                [3] = -56,
+                [4] = -52,
+                [5] = -52,
+                [6] = -46,
+                [7] = -58,
+                [8] = -64,
+                [9] = -54,
+                [10] = -52,
+                [11] = -48,
+                [12] = -46
+            };
+
+            int yOffset = frameOffsets.TryGetValue(yFrame, out int offset) ? offset - 4 : -54;
+
+            Vector2 flamePosition = NPC.Center + new Vector2(-4 * NPC.direction, -84 + yOffset);
+            SpawnFlameParticles(flamePosition);
+
             AICounter++;
 
             switch (CurrentState)
@@ -66,15 +92,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case WaxheadState.Idle:
                     if (AICounter >= idleTime)
                     {
-                        if (Main.rand.NextBool())
-                        {
-                            CurrentState = WaxheadState.Attack;
-                        }
-                        else
-                        {
-                            CurrentState = WaxheadState.SpinAttack;
-                        }
-
+                        //if (Main.rand.NextBool())
+                        //{
+                        //    CurrentState = WaxheadState.Attack;
+                        //}
+                        //else
+                        //{
+                        //    CurrentState = WaxheadState.SpinAttack;
+                        //}
+                        CurrentState = WaxheadState.Attack;
                         AICounter = 0f;
                     }
                     break;
@@ -100,6 +126,49 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     }
                     break;
             }
+        }
+
+        private void SpawnFlameParticles(Vector2 flamePosition)
+        {
+            if (NPC.localAI[0]++ % 2 != 0) return;
+
+            var particleColor = Color.DarkOrange;
+            var endColor = Color.Red;
+            var lightColor = new Vector3(0.7f, 0.4f, 0.1f);
+
+            // Particle spawning
+            int version = Main.rand.Next(1, 4);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_0" + version, AssetRequestMode.ImmediateLoad).Value;
+            float scale = MathHelper.Lerp(0.035f, 0.095f, 1f);
+
+            var flameParticle = new Circle(texture, 0f, useSineFade: false);
+            flameParticle.endColor = endColor;
+
+            // Add lighting based on mode
+            Lighting.AddLight(NPC.Center + new Vector2(-4 * NPC.direction, -72), lightColor);
+
+            ParticleManager.CreateParticleDirect(
+                flameParticle,
+                flamePosition,
+                -Vector2.UnitY,
+                particleColor,
+                1f,
+                scale,
+                Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true
+            );
+
+            var glowParticle = new Circle(ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value, 0f, useSineFade: false);
+            ParticleManager.CreateParticleDirect(
+                glowParticle,
+                flamePosition,
+                -Vector2.UnitY,
+                particleColor * 0.2f,
+                1f,
+                scale: scale + 0.15f,
+                Main.rand.NextFloat(0f, MathHelper.TwoPi),
+                ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true
+            );
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

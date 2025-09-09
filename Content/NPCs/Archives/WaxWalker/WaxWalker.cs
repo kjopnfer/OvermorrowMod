@@ -146,7 +146,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 ExecuteAttack(flamePosition);
             }
 
-            // Spawn particles (existing code)
             SpawnFlameParticles(flamePosition);
         }
 

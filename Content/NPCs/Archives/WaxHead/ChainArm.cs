@@ -172,8 +172,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void DrawChain(SpriteBatch spriteBatch, ChainBall chainBall)
         {
-            if (chainBall.CurrentState == ChainBall.ChainState.Waiting) return; // No chain when waiting
-
+            if (chainBall.CurrentState == ChainBall.ChainState.Waiting) return;
             Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveNPCs + "WaxheadChain").Value;
             Vector2 forearmAnchor = GetForearmAnchor(chainBall);
             Vector2 chainDirection = chainBall.Projectile.Center - forearmAnchor;
@@ -181,16 +180,15 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float chainRotation = chainDirection.ToRotation();
             int chainSegmentHeight = chainTexture.Height;
             int numSegments = (int)(chainDistance / chainSegmentHeight) + 1;
-
             for (int i = 0; i < numSegments; i++)
             {
                 float progress = (float)i / numSegments;
                 Vector2 segmentPosition = Vector2.Lerp(forearmAnchor, chainBall.Projectile.Center, progress);
                 Vector2 segmentScreenPos = segmentPosition - Main.screenPosition;
+                Color segmentLighting = Lighting.GetColor((int)(segmentPosition.X / 16), (int)(segmentPosition.Y / 16));
                 Rectangle sourceRect = new Rectangle(0, 0, chainTexture.Width, chainSegmentHeight);
                 Vector2 origin = new Vector2(chainTexture.Width / 2f, 0);
-
-                spriteBatch.Draw(chainTexture, segmentScreenPos, sourceRect, Color.White,
+                spriteBatch.Draw(chainTexture, segmentScreenPos, sourceRect, segmentLighting * chainBall.Projectile.Opacity,
                     chainRotation + MathHelper.PiOver2, origin, 1f, SpriteEffects.None, 0f);
             }
         }
