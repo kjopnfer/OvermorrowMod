@@ -52,10 +52,10 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 
             //if (Projectile.timeLeft <= 60) scale = MathHelper.Lerp(1f, 0f, Utils.Clamp(AICounter - 340, 0, 20f) / 20f);
 
-            Main.spriteBatch.Draw(texture, Projectile.Center - new Vector2(0, targetNPC.height * 2f) - Main.screenPosition, null, Color.Red * alpha, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+            //Main.spriteBatch.Draw(texture, Projectile.Center - new Vector2(0, targetNPC.height * 2f) - Main.screenPosition, null, Color.Red * alpha, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
 
             scale = MathHelper.Lerp(0.9f, 1.1f, (float)(Math.Sin(AICounter / 15f) / 2 + 0.5f));
-            Main.spriteBatch.Draw(texture, Projectile.Center - new Vector2(0, targetNPC.height * 2f) - Main.screenPosition, null, Color.White * 0.75f, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+            //Main.spriteBatch.Draw(texture, Projectile.Center - new Vector2(0, targetNPC.height * 2f) - Main.screenPosition, null, Color.White * 0.75f, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
 
            
             return false;

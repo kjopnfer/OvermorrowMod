@@ -249,9 +249,10 @@ namespace OvermorrowMod.Common.Items.Daggers
                 Vector2 particleDirection = tangentDirection.RotatedBy(randomAngle);
                 Vector2 particleVelocity = particleDirection * Main.rand.NextFloat(2f, 4f);
 
-                var lightSpark = new Spark(sparkTexture, maxTime: 30, false, 0f)
+                var lightSpark = new Spark(sparkTexture, maxTime: 30, true, 0f)
                 {
-                    endColor = SlashColor
+                    endColor = SlashColor,
+                    rotationOffset = MathHelper.PiOver2
                 };
                 ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity * 2, SlashColor, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
             }

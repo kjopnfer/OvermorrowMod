@@ -184,7 +184,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             }
             //Dust.NewDust(Position.ToWorldCoordinates(), 1, 1, DustID.Torch);
 
-            Main.NewText(AnimationCounter);
+            //Main.NewText(AnimationCounter);
             /*FrameCounter++;
             if (FrameCounter > 10)
             {

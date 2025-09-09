@@ -77,9 +77,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 Vector2 particleDirection = new Vector2((float)System.Math.Cos(finalAngle), (float)System.Math.Sin(finalAngle));
                 Vector2 particleVelocity = particleDirection * Main.rand.Next(3, 9);
 
-                var lightSpark = new Spark(sparkTexture, maxTime: 20, false, 0f)
+                var lightSpark = new Spark(sparkTexture, maxTime: 20, true, 0f)
                 {
-                    endColor = TrailColor
+                    endColor = TrailColor,
+                    rotationOffset = MathHelper.PiOver2
                 };
 
                 ParticleManager.CreateParticleDirect(lightSpark, strikePoint, particleVelocity, TrailColor, 1f, randomScale, 0f, ParticleDrawLayer.BehindProjectiles, useAdditiveBlending: true);
