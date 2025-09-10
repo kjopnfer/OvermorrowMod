@@ -8,6 +8,7 @@ using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -79,6 +80,45 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 [11] = -48,
                 [12] = -46
             };
+
+            if ((yFrame == 6 || yFrame == 12) && NPC.frameCounter % 6 == 0)
+            {
+                Player player = Main.LocalPlayer;
+                // Get distance between NPC and player
+                float distance = Vector2.Distance(NPC.Center, player.Center);
+
+                // Define the inner radius where volume is maximum
+                float innerRadius = ModUtils.TilesToPixels(60); // pixels
+                                                                // Define a maximum distance where sound should be quietest
+                float maxDistance = ModUtils.TilesToPixels(110); // tweak as needed
+                float minVolume = 0.2f;
+                float maxVolume = 1f;
+
+                // Calculate volume based on distance zones
+                float volumeScale;
+                if (distance <= innerRadius)
+                {
+                    // Within inner radius, use maximum volume
+                    volumeScale = 1f;
+                }
+                else
+                {
+                    // Beyond inner radius, scale from max to min
+                    float adjustedDistance = distance - innerRadius;
+                    float adjustedMaxDistance = maxDistance - innerRadius;
+                    volumeScale = EasingUtils.EaseInOutCirc(MathHelper.Clamp(1f - (adjustedDistance / adjustedMaxDistance), 0f, 1f));
+                }
+
+                float finalVolume = MathHelper.Lerp(minVolume, maxVolume, volumeScale);
+                SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/MetalSlam")
+                {
+                    MaxInstances = 2,
+                    PitchVariance = 0.1f,
+                    Volume = finalVolume,
+                    Pitch = -0.85f,
+                }, NPC.Center);
+            }
+
 
             int yOffset = frameOffsets.TryGetValue(yFrame, out int offset) ? offset - 4 : -54;
 
