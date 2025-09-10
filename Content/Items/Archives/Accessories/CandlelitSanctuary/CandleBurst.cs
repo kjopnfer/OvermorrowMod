@@ -7,7 +7,9 @@ using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives
@@ -28,7 +30,11 @@ namespace OvermorrowMod.Content.Items.Archives
 
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
+            SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot with
+            {
+                PitchVariance = 0.1f,
+                Pitch = -0.7f
+            });
 
             float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
@@ -64,7 +70,7 @@ namespace OvermorrowMod.Content.Items.Archives
                 ParticleManager.CreateParticleDirect(lightSpark, Projectile.Center, RandomVelocity * 2, color, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
 
-            
+
             //Particle.CreateParticle(Particle.ParticleType<Circle>(), Projectile.Center, Vector2.Zero, color, 1, randomScale, 0f, 0f, 1f);
         }
 

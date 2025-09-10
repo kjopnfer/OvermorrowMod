@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs
@@ -84,6 +85,14 @@ namespace OvermorrowMod.Content.NPCs
                 case BarrierBook:
                     if (npc.AICounter == 10)
                     {
+                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/SpellShot")
+                        {
+                            MaxInstances = 0,
+                            PitchVariance = 0.1f,
+                            Volume = 0.75f,
+                            Pitch = -0.5f,
+                        }, NPC.Center);
+
                         float radius = 500f;
                         var nearbyHostileEnemies = Main.npc
                        .Where(enemy => enemy.active &&
@@ -103,6 +112,14 @@ namespace OvermorrowMod.Content.NPCs
                 case BlasterBook:
                     if (npc.AICounter == 20)
                     {
+                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/MagicAppear")
+                        {
+                            MaxInstances = 5,
+                            PitchVariance = 0.1f,
+                            Volume = 0.75f,
+                            Pitch = 0.85f,
+                        }, NPC.Center);
+
                         Vector2 directionToPlayer = (npc.TargetingModule.Target.Center - NPC.Center).SafeNormalize(Vector2.Zero); // Direction vector to the player
 
                         float angleSpread = MathHelper.ToRadians(25); // Spread angle for randomness

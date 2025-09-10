@@ -6,6 +6,7 @@ using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,7 +28,7 @@ namespace OvermorrowMod.Content.NPCs
         public ref float AICounter => ref Projectile.ai[1];
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
+
         }
 
         public override void AI()
@@ -44,6 +45,19 @@ namespace OvermorrowMod.Content.NPCs
             }
             else
             {
+                if (AICounter == 45)
+                {
+                    Main.NewText("test");
+
+                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/SpellShot")
+                    {
+                        MaxInstances = 0,
+                        PitchVariance = 0.1f,
+                        Volume = 0.75f,
+                        Pitch = 0.85f,
+                    }, Projectile.Center);
+                }
+
                 if (Main.rand.NextBool(3))
                 {
                     Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;

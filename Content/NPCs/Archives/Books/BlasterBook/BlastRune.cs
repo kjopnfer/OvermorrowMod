@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
@@ -39,6 +40,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             AICounter++;
             if (AICounter > 30 && AICounter <= 60 && AICounter % 10 == 0)
             {
+                SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/SpellShot")
+                {
+                    MaxInstances = 5,
+                    PitchVariance = 0.5f,
+                    Volume = 0.75f,
+                    Pitch = 0.75f,
+                }, Projectile.Center);
+
                 float angleSpread = MathHelper.ToRadians(25); // Spread angle for randomness
                 Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(angleSpread) * 8; // Randomized rotation towards the player
 

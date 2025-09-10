@@ -7,7 +7,9 @@ using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives
@@ -27,7 +29,7 @@ namespace OvermorrowMod.Content.Items.Archives
 
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
+            SoundEngine.PlaySound(SoundID.DD2_SonicBoomBladeSlash, Projectile.Center);
 
             Player player = Main.player[Projectile.owner];
             if (!player.active) return;

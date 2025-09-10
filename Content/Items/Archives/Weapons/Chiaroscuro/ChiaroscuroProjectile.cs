@@ -155,9 +155,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                 Vector2 RandomVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(9, 11);
                 Color color = new Color(149, 149, 239);
 
-                var lightSpark = new Spark(sparkTexture, 0f, false, 0f)
+                var lightSpark = new Spark(sparkTexture, 0f, true, 0f)
                 {
-                    endColor = new Color(108, 108, 224)
+                    endColor = new Color(108, 108, 224),
+                    rotationOffset = MathHelper.PiOver2
                 };
                 ParticleManager.CreateParticleDirect(lightSpark, hitPoint, RandomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
 
@@ -173,7 +174,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             int shadowCount = Main.projectile.Count(p => p.active && p.type == ModContent.ProjectileType<ChiaroscuroShadow>() && p.owner == Projectile.owner);
             if (shadowCount < 3)
             {
-                if (Main.rand.NextBool(4) && !Owner.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()))
+                if (Main.rand.NextBool(5) && !Owner.HasBuff(ModContent.BuffType<Buffs.ChiaroscuroStance>()))
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<ChiaroscuroShadow>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }

@@ -45,7 +45,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Item.useTime = 20;
             Item.rare = ItemRarityID.Blue;
             Item.useStyle = ItemUseStyleID.Shoot;
-
+            Item.UseSound = SoundID.Item1;
             Item.knockBack = 2;
             Item.shootSpeed = 5f;
             Item.autoReuse = true;

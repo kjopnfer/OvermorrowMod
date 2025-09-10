@@ -567,6 +567,12 @@ namespace OvermorrowMod.Common.Items.Guns
 
                     if (!alreadyClicked && inRange)
                     {
+                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/ReloadingClick") with
+                        {
+                            MaxInstances = 0,
+                            Volume = 1f
+                        }, player.Center);
+
                         zone.HasClicked = true;
                         ReloadEventTrigger(player, i, GetClicksLeft());
                         hitValidZone = true;

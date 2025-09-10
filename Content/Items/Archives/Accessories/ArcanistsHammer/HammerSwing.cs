@@ -10,8 +10,10 @@ using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
@@ -74,6 +76,14 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
             if (adjustedCounter < rotationTime)
             {
+                if (adjustedCounter == 25)
+                {
+                    SoundEngine.PlaySound(SoundID.DD2_MonkStaffSwing with
+                    {
+                        Pitch = -1f
+                    });
+                }
+
                 // Normal spin phase
                 float baseRotation = MathHelper.Lerp(0, 180, EasingUtils.EaseInBack(adjustedCounter / rotationTime));
                 rotation = baseRotation * SpinDirection;
@@ -134,6 +144,12 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact with
+            {
+                MaxInstances = 0,
+                Pitch = 1f
+            });
+
             var hitboxHeight = 140;
             Vector2 swordStart = Projectile.Center;
             Vector2 swordEnd = Projectile.Bottom + new Vector2(0, -hitboxHeight).RotatedBy(Projectile.rotation);
