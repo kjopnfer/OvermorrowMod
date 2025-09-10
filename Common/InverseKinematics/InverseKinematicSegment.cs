@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using Terraria.ModLoader;
 using Terraria;
+using Terraria.GameContent;
 
 namespace OvermorrowMod.Common.InverseKinematics
 {
@@ -24,21 +25,16 @@ namespace OvermorrowMod.Common.InverseKinematics
             Length = length;
             Angle = angle;
             Texture = texture;
-
             Origin = origin ?? new Vector2(Texture.Width / 2, 0f);  // Default to the center of the texture
-
             Recalculate();
         }
 
         public void Follow(Vector2 target)
         {
             Vector2 direction = target - A;
-            //Angle = direction.ToRotation();
-
             float targetAngle = direction.ToRotation();
             targetAngle = (targetAngle + MathHelper.TwoPi) % MathHelper.TwoPi;
             Angle = MathHelper.Clamp(targetAngle, MinAngle, MaxAngle);
-
             direction = direction.SafeNormalize(Vector2.Zero) * Length;
             A = target - direction;
         }
@@ -56,18 +52,15 @@ namespace OvermorrowMod.Common.InverseKinematics
 
         public void Draw(SpriteBatch spriteBatch, Color color)
         {
+            Texture2D pixel = TextureAssets.MagicPixel.Value;
             if (Texture == null)
-                Texture = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
+                Texture = pixel;
 
-            Texture2D pixel = ModContent.Request<Texture2D>("Terraria/Images/MagicPixel").Value;
-            //Vector2 scale = new Vector2(Length, 4f); // Adjust thickness as needed
             float rotation = Angle;
             Rectangle rect = new Rectangle(0, 0, 1, 1);
 
             // the sprite is probably placed in the wrong direction, the origin of the sprite should be in the middle of the 
             // left side rectangle and not to the right of it completely
-
-
             spriteBatch.Draw(
                 texture: Texture,
                 position: A - Main.screenPosition,
@@ -81,17 +74,17 @@ namespace OvermorrowMod.Common.InverseKinematics
             );
 
             Vector2 textureSize = new Vector2(Texture.Width, Texture.Height);
-            Rectangle boxRect = new Rectangle((int)(A.X - Main.screenPosition.X), (int)(A.Y - Main.screenPosition.Y), (int)textureSize.X, (int)textureSize.Y);
+            Rectangle boxRect = new Rectangle((int)(A.X - Main.screenPosition.X), (int)(A.Y - Main.screenPosition.Y), (int)textureSize.X, (int)Length);
 
             // Draw a simple rectangle around the texture (debugging purpose)
             spriteBatch.Draw(
                 texture: pixel,
                 position: new Vector2(boxRect.X, boxRect.Y),
                 sourceRectangle: new Rectangle(boxRect.X, boxRect.Y, boxRect.Width, (int)Length),
-                color: Color.Red * 0.25f,  // You can change the color of the box
+                color: Color.Red * 0.25f,
                 rotation: rotation - MathHelper.PiOver2,
                 origin: Vector2.Zero,
-                scale: 1f, // Set the size of the box
+                scale: 1f,
                 SpriteEffects.None,
                 0f
             );

@@ -705,6 +705,8 @@ NPCs: {
 	DoorLock.DisplayName: Door Lock
 	SimplePathfindingNPC.DisplayName: Simple Pathfinding N P C
 	PathfindingNPC.DisplayName: Pathfinding N P C
+	ChainArm.DisplayName: Chain Arm
+	Waxhead.DisplayName: Waxhead
 	HauntedChandelier.DisplayName: Haunted Chandelier
 }
 
@@ -776,6 +778,7 @@ Projectiles: {
 	CurvedDiagonalSlash.DisplayName: Curved Diagonal Slash
 	AnimatedRing.DisplayName: Animated Ring
 	PrimitiveRing.DisplayName: Primitive Ring
+	ChainBall.DisplayName: Chain Ball
 	TestSlashProjectile.DisplayName: Test Slash Projectile
 	CarvingKnifeThrownNew.DisplayName: Carving Knife Thrown New
 	CarvingKnifeThrown.DisplayName: Carving Knife Thrown
