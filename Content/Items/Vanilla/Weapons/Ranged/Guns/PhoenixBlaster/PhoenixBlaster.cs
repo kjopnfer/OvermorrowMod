@@ -53,7 +53,10 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 
                 Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.3f, 0.6f)).RotatedByRandom(MathHelper.ToRadians(15));
 
-                var lightSpark = new Spark(sparkTexture, 20f, false);
+                var lightSpark = new Spark(sparkTexture, 20f, true)
+                {
+                    rotationOffset = MathHelper.PiOver2
+                };
                 ParticleManager.CreateParticleDirect(lightSpark, shootPosition + shootOffset, particleVelocity, Color.Orange, 1f, randomScale, 0f, useAdditiveBlending: true);
             }
         }

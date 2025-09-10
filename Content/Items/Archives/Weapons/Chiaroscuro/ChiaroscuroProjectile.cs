@@ -119,8 +119,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
                     randomScale = Main.rand.NextFloat(0.25f, 0.35f);
 
-                    var lightSpark = new Spark(sparkTexture, 0f, false, 0f);
-                    lightSpark.endColor = new Color(108, 108, 224);
+                    var lightSpark = new Spark(sparkTexture, 0f, true, 0f)
+                    {
+                        endColor = new Color(108, 108, 224),
+                        rotationOffset = MathHelper.PiOver2
+                    };
                     Vector2 randomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(90)) * Main.rand.Next(10, 12);
                     randomVelocity = -Vector2.Normalize(Projectile.velocity) * Main.rand.Next(1, 2);
                     ParticleManager.CreateParticleDirect(lightSpark, sparkPosition, randomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);

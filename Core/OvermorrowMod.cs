@@ -1,21 +1,18 @@
-using System;
-using Terraria.Graphics.Effects;
-using Terraria;
-using Terraria.ModLoader;
-using OvermorrowMod.Content.Skies;
-using OvermorrowMod.Common.Particles;
-using OvermorrowMod.Common.Detours;
-using Terraria.GameContent;
-using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Core.Particles;
+using OvermorrowMod.Content.Skies;
 using OvermorrowMod.Core.Items;
+using OvermorrowMod.Core.Particles;
+using Terraria;
+using Terraria.GameContent;
+using Terraria.Graphics.Effects;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core
 {
-	public partial class OvermorrowModFile : Mod
-	{
+    public partial class OvermorrowModFile : Mod
+    {
         public static OvermorrowModFile Instance { get; set; }
         public OvermorrowModFile() => Instance = this;
 
@@ -55,6 +52,7 @@ namespace OvermorrowMod.Core
                 ParticleManager.Load();
                 DetourLoader.Load();
                 LoadEffects();
+                LoadTextures();
 
                 // Activate this with ManageSpecialBiomeVisuals probably... 
                 //Filters.Scene["OM:RavensfellSky"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(0.2f, 0f, 0.3f).UseOpacity(0.5f), EffectPriority.Medium);
@@ -67,6 +65,7 @@ namespace OvermorrowMod.Core
             ParticleManager.Unload();
             DetourLoader.Unload();
             UnloadEffects();
+            UnloadTextures();
             UnloadVanillaTextures();
         }
 

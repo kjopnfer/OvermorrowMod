@@ -49,11 +49,6 @@ namespace OvermorrowMod.Core.Items.Daggers
             CollectAccessoryModifiers();
         }
 
-        public override void PostUpdate()
-        {
-            UpdateComboTracking();
-        }
-
         /// <summary>
         /// Collects all dagger modifiers from equipped accessories and other sources.
         /// </summary>
@@ -62,6 +57,8 @@ namespace OvermorrowMod.Core.Items.Daggers
             // Check all accessory slots for dagger modifiers
             for (int i = 0; i < Player.armor.Length; i++)
             {
+                if (i >= Player.armor.Length) break; // Safety check
+
                 Item accessory = Player.armor[i];
                 if (accessory?.IsAir != false) continue;
 
@@ -86,45 +83,6 @@ namespace OvermorrowMod.Core.Items.Daggers
                 if (modBuff is IDaggerModifier buffModifier)
                     ActiveModifiers.Add(buffModifier);
             }
-        }
-
-        /// <summary>
-        /// Updates combo tracking and resets combo when appropriate.
-        /// </summary>
-        private void UpdateComboTracking()
-        {
-            // Reset combo if too much time has passed since last hit
-            if (Main.GameUpdateCount - LastComboTime > GetComboResetTime())
-            {
-                if (CurrentComboIndex > 0 || ComboHitCount > 0)
-                {
-                    // Combo was broken, trigger break events if there are active daggers
-                    var activeDaggers = GetActiveDaggers();
-                    if (activeDaggers.Any())
-                    {
-                        foreach (var dagger in activeDaggers)
-                        {
-                            DaggerModifierHandler.TriggerComboBreak(dagger, Player, ComboHitCount);
-                        }
-                    }
-                }
-
-                ResetCombo();
-            }
-        }
-
-        /// <summary>
-        /// Gets the combo reset time from active daggers or uses a default.
-        /// </summary>
-        private int GetComboResetTime()
-        {
-            var activeDaggers = GetActiveDaggers();
-            if (activeDaggers.Any())
-            {
-                var daggerStats = DaggerModifierHandler.GetModifiedStats(activeDaggers.First().GetBaseDaggerStats(), Player);
-                return daggerStats.ComboResetTime;
-            }
-            return 120; // Default combo reset time
         }
 
         /// <summary>

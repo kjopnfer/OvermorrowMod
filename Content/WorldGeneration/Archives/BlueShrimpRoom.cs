@@ -133,7 +133,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
                 PlaceTableAndChair(x + 41 + offset, y + 163, -1, RoomID.Blue);
             }
 
-            WorldGen.PlaceObject(x + 140, y + 139, ModContent.TileType<WaxChandelier>(), true);
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 140, y + 139, ModContent.TileType<WaxChandelier>(), true);
+            else
+                PlaceHauntedChandelier(x + 140, y + 139);
+
             PlaceStairGroup(x + 134, y + 176, 0);
             PlaceHallwayArch(x + 112, y + 176);
             PlaceHallwayArch(x + 120, y + 176);

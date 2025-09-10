@@ -18,6 +18,8 @@ Tiles: {
 		MapEntry0: Mods.OvermorrowMod.Tiles.IlluminatiChest.MapEntry0
 		MapEntry1: Mods.OvermorrowMod.Tiles.IlluminatiChest.MapEntry1
 	}
+
+	BigChest.MapEntry: Big Chest
 }
 
 Biomes: {
@@ -672,6 +674,11 @@ Items: {
 			'''
 		Flavor: Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
 	}
+
+	CarvingKnifeNew: {
+		DisplayName: Carving Knife
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -700,6 +707,7 @@ NPCs: {
 	PathfindingNPC.DisplayName: Pathfinding N P C
 	ChainArm.DisplayName: Chain Arm
 	Waxhead.DisplayName: Waxhead
+	HauntedChandelier.DisplayName: Haunted Chandelier
 }
 
 Bestiary: {
@@ -771,4 +779,9 @@ Projectiles: {
 	AnimatedRing.DisplayName: Animated Ring
 	PrimitiveRing.DisplayName: Primitive Ring
 	ChainBall.DisplayName: Chain Ball
+	TestSlashProjectile.DisplayName: Test Slash Projectile
+	CarvingKnifeThrownNew.DisplayName: Carving Knife Thrown New
+	CarvingKnifeThrown.DisplayName: Carving Knife Thrown
+	CarvingKnifeSlashNew.DisplayName: Carving Knife Slash New
+	CarvingKnifeSlash.DisplayName: Carving Knife Slash
 }

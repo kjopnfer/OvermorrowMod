@@ -85,7 +85,10 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 346, y + 153, ModContent.TileType<WoodenPillar2>());
             PlaceMultiVase(x + 325, y + 173, 1, 7);
 
-            WorldGen.PlaceObject(x + 314, y + 152, ModContent.TileType<WaxChandelier>());
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 314, y + 152, ModContent.TileType<WaxChandelier>());
+            else
+                PlaceHauntedChandelier(x + 314, y + 152);
 
             PlaceHallwayArch(x + 267, y + 189);
             PlaceStairGroup(x + 308, y + 189, 0);
@@ -137,7 +140,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
                 PlaceHallwayArch(x + 416 + offset, y + 123);
             }
 
-            WorldGen.PlaceObject(x + 251, y + 165, ModContent.TileType<WaxChandelier>());
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 251, y + 165, ModContent.TileType<WaxChandelier>());
+            else
+                PlaceHauntedChandelier(x + 251, y + 165);
+
             WorldGen.PlaceObject(x + 379, y + 152, ModContent.TileType<WaxCandleholder>());
             #endregion
 
@@ -153,7 +160,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceMultiVase(x + 374, y + 136, 1, 5);
             WorldGen.PlaceObject(x + 208, y + 123, ModContent.TileType<WaxCandleholder>());
             WorldGen.PlaceObject(x + 420, y + 123, ModContent.TileType<WaxCandleholder>());
-            WorldGen.PlaceObject(x + 405, y + 86, ModContent.TileType<WaxChandelier>());
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 405, y + 86, ModContent.TileType<WaxChandelier>());
+            else
+                PlaceHauntedChandelier(x + 405, y + 86);
+
             PlaceStairGroup(x + 398, y + 123, 0);
 
             WorldGen.PlaceObject(x + 244, y + 123, ModContent.TileType<WaxSconce>());
@@ -207,7 +218,11 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             PlaceTallStairs(x + 419, y + 110);
             PlaceLoungeArea(x + 539, y + 110, RoomID.Yellow);
 
-            WorldGen.PlaceObject(x + 224, y + 86, ModContent.TileType<WaxChandelier>());
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 224, y + 86, ModContent.TileType<WaxChandelier>());
+            else
+                PlaceHauntedChandelier(x + 224, y + 86);
+
             PlaceStairGroup(x + 218, y + 123, 0);
 
             PlaceCozyArea(x + 301, y + 105, RoomID.Yellow);
@@ -304,7 +319,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             AddSpawnPoint(new Vector2(x + 243, y + 79), ModContent.NPCType<ArchiveRat>());
 
-            AddSpawnPoint(new Vector2(x + 378 , y + 109), ModContent.NPCType<ArchiveRat>());
+            AddSpawnPoint(new Vector2(x + 378, y + 109), ModContent.NPCType<ArchiveRat>());
 
             AddSpawnPoint(new Vector2(x + 473, y + 67), ModContent.NPCType<BlasterBook>());
             AddSpawnPoint(new Vector2(x + 506, y + 62), ModContent.NPCType<ChairBook>());

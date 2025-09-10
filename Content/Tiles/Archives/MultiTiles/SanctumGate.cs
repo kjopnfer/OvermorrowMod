@@ -8,6 +8,7 @@ using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -87,17 +88,17 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            /*Tile tile = Framing.GetTileSafely(i, j);
+            Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "SanctumGateEye").Value;
+                Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                Vector2 drawPos = new Vector2(i + 2, j + 3) * 16 - Main.screenPosition + offScreenRange;
 
-                Lighting.AddLight(new Vector2(i, j) * 16, new Vector3(0, 1f, 0));
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, drawPos, new Rectangle(0, 0, 16 * 10, 16 * 16), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+            }
 
-                spriteBatch.Draw(texture, new Vector2(i, j) * 16, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
-            }*/
 
-            return base.PreDraw(i, j, spriteBatch);
+            return true;
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -143,7 +144,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void Update()
         {
-            
+
         }
 
         public override void PostGlobalUpdate()

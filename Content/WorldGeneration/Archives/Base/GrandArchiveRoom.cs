@@ -2,10 +2,13 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Spawners;
+using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Archives;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -90,7 +93,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             [new Color(138, 111, 48)] = ModContent.TileType<CastlePlatform>(),
             [new Color(74, 47, 33)] = ModContent.TileType<ArchiveWood>(),
             [new Color(150, 150, 150)] = -2,
-            [Color.Black] = -1
+            [Color.Black] = ModContent.TileType<DarknessBlock>()
         };
 
         protected override Dictionary<Color, int> WallMapping => new()
@@ -246,6 +249,16 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             }
         }
 
+        /// <summary>
+        /// Create a new HauntedChandelierSpawner that spawns a HauntedChandelier at the position.
+        /// </summary>
+        /// <param name="position">The tile coordinates that the ModTileEntity is created.</param>
+        public void PlaceHauntedChandelier(float x, float y)
+        {
+            int entityID = ModContent.GetInstance<HauntedChandelierSpawner>().Place((int)x, (int)y);
+            HauntedChandelierSpawner spawnPoint = TileEntity.ByID[entityID] as HauntedChandelierSpawner;
+            SpawnPoints.Add(spawnPoint);
+        }
 
         protected void PlaceLoungeArea(int x, int y, RoomID room)
         {
@@ -276,7 +289,12 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 23, y, cozyChairType);
 
-            WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
+            else
+                PlaceHauntedChandelier(x + 11, y - 25);
+
+            //WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
         }
 
         /// <summary>
@@ -526,6 +544,32 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
                 if (Main.netMode == NetmodeID.Server)
                 {
                     NetMessage.SendData(MessageID.TileEntityPlacement, -1, -1, null, x, y, ModContent.TileEntityType<ArchiveDoor_TE>(), 0f, 0, 0, 0);
+                    NetMessage.SendTileSquare(-1, x, y, 2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="doorID">The ID of this door.</param>
+        /// <param name="pairedDoor">The ID of the other door that this will teleport to.</param>
+        protected void PlaceAndConfigureChest(int x, int y, int itemID)
+        {
+            // Place the door and get the placed entity
+            var chestEntity = TileUtils.PlaceTileWithEntity<BigChest, BigChest_TE>(x, y);
+
+            // Configure the door and its paired door ID
+            if (chestEntity != null)
+            {
+                chestEntity.ChestItem = itemID;
+
+                // Send the necessary network data for multiplayer
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    NetMessage.SendData(MessageID.TileEntityPlacement, -1, -1, null, x, y, ModContent.TileEntityType<BigChest_TE>(), 0f, 0, 0, 0);
                     NetMessage.SendTileSquare(-1, x, y, 2);
                 }
             }

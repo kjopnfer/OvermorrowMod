@@ -33,6 +33,9 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
                 chest.item[slot].SetDefaults(ModContent.ItemType<WhitePage>());
             }
 
+            //PlaceAndConfigureChest(x + 115, y + 65, ModContent.ItemType<WhitePage>());
+            PlaceAndConfigureChest(x + 115, y + 64, ModContent.ItemType<WhitePage>());
+
             WorldGen.PlaceObject(x + 61, y + 45, ModContent.TileType<ArchiveBanner>(), true);
             WorldGen.PlaceObject(x + 74, y + 45, ModContent.TileType<ArchiveBanner>(), true);
             WorldGen.PlaceObject(x + 101, y + 45, ModContent.TileType<ArchiveBanner>(), true);

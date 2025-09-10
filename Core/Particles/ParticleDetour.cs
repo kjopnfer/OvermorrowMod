@@ -18,9 +18,10 @@ namespace OvermorrowMod.Core.Particles
             if (Main.dedServ)
                 return;
 
-            Terraria.On_Main.DrawPlayers_BehindNPCs += DrawParticles;
-            Terraria.On_Main.DrawProjectiles += DrawParticles;
-            Terraria.On_Main.DrawInterface += DrawParticles;
+            Terraria.On_Main.DrawPlayers_BehindNPCs += DrawParticlesBehindNPCs;
+            Terraria.On_Main.DrawProjectiles += DrawParticlesProjectile;
+            Terraria.On_Main.DrawInterface += DrawParticlesInterface;
+            Terraria.On_Main.DrawDust += DrawParticlesDust;
         }
 
         public void Unload()
@@ -28,7 +29,7 @@ namespace OvermorrowMod.Core.Particles
             // No special unload logic needed currently.
         }
 
-        private void DrawParticles(On_Main.orig_DrawPlayers_BehindNPCs orig, Main self)
+        private void DrawParticlesBehindNPCs(On_Main.orig_DrawPlayers_BehindNPCs orig, Main self)
         {
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);            //Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.ZoomMatrix);
             ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.BehindNPCs);
@@ -41,21 +42,21 @@ namespace OvermorrowMod.Core.Particles
             orig(self);
         }
 
-        private void DrawParticles(Terraria.On_Main.orig_DrawInterface orig, Main self, GameTime time)
+        private void DrawParticlesInterface(Terraria.On_Main.orig_DrawInterface orig, Main self, GameTime time)
         {
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             //Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
-            ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.AboveAll);
+            ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.Interface);
             Main.spriteBatch.End();
 
             Main.spriteBatch.Begin(default, BlendState.Additive, SamplerState.PointWrap, default, RasterizerState.CullNone, default, Main.GameViewMatrix.TransformationMatrix);
-            ParticleManager.DrawAdditive(Main.spriteBatch, ParticleDrawLayer.AboveAll);
+            ParticleManager.DrawAdditive(Main.spriteBatch, ParticleDrawLayer.Interface);
             Main.spriteBatch.End();
 
             orig(self, time);
         }
 
-        private void DrawParticles(Terraria.On_Main.orig_DrawProjectiles orig, Main self)
+        private void DrawParticlesProjectile(Terraria.On_Main.orig_DrawProjectiles orig, Main self)
         {
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             //Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.ZoomMatrix);
@@ -64,6 +65,19 @@ namespace OvermorrowMod.Core.Particles
 
             Main.spriteBatch.Begin(default, BlendState.Additive, SamplerState.PointWrap, default, RasterizerState.CullNone, default, Main.GameViewMatrix.TransformationMatrix);
             ParticleManager.DrawAdditive(Main.spriteBatch, ParticleDrawLayer.BehindProjectiles);
+            Main.spriteBatch.End();
+
+            orig(self);
+        }
+
+        private void DrawParticlesDust(Terraria.On_Main.orig_DrawDust orig, Main self)
+        {
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            ParticleManager.DrawParticles(Main.spriteBatch, ParticleDrawLayer.AboveAll);
+            Main.spriteBatch.End();
+
+            Main.spriteBatch.Begin(default, BlendState.Additive, SamplerState.PointWrap, default, RasterizerState.CullNone, default, Main.GameViewMatrix.TransformationMatrix);
+            ParticleManager.DrawAdditive(Main.spriteBatch, ParticleDrawLayer.AboveAll);
             Main.spriteBatch.End();
 
             orig(self);

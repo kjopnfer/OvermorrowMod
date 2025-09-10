@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
             AICounter++;
             int yOffset = -120;
-
+            canDamage = false;
             if (AICounter <= fadeInTime)
             {
                 Projectile.Opacity = AICounter / fadeInTime;
@@ -78,6 +78,8 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 float baseRotation = MathHelper.Lerp(0, 180, EasingUtils.EaseInBack(adjustedCounter / rotationTime));
                 rotation = baseRotation * SpinDirection;
                 Projectile.Opacity = 1f;
+
+                canDamage = true;
             }
             else
             {
@@ -149,9 +151,10 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 float randomScale = Main.rand.NextFloat(0.15f, 0.3f);
                 Vector2 randomVelocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(6, 8);
 
-                var lightSpark = new Spark(sparkTexture, 0f, false, 0f)
+                var lightSpark = new Spark(sparkTexture, 0f, true, 0f)
                 {
-                    endColor = new Color(108, 108, 224)
+                    endColor = new Color(108, 108, 224),
+                    rotationOffset = MathHelper.PiOver2
                 };
                 ParticleManager.CreateParticleDirect(lightSpark, hitPoint, randomVelocity, color, 1f, randomScale, MathHelper.Pi, useAdditiveBlending: true);
             }
