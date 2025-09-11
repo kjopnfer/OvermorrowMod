@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -91,6 +92,12 @@ namespace OvermorrowMod.Content.NPCs
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
+            SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact with
+            {
+                Pitch = 0.25f,
+                PitchVariance = 0.25f
+            });
+
             int npcType = Main.rand.NextBool() ? ModContent.NPCType<AnimatedChair>() : ModContent.NPCType<AnimatedSofa>();
             int randomDirection = Main.rand.NextBool() ? -1 : 1;
             Projectile.netUpdate = true;

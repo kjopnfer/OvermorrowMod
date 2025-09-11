@@ -7,6 +7,7 @@ using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -167,6 +168,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     if (nearestPlayer != null && nearestPlayer.Center.Y > NPC.Center.Y &&
                         nearestPlayer.Center.X >= NPC.Hitbox.Left - leadingDistance && nearestPlayer.Center.X <= NPC.Hitbox.Right + leadingDistance)
                     {
+                        SoundEngine.PlaySound(SoundID.NPCDeath52 with
+                        {
+                            MaxInstances = 0,
+                            Pitch = -0.75f,
+                            PitchVariance = 0.6f
+                        });
+
                         AIState = 1;
                         AICounter = 0;
                     }
@@ -221,6 +229,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 Tile tile = Framing.GetTileSafely(bottomCenter.X, bottomCenter.Y);
                 if (tile.HasTile && Main.tileSolid[tile.TileType])
                 {
+                    SoundEngine.PlaySound(SoundID.NPCDeath55 with
+                    {
+                        MaxInstances = 0,
+                        Pitch = 0.8f,
+                        PitchVariance = 0.2f
+                    });
+
                     SpawnImpactParticles();
                     NPC.Bottom = new Vector2(NPC.Center.X, bottomCenter.Y * 16);
                     AIState = 3;
@@ -272,7 +287,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float randomScale = Main.rand.NextFloat(10f, 20f);
             Color color = new Color(149, 149, 239);
             Texture2D sparkTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01", AssetRequestMode.ImmediateLoad).Value;
-            for (int i = 0; i < 24; i++)
+            for (int i = 0; i < Main.rand.Next(12, 19); i++)
             {
                 randomScale = Main.rand.NextFloat(2f, 7f);
                 float angle = Main.rand.NextFloat(MathHelper.ToRadians(-15), MathHelper.ToRadians(15));

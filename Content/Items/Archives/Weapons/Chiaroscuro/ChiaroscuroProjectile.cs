@@ -12,6 +12,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ModLoader;

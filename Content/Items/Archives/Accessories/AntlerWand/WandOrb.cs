@@ -7,6 +7,9 @@ using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
@@ -25,6 +28,17 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
             Projectile.DamageType = DamageClass.Summon;
         }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            SoundEngine.PlaySound(SoundID.NPCHit5 with
+            {
+                MaxInstances = 0,
+                Pitch = -0.2f,
+                PitchVariance = 0.1f
+            });
+        }
+
 
         public override bool? CanDamage() => AICounter > _homingDelay;
 
@@ -83,6 +97,13 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            SoundEngine.PlaySound(SoundID.NPCDeath7 with
+            {
+                MaxInstances = 0,
+                Pitch = -0.5f,
+                PitchVariance = 0.1f
+            });
+
             Player player = Main.player[Projectile.owner];
             player.Heal(1);
 

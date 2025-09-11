@@ -7,8 +7,10 @@ using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
@@ -40,7 +42,12 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
+            SoundEngine.PlaySound(SoundID.Zombie41 with
+            {
+                MaxInstances = 0,
+                //Pitch = 0.5f,
+                PitchVariance = 0.2f,
+            });
         }
 
         public ref float AICounter => ref Projectile.ai[0];

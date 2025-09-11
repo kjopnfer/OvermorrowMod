@@ -29,7 +29,13 @@ namespace OvermorrowMod.Content.Misc
         public override void AI()
         {
             NPC npc = Main.npc[(int)ParentID];
+            OvermorrowNPC overmorrowNPC = npc.ModNPC as OvermorrowNPC;
+
             if (!npc.active) Projectile.Kill();
+            if (overmorrowNPC == null)
+            {
+                Projectile.Kill();
+            }
 
             AICounter++;
             float progress = MathHelper.Clamp(EasingUtils.EaseOutBounce(AICounter / 20f), 0, 1f);

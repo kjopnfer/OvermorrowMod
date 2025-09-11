@@ -8,6 +8,7 @@ using OvermorrowMod.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -47,6 +48,13 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(SoundID.NPCHit30 with
+            {
+                MaxInstances = 0,
+                //Pitch = 0.5f,
+                PitchVariance = 0.2f,
+            });
+
             previousCenter = Projectile.Center;
         }
 
@@ -108,6 +116,16 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             }
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            SoundEngine.PlaySound(SoundID.Zombie54 with
+            {
+                MaxInstances = 0,
+                Pitch = -0.4f,
+                PitchVariance = 0.2f,
+            });
+        }
+
         private void IdleState(Player owner)
         {
             GeneralBehavior(owner, out Vector2 vectorToIdlePosition, out float distanceToIdlePosition);
@@ -125,9 +143,19 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         private void AlertState(Player owner)
         {
+            if (AICounter == 0)
+            {
+                SoundEngine.PlaySound(SoundID.Zombie43 with
+                {
+                    MaxInstances = 0,
+                    Pitch = -0.5f,
+                    PitchVariance = 0.2f,
+                });
+            }
+
             AICounter++;
 
-            // Just play animation and transition, no movement or target searching
+            // Does the shaking
             if (AICounter >= 60)
             {
                 AIState = (int)AIStates.Attack;
@@ -402,6 +430,13 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void OnKill(int timeLeft)
         {
+            SoundEngine.PlaySound(SoundID.NPCHit30 with
+            {
+                MaxInstances = 0,
+                Pitch = -0.5f,
+                PitchVariance = 0.2f,
+            });
+
             ShadowGrasp.SpawnSmoke(Projectile.Center);
         }
 

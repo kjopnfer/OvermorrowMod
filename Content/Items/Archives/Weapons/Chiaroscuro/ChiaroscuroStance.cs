@@ -6,8 +6,10 @@ using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
@@ -36,6 +38,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         public Vector2 anchorOffset;
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(SoundID.Item4 with
+            {
+                Pitch = 0.5f,
+                PitchVariance = 0.1f,
+            });
 
         }
 

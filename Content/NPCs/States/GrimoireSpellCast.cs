@@ -9,6 +9,7 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs
@@ -142,6 +143,12 @@ namespace OvermorrowMod.Content.NPCs
 
                     if (npc.AICounter % 10 == 0 && npc.AICounter < 40)
                     {
+                        SoundEngine.PlaySound(SoundID.Item92 with
+                        {
+                            Pitch = 0.95f,
+                            PitchVariance = 0.25f
+                        });
+
                         float angle = MathHelper.ToRadians(75);
                         float randomDirection = Main.rand.NextBool() ? 1 : -1;
 

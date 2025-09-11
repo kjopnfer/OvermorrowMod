@@ -8,8 +8,10 @@ using OvermorrowMod.Core.Items;
 using System;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
@@ -43,6 +45,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         int shadowIndex;
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(SoundID.NPCHit52 with
+            {
+                MaxInstances = 0,
+                Pitch = 0.5f,
+                PitchVariance = 0.2f
+            });
+
             //Projectile.timeLeft = (int)(Projectile.timeLeft * (1f / Owner.GetTotalAttackSpeed(DamageClass.Melee)));
             //maxTimeLeft = Projectile.timeLeft;
             int existingShadows = 0;
@@ -126,6 +135,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
                     }
                     if (AICounter == 0)
                     {
+                        SoundEngine.PlaySound(SoundID.NPCHit52 with
+                        {
+                            MaxInstances = 0,
+                            Pitch = -0.5f,
+                            PitchVariance = 0.2f
+                        });
+
                         attackStartPos = Owner.MountedCenter + anchorOffset;
 
                         // Define the preset positions
