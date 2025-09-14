@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
-using OvermorrowMod.Core.Items.Accessories;
+using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -37,14 +36,17 @@ namespace OvermorrowMod.Core.NPCs
         /// Manually set a target. Useful for effects that force target changes like Taunt.
         /// </summary>
         /// <param name="target"></param>
-        public void SetTarget(Entity target)
+        public void SetTarget(Entity target, bool withIndicator = false)
         {
             if (target.active)
             {
                 Target = target;
 
-                if (Config.DisplayAggroIndicator)
+                if (Config.DisplayAggroIndicator && withIndicator)
+                {
+                    Main.NewText("call 1");
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                }
 
                 aggroTimer = Config.MaxAggroTime;
             }
@@ -194,7 +196,11 @@ namespace OvermorrowMod.Core.NPCs
             if (Target != null)
             {
                 if (Config.DisplayAggroIndicator)
+                {
+                    Main.NewText("call 2");
+
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
+                }
 
                 aggroTimer = Config.MaxAggroTime;
             }

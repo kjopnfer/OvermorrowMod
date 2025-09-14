@@ -38,6 +38,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SafeSetDefaults()
         {
+            AggroSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/BookAggro")
+            {
+                PitchVariance = 0.2f
+            };
+
             NPC.width = 30;
             NPC.height = 44;
             NPC.lifeMax = 110;
@@ -111,17 +116,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
         /// </summary>
         public void ReenableAlertIndicator()
         {
+            var currentTarget = TargetingModule.Target;
             TargetingModule =
                 new NPCTargetingModule(NPC,
                 new NPCTargetingConfig(
                 maxAggroTime: ModUtils.SecondsToTicks(10f),
                 aggroLossRate: 0.5f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
-                aggroRadius: new AggroRadius(
-                    right: ModUtils.TilesToPixels(25),            // Far right detection
-                    left: ModUtils.TilesToPixels(25),             // Close left detection
-                    up: ModUtils.TilesToPixels(15),               // Medium up detection
-                    down: ModUtils.TilesToPixels(5),             // Far down detection
+                 aggroRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(30),            // Far right detection
+                    left: ModUtils.TilesToPixels(30),             // Close left detection
+                    up: ModUtils.TilesToPixels(2),               // Medium up detection
+                    down: ModUtils.TilesToPixels(20),             // Far down detection
                     flipWithDirection: true                       // Flip based on NPC direction
                 ),
                 attackRadius: new AggroRadius(
@@ -144,6 +150,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 }
            );
 
+            TargetingModule.SetTarget(currentTarget);
             /*new NPCTargetingModule(NPC, new NPCTargetingConfig(
             maxAggroTime: ModUtils.SecondsToTicks(15),
             aggroLossRate: 1f,

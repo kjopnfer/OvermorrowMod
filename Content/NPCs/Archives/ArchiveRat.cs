@@ -48,6 +48,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SafeSetDefaults()
         {
+            AggroSound = SoundID.NPCDeath4 with
+            {
+                Pitch = 0.5f
+            };
+
             NPCID.Sets.TrailCacheLength[NPC.type] = 7;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
 

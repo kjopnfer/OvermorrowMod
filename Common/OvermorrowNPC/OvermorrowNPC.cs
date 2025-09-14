@@ -6,6 +6,7 @@ using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.Localization;
@@ -30,6 +31,11 @@ namespace OvermorrowMod.Common
         /// Saves the ID of the Spawner if the NPC was created by one.
         /// </summary>
         public int? SpawnerID { get; set; } = null;
+
+        /// <summary>
+        /// Sound that plays when the NPC finds a target.
+        /// </summary>
+        public SoundStyle? AggroSound { get; set; } = null;
 
         /// <summary>
         /// Gets the associated NPCSpawnPoint if the NPC was created by a spawner.

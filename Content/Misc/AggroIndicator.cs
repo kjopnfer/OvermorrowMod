@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
@@ -24,6 +25,13 @@ namespace OvermorrowMod.Content.Misc
 
         public override void OnSpawn(IEntitySource source)
         {
+            NPC npc = Main.npc[(int)ParentID];
+            OvermorrowNPC overmorrowNPC = npc.ModNPC as OvermorrowNPC;
+
+            if (overmorrowNPC.AggroSound != null)
+            {
+                SoundEngine.PlaySound(overmorrowNPC.AggroSound, npc.Center);
+            }
         }
 
         public override void AI()
