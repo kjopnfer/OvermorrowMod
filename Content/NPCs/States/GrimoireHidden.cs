@@ -5,6 +5,8 @@ using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System.Diagnostics.Metrics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -51,6 +53,10 @@ namespace OvermorrowMod.Content.NPCs
                 NPC.noGravity = false;
                 if (OvermorrowNPC.AICounter++ >= 36)
                 {
+                    SoundEngine.PlaySound(SoundID.Dig with
+                    {
+                        Pitch = -0.5f
+                    });
                     IsFinished = true;
                 }
             }

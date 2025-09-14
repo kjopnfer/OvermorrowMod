@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using OvermorrowMod.Common.Utilities;
 using Terraria.ID;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -30,6 +31,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
         int hitboxHeight = 80;
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(SoundID.Grass with
+            {
+                MaxInstances = 1,
+                PitchVariance = 0.9f,
+                SoundLimitBehavior = SoundLimitBehavior.IgnoreNew
+            });
             spriteVariant = Main.rand.Next(0, 3);
         }
 

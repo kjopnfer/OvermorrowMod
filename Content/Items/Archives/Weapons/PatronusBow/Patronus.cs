@@ -14,6 +14,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
@@ -40,6 +41,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(SoundID.AbigailUpgrade with
+            {
+                Volume = 1f,
+                Pitch = 0.8f,
+                PitchVariance = 0.1f,
+            });
+
             Vector2 currentCenter = Projectile.Center;
             Vector2 backwardDirection = -Vector2.Normalize(Projectile.velocity);
 

@@ -132,6 +132,14 @@ namespace OvermorrowMod.Content.NPCs
                 case PlantBook:
                     if (npc.AICounter == 30)
                     {
+                        SoundEngine.PlaySound(SoundID.Item69 with
+                        {
+
+                            MaxInstances = 0,
+                            PitchVariance = 0.1f,
+                            Volume = 1f,
+                            Pitch = -0.5f,
+                        }, NPC.Center);
 
                         float angle = MathHelper.ToRadians(75);
                         Vector2 projectileVelocity = new Vector2(100 * NPC.direction, 0).RotatedByRandom(angle) * 50;

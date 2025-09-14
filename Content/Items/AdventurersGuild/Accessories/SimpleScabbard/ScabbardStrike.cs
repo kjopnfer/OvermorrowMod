@@ -6,6 +6,7 @@ using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
@@ -42,6 +43,10 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DaggerSlash")
+            {
+
+            }, Projectile.Center);
             InitializeSlashes();
 
             if (Main.myPlayer == Projectile.owner)

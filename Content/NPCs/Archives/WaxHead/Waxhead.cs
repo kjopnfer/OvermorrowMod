@@ -91,7 +91,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 float innerRadius = ModUtils.TilesToPixels(60); // pixels
                                                                 // Define a maximum distance where sound should be quietest
                 float maxDistance = ModUtils.TilesToPixels(110); // tweak as needed
-                float minVolume = 0.2f;
+                float minVolume = 0.1f;
                 float maxVolume = 1f;
 
                 // Calculate volume based on distance zones

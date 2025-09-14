@@ -13,6 +13,8 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria.DataStructures;
 using OvermorrowMod.Core.Interfaces;
+using Terraria.Audio;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
@@ -56,6 +58,13 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(SoundID.DD2_GhastlyGlaiveImpactGhost with
+            {
+                MaxInstances = 0,
+                Pitch = 0.25f,
+                PitchVariance = 0.1f
+            });
+
             // Randomized turn config
             Projectile.localAI[0] = MathHelper.ToRadians(Main.rand.NextFloat(6f, 10f)); // maxTurn
             Projectile.localAI[1] = Main.rand.NextFloat(0.1f, 0.2f); // turnLerp

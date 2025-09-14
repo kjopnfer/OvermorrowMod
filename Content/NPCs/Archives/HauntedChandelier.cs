@@ -94,6 +94,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
+            NPC.dontTakeDamage = true;
             NPC.ShowNameOnHover = false;
             AICounter++;
 
@@ -387,6 +388,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var lightAverage = (drawColor.R / 255f + drawColor.G / 255f + drawColor.B / 255f) / 3;
+            if (Main.LocalPlayer.HasBuff(BuffID.Hunter) || Main.LocalPlayer.HasBuff(BuffID.Dangersense))
+            {
+                drawColor = Color.Lerp(new Color(255, 50, 50), drawColor, lightAverage);
+            }
+
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, SpriteEffects.None, 0);
 
             return false;

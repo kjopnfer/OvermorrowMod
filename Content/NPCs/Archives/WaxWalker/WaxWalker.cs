@@ -11,6 +11,7 @@ using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
@@ -49,6 +50,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.damage = 23;
             NPC.knockBackResist = 0.2f;
             NPCID.Sets.ImmuneToAllBuffs[Type] = true;
+            NPC.HitSound = SoundID.NPCHit4;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
@@ -130,6 +132,45 @@ namespace OvermorrowMod.Content.NPCs.Archives
             State currentState = AIStateMachine.GetCurrentSubstate();
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 
+            Main.NewText(yFrame);
+            if ((yFrame == 4 || yFrame == 12) && NPC.frameCounter % 6 == 0)
+            {
+                Player player = Main.LocalPlayer;
+                // Get distance between NPC and player
+                float distance = Vector2.Distance(NPC.Center, player.Center);
+
+                // Define the inner radius where volume is maximum
+                float innerRadius = ModUtils.TilesToPixels(60); // pixels
+                                                                // Define a maximum distance where sound should be quietest
+                float maxDistance = ModUtils.TilesToPixels(110); // tweak as needed
+                float minVolume = 0f;
+                float maxVolume = 0.4f;
+
+                // Calculate volume based on distance zones
+                float volumeScale;
+                if (distance <= innerRadius)
+                {
+                    // Within inner radius, use maximum volume
+                    volumeScale = 1f;
+                }
+                else
+                {
+                    // Beyond inner radius, scale from max to min
+                    float adjustedDistance = distance - innerRadius;
+                    float adjustedMaxDistance = maxDistance - innerRadius;
+                    volumeScale = EasingUtils.EaseInOutCirc(MathHelper.Clamp(1f - (adjustedDistance / adjustedMaxDistance), 0f, 1f));
+                }
+
+                float finalVolume = MathHelper.Lerp(minVolume, maxVolume, volumeScale);
+                SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/MetalSlam")
+                {
+                    MaxInstances = 2,
+                    PitchVariance = 0.1f,
+                    Volume = finalVolume,
+                    Pitch = 0.7f,
+                }, NPC.Center);
+            }
+
             Vector2 flamePosition = NPC.Center + new Vector2(-4 * NPC.direction, -64);
 
             if (TargetingModule.HasTarget())
@@ -177,6 +218,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 case AttackType.FlameLob:
                     if (FlameCounter % 100 == 0 && FlameCounter < AttackDelay + ModUtils.SecondsToTicks(3))
                     {
+                        SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with
+                        {
+                            Pitch = -0.25f,
+                            PitchVariance = 0.2f
+                        });
+
                         int randomSpeed = Main.rand.Next(6, 13);
                         Projectile.NewProjectile(
                             NPC.GetSource_FromThis(),
@@ -194,6 +241,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     // Fire once per attack cycle (every 3 seconds)
                     if (FlameCounter % 200 == 0 && FlameCounter < AttackDelay + ModUtils.SecondsToTicks(3))
                     {
+                        SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with
+                        {
+                            Pitch = -0.25f,
+                            PitchVariance = 0.2f
+                        });
+
                         Vector2 directionToTarget = (TargetingModule.Target.Center - flamePosition).SafeNormalize(Vector2.UnitY);
                         int randomSpeed = Main.rand.Next(3, 5);
                         Vector2 shootVelocity = directionToTarget * randomSpeed;
@@ -214,6 +267,18 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     // Fire once per attack cycle (every 3 seconds)
                     if (FlameCounter % AttackDelay == 60)
                     {
+                        SoundEngine.PlaySound(SoundID.NPCDeath6 with
+                        {
+                            Pitch = -0.2f,
+                            Volume = 0.5f
+                        });
+
+                        SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with
+                        {
+                            Pitch = -0.75f,
+                            PitchVariance = 0.2f
+                        });
+
                         Vector2 directionToTarget = (TargetingModule.Target.Center - flamePosition).SafeNormalize(Vector2.UnitY);
                         int randomSpeed = Main.rand.Next(6, 13);
                         Vector2 shootVelocity = directionToTarget * randomSpeed;

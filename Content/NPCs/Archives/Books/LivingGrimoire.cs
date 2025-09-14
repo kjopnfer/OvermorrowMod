@@ -7,6 +7,7 @@ using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
@@ -45,7 +46,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
-
+            NPC.HitSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/BookHit")
+            {
+                Volume = 1f
+            };
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 

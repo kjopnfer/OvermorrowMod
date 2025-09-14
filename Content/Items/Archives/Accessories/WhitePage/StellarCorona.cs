@@ -7,8 +7,10 @@ using OvermorrowMod.Core.Particles;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
@@ -41,7 +43,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void OnSpawn(IEntitySource source)
         {
-            base.OnSpawn(source);
+            SoundEngine.PlaySound(SoundID.AbigailSummon);
         }
 
         public ref float AICounter => ref Projectile.ai[0];

@@ -11,6 +11,7 @@ using OvermorrowMod.Core.Items.Accessories;
 using OvermorrowMod.Core.Particles;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
@@ -63,7 +64,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
             {
                 player.GetCritChance(DamageClass.Melee) += 100; // 100% crit chance bonus
             }
-        }
+        }   
 
         protected override void SetAccessoryEffects(AccessoryDefinition definition)
         {
@@ -74,6 +75,10 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 },
                 effect: (player) =>
                 {
+                    SoundEngine.PlaySound(SoundID.AbigailUpgrade with
+                    {
+                        Pitch = -0.1f
+                    }, player.Center);
                     player.AddBuff(ModContent.BuffType<WarriorsResolve>(), ModUtils.SecondsToTicks(10));
                     GetInstance<WarriorsEpic>(player).WarriorsEpicCooldown = ModUtils.SecondsToTicks(30);
                 }

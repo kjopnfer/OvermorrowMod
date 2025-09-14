@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Particles;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -67,7 +68,10 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                 Projectile.velocity = newDirection * speed;
 
                 if (Projectile.Hitbox.Intersects(player.Hitbox))
+                {
+                    SoundEngine.PlaySound(SoundID.Splash, player.Center);
                     Projectile.Kill();
+                }
             }
 
             DrawParticles();

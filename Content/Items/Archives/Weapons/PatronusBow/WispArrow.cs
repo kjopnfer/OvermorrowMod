@@ -12,7 +12,9 @@ using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
@@ -400,6 +402,13 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnSpawn(IEntitySource source)
         {
+            SoundEngine.PlaySound(SoundID.AbigailAttack with
+            {
+                Volume = 1f,
+                Pitch = 0.8f,
+                PitchVariance = 0.1f,
+            });
+
             float randomScale = Main.rand.NextFloat(5f, 10f);
             Color color = new Color(202, 188, 255);
             float time = ModUtils.SecondsToTicks(0.4f);
