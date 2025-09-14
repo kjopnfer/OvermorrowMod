@@ -69,7 +69,11 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
                 if (Projectile.Hitbox.Intersects(player.Hitbox))
                 {
-                    SoundEngine.PlaySound(SoundID.Splash, player.Center);
+                    SoundEngine.PlaySound(SoundID.Splash with
+                    {
+                        MaxInstances = 0,
+                        Pitch = -0.25f
+                    }, player.Center);
                     Projectile.Kill();
                 }
             }

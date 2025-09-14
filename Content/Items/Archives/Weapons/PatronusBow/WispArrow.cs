@@ -302,6 +302,11 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnKill(int timeLeft)
         {
+            SoundEngine.PlaySound(SoundID.Item30 with
+            {
+                Pitch = -0.5f,
+                PitchVariance = 0.2f
+            });
             bool isPowerShot = Projectile.GetGlobalProjectile<GlobalProjectiles>().IsPowerShot;
 
             float randomScale = Main.rand.NextFloat(5f, 10f);
@@ -402,11 +407,10 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
 
         public override void OnSpawn(IEntitySource source)
         {
-            SoundEngine.PlaySound(SoundID.AbigailAttack with
+            SoundEngine.PlaySound(SoundID.Item30 with
             {
-                Volume = 1f,
-                Pitch = 0.8f,
-                PitchVariance = 0.1f,
+                Pitch = -0.2f,
+                PitchVariance = 0.3f,
             });
 
             float randomScale = Main.rand.NextFloat(5f, 10f);

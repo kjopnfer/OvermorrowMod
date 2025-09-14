@@ -9,6 +9,7 @@ using OvermorrowMod.Core.Particles;
 using ReLogic.Content;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -71,6 +72,12 @@ namespace OvermorrowMod.Content.Misc
 
                 if (!NPC.noGravity && NPC.collideY && NPC.velocity.Y >= 0)
                 {
+                    SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with
+                    {
+                        Pitch = 0.5f,
+                        PitchVariance = 0.2f,
+                    }, NPC.Center);
+
                     NPC.life = 0;
                     NPC.HitEffect(new NPC.HitInfo());
                     NPC.active = false;

@@ -6,7 +6,9 @@ using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
 using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -190,6 +192,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         // Start the death animation directly on the lock NPC
                         if (LockNPC?.ModNPC is DoorLock doorLock)
                         {
+                            SoundEngine.PlaySound(SoundID.Unlock, doorLock.NPC.Center);
                             doorLock.StartDeathAnimation();
                         }
                     }

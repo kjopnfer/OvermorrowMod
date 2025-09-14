@@ -3,6 +3,8 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.NPCs;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -52,7 +54,12 @@ namespace OvermorrowMod.Content.NPCs
             if (OvermorrowNPC.AICounter == 30)
             {
                 //NPC.velocity.X = Main.rand.Next(14, 17) * NPC.direction;
-
+                SoundEngine.PlaySound(SoundID.Item45 with
+                {
+                    Pitch = 0.8f,
+                    PitchVariance = 0.5f,
+                    Volume = 0.15f
+                });
                 float speed = Main.rand.Next(14, 17);
                 if (MathHelper.ToDegrees(NPC.AngleTo(OvermorrowNPC.TargetingModule.Target.Center)) < 0)
                     speed = 12;
