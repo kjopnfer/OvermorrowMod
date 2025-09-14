@@ -55,11 +55,12 @@ namespace OvermorrowMod.Common
         public virtual NPCTargetingConfig TargetingConfig() => new NPCTargetingConfig();
         public sealed override void SetDefaults()
         {
-            NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
             TargetingModule = new NPCTargetingModule(NPC, TargetingConfig());
             AIStateMachine = new AIStateMachine(NPC.ModNPC as OvermorrowNPC, InitializeIdleStates(), InitializeMovementStates(), InitializeAttackStates());
 
             SafeSetDefaults();
+
+            NPC.GetGlobalNPC<BarrierNPC>().MaxBarrierPoints = (int)(NPC.lifeMax * 0.25f);
         }
 
         public virtual void SafeSetDefaults() { }

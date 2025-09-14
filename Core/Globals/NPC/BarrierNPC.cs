@@ -1,12 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
-using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.Buffs;
 using System;
 using System.IO;
-using System.Threading;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
