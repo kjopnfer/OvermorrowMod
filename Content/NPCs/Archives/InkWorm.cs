@@ -51,6 +51,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.noGravity = true;
             NPC.friendly = false;
             NPC.noTileCollide = true;
+            NPC.HitSound = SoundID.Item111;
             NPC.GetGlobalNPC<BarrierNPC>().CanGainBarrier = false;
         }
 

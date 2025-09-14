@@ -5,6 +5,8 @@ using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -42,8 +44,11 @@ namespace OvermorrowMod.Content.NPCs
         {
             OvermorrowNPC.AICounter = 0;
             rollCooldown = ModUtils.SecondsToTicks(Main.rand.Next(3, 5));
+
+            collideSound = true;
         }
 
+        bool collideSound = true;
         public override void Update()
         {
             OvermorrowNPC.AICounter++;
@@ -72,15 +77,19 @@ namespace OvermorrowMod.Content.NPCs
 
             if (NPC.collideY)
             {
-                // Roll for 30 frames
-                //NPC.velocity.X = NPC.direction * 12f; // Adjust speed as neededif (NPC.collideX)
-                
+                if (collideSound)
+                {
+                    SoundEngine.PlaySound(SoundID.NPCHit42 with
+                    {
+                        Pitch = 0.6f,
+                        PitchVariance = 0.4f
+                    });
+
+                    collideSound = false;
+                }
 
                 NPC.velocity.X += NPC.direction * acceleration;
                 Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
-
-                //NPC.rotation += NPC.direction * 0.6f;
-                
             }
         }
     }

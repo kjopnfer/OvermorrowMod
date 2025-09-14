@@ -41,6 +41,10 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SafeSetDefaults()
         {
+            AggroSound = SoundID.Zombie70 with
+            {
+                Pitch = -0.8f
+            };
             NPCID.Sets.TrailCacheLength[NPC.type] = 10;
             NPCID.Sets.TrailingMode[NPC.type] = 3;
 
@@ -50,6 +54,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.defense = 24;
             NPC.damage = 23;
             NPC.knockBackResist = 0.2f;
+            NPC.HitSound = SoundID.NPCHit4;
+            NPC.DeathSound = SoundID.NPCDeath43 with
+            {
+                Pitch = 0.4f,
+                PitchVariance = 0.2f
+            };
             NPCID.Sets.ImmuneToAllBuffs[Type] = true;
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
@@ -78,11 +88,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 aggroLossRate: 1f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
                 aggroRadius: new AggroRadius(
-                    right: ModUtils.TilesToPixels(25),            // Far right detection
-                    left: ModUtils.TilesToPixels(25),             // Close left detection
-                    up: ModUtils.TilesToPixels(15),               // Medium up detection
-                    down: ModUtils.TilesToPixels(15),             // Far down detection
-                    flipWithDirection: true                       // Flip based on NPC direction
+                    right: ModUtils.TilesToPixels(25),
+                    left: ModUtils.TilesToPixels(25),
+                    up: ModUtils.TilesToPixels(15),
+                    down: ModUtils.TilesToPixels(15),
+                    flipWithDirection: true
                 ),
                 attackRadius: AggroRadius.Circle(ModUtils.TilesToPixels(35)),
                 alertRadius: new AggroRadius(

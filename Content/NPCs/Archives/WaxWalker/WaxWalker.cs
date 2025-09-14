@@ -40,6 +40,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SafeSetDefaults()
         {
+            AggroSound = SoundID.Zombie70 with
+            {
+                Pitch = -0.8f
+            };
+
             NPCID.Sets.TrailCacheLength[NPC.type] = 10;
             NPCID.Sets.TrailingMode[NPC.type] = 3;
 
@@ -51,6 +56,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.knockBackResist = 0.2f;
             NPCID.Sets.ImmuneToAllBuffs[Type] = true;
             NPC.HitSound = SoundID.NPCHit4;
+            NPC.DeathSound = SoundID.NPCDeath43 with
+            {
+                Pitch = 0.4f,
+                PitchVariance = 0.2f
+            };
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
@@ -132,7 +142,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             State currentState = AIStateMachine.GetCurrentSubstate();
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
 
-            Main.NewText(yFrame);
             if ((yFrame == 4 || yFrame == 12) && NPC.frameCounter % 6 == 0)
             {
                 Player player = Main.LocalPlayer;

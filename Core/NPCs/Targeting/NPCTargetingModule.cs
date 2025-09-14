@@ -44,7 +44,6 @@ namespace OvermorrowMod.Core.NPCs
 
                 if (Config.DisplayAggroIndicator && withIndicator)
                 {
-                    Main.NewText("call 1");
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
                 }
 
@@ -197,8 +196,6 @@ namespace OvermorrowMod.Core.NPCs
             {
                 if (Config.DisplayAggroIndicator)
                 {
-                    Main.NewText("call 2");
-
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<AggroIndicator>(), 1, 1f, Main.myPlayer, ai0: npc.whoAmI);
                 }
 

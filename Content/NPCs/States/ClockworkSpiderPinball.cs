@@ -5,6 +5,8 @@ using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -82,9 +84,15 @@ namespace OvermorrowMod.Content.NPCs
                     NPC.velocity.Y = -6;
                 }
 
-
                 if (OvermorrowNPC.AICounter > delay && NPC.collideY)
                 {
+                    SoundEngine.PlaySound(SoundID.NPCHit42 with
+                    {
+                        MaxInstances = 0,
+                        Pitch = 0.6f,
+                        PitchVariance = 0.2f
+                    });
+
                     TryGetPinballDirection(Vector2.Zero);
                     NPC.noGravity = true;
                     NPC.velocity = currentDirection * pinballSpeed;
@@ -95,6 +103,12 @@ namespace OvermorrowMod.Content.NPCs
 
             if (OvermorrowNPC.AICounter >= delay && (NPC.collideX || NPC.collideY))
             {
+                SoundEngine.PlaySound(SoundID.NPCHit42 with
+                {
+                    Pitch = 0.6f,
+                    PitchVariance = 0.4f
+                });
+
                 numBounces++;
 
                 if (numBounces >= maxBounces)
@@ -105,6 +119,8 @@ namespace OvermorrowMod.Content.NPCs
 
                     if (NPC.collideY)
                     {
+                       
+
                         NPC.noGravity = false;
                         IsFinished = true;
                     }

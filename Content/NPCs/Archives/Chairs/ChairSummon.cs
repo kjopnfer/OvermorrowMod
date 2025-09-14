@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.Particles;
 using System.Collections.Generic;
@@ -54,17 +55,37 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
         }
 
+        public override void SafeSetDefaults()
+        {
+
+        }
+
         public override NPCTargetingConfig TargetingConfig()
         {
             return new NPCTargetingConfig(
-                maxAggroTime: ModUtils.SecondsToTicks(15),
+                maxAggroTime: ModUtils.SecondsToTicks(10f),
                 aggroLossRate: 1f,
-                aggroCooldownTime: 180f,
-                maxTargetRange: ModUtils.TilesToPixels(55),
-                maxAttackRange: ModUtils.TilesToPixels(55),
-                alertRange: ModUtils.TilesToPixels(60),
+                aggroCooldownTime: ModUtils.SecondsToTicks(4f),
+                aggroRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(25),            // Far right detection
+                    left: ModUtils.TilesToPixels(25),             // Close left detection
+                    up: ModUtils.TilesToPixels(15),               // Medium up detection
+                    down: ModUtils.TilesToPixels(15),             // Far down detection
+                    flipWithDirection: true                       // Flip based on NPC direction
+                ),
+                attackRadius: AggroRadius.Circle(ModUtils.TilesToPixels(35)),
+                alertRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(35),
+                    left: ModUtils.TilesToPixels(35),
+                    up: ModUtils.TilesToPixels(25),
+                    down: ModUtils.TilesToPixels(25),
+                    flipWithDirection: true
+                ),
                 prioritizeAggro: true
-            );
+            )
+            {
+                ShowDebugVisualization = true
+            };
         }
 
         protected State AIState => AIStateMachine.GetCurrentSubstate();
@@ -84,39 +105,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             }
 
             AIStateMachine.Update(NPC.ModNPC as OvermorrowNPC);
-
-            /*switch ((AICase)AIState)
-            {
-                case AICase.Summon:
-                    while (!Collision.SolidTiles((int)(NPC.position.X / 16), (int)((NPC.position.X + NPC.width) / 16), (int)((NPC.position.Y + NPC.height) / 16), (int)((NPC.position.Y + NPC.height + 1) / 16)) && failCount < maxAttempts)
-                    {
-                        NPC.position.Y += 1; // Move the NPC downward
-                        failCount++; // Increment the fail count to avoid infinite loops
-                    }
-
-                    Vector3 originalColor = new Vector3(0.5f, 0.3765f, 0.3980f);
-                    float lerpFactor = MathHelper.Clamp((AICounter - 60f) / 60f, 0f, 1f);
-                    Vector3 lerpedColor = Vector3.Lerp(originalColor, Vector3.Zero, lerpFactor);
-
-                    Lighting.AddLight(NPC.Center, lerpedColor);
-
-                    if (AICounter++ >= 120)
-                    {
-                        AIState = (int)AICase.Idle;
-                        AICounter = 0;
-                    }
-                    break;
-                case AICase.Idle:
-                    if (AICounter++ >= idleTime)
-                    {
-                        AIState = (int)AICase.Jump;
-                        AICounter = 0;
-                    }
-                    break;
-                case AICase.Jump:
-                    MovementAI();
-                    break;
-            }*/
         }
 
         public abstract void MovementAI();

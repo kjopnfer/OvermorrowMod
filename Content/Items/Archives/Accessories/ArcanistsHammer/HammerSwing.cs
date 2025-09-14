@@ -188,7 +188,8 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage += target.defense;
+            modifiers.ArmorPenetration += target.defense;
+            //modifiers.SourceDamage += target.defense;
         }
 
         public override void OnKill(int timeLeft)

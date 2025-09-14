@@ -5,6 +5,8 @@ using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -86,6 +88,11 @@ namespace OvermorrowMod.Content.NPCs
 
             if (OvermorrowNPC.AICounter > waitTime && NPC.collideY && numBounces == 0)
             {
+                SoundEngine.PlaySound(SoundID.NPCHit42 with
+                {
+                    Pitch = 0.6f,
+                    PitchVariance = 0.4f
+                });
                 //Main.NewText("I DID THE FIRS BOUNCEdo second bounce");
                 numBounces++;
 
@@ -107,6 +114,12 @@ namespace OvermorrowMod.Content.NPCs
             var secondBounceDelay = !NPC.noGravity ? waitTime + 80 : waitTime + 10;
             if (OvermorrowNPC.AICounter > secondBounceDelay && NPC.collideY && numBounces == 1)
             {
+                SoundEngine.PlaySound(SoundID.NPCHit42 with
+                {
+                    Pitch = 0.6f,
+                    PitchVariance = 0.4f
+                });
+
                 if (NPC.noGravity)
                 {
                     //Main.NewText("???");
@@ -127,6 +140,11 @@ namespace OvermorrowMod.Content.NPCs
             //if (numBounces == 2 && NPC.collideY && OvermorrowNPC.AICounter > 70)
             if (numBounces == 2 && NPC.collideY && OvermorrowNPC.AICounter > waitTime + 40)
             {
+                SoundEngine.PlaySound(SoundID.NPCHit42 with
+                {
+                    Pitch = 0.6f,
+                    PitchVariance = 0.4f
+                });
 
                 //Main.NewText("do third again " + OvermorrowNPC.AICounter + " no gravity is: " + NPC.noGravity);
                 if (NPC.noGravity)
@@ -143,6 +161,12 @@ namespace OvermorrowMod.Content.NPCs
 
             if (numBounces >= 3 && NPC.collideY)
             {
+                SoundEngine.PlaySound(SoundID.NPCHit42 with
+                {
+                    Pitch = 0.6f,
+                    PitchVariance = 0.4f
+                });
+
                 //Main.NewText("end bounces at " + numBounces);
                 numBounces = 0;
                 IsFinished = true;

@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Core.Globals;
 
 namespace OvermorrowMod.Content.NPCs.Archives
 {
@@ -23,9 +24,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void SafeSetDefaults()
         {
+            AggroSound = SoundID.Zombie58 with
+            {
+                Pitch = 0.8f
+            };
+
             NPC.width = 30;
             NPC.height = 42;
-            NPC.lifeMax = 48;
+            NPC.lifeMax = 110;
             NPC.defense = 8;
             NPC.damage = 23;
             NPC.knockBackResist = 0.5f;

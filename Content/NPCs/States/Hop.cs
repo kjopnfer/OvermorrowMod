@@ -1,9 +1,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using System.Diagnostics.Metrics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using static log4net.Appender.RollingFileAppender;
 
 namespace OvermorrowMod.Content.NPCs
@@ -22,6 +25,13 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Enter()
         {
+            if (NPC.ModNPC is ChairSummon)
+            {
+                SoundEngine.PlaySound(SoundID.Zombie58 with
+                {
+                    Pitch = 0.8f
+                });
+            }
             OvermorrowNPC.AICounter = 0;
 
             int jumpDirection = Main.rand.Next(2, 6) * NPC.direction;

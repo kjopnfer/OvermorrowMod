@@ -62,6 +62,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.defense = 12;
             NPC.damage = 23;
             NPC.knockBackResist = 0.5f;
+            NPC.HitSound = SoundID.NPCDeath4 with
+            {
+                Pitch = 0.2f,
+                PitchVariance = 0.2f
+            };
+            
             NPC.value = Item.buyPrice(0, 0, silver: 2, copper: 20);
 
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
