@@ -47,8 +47,6 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (AICounter == 45)
                 {
-                    Main.NewText("test");
-
                     SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/SpellShot")
                     {
                         MaxInstances = 0,
