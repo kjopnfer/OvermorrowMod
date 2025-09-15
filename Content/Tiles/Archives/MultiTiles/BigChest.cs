@@ -6,7 +6,6 @@ using OvermorrowMod.Content.Items.Archives;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -64,18 +63,13 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-
             Tile tile = Framing.GetTileSafely(i, j);
             BigChest_TE chest;
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
             TileUtils.TryFindModTileEntity<BigChest_TE>(bottomLeft.X, bottomLeft.Y, out chest);
 
-            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name).Value;
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "BigChestContainer").Value;
             Texture2D glow = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "BigChestGlow").Value;
-
-            var frameWidth = 72;
-            var frameHeight = 90;
 
             var tileSize = 18;
             var numTilesX = 4;
@@ -84,30 +78,56 @@ namespace OvermorrowMod.Content.Tiles.Archives
             var framePixelsX = (numTilesX - 1) * tileSize;
             var framePixelsY = (numTilesY - 1) * tileSize;
 
-            float glowProgress;
-            if (chest.AnimationCounter <= 120)
+            float glowProgress = 0f;
+            float lidOffset = 0f;
+
+            int phase1End = 60;
+            int phase2End = phase1End + chest.WaitDuration;
+            int phase3End = phase2End + 60;
+            int phase4End = phase3End + 30;
+
+            if (chest.AnimationCounter <= phase1End) // Wake up glow
             {
-                glowProgress = MathHelper.Lerp(0f, 1f, EasingUtils.EaseOutBack(chest.AnimationCounter / 120f));
+                glowProgress = MathHelper.Lerp(0f, 1f, EasingUtils.EaseOutBack(chest.AnimationCounter / (float)phase1End));
+                lidOffset = 0f;
+            }
+            else if (chest.AnimationCounter <= phase2End)
+            {
+                glowProgress = 1f;
+                lidOffset = 0f;
+            }
+            else if (chest.AnimationCounter <= phase3End) // Lift up lid
+            {
+                glowProgress = 1f;
+                float liftProgress = (chest.AnimationCounter - phase2End) / 60f; // Match the 60 from Update
+                lidOffset = MathHelper.Lerp(0f, -ModUtils.TilesToPixels(4), EasingUtils.EaseOutQuart(liftProgress));
+            }
+            else if (chest.WaitingForItemPickup) // Keep lid open while waiting for item pickup
+            {
+                glowProgress = 1f;
+                lidOffset = -ModUtils.TilesToPixels(4);
+            }
+            else if (chest.AnimationCounter <= phase4End + 30) // Drop lid after item pickup
+            {
+                glowProgress = 1f;
+                float dropProgress = (chest.AnimationCounter - phase4End) / 30f;
+                lidOffset = MathHelper.Lerp(-ModUtils.TilesToPixels(4), 0f, EasingUtils.EaseInBack(dropProgress));
             }
             else
             {
-                float fadeProgress = (chest.AnimationCounter - 120) / 120f;
+                float fadeProgress = (chest.AnimationCounter - phase4End - 30) / 60f;
                 glowProgress = MathHelper.Lerp(1f, 0f, fadeProgress);
+                lidOffset = 0f;
             }
 
-            //var offset = 270 * (chest.AnimationFrame - 1);
             for (int xFrame = 0; xFrame <= framePixelsX; xFrame += tileSize)
             {
-                // Loop through all possible frame positions for y (0 to 240) in increments of 18
                 for (int yFrame = 0; yFrame <= framePixelsY; yFrame += tileSize)
                 {
-                    // Only draw frames that match the current TileFrameX and TileFrameY
                     if (tile.TileFrameX == xFrame && tile.TileFrameY == yFrame)
                     {
-                        // Calculate the rectangle for the current tile frame
-                        Rectangle drawRectangle = new Rectangle(xFrame, 0 + (yFrame /* door.DoorFrame*/) + 2, 16, 16);
+                        Rectangle drawRectangle = new Rectangle(xFrame, 0 + (yFrame) + 2, 16, 16);
 
-                        // Off-screen range for drawing optimization
                         Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                         Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
 
@@ -117,13 +137,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         if (xFrame == 0 && yFrame == 0)
                         {
                             Texture2D lid = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + "BigChestLid").Value;
-                            spriteBatch.Draw(lid, drawPos + new Vector2(0, 2), null, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                            spriteBatch.Draw(lid, drawPos + new Vector2(0, 2 + lidOffset), null, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
                         }
                     }
                 }
             }
-
-
 
             return false;
         }
@@ -135,8 +153,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public bool HasOpened = false;
         private int FrameCounter = 0;
-        public int AnimationCounter = 1; // Goes from frame 0 to 7
+        public int AnimationCounter = 1;
         public bool AnimationStarted = false;
+
+        public int WaitDuration = 60;
+        public int SpawnedItemID = -1;
+        public bool WaitingForItemPickup = false;
+        public bool ItemSpawned = false;
+
         public override void SaveData(TagCompound tag)
         {
             tag["ChestItem"] = ChestItem;
@@ -151,9 +175,15 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public void Interact()
         {
-            AnimationStarted = true;
-            //Item.NewItem(null, Position.ToWorldCoordinates(), ChestItem);
-            Main.NewText("execute opening with item id" + ChestItem);
+            if (!HasOpened && !AnimationStarted)
+            {
+                AnimationStarted = true;
+                HasOpened = true;
+                AnimationCounter = 1;
+            }
+            else
+            {
+            }
         }
 
         public override void Update()
@@ -161,43 +191,93 @@ namespace OvermorrowMod.Content.Tiles.Archives
             if (AnimationStarted)
             {
                 AnimationCounter++;
-                if (AnimationCounter > 240) // Extended to allow for fade out
-                {
-                    AnimationCounter = 0;
-                    AnimationStarted = false;
-                }
 
-                float glowProgress;
-                if (AnimationCounter <= 120)
+                int phase1End = 60;
+                int phase2End = phase1End + WaitDuration;
+                int phase3End = phase2End + 60;
+                int phase4End = phase3End + 30;
+
+                if (AnimationCounter <= phase1End)
                 {
-                    // Fade in
-                    glowProgress = MathHelper.Lerp(0f, 1f, EasingUtils.EaseOutBack(AnimationCounter / 120f));
+                }
+                else if (AnimationCounter <= phase2End)
+                {
+                }
+                else if (AnimationCounter <= phase3End)
+                {
+                    if (!ItemSpawned)
+                    {
+                        Vector2 spawnPos = Position.ToWorldCoordinates() + new Vector2(32, -16);
+                        int itemID = Item.NewItem(null, spawnPos, ChestItem, 1);
+                        SpawnedItemID = itemID;
+                        ItemSpawned = true;
+                        WaitingForItemPickup = true;
+                    }
                 }
                 else
                 {
-                    // Fade out
-                    float fadeProgress = (AnimationCounter - 120) / 120f;
+                    // Check if item still exists
+                    if (WaitingForItemPickup && SpawnedItemID >= 0 && SpawnedItemID < Main.item.Length)
+                    {
+                        Item spawnedItem = Main.item[SpawnedItemID];
+                        if (!spawnedItem.active)
+                        {
+                            WaitingForItemPickup = false;
+                            AnimationCounter = phase4End + 1; // Start closing animation
+                        }
+                        else
+                        {
+                            AnimationCounter = phase4End; // Stay in waiting phase
+                        }
+                    }
+                    else if (WaitingForItemPickup)
+                    {
+                        WaitingForItemPickup = false;
+                        AnimationCounter = phase4End + 1;
+                    }
+
+                    // End animation check
+                    if (!WaitingForItemPickup && AnimationCounter > phase4End + 90) // 30 for close + 60 for fade
+                    {
+                        AnimationCounter = 1;
+                        AnimationStarted = false;
+                        ItemSpawned = false;
+                        SpawnedItemID = -1;
+                        WaitingForItemPickup = false;
+                        HasOpened = false;
+                    }
+                }
+
+                float glowProgress = 0f;
+
+                if (AnimationCounter <= phase1End)
+                {
+                    glowProgress = MathHelper.Lerp(0f, 1f, EasingUtils.EaseOutBack(AnimationCounter / (float)phase1End));
+                }
+                else if (AnimationCounter <= phase2End)
+                {
+                    glowProgress = 1f;
+                }
+                else if (AnimationCounter <= phase3End)
+                {
+                    glowProgress = 1f;
+                }
+                else if (WaitingForItemPickup)
+                {
+                    glowProgress = 1f;
+                }
+                else if (AnimationCounter <= phase4End + 30)
+                {
+                    glowProgress = 1f;
+                }
+                else
+                {
+                    float fadeProgress = (AnimationCounter - phase4End - 30) / 60f;
                     glowProgress = MathHelper.Lerp(1f, 0f, fadeProgress);
                 }
 
                 Lighting.AddLight(Position.ToWorldCoordinates() + new Vector2(2 * 16 - 12, 0), new Vector3(0f, 1f, 0.5f) * glowProgress);
             }
-            //Dust.NewDust(Position.ToWorldCoordinates(), 1, 1, DustID.Torch);
-
-            //Main.NewText(AnimationCounter);
-            /*FrameCounter++;
-            if (FrameCounter > 10)
-            {
-                FrameCounter = 0;
-                AnimationFrame++;
-                if (AnimationFrame > 7)
-                {
-                    AnimationFrame = 0;
-                }
-            }*/
-
-
-            //AnimationFrame = 1;
         }
 
         public override bool IsTileValidForEntity(int x, int y)
