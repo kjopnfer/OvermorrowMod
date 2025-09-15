@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
+using System;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -105,7 +106,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             else if (chest.WaitingForItemPickup) // Keep lid open while waiting for item pickup
             {
                 glowProgress = 1f;
-                lidOffset = -ModUtils.TilesToPixels(4);
+                float floatOffset = MathF.Sin(chest.HoverCounter * 0.05f) * 3f; // 3 pixel float amplitude
+                lidOffset = -ModUtils.TilesToPixels(4) + floatOffset;
             }
             else if (chest.AnimationCounter <= phase4End + 30) // Drop lid after item pickup
             {
@@ -152,7 +154,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public int ChestItem;
 
         public bool HasOpened = false;
-        private int FrameCounter = 0;
+        public int HoverCounter = 0;
         public int AnimationCounter = 1;
         public bool AnimationStarted = false;
 
@@ -227,6 +229,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         }
                         else
                         {
+                            HoverCounter++;
                             AnimationCounter = phase4End; // Stay in waiting phase
                         }
                     }
@@ -239,6 +242,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     // End animation check
                     if (!WaitingForItemPickup && AnimationCounter > phase4End + 90) // 30 for close + 60 for fade
                     {
+                        HoverCounter = 0;
                         AnimationCounter = 1;
                         AnimationStarted = false;
                         ItemSpawned = false;
