@@ -67,7 +67,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override NPCTargetingConfig TargetingConfig()
         {
-            NPCTargetingConfig config = new NPCTargetingConfig() {
+            NPCTargetingConfig config = new NPCTargetingConfig()
+            {
                 DisplayAggroIndicator = false,
                 AlertRange = null
             };
@@ -326,14 +327,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void AI()
         {
+            InkWormBody parentState = Parent.ModNPC as InkWormBody;
+            float distance = initialDistance;
+
             if (!Parent.active)
             {
                 NPC.active = false;
                 return;
             }
-
-            InkWormBody parentState = Parent.ModNPC as InkWormBody;
-            float distance = initialDistance;
 
             NPC.Opacity = 1f;
             NPC.dontTakeDamage = true;
