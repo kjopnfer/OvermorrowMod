@@ -3,10 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Core;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Particles
 {
@@ -182,7 +180,12 @@ namespace OvermorrowMod.Content.Particles
             var lightTime = maxTime * 0.6f;
             if (timeAlive < lightTime)
             {
-                Lighting.AddLight(particle.position, particle.color.ToVector3() * 0.5f);
+                if (lightColor != null)
+                {
+                    Lighting.AddLight(particle.position, lightColor.Value.ToVector3() * 0.5f);
+                }
+                else
+                    Lighting.AddLight(particle.position, particle.color.ToVector3() * 0.5f);
             }
 
             if (timeAlive > maxTime) particle.Kill();

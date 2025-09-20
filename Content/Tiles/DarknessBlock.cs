@@ -48,7 +48,7 @@ namespace OvermorrowMod.Content.Tiles
                     {
                         endColor = Color.Black,
                         slowModifier = 0.98f,
-                        squashHeight = false
+                        squashHeight = false,
                     };
 
                     float scale = Main.rand.NextFloat(0.1f, 0.25f);

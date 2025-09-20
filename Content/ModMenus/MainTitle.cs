@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.ModMenus
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>(AssetDirectory.Menu + "ModTitleLogo");
         public override string DisplayName => "Overmorrow";
-        public override int Music => MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/GrandArchivesPlaceholder");
+        public override int Music => MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/GrandArchives");
         public override Asset<Texture2D> MoonTexture => ModContent.Request<Texture2D>(AssetDirectory.Empty);
         public override Asset<Texture2D> SunTexture => ModContent.Request<Texture2D>(AssetDirectory.Empty);
     }

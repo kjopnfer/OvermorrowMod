@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Biomes
         public override string BestiaryIcon => AssetDirectory.BiomeIcons + "ArchiveBestiary";
         public override string BackgroundPath => AssetDirectory.MapBackgrounds + "GrandArchives";
         public override string MapBackground => BackgroundPath;
-        public override int Music => MusicLoader.GetMusicSlot(Mod, "Sounds/Music/GrandArchivesPlaceholder");
+        public override int Music => MusicLoader.GetMusicSlot(Mod, "Sounds/Music/GrandArchives");
         public override bool IsBiomeActive(Player player)
         {
             return OvermorrowModSystem.ArchiveTiles >= 50;

@@ -15,6 +15,10 @@ namespace OvermorrowMod.Common.Particles
         public float rotationOffset = 0f;
         public int intensity = 1;
 
+        /// <summary>
+        /// Defaults to null to use the particle.color as a color
+        /// </summary>
+        public Color? lightColor = null;
         public virtual int Width { get; protected set; } = 16;
         public virtual int Height { get; protected set; } = 16;
 
