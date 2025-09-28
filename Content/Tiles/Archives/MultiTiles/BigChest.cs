@@ -3,10 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
+using OvermorrowMod.Core.Globals;
 using System;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -159,7 +161,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public bool AnimationStarted = false;
 
         public int WaitDuration = 60;
-        public int SpawnedItemID = -1;
+        public int SpawnedProjectileID = -1;
         public bool WaitingForItemPickup = false;
         public bool ItemSpawned = false;
 
@@ -183,9 +185,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 HasOpened = true;
                 AnimationCounter = 1;
             }
-            else
-            {
-            }
         }
 
         public override void Update()
@@ -201,42 +200,49 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
                 if (AnimationCounter <= phase1End)
                 {
+                    // Phase 1: Wake up glow
                 }
                 else if (AnimationCounter <= phase2End)
                 {
+                    // Phase 2: Wait
                 }
                 else if (AnimationCounter <= phase3End)
                 {
+                    // Phase 3: Lift lid and spawn item
                     if (!ItemSpawned)
                     {
                         Vector2 spawnPos = Position.ToWorldCoordinates() + new Vector2(32, -16);
-                        int itemID = Item.NewItem(null, spawnPos, ChestItem, 1);
-                        SpawnedItemID = itemID;
+                        int projID = Projectile.NewProjectile(null, spawnPos, Vector2.Zero, ModContent.ProjectileType<Content.Misc.DisplayItem>(), 0, 0f, Main.myPlayer, ChestItem);
+
+                        SpawnedProjectileID = projID;
                         ItemSpawned = true;
                         WaitingForItemPickup = true;
                     }
                 }
                 else
                 {
-                    // Check if item still exists
-                    if (WaitingForItemPickup && SpawnedItemID >= 0 && SpawnedItemID < Main.item.Length)
+                    // Phase 4+: Check if projectile still exists
+                    if (WaitingForItemPickup)
                     {
-                        Item spawnedItem = Main.item[SpawnedItemID];
-                        if (!spawnedItem.active)
+                        bool projectileExists = false;
+
+                        if (SpawnedProjectileID >= 0 && SpawnedProjectileID < Main.projectile.Length)
+                        {
+                            Projectile spawnedProj = Main.projectile[SpawnedProjectileID];
+                            if (spawnedProj.active && spawnedProj.type == ModContent.ProjectileType<Content.Misc.DisplayItem>())
+                            {
+                                spawnedProj.Center = Position.ToWorldCoordinates() + new Vector2(22, -58);
+                                projectileExists = true;
+                                HoverCounter++;
+                                AnimationCounter = phase4End; // Stay in waiting phase
+                            }
+                        }
+
+                        if (!projectileExists)
                         {
                             WaitingForItemPickup = false;
                             AnimationCounter = phase4End + 1; // Start closing animation
                         }
-                        else
-                        {
-                            HoverCounter++;
-                            AnimationCounter = phase4End; // Stay in waiting phase
-                        }
-                    }
-                    else if (WaitingForItemPickup)
-                    {
-                        WaitingForItemPickup = false;
-                        AnimationCounter = phase4End + 1;
                     }
 
                     // End animation check
@@ -246,7 +252,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         AnimationCounter = 1;
                         AnimationStarted = false;
                         ItemSpawned = false;
-                        SpawnedItemID = -1;
+                        SpawnedProjectileID = -1;
                         WaitingForItemPickup = false;
                         HasOpened = false;
                     }

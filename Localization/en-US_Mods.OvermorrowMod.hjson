@@ -784,4 +784,5 @@ Projectiles: {
 	CarvingKnifeThrown.DisplayName: Carving Knife Thrown
 	CarvingKnifeSlashNew.DisplayName: Carving Knife Slash New
 	CarvingKnifeSlash.DisplayName: Carving Knife Slash
+	DisplayItem.DisplayName: Display Item
 }

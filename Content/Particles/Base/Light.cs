@@ -108,6 +108,8 @@ namespace OvermorrowMod.Content.Particles
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (texture == null) return;
+            if (AnchorEntity == null || !AnchorEntity.active)
+                return;
 
             float progress = timeAlive / maxTime;
             Color drawColor = Color.Lerp(particle.color, endColor.Value, progress);

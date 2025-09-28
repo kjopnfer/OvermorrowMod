@@ -78,7 +78,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
                     var lightRay = new Light(lightTexture, ModUtils.SecondsToTicks(3), npc, Vector2.Zero);
                     float randomRotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
                     float randomSize = Main.rand.NextFloat(0.1f, 0.3f);
-                    ParticleManager.CreateParticleDirect(lightRay, npc.Center, Vector2.Zero, color, 1f, randomSize, randomRotation, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true); // Scale of 3f becomes the max height
+                    ParticleManager.CreateParticleDirect(lightRay, npc.Center, Vector2.Zero, color, 1f, randomSize, randomRotation, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true);
                 }
             }
         }
