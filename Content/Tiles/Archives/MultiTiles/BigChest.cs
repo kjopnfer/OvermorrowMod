@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -124,6 +125,28 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 lidOffset = 0f;
             }
 
+            // Draw spawn aura from lid opening until lid closes, then fade out
+            if (chest.AnimationCounter > phase2End)
+            {
+                float auraProgress;
+                if (chest.WaitingForItemPickup)
+                {
+                    auraProgress = 60f;
+                }
+                else if (chest.AnimationCounter <= phase4End + 30)
+                {
+                    float closeProgress = (chest.AnimationCounter - phase4End) / 30f;
+                    auraProgress = 60f + (closeProgress * 60f);
+                }
+                else
+                {
+                    float finalFadeProgress = (chest.AnimationCounter - phase4End - 30) / 60f;
+                    auraProgress = 120f + (finalFadeProgress * 60f);
+                }
+
+                DrawSpawnAura(spriteBatch, bottomLeft, auraProgress);
+            }
+
             for (int xFrame = 0; xFrame <= framePixelsX; xFrame += tileSize)
             {
                 for (int yFrame = 0; yFrame <= framePixelsY; yFrame += tileSize)
@@ -148,6 +171,28 @@ namespace OvermorrowMod.Content.Tiles.Archives
             }
 
             return false;
+        }
+
+        private void DrawSpawnAura(SpriteBatch spriteBatch, Point bottomLeft, float animationProgress)
+        {
+            Vector2 chestCenter = bottomLeft.ToWorldCoordinates() + new Vector2(216, 184); // Center of chest
+            float amount = 20f;
+
+            float baseAlpha = 0.8f;
+            if (animationProgress >= 60)
+                baseAlpha = MathHelper.Lerp(0.8f, 0, (animationProgress - 60f) / amount);
+
+            Texture2D auraTexture = TextureAssets.Extra[60].Value;
+            Vector2 drawPos = chestCenter - Main.screenPosition;
+
+            Vector2 scale = new Vector2(1f, 0.3f);
+            Vector2 origin = new Vector2(auraTexture.Width / 2f, auraTexture.Height);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Draw(auraTexture, drawPos, null, Color.LimeGreen, 0f, origin, scale, SpriteEffects.None, 0);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
 
@@ -211,7 +256,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     // Phase 3: Lift lid and spawn item
                     if (!ItemSpawned)
                     {
-                        Vector2 spawnPos = Position.ToWorldCoordinates() + new Vector2(32, -16);
+                        Vector2 spawnPos = Position.ToWorldCoordinates() + new Vector2(22, -24);
                         int projID = Projectile.NewProjectile(null, spawnPos, Vector2.Zero, ModContent.ProjectileType<Content.Misc.DisplayItem>(), 0, 0f, Main.myPlayer, ChestItem);
 
                         SpawnedProjectileID = projID;
@@ -231,7 +276,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                             Projectile spawnedProj = Main.projectile[SpawnedProjectileID];
                             if (spawnedProj.active && spawnedProj.type == ModContent.ProjectileType<Misc.DisplayItem>())
                             {
-                                spawnedProj.Center = Position.ToWorldCoordinates() + new Vector2(22, -58);
+                                //spawnedProj.Center = Position.ToWorldCoordinates() + new Vector2(22, -58);
                                 projectileExists = true;
                                 HoverCounter++;
                                 AnimationCounter = phase4End; // Stay in waiting phase
