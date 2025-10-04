@@ -48,20 +48,26 @@ namespace OvermorrowMod.Content.Misc
         public override void AI()
         {
             AICounter++;
+            if (AICounter <= 5f)
+            {
+                Projectile.Center = startPosition;
+                return;
+            }
 
+            float adjustedCounter = AICounter - 8f;
             Vector2 targetPosition;
 
-            if (AICounter <= 45f)
+            if (adjustedCounter <= 45f)
             {
                 // Initial rise animation
-                float progress = EasingUtils.EaseOutBack(MathHelper.Clamp(AICounter / 45f, 0, 1f));
+                float progress = EasingUtils.EaseOutBack(MathHelper.Clamp(adjustedCounter / 45f, 0, 1f));
                 float offset = MathHelper.Lerp(0, -42, progress);
                 targetPosition = startPosition + new Vector2(0, offset);
             }
             else
             {
                 // Idle hover animation
-                float hoverTime = (AICounter - 45f) * 0.05f;
+                float hoverTime = (adjustedCounter - 45f) * 0.05f;
                 float hoverOffset = MathF.Sin(hoverTime) * 4f;
                 targetPosition = startPosition + new Vector2(0, -42 + hoverOffset);
             }
@@ -99,11 +105,17 @@ namespace OvermorrowMod.Content.Misc
 
         public override bool PreDraw(ref Color lightColor)
         {
+            if (AICounter <= 8f)
+                return false;
+
             if (ItemID <= 0)
                 return false;
 
             Texture2D texture = TextureAssets.Item[ItemID].Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
+            float adjustedCounter = AICounter - 8f;
+            float fadeAlpha = MathHelper.Clamp(adjustedCounter / 15f, 0f, 1f);
+
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * fadeAlpha, 0f, texture.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             return true;
         }

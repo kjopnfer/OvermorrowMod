@@ -175,24 +175,25 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         private void DrawSpawnAura(SpriteBatch spriteBatch, Point bottomLeft, float animationProgress)
         {
-            Vector2 chestCenter = bottomLeft.ToWorldCoordinates() + new Vector2(216, 184); // Center of chest
+            Vector2 chestCenter = bottomLeft.ToWorldCoordinates() + new Vector2(216, 178); // Center of chest
             float amount = 20f;
 
             float baseAlpha = 0.8f;
             if (animationProgress >= 60)
                 baseAlpha = MathHelper.Lerp(0.8f, 0, (animationProgress - 60f) / amount);
 
-            Texture2D auraTexture = TextureAssets.Extra[60].Value;
+            Texture2D auraTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "gradient_rectangle").Value;
+
             Vector2 drawPos = chestCenter - Main.screenPosition;
 
-            Vector2 scale = new Vector2(1f, 0.3f);
+            Vector2 scale = new Vector2(1f, 0.2f);
             Vector2 origin = new Vector2(auraTexture.Width / 2f, auraTexture.Height);
 
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-            Main.spriteBatch.Draw(auraTexture, drawPos, null, Color.LimeGreen, 0f, origin, scale, SpriteEffects.None, 0);
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            //spriteBatch.End();
+            //spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            //spriteBatch.Draw(auraTexture, drawPos, null, Color.Red, 0f, origin, scale, SpriteEffects.None, 0);
+            //spriteBatch.End();
+            //spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
 
