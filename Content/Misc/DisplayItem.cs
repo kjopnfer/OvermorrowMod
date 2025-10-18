@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,9 @@ namespace OvermorrowMod.Content.Misc
             startPosition = Projectile.Center;
         }
 
+        public ModTileEntity tileEntity;
+        BigChest_TE ChestInstance => (BigChest_TE)TileEntity.ByID[tileEntity.ID];
+
         public override void AI()
         {
             AICounter++;
@@ -80,6 +84,7 @@ namespace OvermorrowMod.Content.Misc
                 if (player.active && !player.dead && player.Hitbox.Intersects(Projectile.Hitbox))
                 {
                     Item.NewItem(null, player.Center, ItemID);
+                    ChestInstance.ItemPickedUp = true;
                     Projectile.Kill();
                     return;
                 }

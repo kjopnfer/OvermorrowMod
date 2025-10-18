@@ -202,6 +202,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public int ChestItem;
 
         public bool HasOpened = false;
+        public bool ItemPickedUp = false;
         public int HoverCounter = 0;
         public int AnimationCounter = 1;
         public bool AnimationStarted = false;
@@ -215,16 +216,21 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             tag["ChestItem"] = ChestItem;
             tag["HasOpened"] = HasOpened;
+            tag["ItemPickedUp"] = ItemPickedUp;
         }
 
         public override void LoadData(TagCompound tag)
         {
             HasOpened = tag.Get<bool>("HasOpened");
             ChestItem = tag.Get<int>("ChestItem");
+            ItemPickedUp = tag.Get<bool>("ItemPickedUp");
         }
 
         public void Interact()
         {
+            if (ItemPickedUp)
+                return;
+
             if (!HasOpened && !AnimationStarted)
             {
                 AnimationStarted = true;
