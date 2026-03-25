@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.CustomCollision;
-using OvermorrowMod.Content.NPCs;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;

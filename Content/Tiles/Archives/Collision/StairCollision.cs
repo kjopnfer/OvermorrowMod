@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.NPCs
+namespace OvermorrowMod.Content.Tiles.Archives
 {
     public class StairCollision : TileCollisionNPC
     {

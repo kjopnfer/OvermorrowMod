@@ -4,7 +4,7 @@ using OvermorrowMod.Common.CustomCollision;
 using Terraria;
 using Terraria.ID;
 
-namespace OvermorrowMod.Content.NPCs
+namespace OvermorrowMod.Content.Tiles.Archives
 {
     public class BridgeCollision : TileCollisionNPC
     {
