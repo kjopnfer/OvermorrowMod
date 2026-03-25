@@ -2,11 +2,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Core.NPCs;
 using Terraria;
 
-namespace OvermorrowMod.Content.NPCs
+namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class CeilingWalk : BaseMovementState
     {

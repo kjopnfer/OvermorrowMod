@@ -5,7 +5,7 @@ using OvermorrowMod.Core.NPCs;
 using System;
 using Terraria;
 
-namespace OvermorrowMod.Content.NPCs
+namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class BasicFly : BaseMovementState
     {

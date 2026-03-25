@@ -5,7 +5,7 @@ using OvermorrowMod.Core.NPCs;
 using System.Diagnostics.Metrics;
 using Terraria;
 
-namespace OvermorrowMod.Content.NPCs
+namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class ChairSummonAnimation : BaseIdleState
     {

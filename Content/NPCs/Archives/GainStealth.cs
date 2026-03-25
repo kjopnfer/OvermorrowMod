@@ -3,7 +3,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.NPCs;
 using Terraria;
 
-namespace OvermorrowMod.Content.NPCs
+namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class GainStealth : BaseAttackState
     {

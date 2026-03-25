@@ -7,7 +7,7 @@ using System.Linq;
 using Terraria;
 using Terraria.ID;
 
-namespace OvermorrowMod.Content.NPCs
+namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class GrimoireIdle : BaseIdleState
     {
