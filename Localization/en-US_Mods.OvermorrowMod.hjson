@@ -679,6 +679,11 @@ Items: {
 		DisplayName: Carving Knife
 		Tooltip: ""
 	}
+
+	TestKey: {
+		DisplayName: Test Key
+		Tooltip: ""
+	}
 }
 
 NPCs: {

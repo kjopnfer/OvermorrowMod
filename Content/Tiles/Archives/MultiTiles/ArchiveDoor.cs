@@ -299,10 +299,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void Update()
         {
-            // Manage the lock NPC
             ManageLockNPC();
-
-            // Note: The validation is now handled inside ManageLockNPC() for better organization
 
             if (IsLocked) return;
 
