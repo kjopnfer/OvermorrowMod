@@ -125,7 +125,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
             foreach (var conn in connections)
             {
                 if (conn.Type == ConnectionType.Corridor)
-                    ProceduralCorridor.Clear(conn.Corridor.Value, corridorHeight);
+                    ProceduralCorridor.Clear(conn.Corridor.Value, corridorHeight, fillTileType);
             }
 
             // ==================

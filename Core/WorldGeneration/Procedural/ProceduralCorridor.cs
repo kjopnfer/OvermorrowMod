@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using OvermorrowMod.Content.Tiles.Archives;
@@ -9,7 +10,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
     {
         Flat,
         Slope,
-        Stairs
+        Stairs,
+        Bridge
     }
 
     public struct CorridorPlan
@@ -21,6 +23,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
         public int TotalWidth;
         public int HeightChange;
 
+        public List<int> BridgeSpans;
+
         public int EndX => StartX + TotalWidth;
     }
 
@@ -30,6 +34,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
         private const int DiagonalStairHeight = 10;
         private const int FlatPad = 5;
         private const int MinStepWidth = 3;
+
+        private const int BridgeWidth = 17;
+        private const int BridgePitDepth = 60;
+        private const int BridgeCeilingHeight = 25;
+        private const int MinBridgeCount = 2;
+        private const int MaxBridgeCount = 4;
+        private const int BridgeWallWidth = 1;
+        private const int MinBridgeGap = 24;
+        private const int MaxBridgeGap = 34;
 
         public static CorridorPlan Plan(int startX, int floorY, int heightChange, Random rand)
         {
@@ -44,8 +57,32 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
 
             if (absChange == 0)
             {
-                plan.Type = CorridorType.Flat;
-                plan.TotalWidth = rand.Next(10, 21);
+                bool useBridge = rand.Next(3) == 0;
+                if (useBridge)
+                {
+                    plan.Type = CorridorType.Bridge;
+                    int bridgeCount = rand.Next(MinBridgeCount, MaxBridgeCount + 1);
+
+                    plan.BridgeSpans = new List<int>();
+                    int cursor = BridgeWallWidth;
+
+                    for (int i = 0; i < bridgeCount; i++)
+                    {
+                        int gap = rand.Next(MinBridgeGap, MaxBridgeGap);
+                        cursor += gap;
+                        plan.BridgeSpans.Add(cursor);
+                        cursor += BridgeWidth;
+                    }
+
+                    int finalGap = rand.Next(MinBridgeGap, MaxBridgeGap);
+                    cursor += finalGap + BridgeWallWidth;
+                    plan.TotalWidth = cursor;
+                }
+                else
+                {
+                    plan.Type = CorridorType.Flat;
+                    plan.TotalWidth = rand.Next(10, 21);
+                }
             }
             else if (absChange <= 8)
             {
@@ -63,7 +100,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
             return plan;
         }
 
-        public static void Clear(CorridorPlan plan, int corridorHeight)
+        public static void Clear(CorridorPlan plan, int corridorHeight, int fillTileType)
         {
             switch (plan.Type)
             {
@@ -75,6 +112,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                     break;
                 case CorridorType.Stairs:
                     ClearStairs(plan, corridorHeight);
+                    break;
+                case CorridorType.Bridge:
+                    ClearBridge(plan, fillTileType);
                     break;
             }
         }
@@ -90,6 +130,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                 int lowerFloor = Math.Max(plan.StartFloorY, plan.EndFloorY);
 
                 PlaceDiagonalStairStack(stairStartX, lowerFloor, stairsNeeded);
+            }
+            else if (plan.Type == CorridorType.Bridge)
+            {
+                PlaceBridges(plan);
             }
         }
 
@@ -147,10 +191,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
             int higherFloor = Math.Min(plan.StartFloorY, plan.EndFloorY);
             int lowerFloor = Math.Max(plan.StartFloorY, plan.EndFloorY);
 
-            // Flat from room exit to stair base at the starting floor level
             ClearFlat(plan.StartX, stairStartX, plan.StartFloorY, corridorHeight);
 
-            // Clear the stair area — full height between both floors plus headroom
             for (int x = stairStartX; x < stairEndX; x++)
             {
                 for (int y = higherFloor - corridorHeight - DiagonalStairHeight; y <= lowerFloor; y++)
@@ -159,8 +201,71 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                 }
             }
 
-            // Flat pad from stair exit to next room at the end floor level
             ClearFlat(stairEndX, plan.EndX, plan.EndFloorY, corridorHeight);
+        }
+
+        private static void ClearBridge(CorridorPlan plan, int fillTileType)
+        {
+            int floorY = plan.StartFloorY;
+
+            // Fill the entire pit area with solid tiles first, then selectively clear
+            // This ensures pillars, outer walls, and pit floor all exist
+            for (int x = plan.StartX; x <= plan.EndX; x++)
+            {
+                for (int y = floorY + 1; y <= floorY + BridgePitDepth; y++)
+                {
+                    WorldGen.PlaceTile(x, y, fillTileType, true, true);
+                }
+            }
+
+            // Clear the walkable area above the bridge across the full width
+            // Start from StartX so room border detection sees air and opens the wall
+            for (int x = plan.StartX; x <= plan.EndX; x++)
+            {
+                for (int y = floorY - BridgeCeilingHeight; y <= floorY; y++)
+                {
+                    WorldGen.KillTile(x, y, false, false, true);
+                }
+            }
+
+            // Clear the pit only under bridge spans (leave pillar columns solid below floor)
+            foreach (int spanOffset in plan.BridgeSpans)
+            {
+                int spanStartX = plan.StartX + spanOffset;
+                int spanEndX = spanStartX + BridgeWidth;
+
+                for (int x = spanStartX; x < spanEndX; x++)
+                {
+                    for (int y = floorY + 1; y < floorY + BridgePitDepth; y++)
+                    {
+                        WorldGen.KillTile(x, y, false, false, true);
+                    }
+                }
+            }
+        }
+
+        private const int DarknessOffset = 14;
+        private const int DarknessRows = 3;
+
+        private static void PlaceBridges(CorridorPlan plan)
+        {
+            int floorY = plan.StartFloorY;
+            int darknessType = ModContent.TileType<Content.Tiles.DarknessBlock>();
+
+            foreach (int spanOffset in plan.BridgeSpans)
+            {
+                int bridgeX = plan.StartX + spanOffset;
+                WorldGen.PlaceObject(bridgeX, floorY + 1, ModContent.TileType<ArchiveBridge>());
+
+                for (int row = 0; row < DarknessRows; row++)
+                {
+                    int y = floorY + DarknessOffset + row;
+                    for (int x = bridgeX; x < bridgeX + BridgeWidth; x++)
+                    {
+                        WorldGen.PlaceTile(x, y, darknessType, true, true);
+                    }
+                }
+            }
         }
 
         private static void PlaceDiagonalStairStack(int x, int y, int stack)

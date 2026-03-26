@@ -30,7 +30,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             int liningTile = ModContent.TileType<ArchiveWood>();
 
             Point pointA = new Point(new TestSubworld().Width / 2 - 150, new TestSubworld().Height / 2 + 90);
-            Point pointB = new Point(new TestSubworld().Width / 2 + 100, new TestSubworld().Height / 2);
+            Point pointB = new Point(new TestSubworld().Width / 2 + 200, new TestSubworld().Height / 2);
 
             var rooms = ProceduralGenerator.Generate(
                 pointA, pointB, RoomCount,
