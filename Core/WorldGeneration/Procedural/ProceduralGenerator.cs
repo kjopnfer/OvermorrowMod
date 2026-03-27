@@ -125,16 +125,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
             foreach (var conn in connections)
             {
                 if (conn.Type == ConnectionType.Corridor)
-                    ProceduralCorridor.Clear(conn.Corridor.Value, corridorHeight, fillTileType);
+                {
+                    var plan = conn.Corridor.Value;
+                    ProceduralCorridor.Clear(plan, corridorHeight, fillTileType);
+
+                    // Determine the actual ceiling height for this corridor type
+                    int clearHeight = plan.Type == CorridorType.Bridge ? 25 : corridorHeight;
+
+                    // Clear room A's right wall where the corridor starts
+                    var roomA = rooms[conn.RoomAIndex];
+                    int wallX = roomA.Position.X + roomA.Width - 1;
+                    for (int y = plan.StartFloorY - clearHeight; y <= plan.StartFloorY; y++)
+                        WorldGen.KillTile(wallX, y, false, false, true);
+
+                    // Clear room B's left wall where the corridor ends
+                    var roomB = rooms[conn.RoomBIndex];
+                    int wallBX = roomB.Position.X;
+                    for (int y = plan.EndFloorY - clearHeight; y <= plan.EndFloorY; y++)
+                        WorldGen.KillTile(wallBX, y, false, false, true);
+                }
             }
 
             // ==================
             // PASS 4: BORDERS
             // ==================
-            foreach (var room in rooms)
-            {
-                PlaceRoomBorders(room, liningTileType);
-            }
+            PlaceWoodBorders(rooms, liningTileType, fillTileType, padding: 10);
 
             // ==================
             // PASS 5: FURNITURE
@@ -172,36 +187,65 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
             }
         }
 
-        private static void PlaceRoomBorders(ProceduralRoom room, int liningTileType)
+        private const int BorderThickness = 4;
+
+        private static void PlaceWoodBorders(List<ProceduralRoom> rooms, int liningTileType, int fillTileType, int padding)
         {
-            for (int x = 0; x < room.Width; x++)
+            int minX = int.MaxValue, minY = int.MaxValue;
+            int maxX = int.MinValue, maxY = int.MinValue;
+
+            foreach (var room in rooms)
             {
-                for (int y = 0; y < room.Height; y++)
+                if (room.Position.X < minX) minX = room.Position.X;
+                if (room.Position.Y < minY) minY = room.Position.Y;
+                if (room.Position.X + room.Width > maxX) maxX = room.Position.X + room.Width;
+                if (room.Position.Y + room.Height > maxY) maxY = room.Position.Y + room.Height;
+            }
+
+            minX -= padding;
+            minY -= padding;
+            maxX += padding;
+            maxY += padding;
+
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
                 {
-                    bool isBorder = x == 0 || x == room.Width - 1 || y == 0 || y == room.Height - 1;
-                    if (!isBorder) continue;
+                    Tile tile = Framing.GetTileSafely(x, y);
+                    if (!tile.HasTile) continue;
+                    if (tile.TileType != fillTileType) continue;
 
-                    int worldX = room.Position.X + x;
-                    int worldY = room.Position.Y + y;
+                    Tile above = Framing.GetTileSafely(x, y - 1);
+                    Tile below = Framing.GetTileSafely(x, y + 1);
 
-                    // Check if a corridor cleared through this border tile.
-                    // If the tile OUTSIDE the room is air, there is a corridor
-                    bool corridorExit = false;
-                    if (x == 0) corridorExit = !Framing.GetTileSafely(worldX - 1, worldY).HasTile;
-                    else if (x == room.Width - 1) corridorExit = !Framing.GetTileSafely(worldX + 1, worldY).HasTile;
-                    else if (y == 0) corridorExit = !Framing.GetTileSafely(worldX, worldY - 1).HasTile;
-                    else if (y == room.Height - 1) corridorExit = !Framing.GetTileSafely(worldX, worldY + 1).HasTile;
-
-                    if (corridorExit)
+                    // Floor edge: this tile is stone and the tile below is air
+                    if (!below.HasTile)
                     {
-                        // Clear the border tile so the corridor connects cleanly
-                        WorldGen.KillTile(worldX, worldY, false, false, true);
+                        for (int t = 0; t < BorderThickness; t++)
+                        {
+                            int wy = y - t;
+                            Tile target = Framing.GetTileSafely(x, wy);
+                            if (target.HasTile && target.TileType == fillTileType)
+                            {
+                                WorldGen.KillTile(x, wy, false, false, true);
+                                WorldGen.PlaceTile(x, wy, liningTileType, true, true);
+                            }
+                        }
                     }
-                    else
+
+                    // Ceiling edge: this tile is stone and the tile above is air
+                    if (!above.HasTile)
                     {
-                        // Replace fill with lining
-                        WorldGen.KillTile(worldX, worldY, false, false, true);
-                        WorldGen.PlaceTile(worldX, worldY, liningTileType, true, true);
+                        for (int t = 0; t < BorderThickness; t++)
+                        {
+                            int wy = y + t;
+                            Tile target = Framing.GetTileSafely(x, wy);
+                            if (target.HasTile && target.TileType == fillTileType)
+                            {
+                                WorldGen.KillTile(x, wy, false, false, true);
+                                WorldGen.PlaceTile(x, wy, liningTileType, true, true);
+                            }
+                        }
                     }
                 }
             }

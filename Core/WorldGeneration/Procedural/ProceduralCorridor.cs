@@ -100,6 +100,111 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
             return plan;
         }
 
+        private const int CorridorBorderThickness = 4;
+
+        public static void PlaceBorders(CorridorPlan plan, int corridorHeight, int liningTileType)
+        {
+            if (plan.Type == CorridorType.Bridge) return;
+
+            if (plan.Type == CorridorType.Flat)
+            {
+                PlaceFlatBorders(plan.StartX, plan.EndX, plan.StartFloorY, corridorHeight, liningTileType);
+            }
+            else if (plan.Type == CorridorType.Slope)
+            {
+                PlaceSlopeBorders(plan, corridorHeight, liningTileType);
+            }
+            else if (plan.Type == CorridorType.Stairs)
+            {
+                int stairsNeeded = (int)Math.Ceiling((double)Math.Abs(plan.HeightChange) / DiagonalStairHeight);
+                int stairStartX = plan.StartX + FlatPad;
+                int stairEndX = stairStartX + stairsNeeded * DiagonalStairWidth;
+
+                PlaceFlatBorders(plan.StartX, stairStartX, plan.StartFloorY, corridorHeight, liningTileType);
+                PlaceFlatBorders(stairEndX, plan.EndX, plan.EndFloorY, corridorHeight, liningTileType);
+
+                // Floor under the stair area at the lower level
+                int lowerFloor = Math.Max(plan.StartFloorY, plan.EndFloorY);
+                for (int x = stairStartX; x < stairEndX; x++)
+                {
+                    for (int t = 1; t <= CorridorBorderThickness; t++)
+                    {
+                        if (Framing.GetTileSafely(x, lowerFloor + t).HasTile)
+                        {
+                            WorldGen.KillTile(x, lowerFloor + t, false, false, true);
+                            WorldGen.PlaceTile(x, lowerFloor + t, liningTileType, true, true);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void PlaceFlatBorders(int startX, int endX, int floorY, int corridorHeight, int liningTileType)
+        {
+            for (int x = startX; x <= endX; x++)
+            {
+                // Floor
+                for (int t = 1; t <= CorridorBorderThickness; t++)
+                {
+                    if (Framing.GetTileSafely(x, floorY + t).HasTile)
+                    {
+                        WorldGen.KillTile(x, floorY + t, false, false, true);
+                        WorldGen.PlaceTile(x, floorY + t, liningTileType, true, true);
+                    }
+                }
+
+                // Ceiling
+                for (int t = 1; t <= CorridorBorderThickness; t++)
+                {
+                    if (Framing.GetTileSafely(x, floorY - corridorHeight - t).HasTile)
+                    {
+                        WorldGen.KillTile(x, floorY - corridorHeight - t, false, false, true);
+                        WorldGen.PlaceTile(x, floorY - corridorHeight - t, liningTileType, true, true);
+                    }
+                }
+            }
+        }
+
+        private static void PlaceSlopeBorders(CorridorPlan plan, int corridorHeight, int liningTileType)
+        {
+            int absChange = Math.Abs(plan.HeightChange);
+            int direction = plan.HeightChange > 0 ? 1 : -1;
+
+            int slopeStart = plan.StartX + FlatPad;
+            int slopeEnd = plan.EndX - FlatPad;
+            int stepWidth = Math.Max(MinStepWidth, (slopeEnd - slopeStart) / absChange);
+
+            for (int x = plan.StartX; x <= plan.EndX; x++)
+            {
+                int currentFloor;
+                if (x < slopeStart) currentFloor = plan.StartFloorY;
+                else if (x >= slopeEnd) currentFloor = plan.EndFloorY;
+                else
+                {
+                    int posInSlope = x - slopeStart;
+                    int step = Math.Min(posInSlope / stepWidth, absChange);
+                    currentFloor = plan.StartFloorY + step * direction;
+                }
+
+                for (int t = 1; t <= CorridorBorderThickness; t++)
+                {
+                    if (Framing.GetTileSafely(x, currentFloor + t).HasTile)
+                    {
+                        WorldGen.KillTile(x, currentFloor + t, false, false, true);
+                        WorldGen.PlaceTile(x, currentFloor + t, liningTileType, true, true);
+                    }
+                }
+                for (int t = 1; t <= CorridorBorderThickness; t++)
+                {
+                    if (Framing.GetTileSafely(x, currentFloor - corridorHeight - t).HasTile)
+                    {
+                        WorldGen.KillTile(x, currentFloor - corridorHeight - t, false, false, true);
+                        WorldGen.PlaceTile(x, currentFloor - corridorHeight - t, liningTileType, true, true);
+                    }
+                }
+            }
+        }
+
         public static void Clear(CorridorPlan plan, int corridorHeight, int fillTileType)
         {
             switch (plan.Type)
@@ -228,7 +333,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                 }
             }
 
-            // Clear the pit only under bridge spans (leave pillar columns solid below floor)
+            // Clear the pit under bridge
             foreach (int spanOffset in plan.BridgeSpans)
             {
                 int spanStartX = plan.StartX + spanOffset;
