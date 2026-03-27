@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural
 {
@@ -173,6 +174,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                 }
             }
 
+            // ==================
+            // PASS 6: WALLS
+            // ==================
+            int woodWall = ModContent.WallType<ArchiveWoodWall>();
+            int blueWall = ModContent.WallType<ArchiveWoodWallBlue>();
+            PlaceWallPanels(rooms, fillTileType, woodWall, blueWall, padding: 10);
+
             return rooms;
         }
 
@@ -274,6 +282,134 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                 for (int y = minY; y <= maxY; y++)
                 {
                     WorldGen.PlaceTile(x, y, tileType, true, true);
+                }
+            }
+        }
+
+        private const int MinPanelWidth = 6;
+        private const int MaxPanelWidth = 10;
+
+        private static void PlaceWallPanels(List<ProceduralRoom> rooms, int fillTileType, int woodWall, int blueWall, int padding)
+        {
+            int minX = int.MaxValue, minY = int.MaxValue;
+            int maxX = int.MinValue, maxY = int.MinValue;
+
+            foreach (var room in rooms)
+            {
+                if (room.Position.X < minX) minX = room.Position.X;
+                if (room.Position.Y < minY) minY = room.Position.Y;
+                if (room.Position.X + room.Width > maxX) maxX = room.Position.X + room.Width;
+                if (room.Position.Y + room.Height > maxY) maxY = room.Position.Y + room.Height;
+            }
+
+            minX -= padding;
+            minY -= padding;
+            maxX += padding;
+            maxY += padding;
+
+            var rand = new Random(Environment.TickCount + 999);
+
+            // Scan for air sections by finding ceiling rows
+            for (int y = minY; y <= maxY; y++)
+            {
+                int runStartX = -1;
+
+                for (int x = minX; x <= maxX + 1; x++)
+                {
+                    bool isAir = !Framing.GetTileSafely(x, y).HasTile;
+
+                    if (isAir && runStartX == -1)
+                    {
+                        runStartX = x;
+                    }
+                    else if (!isAir && runStartX != -1)
+                    {
+                        bool hasCeiling = Framing.GetTileSafely(runStartX, y - 1).HasTile;
+                        if (hasCeiling)
+                        {
+                            int ceilingY = y;
+                            int floorY = y;
+                            while (!Framing.GetTileSafely(runStartX, floorY + 1).HasTile && floorY < maxY)
+                                floorY++;
+
+                            int airWidth = x - runStartX;
+                            int airHeight = floorY - ceilingY + 1;
+
+                            if (airHeight >= 10 && airWidth >= 6)
+                            {
+                                DivideIntoRectangles(runStartX, ceilingY, airWidth, airHeight, woodWall, blueWall, rand);
+                            }
+                        }
+
+                        runStartX = -1;
+                    }
+                }
+            }
+        }
+
+        private static void DivideIntoRectangles(int startX, int startY, int airWidth, int airHeight, int woodWall, int blueWall, Random rand)
+        {
+            // Divide the air width into roughly even rectangles
+            // Calculate how many panels fit
+            int panelCount = Math.Max(1, airWidth / MaxPanelWidth);
+            int baseWidth = airWidth / panelCount;
+            int remainder = airWidth % panelCount;
+
+            int cursorX = startX;
+            for (int i = 0; i < panelCount; i++)
+            {
+                // Distribute remainder to middle panels
+                int pw = baseWidth;
+                if (i >= panelCount / 2 - remainder / 2 && i < panelCount / 2 - remainder / 2 + remainder)
+                    pw++;
+
+                DrawRectangleBorder(cursorX, startY, pw, airHeight, woodWall, blueWall);
+                cursorX += pw;
+            }
+        }
+
+        private static void DrawRectangleBorder(int rx, int ry, int w, int h, int woodWall, int blueWall)
+        {
+            int drawStartY = ry - 1;
+            int drawEndY = ry + h;
+            int drawHeight = drawEndY - drawStartY + 1;
+
+            // Inner fill region (3rd rect) is inset 2 from each side
+            int innerTopCutY = 6; // 5th row of inner fill (inner starts at ly=2, so 2+4=6)
+            int innerBottomCutY = drawHeight - 4; // second to last row of inner fill
+
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int ly = 0; ly < drawHeight; ly++)
+                {
+                    int worldX = rx + lx;
+                    int worldY = drawStartY + ly;
+
+                    // 1st rect: outer border of W
+                    bool isOuterBorder = (lx == 0 || lx == w - 1 || ly == 0 || ly == drawHeight - 1);
+
+                    // 2nd rect: E gap (1 tile inside outer border)
+                    bool isGap = !isOuterBorder && (lx == 1 || lx == w - 2 || ly == 1 || ly == drawHeight - 2);
+
+                    // 3rd rect: inner fill of W (2 tiles inside outer border)
+                    bool isInner = (lx >= 2 && lx <= w - 3 && ly >= 2 && ly <= drawHeight - 3);
+
+                    bool isCutRow = isInner && (ly == innerTopCutY || ly == innerBottomCutY);
+
+                    if (isOuterBorder)
+                    {
+                        WorldGen.PlaceWall(worldX, worldY, woodWall, true);
+                    }
+                    else if (isGap || isCutRow)
+                    {
+                        // Empty
+                    }
+                    else if (isInner)
+                    {
+                        // Middle section between the two cut rows uses blue wall
+                        bool isMiddleSection = ly > innerTopCutY && ly < innerBottomCutY;
+                        WorldGen.PlaceWall(worldX, worldY, isMiddleSection ? blueWall : woodWall, true);
+                    }
                 }
             }
         }
