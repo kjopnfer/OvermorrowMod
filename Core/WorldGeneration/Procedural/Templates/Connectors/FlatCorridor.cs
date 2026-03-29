@@ -1,3 +1,4 @@
+using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Tiles.Archives;
 using Terraria;
@@ -9,8 +10,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
     {
         private const int CorridorHeight = 8;
 
-        int[] widths = { 1, 1, 2, 1, 4, 1, 2, 1, 5, 1, 2, 1, 4, 1, 2, 1};
-        int[] types =  {-1, -1, 0,-1, 1,-1, 0,-1, 2,-1, 0,-1, 1,-1, 0,-1};
+        int[] widths = { 1, 1, 2, 1, 4, 1, 2, 1, 7, 1, 2, 1, 4, 1, 2, 1 };
+        int[] types = { -1, -1, 0, -1, 1, -1, 0, -1, 2, -1, 0, -1, 1, -1, 0, -1 };
         // 0 = wood, 1 = castle/stone, 2 = blue, -1 = gap
 
         public SocketAnchor Build(SocketAnchor entry, int fillTileType, int liningTileType)
@@ -45,6 +46,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                     PlaceWallStripe(cursor, wallTop, widths[i], wallBottom, wallType);
                 }
                 cursor += widths[i];
+            }
+
+            for (int x = startX; x < startX + length; x++)
+            {
+                WorldGen.PlaceWall(x, floorY - CorridorHeight - 1, woodWall, true);
+                WorldGen.PlaceWall(x, floorY + 1, woodWall, true);
             }
 
             return new SocketAnchor
