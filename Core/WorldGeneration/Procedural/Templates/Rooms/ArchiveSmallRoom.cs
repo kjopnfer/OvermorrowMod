@@ -2,20 +2,14 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Tiles.Archives;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
 {
     public class ArchiveSmallRoom : IRoomTemplate
     {
-        public int Width => 40;
-        public int Height => 32;
-
-        private const int StoneEdgeWidth = 4;
-        private const int BorderThickness = 4;
-        private const int Padding = 10;
-        private const int CorridorHeight = 8;
+        public int Width => 82;
+        public int Height => 26;
 
         private Point LeftSocketRel => new Point(0, Height - 1);
         private Point RightSocketRel => new Point(Width - 1, Height - 1);
@@ -45,9 +39,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
             var room = new ProceduralRoom(position, Width, Height);
 
             ClearInterior(position);
-            PlaceWoodBorders(position, liningTileType, fillTileType);
-            PlaceCastleWalls(position);
-            PlaceWallPanels(position);
+
+            int cursor = position.X;
+            cursor += PlaceWoodPanel(cursor, position.Y);
+            cursor += PlaceBookPanel(cursor, position.Y);
+            cursor += PlaceWoodPanel(cursor, position.Y);
+            cursor += PlaceBookPanel(cursor, position.Y);
+            cursor += PlaceWoodPanel(cursor, position.Y);
+            cursor += PlaceBookPanel(cursor, position.Y);
+            cursor += PlaceWoodPanel(cursor, position.Y);
+
             AddSockets(room);
 
             return room;
@@ -56,16 +57,68 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
         private void AddSockets(ProceduralRoom room)
         {
             room.SetEdgeSocket(new EdgeSocket(
-                new Point(0, Height - 1),
+                LeftSocketRel,
                 SocketDirection.Left,
                 _leftSocketAccepted
             ));
 
             room.SetEdgeSocket(new EdgeSocket(
-                new Point(39, Height - 1),
+                RightSocketRel,
                 SocketDirection.Right,
                 _rightSocketAccepted
             ));
+        }
+
+        private int PlaceWoodPanel(int startX, int startY)
+        {
+            int w = 7;
+            int woodWall = ModContent.WallType<ArchiveWoodWall>();
+            int blueWall = ModContent.WallType<ArchiveWoodWallBlue>();
+            DrawWallPanel(startX, startY, w, Height, woodWall, blueWall);
+            return w;
+        }
+
+        private int PlaceBookPanel(int startX, int startY)
+        {
+            int frameWall = ModContent.WallType<ArchiveBookWallFrame>();
+            int bookWall = ModContent.WallType<ArchiveBookWall>();
+            int woodWall = ModContent.WallType<ArchiveWoodWall>();
+
+            int w = 18;
+            int bookHeight = 20;
+
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int ly = 0; ly < Height; ly++)
+                {
+                    int worldX = startX + lx;
+                    int worldY = startY + ly;
+
+                    // Left and right columns are wood padding
+                    if (lx == 0 || lx == w - 1)
+                    {
+                        WorldGen.PlaceWall(worldX, worldY, woodWall, true);
+                        continue;
+                    }
+
+                    // Top area is wood
+                    int bookStart = Height - bookHeight;
+                    if (ly < bookStart)
+                    {
+                        WorldGen.PlaceWall(worldX, worldY, woodWall, true);
+                        continue;
+                    }
+
+                    // Book area: frame border + shelf rows, book fill
+                    int bookLy = ly - bookStart;
+                    bool isBorder = (lx == 1 || lx == w - 2 || bookLy == 0 || bookLy == bookHeight - 1);
+                    int fromBottom = (bookHeight - 1) - bookLy;
+                    bool isShelfRow = (fromBottom % 4 == 0);
+                    WorldGen.PlaceWall(worldX, worldY, (isBorder || isShelfRow) ? frameWall : bookWall, true);
+                }
+            }
+
+            return w;
         }
 
         private void ClearInterior(Point position)
@@ -75,50 +128,47 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
                     WorldGen.KillTile(position.X + x, position.Y + y, false, false, true);
         }
 
-        private void PlaceCastleWalls(Point position)
+        /// <summary>
+        /// Draws a nested rectangle wall panel:
+        /// Rect 1 (outer): wood border
+        /// Rect 2: empty gap (1 tile inset)
+        /// Rect 3 (inner): wood fill, with horizontal cut rows and a blue middle section
+        /// </summary>
+        private static void DrawWallPanel(int rx, int ry, int w, int h, int woodWall, int blueWall)
         {
-            int castleWall = ModContent.WallType<CastleWall>();
-            for (int x = position.X; x < position.X + Width; x++)
-                for (int y = position.Y; y < position.Y + Height; y++)
-                    WorldGen.PlaceWall(x, y, castleWall, true);
+            int drawStartY = ry - 1;
+            int drawEndY = ry + h;
+            int drawHeight = drawEndY - drawStartY + 1;
 
-            int inset = StoneEdgeWidth + 2;
-            for (int x = position.X + inset; x < position.X + Width - inset; x++)
-                for (int y = position.Y; y < position.Y + Height; y++)
-                    WorldGen.KillWall(x, y, false);
-        }
+            int innerTopCutY = 6;
+            int innerBottomCutY = drawHeight - 4;
 
-        private void PlaceWallPanels(Point position)
-        {
-            int inset = StoneEdgeWidth + 2;
-            int panelStartX = position.X + inset + 1;
-            int panelEndX = position.X + Width - inset - 2;
-            int panelWidth = panelEndX - panelStartX + 1;
-
-            int woodWall = ModContent.WallType<ArchiveWoodWall>();
-            int blueWall = ModContent.WallType<ArchiveWoodWallBlue>();
-            ProceduralGenerator.PlaceWallPanels(panelStartX, position.Y, panelWidth, Height, woodWall, blueWall);
-        }
-
-        private void PlaceWoodBorders(Point position, int liningTileType, int fillTileType)
-        {
-            WorldGen.PlaceTile(position.X + StoneEdgeWidth + 1, position.Y, TileID.Adamantite, true, true);
-            WorldGen.PlaceTile(position.X + Width - StoneEdgeWidth - 2, position.Y, TileID.Adamantite, true, true);
-
-            for (int x = position.X + StoneEdgeWidth + 1; x <= position.X + Width - StoneEdgeWidth - 2; x++)
+            for (int lx = 0; lx < w; lx++)
             {
-                WorldGen.PlaceTile(x, position.Y - 1, ModContent.TileType<ArchiveWood>(), true, true);
-                WorldGen.PlaceTile(x, position.Y - 2, ModContent.TileType<ArchiveWood>(), true, true);
-                WorldGen.PlaceTile(x, position.Y - 3, ModContent.TileType<ArchiveWood>(), true, true);
-                WorldGen.PlaceTile(x, position.Y - 4, ModContent.TileType<ArchiveWood>(), true, true);
-            }
+                for (int ly = 0; ly < drawHeight; ly++)
+                {
+                    int worldX = rx + lx;
+                    int worldY = drawStartY + ly;
 
-            for (int x = position.X + StoneEdgeWidth + 1; x <= position.X + Width - StoneEdgeWidth - 2; x++)
-            {
-                WorldGen.PlaceTile(x, position.Y + Height, ModContent.TileType<ArchiveWood>(), true, true);
-                WorldGen.PlaceTile(x, position.Y + Height + 1, ModContent.TileType<ArchiveWood>(), true, true);
-                WorldGen.PlaceTile(x, position.Y + Height + 2, ModContent.TileType<ArchiveWood>(), true, true);
-                WorldGen.PlaceTile(x, position.Y + Height + 3, ModContent.TileType<ArchiveWood>(), true, true);
+                    bool isOuterBorder = (lx == 0 || lx == w - 1 || ly == 0 || ly == drawHeight - 1);
+                    bool isGap = !isOuterBorder && (lx == 1 || lx == w - 2 || ly == 1 || ly == drawHeight - 2);
+                    bool isInner = (lx >= 2 && lx <= w - 3 && ly >= 2 && ly <= drawHeight - 3);
+                    bool isCutRow = isInner && (ly == innerTopCutY || ly == innerBottomCutY);
+
+                    if (isOuterBorder)
+                    {
+                        WorldGen.PlaceWall(worldX, worldY, woodWall, true);
+                    }
+                    else if (isGap || isCutRow)
+                    {
+                        // Empty
+                    }
+                    else if (isInner)
+                    {
+                        bool isMiddleSection = ly > innerTopCutY && ly < innerBottomCutY;
+                        WorldGen.PlaceWall(worldX, worldY, isMiddleSection ? blueWall : woodWall, true);
+                    }
+                }
             }
         }
     }

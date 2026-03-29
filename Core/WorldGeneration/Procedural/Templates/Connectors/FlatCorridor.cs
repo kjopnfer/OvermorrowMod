@@ -11,8 +11,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
         private const int CorridorHeight = 8;
 
         int[] widths = { 1, 1, 2, 1, 4, 1, 2, 1, 7, 1, 2, 1, 4, 1, 2, 1 };
-        int[] types = { -1, -1, 0, -1, 1, -1, 0, -1, 2, -1, 0, -1, 1, -1, 0, -1 };
+
+        // shit code lets goo
         // 0 = wood, 1 = castle/stone, 2 = blue, -1 = gap
+        int[] types = { -1, -1, 0, -1, 1, -1, 0, -1, 2, -1, 0, -1, 1, -1, 0, -1 };
 
         public SocketAnchor Build(SocketAnchor entry, int fillTileType, int liningTileType)
         {
@@ -25,7 +27,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
             int endX = startX + length;
             int ceilingY = floorY - CorridorHeight;
 
-            // Clear remove tiles
             for (int x = startX; x <= endX; x++)
                 for (int y = ceilingY; y <= floorY; y++)
                     WorldGen.KillTile(x, y);
@@ -48,7 +49,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 cursor += widths[i];
             }
 
-            for (int x = startX; x < startX + length; x++)
+            // Wood walls inside the floor and ceiling to force the pattern
+            for (int x = startX + 2; x < startX + length - 1; x++)
             {
                 WorldGen.PlaceWall(x, floorY - CorridorHeight - 1, woodWall, true);
                 WorldGen.PlaceWall(x, floorY + 1, woodWall, true);
