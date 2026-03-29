@@ -81,7 +81,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                 else
                 {
                     plan.Type = CorridorType.Flat;
-                    plan.TotalWidth = rand.Next(10, 21);
+                    int flatLength = rand.Next(41, 62);
+                    if (flatLength % 2 == 0) flatLength++;
+                    plan.TotalWidth = flatLength;
                 }
             }
             else if (absChange <= 8)
