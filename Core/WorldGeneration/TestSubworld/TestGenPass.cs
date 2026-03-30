@@ -51,11 +51,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 fillTile, liningTile, rand
             );
 
-            if (rooms.Count > 0)
-            {
-                Main.spawnTileX = rooms[0].Center.X;
-                Main.spawnTileY = rooms[0].FloorY;
-            }
+            Main.spawnTileX = centerX - 100 + archiveSmallRoom.Width / 2;
+            Main.spawnTileY = centerY + archiveSmallRoom.Height / 2;
         }
     }
 }
