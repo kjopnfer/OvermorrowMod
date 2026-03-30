@@ -47,17 +47,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
         /// </summary>
         public SocketDirection Facing { get; }
 
-        /// <summary>
-        /// What connectors can plug into this socket. Null/empty for input-only sockets.
-        /// </summary>
-        public List<IProcedural> Accepted { get; }
+        public List<IProceduralRoom> Accepted { get; }
 
         /// <summary>
         /// The room this socket belongs to. Set when added to a room.
         /// </summary>
         public ProceduralRoom Owner { get; internal set; }
 
-        public EdgeSocket(Point relativePosition, SocketDirection facing, List<IProcedural> accepted = null)
+        public EdgeSocket(Point relativePosition, SocketDirection facing, List<IProceduralRoom> accepted = null)
         {
             RelativePosition = relativePosition;
             Facing = facing;
@@ -65,35 +62,34 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
         }
 
         /// <summary>
-        /// Returns the top-left origin of where the next connected piece starts.
-        /// This is one tile past the socket in the facing direction.
+        /// Returns this socket's world position given the owner's origin.
         /// </summary>
-        public SocketAnchor ToAnchor()
+        public SocketAnchor ToWorldAnchor(Point ownerOrigin) => new SocketAnchor
         {
-            int worldX = Owner.Position.X + RelativePosition.X;
-            int worldY = Owner.Position.Y + RelativePosition.Y;
-
-            // Offset by 1 in the facing direction to get the origin of the next space
-            Point origin = Facing switch
-            {
-                SocketDirection.Right => new Point(worldX + 1, worldY),
-                SocketDirection.Left => new Point(worldX - 1, worldY),
-                SocketDirection.Down => new Point(worldX, worldY + 1),
-                SocketDirection.Up => new Point(worldX, worldY - 1),
-                _ => new Point(worldX, worldY)
-            };
-
-            return new SocketAnchor { Position = origin, Facing = Facing };
-        }
+            Position = new Point(ownerOrigin.X + RelativePosition.X, ownerOrigin.Y + RelativePosition.Y),
+            Facing = Facing
+        };
 
         /// <summary>
-        /// Compute room origin so this socket aligns with the given anchor.
-        /// Universal formula — works for all rooms, all directions.
+        /// Computes the origin of a piece so that its matching socket sits adjacent to the given anchor.
+        /// Pieces end up side by side, not overlapping.
         /// </summary>
-        public Point AlignRoom(SocketAnchor anchor) => new Point(
-            anchor.Position.X - RelativePosition.X,
-            anchor.Position.Y - RelativePosition.Y
-        );
+        public static Point AlignTo(SocketAnchor from, EdgeSocket targetSocket)
+        {
+            Point offset = from.Facing switch
+            {
+                SocketDirection.Right => new Point(1, 0),
+                SocketDirection.Left => new Point(-1, 0),
+                SocketDirection.Down => new Point(0, 1),
+                SocketDirection.Up => new Point(0, -1),
+                _ => Point.Zero
+            };
+
+            return new Point(
+                from.Position.X + offset.X - targetSocket.RelativePosition.X,
+                from.Position.Y + offset.Y - targetSocket.RelativePosition.Y
+            );
+        }
     }
 
     /// <summary>
@@ -110,14 +106,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
         /// <summary>
         /// What can be placed in this socket.
         /// </summary>
-        public List<IProcedural> Accepted { get; }
+        public List<IProceduralRoom> Accepted { get; }
 
         /// <summary>
         /// The room this socket belongs to. Set when added to a room.
         /// </summary>
         public ProceduralRoom Owner { get; internal set; }
 
-        public InteriorSocket(Rectangle bounds, List<IProcedural> accepted = null)
+        public InteriorSocket(Rectangle bounds, List<IProceduralRoom> accepted = null)
         {
             Bounds = bounds;
             Accepted = accepted;

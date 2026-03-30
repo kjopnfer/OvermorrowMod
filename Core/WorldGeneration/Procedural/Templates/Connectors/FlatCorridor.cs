@@ -1,4 +1,3 @@
-using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Tiles.Archives;
 using Terraria;
@@ -6,28 +5,38 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
 {
-    public class FlatCorridor : IProcedural
+    public class FlatCorridor : IProceduralRoom
     {
         private const int CorridorHeight = 8;
 
-        int[] widths = { 1, 2, 1, 4, 1, 2, 1, 7, 1, 2, 1, 4, 1, 2, 1 };
-
-        // shit code lets goo
         // 0 = wood, 1 = castle/stone, 2 = blue, -1 = gap
+        int[] widths = { 1, 2, 1, 4, 1, 2, 1, 7, 1, 2, 1, 4, 1, 2, 1 };
         int[] types = { -1, 0, -1, 1, -1, 0, -1, 2, -1, 0, -1, 1, -1, 0, -1 };
 
-        public SocketAnchor Build(SocketAnchor entry, int fillTileType, int liningTileType)
+        public int Width
         {
-            int startX = entry.Position.X;
-            int floorY = entry.Position.Y;
+            get { int l = 0; for (int i = 0; i < widths.Length; i++) l += widths[i]; return l; }
+        }
 
-            int length = 0;
-            for (int i = 0; i < widths.Length; i++) length += widths[i];
+        public int Height => CorridorHeight + 1;
 
-            int endX = startX + length;
-            int ceilingY = floorY - CorridorHeight;
+        public EdgeSocket Left { get; } = new EdgeSocket(new Point(0, 8), SocketDirection.Left);
+        public EdgeSocket Right { get; }
+        public EdgeSocket Top => null;
+        public EdgeSocket Bottom => null;
 
-            for (int x = startX; x <= endX; x++)
+        public FlatCorridor()
+        {
+            Right = new EdgeSocket(new Point(Width - 1, CorridorHeight), SocketDirection.Right);
+        }
+
+
+        public SocketAnchor Build(Point origin, int fillTileType, int liningTileType)
+        {
+            int floorY = origin.Y + CorridorHeight;
+            int ceilingY = origin.Y;
+
+            for (int x = origin.X; x < origin.X + Width; x++)
                 for (int y = ceilingY; y <= floorY; y++)
                     WorldGen.KillTile(x, y);
 
@@ -37,8 +46,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
             int wallTop = ceilingY + 1;
             int wallBottom = floorY - 1;
 
-            int cursor = startX;
-
+            int cursor = origin.X;
             for (int i = 0; i < widths.Length; i++)
             {
                 if (types[i] >= 0)
@@ -49,16 +57,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 cursor += widths[i];
             }
 
-            // Wood walls inside the floor and ceiling to force the pattern
-            for (int x = startX + 1; x < startX + length - 1; x++)
+            for (int x = origin.X + 1; x < origin.X + Width - 1; x++)
             {
-                WorldGen.PlaceWall(x, floorY - CorridorHeight - 1, woodWall, true);
+                WorldGen.PlaceWall(x, ceilingY - 1, woodWall, true);
                 WorldGen.PlaceWall(x, floorY + 1, woodWall, true);
             }
 
             return new SocketAnchor
             {
-                Position = new Point(endX, floorY),
+                Position = new Point(origin.X + Right.RelativePosition.X, origin.Y + Right.RelativePosition.Y),
                 Facing = SocketDirection.Right
             };
         }

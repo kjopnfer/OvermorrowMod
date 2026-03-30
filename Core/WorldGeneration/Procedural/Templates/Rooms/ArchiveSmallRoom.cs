@@ -7,97 +7,51 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
 {
-    public class ArchiveSmallRoom : IRoomTemplate
+    public class ArchiveSmallRoom : IProceduralRoom
     {
         public int Width => 83;
         public int Height => 26;
 
-        // Sockets inside the room boundary
-        private Point LeftSocketRel => new Point(0, Height - 1);
-        private Point RightSocketRel => new Point(Width - 1, Height - 1);
+        public EdgeSocket Left { get; }
+        public EdgeSocket Right { get; }
+        public EdgeSocket Top { get; }
+        public EdgeSocket Bottom { get; }
 
-        private readonly List<IProcedural> _leftSocketAccepted;
-        private readonly List<IProcedural> _rightSocketAccepted;
-        private readonly List<IProcedural> _downSocketAccepted;
-
-        public ArchiveSmallRoom(List<IProcedural> leftSocketAccepted, List<IProcedural> rightSocketAccepted, List<IProcedural> downSocketAccepted = null)
+        public ArchiveSmallRoom(
+            List<IProceduralRoom> leftAccepted,
+            List<IProceduralRoom> rightAccepted,
+            List<IProceduralRoom> downAccepted = null)
         {
-            _leftSocketAccepted = leftSocketAccepted;
-            _rightSocketAccepted = rightSocketAccepted;
-            _downSocketAccepted = downSocketAccepted;
+            Left = new EdgeSocket(new Point(0, Height - 1), SocketDirection.Left, leftAccepted);
+            Right = new EdgeSocket(new Point(Width - 1, Height - 1), SocketDirection.Right, rightAccepted);
+            Top = new EdgeSocket(new Point(Width / 2, 0), SocketDirection.Up);
+            Bottom = new EdgeSocket(new Point(Width / 2, Height - 1), SocketDirection.Down, downAccepted);
         }
 
-        public Point AlignTo(SocketAnchor anchor)
+
+        public SocketAnchor Build(Point origin, int fillTileType, int liningTileType)
         {
-            Point socketRel = anchor.Facing.Opposite() switch
+            ClearInterior(origin);
+
+            int cursor = origin.X;
+            cursor += PlaceWoodPanel(cursor, origin.Y);
+            cursor += PlaceBookPanel(cursor, origin.Y, 18);
+            cursor += PlaceWoodPanel(cursor, origin.Y);
+            cursor += PlaceBookPanel(cursor, origin.Y, 19);
+            cursor += PlaceWoodPanel(cursor, origin.Y);
+            cursor += PlaceBookPanel(cursor, origin.Y, 18);
+            cursor += PlaceWoodPanel(cursor, origin.Y);
+
+            WorldGen.PlaceTile(origin.X + Width / 2, origin.Y, TileID.Adamantite, true, true);
+            WorldGen.PlaceTile(origin.X + Width / 2, origin.Y + Height - 1, TileID.Adamantite, true, true);
+            WorldGen.PlaceTile(origin.X, origin.Y + Height - 1, TileID.Adamantite, true, true);
+            WorldGen.PlaceTile(origin.X + Width - 1, origin.Y + Height - 1, TileID.Adamantite, true, true);
+
+            return new SocketAnchor
             {
-                SocketDirection.Left => LeftSocketRel,
-                SocketDirection.Right => RightSocketRel,
-                SocketDirection.Up => new Point(Width / 2, 0),
-                _ => LeftSocketRel
+                Position = new Point(origin.X + Right.RelativePosition.X, origin.Y + Right.RelativePosition.Y),
+                Facing = SocketDirection.Right
             };
-            return new Point(anchor.Position.X - socketRel.X, anchor.Position.Y - socketRel.Y);
-        }
-
-        public ProceduralRoom Generate(Point position, int fillTileType, int liningTileType)
-        {
-            var room = new ProceduralRoom(position, Width, Height);
-
-            ClearInterior(position);
-
-            int cursor = position.X;
-            cursor += PlaceWoodPanel(cursor, position.Y);
-            cursor += PlaceBookPanel(cursor, position.Y, 18);
-            cursor += PlaceWoodPanel(cursor, position.Y);
-            cursor += PlaceBookPanel(cursor, position.Y, 19);
-            cursor += PlaceWoodPanel(cursor, position.Y);
-            cursor += PlaceBookPanel(cursor, position.Y, 18);
-            cursor += PlaceWoodPanel(cursor, position.Y);
-
-            AddSockets(room);
-
-            return room;
-        }
-
-        private void AddSockets(ProceduralRoom room)
-        {
-            room.SetEdgeSocket(new EdgeSocket(
-                LeftSocketRel,
-                SocketDirection.Left,
-                _leftSocketAccepted
-            ));
-
-            room.SetEdgeSocket(new EdgeSocket(
-                RightSocketRel,
-                SocketDirection.Right,
-                _rightSocketAccepted
-            ));
-
-            // Up and Down sockets in the middle of the room
-            int midX = Width / 2;
-            room.SetEdgeSocket(new EdgeSocket(
-                new Point(midX, 0),
-                SocketDirection.Up
-            ));
-            room.SetEdgeSocket(new EdgeSocket(
-                new Point(midX, Height - 1),
-                SocketDirection.Down,
-                _downSocketAccepted
-            ));
-
-            // Debug markers - up/down
-            int worldMidX = room.Position.X + midX;
-            WorldGen.PlaceTile(worldMidX, room.Position.Y, TileID.Adamantite, true, true);
-            WorldGen.PlaceTile(worldMidX, room.Position.Y + Height - 1, TileID.Adamantite, true, true);
-
-            // Debug markers - left/right
-            int leftX = room.Position.X + LeftSocketRel.X;
-            int leftY = room.Position.Y + LeftSocketRel.Y;
-            WorldGen.PlaceTile(leftX, leftY, TileID.Adamantite, true, true);
-
-            int rightX = room.Position.X + RightSocketRel.X;
-            int rightY = room.Position.Y + RightSocketRel.Y;
-            WorldGen.PlaceTile(rightX, rightY, TileID.Adamantite, true, true);
         }
 
         private int PlaceWoodPanel(int startX, int startY)
@@ -123,14 +77,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
                     int worldX = startX + lx;
                     int worldY = startY + ly;
 
-                    // Left and right columns are wood padding
                     if (lx == 0 || lx == w - 1)
                     {
                         WorldGen.PlaceWall(worldX, worldY, woodWall, true);
                         continue;
                     }
 
-                    // Top area is wood
                     int bookStart = Height - bookHeight;
                     if (ly < bookStart)
                     {
@@ -138,7 +90,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
                         continue;
                     }
 
-                    // Book area: frame border + shelf rows, book fill
                     int bookLy = ly - bookStart;
                     bool isBorder = (lx == 1 || lx == w - 2 || bookLy == 0 || bookLy == bookHeight - 1);
                     int fromBottom = (bookHeight - 1) - bookLy;
@@ -150,18 +101,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
             return w;
         }
 
-        private void ClearInterior(Point position)
+        private void ClearInterior(Point origin)
         {
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
-                    WorldGen.KillTile(position.X + x, position.Y + y, false, false, true);
+                    WorldGen.KillTile(origin.X + x, origin.Y + y, false, false, true);
         }
 
         /// <summary>
-        /// Draws a nested rectangle wall panel:
-        /// Rect 1 (outer): wood border
-        /// Rect 2: empty gap (1 tile inset)
-        /// Rect 3 (inner): wood fill, with horizontal cut rows and a blue middle section
+        /// Nested rectangle wall panel: outer wood border, empty gap, inner fill with cut rows and blue middle.
         /// </summary>
         private static void DrawWallPanel(int rx, int ry, int w, int h, int woodWall, int blueWall)
         {
@@ -169,6 +117,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
             int drawEndY = ry + h;
             int drawHeight = drawEndY - drawStartY + 1;
 
+            // Row indices where horizontal cuts split the inner fill into 3 sections
             int innerTopCutY = 6;
             int innerBottomCutY = drawHeight - 4;
 
@@ -185,13 +134,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
                     bool isCutRow = isInner && (ly == innerTopCutY || ly == innerBottomCutY);
 
                     if (isOuterBorder)
-                    {
                         WorldGen.PlaceWall(worldX, worldY, woodWall, true);
-                    }
-                    else if (isGap || isCutRow)
-                    {
-                        // Empty
-                    }
+                    else if (isGap || isCutRow) { }
                     else if (isInner)
                     {
                         bool isMiddleSection = ly > innerTopCutY && ly < innerBottomCutY;

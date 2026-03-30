@@ -36,12 +36,12 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             var verticalStairs = new VerticalStairs();
 
             var archiveSmallRoom = new ArchiveSmallRoom(
-                leftSocketAccepted: new List<IProcedural> { flatCorridor },
-                rightSocketAccepted: new List<IProcedural> { flatCorridor },
-                downSocketAccepted: new List<IProcedural> { verticalStairs }
+                leftAccepted: new List<IProceduralRoom> { flatCorridor },
+                rightAccepted: new List<IProceduralRoom> { flatCorridor },
+                downAccepted: new List<IProceduralRoom> { verticalStairs }
             );
 
-            var roomPool = new List<IRoomTemplate> { archiveSmallRoom };
+            var roomPool = new List<IProceduralRoom> { archiveSmallRoom };
 
             var rooms = ProceduralChain.Build(
                 start: new Point(centerX - 100, centerY),

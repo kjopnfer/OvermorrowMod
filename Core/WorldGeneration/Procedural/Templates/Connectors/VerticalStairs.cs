@@ -6,45 +6,46 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
 {
-    public class VerticalStairs : IProcedural
+    public class VerticalStairs : IProceduralRoom
     {
-        private const int ShaftWidth = 38;
-        private const int ShaftHeight = 34;
+        public int Width => 38;
+        public int Height => 34;
 
-        public SocketAnchor Build(SocketAnchor entry, int fillTileType, int liningTileType)
+        public EdgeSocket Left => null;
+        public EdgeSocket Right => null;
+        public EdgeSocket Top { get; } = new EdgeSocket(new Point(19, 0), SocketDirection.Up);
+        public EdgeSocket Bottom { get; } = new EdgeSocket(new Point(19, 33), SocketDirection.Down);
+
+
+        public SocketAnchor Build(Point origin, int fillTileType, int liningTileType)
         {
-            int startX = entry.Position.X - ShaftWidth / 2;
-            int startY = entry.Position.Y;
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
+                    WorldGen.KillTile(origin.X + x, origin.Y + y, false, false, true);
 
-            for (int x = startX; x < startX + ShaftWidth; x++)
-                for (int y = startY; y < startY + ShaftHeight; y++)
-                    WorldGen.KillTile(x, y, false, false, true);
-
-            int wood = ModContent.TileType<ArchiveWood>();
-
-            // Top Left
             for (int x = 0; x < 12; x++)
                 for (int y = 0; y < 4; y++)
-                    WorldGen.PlaceTile(startX + x, startY + y, TileID.Emerald, true, true);
+                    WorldGen.PlaceTile(origin.X + x, origin.Y + y, TileID.Emerald, true, true);
 
-            // Bottom Left
             for (int x = 0; x < 12; x++)
                 for (int y = 0; y < 4; y++)
-                    WorldGen.PlaceTile(startX + x, startY + ShaftHeight - y - 1, TileID.Diamond, true, true);
+                    WorldGen.PlaceTile(origin.X + x, origin.Y + Height - y - 1, TileID.Diamond, true, true);
 
-            // Top Right
             for (int x = 0; x < 12; x++)
                 for (int y = 0; y < 4; y++)
-                    WorldGen.PlaceTile(entry.Position.X + ShaftWidth / 2 - x - 1, startY + y, TileID.Emerald, true, true);
+                    WorldGen.PlaceTile(origin.X + Width - x - 1, origin.Y + y, TileID.Emerald, true, true);
 
-            // Bottom Right
             for (int x = 0; x < 12; x++)
                 for (int y = 0; y < 4; y++)
-                    WorldGen.PlaceTile(entry.Position.X + ShaftWidth / 2 - x - 1, startY + ShaftHeight - y - 1, TileID.Diamond, true, true);
+                    WorldGen.PlaceTile(origin.X + Width - x - 1, origin.Y + Height - y - 1, TileID.Diamond, true, true);
+
+            for (int x = 0; x < 3; x++)
+                for (int y = 0; y < Height; y++)
+                    WorldGen.PlaceWall(origin.X + x, origin.Y + y, ModContent.WallType<ArchiveWoodWall>(), true);
 
             return new SocketAnchor
             {
-                Position = new Point(entry.Position.X, startY + ShaftHeight),
+                Position = new Point(origin.X + Bottom.RelativePosition.X, origin.Y + Bottom.RelativePosition.Y),
                 Facing = SocketDirection.Down
             };
         }
