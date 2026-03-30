@@ -43,6 +43,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                 var room = template.Generate(roomPos, fillTileType, liningTileType);
                 rooms.Add(room);
 
+                // Build horizontal connector to next room
                 if (i < roomCount - 1)
                 {
                     var outputSocket = room.Right;
@@ -51,6 +52,20 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                         var connector = outputSocket.Accepted[rand.Next(outputSocket.Accepted.Count)];
                         cursor = connector.Build(outputSocket.ToAnchor(), fillTileType, liningTileType);
                     }
+                }
+
+                // Build vertical connector from Down socket if available
+                var downSocket = room.Bottom;
+                if (downSocket != null && downSocket.Accepted != null && downSocket.Accepted.Count > 0)
+                {
+                    var vertConnector = downSocket.Accepted[rand.Next(downSocket.Accepted.Count)];
+                    var vertExit = vertConnector.Build(downSocket.ToAnchor(), fillTileType, liningTileType);
+
+                    // Place a room below aligned to the vertical exit
+                    var belowTemplate = roomPool[rand.Next(roomPool.Count)];
+                    Point belowPos = belowTemplate.AlignTo(vertExit);
+                    var belowRoom = belowTemplate.Generate(belowPos, fillTileType, liningTileType);
+                    rooms.Add(belowRoom);
                 }
             }
 

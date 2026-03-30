@@ -65,13 +65,26 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
         }
 
         /// <summary>
-        /// Convert this socket to a world-space anchor.
+        /// Returns the top-left origin of where the next connected piece starts.
+        /// This is one tile past the socket in the facing direction.
         /// </summary>
-        public SocketAnchor ToAnchor() => new SocketAnchor
+        public SocketAnchor ToAnchor()
         {
-            Position = new Point(Owner.Position.X + RelativePosition.X, Owner.Position.Y + RelativePosition.Y),
-            Facing = Facing
-        };
+            int worldX = Owner.Position.X + RelativePosition.X;
+            int worldY = Owner.Position.Y + RelativePosition.Y;
+
+            // Offset by 1 in the facing direction to get the origin of the next space
+            Point origin = Facing switch
+            {
+                SocketDirection.Right => new Point(worldX + 1, worldY),
+                SocketDirection.Left => new Point(worldX - 1, worldY),
+                SocketDirection.Down => new Point(worldX, worldY + 1),
+                SocketDirection.Up => new Point(worldX, worldY - 1),
+                _ => new Point(worldX, worldY)
+            };
+
+            return new SocketAnchor { Position = origin, Facing = Facing };
+        }
 
         /// <summary>
         /// Compute room origin so this socket aligns with the given anchor.

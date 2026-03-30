@@ -2,25 +2,29 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Tiles.Archives;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
 {
     public class ArchiveSmallRoom : IRoomTemplate
     {
-        public int Width => 82;
+        public int Width => 83;
         public int Height => 26;
 
+        // Sockets inside the room boundary
         private Point LeftSocketRel => new Point(0, Height - 1);
         private Point RightSocketRel => new Point(Width - 1, Height - 1);
 
         private readonly List<IProcedural> _leftSocketAccepted;
         private readonly List<IProcedural> _rightSocketAccepted;
+        private readonly List<IProcedural> _downSocketAccepted;
 
-        public ArchiveSmallRoom(List<IProcedural> leftSocketAccepted, List<IProcedural> rightSocketAccepted)
+        public ArchiveSmallRoom(List<IProcedural> leftSocketAccepted, List<IProcedural> rightSocketAccepted, List<IProcedural> downSocketAccepted = null)
         {
             _leftSocketAccepted = leftSocketAccepted;
             _rightSocketAccepted = rightSocketAccepted;
+            _downSocketAccepted = downSocketAccepted;
         }
 
         public Point AlignTo(SocketAnchor anchor)
@@ -29,6 +33,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
             {
                 SocketDirection.Left => LeftSocketRel,
                 SocketDirection.Right => RightSocketRel,
+                SocketDirection.Up => new Point(Width / 2, 0),
                 _ => LeftSocketRel
             };
             return new Point(anchor.Position.X - socketRel.X, anchor.Position.Y - socketRel.Y);
@@ -42,11 +47,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
 
             int cursor = position.X;
             cursor += PlaceWoodPanel(cursor, position.Y);
-            cursor += PlaceBookPanel(cursor, position.Y);
+            cursor += PlaceBookPanel(cursor, position.Y, 18);
             cursor += PlaceWoodPanel(cursor, position.Y);
-            cursor += PlaceBookPanel(cursor, position.Y);
+            cursor += PlaceBookPanel(cursor, position.Y, 19);
             cursor += PlaceWoodPanel(cursor, position.Y);
-            cursor += PlaceBookPanel(cursor, position.Y);
+            cursor += PlaceBookPanel(cursor, position.Y, 18);
             cursor += PlaceWoodPanel(cursor, position.Y);
 
             AddSockets(room);
@@ -67,6 +72,32 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
                 SocketDirection.Right,
                 _rightSocketAccepted
             ));
+
+            // Up and Down sockets in the middle of the room
+            int midX = Width / 2;
+            room.SetEdgeSocket(new EdgeSocket(
+                new Point(midX, 0),
+                SocketDirection.Up
+            ));
+            room.SetEdgeSocket(new EdgeSocket(
+                new Point(midX, Height - 1),
+                SocketDirection.Down,
+                _downSocketAccepted
+            ));
+
+            // Debug markers - up/down
+            int worldMidX = room.Position.X + midX;
+            WorldGen.PlaceTile(worldMidX, room.Position.Y, TileID.Adamantite, true, true);
+            WorldGen.PlaceTile(worldMidX, room.Position.Y + Height - 1, TileID.Adamantite, true, true);
+
+            // Debug markers - left/right
+            int leftX = room.Position.X + LeftSocketRel.X;
+            int leftY = room.Position.Y + LeftSocketRel.Y;
+            WorldGen.PlaceTile(leftX, leftY, TileID.Adamantite, true, true);
+
+            int rightX = room.Position.X + RightSocketRel.X;
+            int rightY = room.Position.Y + RightSocketRel.Y;
+            WorldGen.PlaceTile(rightX, rightY, TileID.Adamantite, true, true);
         }
 
         private int PlaceWoodPanel(int startX, int startY)
@@ -78,13 +109,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
             return w;
         }
 
-        private int PlaceBookPanel(int startX, int startY)
+        private int PlaceBookPanel(int startX, int startY, int w)
         {
             int frameWall = ModContent.WallType<ArchiveBookWallFrame>();
             int bookWall = ModContent.WallType<ArchiveBookWall>();
             int woodWall = ModContent.WallType<ArchiveWoodWall>();
-
-            int w = 18;
             int bookHeight = 20;
 
             for (int lx = 0; lx < w; lx++)

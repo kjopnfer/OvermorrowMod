@@ -33,10 +33,12 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             var rand = new Random(Environment.TickCount);
 
             var flatCorridor = new FlatCorridor();
+            var verticalStairs = new VerticalStairs();
 
             var archiveSmallRoom = new ArchiveSmallRoom(
                 leftSocketAccepted: new List<IProcedural> { flatCorridor },
-                rightSocketAccepted: new List<IProcedural> { flatCorridor }
+                rightSocketAccepted: new List<IProcedural> { flatCorridor },
+                downSocketAccepted: new List<IProcedural> { verticalStairs }
             );
 
             var roomPool = new List<IRoomTemplate> { archiveSmallRoom };
