@@ -10,10 +10,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
     {
         private const int FillPadding = 20;
 
-        /// <summary>
-        /// Gets the matching socket on a piece for a given facing direction.
-        /// A Right-facing anchor needs a Left socket on the target, etc.
-        /// </summary>
         private static EdgeSocket GetMatchingSocket(IProceduralRoom piece, SocketDirection fromFacing)
         {
             return (fromFacing.Opposite()) switch
@@ -26,17 +22,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
             };
         }
 
-        public static List<ProceduralRoom> Build(
+        private static EdgeSocket GetSocket(IProceduralRoom piece, SocketDirection facing)
+        {
+            return facing switch
+            {
+                SocketDirection.Left => piece.Left,
+                SocketDirection.Right => piece.Right,
+                SocketDirection.Up => piece.Top,
+                SocketDirection.Down => piece.Bottom,
+                _ => null
+            };
+        }
+
+        public static void Build(
             Point start, Point target, int roomCount,
             List<IProceduralRoom> roomPool,
             int fillTileType, int liningTileType, Random rand)
         {
-            var rooms = new List<ProceduralRoom>();
-
             int minX = Math.Min(start.X, target.X) - FillPadding;
-            int maxX = Math.Max(start.X, target.X) + 200 + FillPadding;
-            int minY = Math.Min(start.Y, target.Y) - 100 - FillPadding;
-            int maxY = Math.Max(start.Y, target.Y) + 100 + FillPadding;
+            int maxX = Math.Max(start.X, target.X) + roomCount * 200 + FillPadding;
+            int minY = Math.Min(start.Y, target.Y) - roomCount * 60 - FillPadding;
+            int maxY = Math.Max(start.Y, target.Y) + roomCount * 60 + FillPadding;
 
             for (int x = minX; x <= maxX; x++)
                 for (int y = minY; y <= maxY; y++)
@@ -63,7 +69,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                     roomOrigin = EdgeSocket.AlignTo(cursor, matchingSocket);
                 }
 
-                cursor = template.Build(roomOrigin, fillTileType, liningTileType);
+                template.Build(roomOrigin, fillTileType, liningTileType);
 
                 if (i < roomCount - 1)
                 {
@@ -74,27 +80,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
                         var socketWorld = rightSocket.ToWorldAnchor(roomOrigin);
                         var connectorLeft = GetMatchingSocket(connector, socketWorld.Facing);
                         Point connectorOrigin = EdgeSocket.AlignTo(socketWorld, connectorLeft);
-                        cursor = connector.Build(connectorOrigin, fillTileType, liningTileType);
+                        connector.Build(connectorOrigin, fillTileType, liningTileType);
+
+                        var connectorExitSocket = GetSocket(connector, socketWorld.Facing);
+                        cursor = connectorExitSocket.ToWorldAnchor(connectorOrigin);
                     }
                 }
 
                 var bottomSocket = template.Bottom;
-                if (bottomSocket != null && bottomSocket.Accepted != null && bottomSocket.Accepted.Count > 0)
+                if (bottomSocket != null && bottomSocket.Accepted != null && bottomSocket.Accepted.Count > 0 && rand.Next(2) == 0)
                 {
                     var vertConnector = bottomSocket.Accepted[rand.Next(bottomSocket.Accepted.Count)];
                     var socketWorld = bottomSocket.ToWorldAnchor(roomOrigin);
                     var connectorTop = GetMatchingSocket(vertConnector, socketWorld.Facing);
                     Point vertOrigin = EdgeSocket.AlignTo(socketWorld, connectorTop);
-                    var vertExit = vertConnector.Build(vertOrigin, fillTileType, liningTileType);
+                    vertConnector.Build(vertOrigin, fillTileType, liningTileType);
+
+                    var vertExitSocket = GetSocket(vertConnector, socketWorld.Facing);
+                    var vertExitAnchor = vertExitSocket.ToWorldAnchor(vertOrigin);
 
                     var belowTemplate = roomPool[rand.Next(roomPool.Count)];
-                    var belowSocket = GetMatchingSocket(belowTemplate, vertExit.Facing);
-                    Point belowOrigin = EdgeSocket.AlignTo(vertExit, belowSocket);
+                    var belowSocket = GetMatchingSocket(belowTemplate, vertExitAnchor.Facing);
+                    Point belowOrigin = EdgeSocket.AlignTo(vertExitAnchor, belowSocket);
                     belowTemplate.Build(belowOrigin, fillTileType, liningTileType);
                 }
             }
-
-            return rooms;
         }
     }
 }

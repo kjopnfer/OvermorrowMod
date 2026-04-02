@@ -18,8 +18,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates
 
         /// <summary>
         /// Build this piece at the given origin (top-left corner).
-        /// Returns the exit socket's world position for the next piece to align to.
         /// </summary>
-        SocketAnchor Build(Point origin, int fillTileType, int liningTileType);
+        void Build(Point origin, int fillTileType, int liningTileType);
     }
 }

@@ -29,7 +29,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
         }
 
 
-        public SocketAnchor Build(Point origin, int fillTileType, int liningTileType)
+        public void Build(Point origin, int fillTileType, int liningTileType)
         {
             ClearInterior(origin);
 
@@ -46,12 +46,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
             WorldGen.PlaceTile(origin.X + Width / 2, origin.Y + Height - 1, TileID.Adamantite, true, true);
             WorldGen.PlaceTile(origin.X, origin.Y + Height - 1, TileID.Adamantite, true, true);
             WorldGen.PlaceTile(origin.X + Width - 1, origin.Y + Height - 1, TileID.Adamantite, true, true);
-
-            return new SocketAnchor
-            {
-                Position = new Point(origin.X + Right.RelativePosition.X, origin.Y + Right.RelativePosition.Y),
-                Facing = SocketDirection.Right
-            };
         }
 
         private int PlaceWoodPanel(int startX, int startY)

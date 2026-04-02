@@ -34,19 +34,21 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
             var flatCorridor = new FlatCorridor();
             var verticalStairs = new VerticalStairs();
+            var descendingStairs = new DescendingStairs();
+            var ascendingStairs = new AscendingStairs();
 
             var archiveSmallRoom = new ArchiveSmallRoom(
                 leftAccepted: new List<IProceduralRoom> { flatCorridor },
-                rightAccepted: new List<IProceduralRoom> { flatCorridor },
+                rightAccepted: new List<IProceduralRoom> { flatCorridor, descendingStairs, ascendingStairs },
                 downAccepted: new List<IProceduralRoom> { verticalStairs }
             );
 
             var roomPool = new List<IProceduralRoom> { archiveSmallRoom };
 
-            var rooms = ProceduralChain.Build(
+            ProceduralChain.Build(
                 start: new Point(centerX - 100, centerY),
                 target: new Point(centerX + 200, centerY),
-                roomCount: 3,
+                roomCount: 6,
                 roomPool: roomPool,
                 fillTile, liningTile, rand
             );

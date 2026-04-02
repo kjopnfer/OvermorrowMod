@@ -31,7 +31,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
         }
 
 
-        public SocketAnchor Build(Point origin, int fillTileType, int liningTileType)
+        public void Build(Point origin, int fillTileType, int liningTileType)
         {
             int floorY = origin.Y + CorridorHeight;
             int ceilingY = origin.Y;
@@ -62,12 +62,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 WorldGen.PlaceWall(x, ceilingY - 1, woodWall, true);
                 WorldGen.PlaceWall(x, floorY + 1, woodWall, true);
             }
-
-            return new SocketAnchor
-            {
-                Position = new Point(origin.X + Right.RelativePosition.X, origin.Y + Right.RelativePosition.Y),
-                Facing = SocketDirection.Right
-            };
         }
 
         private static void PlaceWallStripe(int startX, int top, int width, int bottom, int wallType)

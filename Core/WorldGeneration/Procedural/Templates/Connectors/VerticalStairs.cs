@@ -16,7 +16,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
         public EdgeSocket Bottom { get; } = new EdgeSocket(new Point(19, 33), SocketDirection.Down);
 
 
-        public SocketAnchor Build(Point origin, int fillTileType, int liningTileType)
+        public void Build(Point origin, int fillTileType, int liningTileType)
         {
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
@@ -67,11 +67,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 WorldGen.PlaceWall(origin.X + 26, origin.Y + y + 30, woodWall, true);
             }
 
-            return new SocketAnchor
-            {
-                Position = new Point(origin.X + Bottom.RelativePosition.X, origin.Y + Bottom.RelativePosition.Y),
-                Facing = SocketDirection.Down
-            };
         }
     }
 }
