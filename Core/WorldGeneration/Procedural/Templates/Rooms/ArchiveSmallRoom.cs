@@ -42,10 +42,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
             cursor += PlaceBookPanel(cursor, origin.Y, 18);
             cursor += PlaceWoodPanel(cursor, origin.Y);
 
-            WorldGen.PlaceTile(origin.X + Width / 2, origin.Y, TileID.Adamantite, true, true);
-            WorldGen.PlaceTile(origin.X + Width / 2, origin.Y + Height - 1, TileID.Adamantite, true, true);
-            WorldGen.PlaceTile(origin.X, origin.Y + Height - 1, TileID.Adamantite, true, true);
-            WorldGen.PlaceTile(origin.X + Width - 1, origin.Y + Height - 1, TileID.Adamantite, true, true);
+            //WorldGen.PlaceTile(origin.X + Width / 2, origin.Y, TileID.Adamantite, true, true);
+            //WorldGen.PlaceTile(origin.X + Width / 2, origin.Y + Height - 1, TileID.Adamantite, true, true);
+            //WorldGen.PlaceTile(origin.X, origin.Y + Height - 1, TileID.Adamantite, true, true);
+            //WorldGen.PlaceTile(origin.X + Width - 1, origin.Y + Height - 1, TileID.Adamantite, true, true);
         }
 
         private int PlaceWoodPanel(int startX, int startY)
