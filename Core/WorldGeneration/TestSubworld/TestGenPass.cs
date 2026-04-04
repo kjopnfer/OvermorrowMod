@@ -45,16 +45,19 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
             var roomPool = new List<IProceduralRoom> { archiveSmallRoom };
 
+            int startX = 100;
+            int startY = centerY;
+
             ProceduralChain.Build(
-                start: new Point(centerX - 100, centerY),
-                target: new Point(centerX + 200, centerY),
+                start: new Point(startX, startY),
+                target: new Point(startX + 200, startY),
                 roomCount: 6,
                 roomPool: roomPool,
                 fillTile, liningTile, rand
             );
 
-            Main.spawnTileX = centerX - 100 + archiveSmallRoom.Width / 2;
-            Main.spawnTileY = centerY + archiveSmallRoom.Height / 2;
+            Main.spawnTileX = startX + archiveSmallRoom.Width / 2;
+            Main.spawnTileY = startY + archiveSmallRoom.Height / 2;
         }
     }
 }
