@@ -19,7 +19,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
         public EdgeSocket Top => null;
         public EdgeSocket Bottom => null;
 
-        private readonly bool _descendLeftToRight;
+        protected readonly bool _descendLeftToRight;
 
         protected Stairs(bool descendLeftToRight)
         {
@@ -33,8 +33,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
             int leftFloorY = _descendLeftToRight ? CorridorHeight : CorridorHeight + StepCount;
             int rightFloorY = _descendLeftToRight ? CorridorHeight + StepCount : CorridorHeight;
 
-            void Clear(int wx, int wy) { Tile t = Main.tile[wx, wy]; t.HasTile = false; }
-            void Place(int wx, int wy) { Tile t = Main.tile[wx, wy]; t.TileType = woodTile; t.HasTile = true; }
+            void Clear(int wx, int wy)
+            {
+                Tile t = Main.tile[wx, wy];
+                t.HasTile = false;
+            }
+
+            void Place(int wx, int wy)
+            {
+                Tile t = Main.tile[wx, wy];
+                t.TileType = woodTile; t.HasTile = true;
+            }
 
             for (int x = 0; x < LandingWidth; x++)
             {
@@ -78,7 +87,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
             if (_descendLeftToRight)
             {
                 ProceduralUtils.DrawWallPanel(origin.X, origin.Y, LandingWidth, leftFloorY, woodWall, blueWall);
-                //for (int offset = 0; offset < )
+
                 DrawColoredPanel(origin.X + LandingWidth, origin.Y, 5, leftFloorY + 1);
                 DrawColoredPanel(origin.X + LandingWidth + 4, origin.Y, 5, leftFloorY + 5);
                 DrawColoredPanel(origin.X + LandingWidth + 8, origin.Y, 5, leftFloorY + 9);
@@ -86,34 +95,49 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 DrawColoredPanel(origin.X + LandingWidth + 16, origin.Y, 5, leftFloorY + 17);
 
                 for (int x = 0; x <= 4; x++)
-                {
                     for (int y = 0; y < 4; y++)
                     {
                         WorldGen.PlaceWall(origin.X + LandingWidth + x - 1, origin.Y + leftFloorY + y + 1, woodWall);
-                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 4 - 1, origin.Y + leftFloorY + y + 5, woodWall);
-                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 8 - 1, origin.Y + leftFloorY + y + 9, woodWall);
-                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 12 - 1, origin.Y + leftFloorY + y + 13, woodWall);
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 3, origin.Y + leftFloorY + y + 5, woodWall);
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 7, origin.Y + leftFloorY + y + 9, woodWall);
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 11, origin.Y + leftFloorY + y + 13, woodWall);
                     }
-                }
 
                 for (int x = 0; x < 20; x++)
-                {
-                    WorldGen.PlaceWall(origin.X + LandingWidth + x + 18 - 1, origin.Y + leftFloorY + 17, woodWall);
-                }
+                    WorldGen.PlaceWall(origin.X + LandingWidth + x + 17, origin.Y + leftFloorY + 17, woodWall);
 
                 for (int x = 0; x < 36; x++)
-                {
-                    WorldGen.PlaceWall(origin.X + LandingWidth + x + 2 - 1, origin.Y - 1, woodWall);
-                }
+                    WorldGen.PlaceWall(origin.X + LandingWidth + x + 1, origin.Y - 1, woodWall);
 
-
-                //ProceduralUtils.DrawWallPanel(origin.X + LandingWidth, origin.Y + 1, 5, leftFloorY, woodWall, blueWall);
-                //ProceduralUtils.DrawWallPanel(origin.X + LandingWidth + 4, origin.Y + 1, 5, leftFloorY + 4, woodWall, blueWall);
-
+                ProceduralUtils.DrawWallPanel(origin.X + LandingWidth + StepCount + 4, origin.Y, LandingWidth - 4, rightFloorY, woodWall, blueWall);
             }
             else
             {
+                ProceduralUtils.DrawWallPanel(origin.X, origin.Y, LandingWidth - 4, leftFloorY, woodWall, blueWall);
 
+                DrawColoredPanel(origin.X + LandingWidth - 4, origin.Y, 5, rightFloorY + 17);
+                DrawColoredPanel(origin.X + LandingWidth, origin.Y, 5, rightFloorY + 13);
+                DrawColoredPanel(origin.X + LandingWidth + 4, origin.Y, 5, rightFloorY + 9);
+                DrawColoredPanel(origin.X + LandingWidth + 8, origin.Y, 5, rightFloorY + 5);
+                DrawColoredPanel(origin.X + LandingWidth + 12, origin.Y, 5, rightFloorY + 1);
+
+                for (int x = 0; x <= 4; x++)
+                    for (int y = 0; y < 4; y++)
+                    {
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x - 3, origin.Y + leftFloorY + y, woodWall);
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 1, origin.Y + leftFloorY - 4 + y, woodWall);
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 5, origin.Y + leftFloorY - 8 + y, woodWall);
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 9, origin.Y + leftFloorY - 12 + y, woodWall);
+                        WorldGen.PlaceWall(origin.X + LandingWidth + x + 13, origin.Y + leftFloorY - 16 + y, woodWall);
+                    }
+
+                for (int x = 0; x < 20; x++)
+                    WorldGen.PlaceWall(origin.X + LandingWidth + x - 1, origin.Y + leftFloorY, woodWall);
+
+                for (int x = 0; x < 36; x++)
+                    WorldGen.PlaceWall(origin.X + LandingWidth + x - 3, origin.Y - 1, woodWall);
+
+                ProceduralUtils.DrawWallPanel(origin.X + LandingWidth + StepCount, origin.Y, LandingWidth, rightFloorY, woodWall, blueWall);
             }
         }
     }
