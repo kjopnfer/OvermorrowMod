@@ -51,7 +51,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             ProceduralChain.Build(
                 start: new Point(startX, startY),
                 target: new Point(startX + 200, startY),
-                roomCount: 6,
+                roomCount: 4,
                 roomPool: roomPool,
                 fillTile, liningTile, rand
             );

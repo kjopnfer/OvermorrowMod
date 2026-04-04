@@ -215,7 +215,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural
 
             for (int x = minX; x <= maxX; x++)
                 for (int y = minY; y <= maxY; y++)
-                    WorldGen.PlaceTile(x, y, fillTileType, true, true);
+                {
+                    Tile t = Main.tile[x, y];
+                    t.TileType = (ushort)fillTileType;
+                    t.HasTile = true;
+                }
 
             var layout = Plan(start, roomCount, roomPool, rand);
             BuildStructure(layout, fillTileType, liningTileType);

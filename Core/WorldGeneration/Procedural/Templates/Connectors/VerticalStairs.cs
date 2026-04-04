@@ -16,20 +16,28 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
         public EdgeSocket Bottom { get; } = new EdgeSocket(new Point(19, 33), SocketDirection.Down);
 
 
+
         public void Build(Point origin, int fillTileType, int liningTileType)
         {
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
-                    WorldGen.KillTile(origin.X + x, origin.Y + y, false, false, true);
+                {
+                    Tile t = Main.tile[origin.X + x, origin.Y + y];
+                    t.HasTile = false;
+                }
 
-            int woodTile = ModContent.TileType<ArchiveWood>();
+            ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
             for (int x = 0; x < 12; x++)
                 for (int y = 0; y < 4; y++)
                 {
-                    WorldGen.PlaceTile(origin.X + x, origin.Y + y, woodTile, true, true);
-                    WorldGen.PlaceTile(origin.X + x, origin.Y + Height - y - 1, woodTile, true, true);
-                    WorldGen.PlaceTile(origin.X + Width - x - 1, origin.Y + y, woodTile, true, true);
-                    WorldGen.PlaceTile(origin.X + Width - x - 1, origin.Y + Height - y - 1, woodTile, true, true);
+                    void Place(int wx, int wy) { 
+                        Tile t = Main.tile[wx, wy]; t.TileType = woodTile; t.HasTile = true; 
+                    }
+
+                    Place(origin.X + x,             origin.Y + y);
+                    Place(origin.X + x,             origin.Y + Height - y - 1);
+                    Place(origin.X + Width - x - 1, origin.Y + y);
+                    Place(origin.X + Width - x - 1, origin.Y + Height - y - 1);
                 }
 
             int woodWall = ModContent.WallType<ArchiveWoodWall>();

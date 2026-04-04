@@ -99,7 +99,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms
         {
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
-                    WorldGen.KillTile(origin.X + x, origin.Y + y, false, false, true);
+                {
+                    Tile t = Main.tile[origin.X + x, origin.Y + y];
+                    t.HasTile = false;
+                }
         }
     }
 }

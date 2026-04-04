@@ -38,7 +38,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
 
             for (int x = origin.X; x < origin.X + Width; x++)
                 for (int y = ceilingY; y <= floorY; y++)
-                    WorldGen.KillTile(x, y);
+                    WorldGen.KillTile(x, y, false, false, true);
 
             int woodWall = ModContent.WallType<ArchiveWoodWall>();
             int castleWall = ModContent.WallType<CastleWall>();
