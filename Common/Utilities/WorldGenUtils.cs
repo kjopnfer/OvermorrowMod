@@ -9,6 +9,57 @@ namespace OvermorrowMod.Common.Utilities
 {
     public static class WorldGenUtils
     {
+        /// <summary>
+        /// Places a single 1x1 tile by directly setting the tile type and active flag.
+        /// Bypasses WorldGen.PlaceTile which performs neighbor updates, framing, object data lookups,
+        /// dust effects, and sync calls on every invocation. Use this when bulk-placing simple tiles
+        /// in procedural generation where those side effects are unnecessary and would cause
+        /// significant performance overhead (e.g. hundreds of tiles in a single Build call).
+        /// Do not use for multi-tile objects or tiles that require framing (use WorldGen.PlaceTile for those).
+        /// </summary>
+        public static void PlaceTile(int x, int y, ushort tileType)
+        {
+            Tile t = Main.tile[x, y];
+            t.TileType = tileType;
+            t.HasTile = true;
+        }
+
+        /// <summary>
+        /// Removes a tile by clearing its active flag.
+        /// Bypasses WorldGen.KillTile which performs drop checks, dust effects, sound,
+        /// neighbor updates, and sync calls. Use this for bulk-clearing tiles in procedural
+        /// generation where those side effects are unnecessary.
+        /// </summary>
+        public static void ClearTile(int x, int y)
+        {
+            Tile t = Main.tile[x, y];
+            t.HasTile = false;
+        }
+
+        /// <summary>
+        /// Places a wall by directly setting the WallType property.
+        /// Bypasses WorldGen.PlaceWall which performs bounds checking, framing,
+        /// neighbor wall updates, and sync calls on every invocation. Use this when bulk-placing
+        /// walls in procedural generation where those side effects are unnecessary and would cause
+        /// significant performance overhead.
+        /// </summary>
+        public static void SetWall(int x, int y, ushort wallType)
+        {
+            Tile t = Main.tile[x, y];
+            t.WallType = wallType;
+        }
+
+        /// <summary>
+        /// Removes a wall by setting WallType to None.
+        /// Bypasses WorldGen.KillWall which performs drop checks, dust effects, sound,
+        /// neighbor updates, and sync calls. Use this for bulk-clearing walls in procedural generation.
+        /// </summary>
+        public static void ClearWall(int x, int y)
+        {
+            Tile t = Main.tile[x, y];
+            t.WallType = WallID.None;
+        }
+
         // oh my god -Japan
         /*
          *  Generates a single tile and wall at the given coordinates. (if the tile is > 1 x 1 it assumes the passed in coordinate is the top left)
