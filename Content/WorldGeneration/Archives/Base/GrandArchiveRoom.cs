@@ -146,7 +146,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             if (stackSize < 1)
                 stackSize = 1;
 
-            // Place bottom tile — must succeed
+            // Place bottom tile ï¿½ must succeed
             bool success = WorldGen.PlaceObject(x, y, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
             if (!success)
                 return false;
@@ -331,7 +331,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        protected void PlaceVaseGroup(int x, int y)
+        public static void PlaceVaseGroup(int x, int y)
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<ArchivePotSmall>());
             WorldGen.PlaceObject(x + 1, y, ModContent.TileType<FatVase>());
@@ -345,7 +345,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="repeat"></param>
-        protected void PlaceMultiVase(int x, int y, int direction, int repeat)
+        public static void PlaceMultiVase(int x, int y, int direction, int repeat)
         {
             if (direction != 1 && direction != -1) direction = 1;
 

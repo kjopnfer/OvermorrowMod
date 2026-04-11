@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Content.WorldGeneration.Archives;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -37,14 +38,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
 
             ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
             ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
+            int platformType = ModContent.TileType<CastlePlatform>();
 
-            void DrawColoredPanel(int rx, int ry, int w, int h)
+            void DrawColoredPanel(int rx, int ry, int w, int h, int skipRowFromBottom = -1)
             {
                 for (int lx = 0; lx < w; lx++)
                     for (int ly = 0; ly < h; ly++)
                     {
                         bool isBorder = (lx == 0 || lx == w - 1 || ly == 0 || ly == h - 1);
-                        if (!isBorder)
+                        bool isSkipped = skipRowFromBottom > 0 && ly == h - 1 - skipRowFromBottom;
+                        if (!isBorder && !isSkipped)
                             WorldGenUtils.SetWall(rx + lx, ry + ly, blueWall);
                     }
             }
@@ -113,11 +116,28 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                         WorldGenUtils.ClearWall(origin.X + TopLandingWidth + StepCount + x, origin.Y + y);
                 }
 
-                DrawColoredPanel(origin.X + TopLandingWidth, origin.Y + 0, 5, CorridorHeight + 1);
-                DrawColoredPanel(origin.X + TopLandingWidth + 4, origin.Y + 0, 5, CorridorHeight + 5);
-                DrawColoredPanel(origin.X + TopLandingWidth + 8, origin.Y + 4, 5, CorridorHeight + 5);
-                DrawColoredPanel(origin.X + TopLandingWidth + 12, origin.Y + 8, 5, CorridorHeight + 5);
-                DrawColoredPanel(origin.X + TopLandingWidth + 16, origin.Y + 12, 5, CorridorHeight + 5);
+                DrawColoredPanel(origin.X + TopLandingWidth, origin.Y + 0, 5, CorridorHeight + 1, 3);
+                DrawColoredPanel(origin.X + TopLandingWidth + 4, origin.Y + 0, 5, CorridorHeight + 5, 3);
+                DrawColoredPanel(origin.X + TopLandingWidth + 8, origin.Y + 4, 5, CorridorHeight + 5, 3);
+                DrawColoredPanel(origin.X + TopLandingWidth + 12, origin.Y + 8, 5, CorridorHeight + 5, 3);
+                DrawColoredPanel(origin.X + TopLandingWidth + 16, origin.Y + 12, 5, CorridorHeight + 5, 3);
+
+                // Platforms on the gap row in each panel (5 wide to span both panel borders)
+                for (int lx = 0; lx < 5; lx++)
+                {
+                    WorldGen.PlaceTile(origin.X + TopLandingWidth + lx, origin.Y + 0 + (CorridorHeight + 1) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + TopLandingWidth + 4 + lx, origin.Y + 0 + (CorridorHeight + 5) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + TopLandingWidth + 8 + lx, origin.Y + 4 + (CorridorHeight + 5) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + TopLandingWidth + 12 + lx, origin.Y + 8 + (CorridorHeight + 5) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + TopLandingWidth + 16 + lx, origin.Y + 12 + (CorridorHeight + 5) - 4, platformType, true, true);
+                }
+
+                // Vases on top of each platform
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth, origin.Y + 0 + (CorridorHeight + 1) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth + 4, origin.Y + 0 + (CorridorHeight + 5) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth + 8, origin.Y + 4 + (CorridorHeight + 5) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth + 12, origin.Y + 8 + (CorridorHeight + 5) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth + 16, origin.Y + 12 + (CorridorHeight + 5) - 5);
 
                 for (int x = 0; x <= 4; x++)
                     for (int y = 0; y < 4; y++)
@@ -215,11 +235,28 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                         WorldGenUtils.PlaceTile(origin.X + LandingWidth + 1 + StepCount + x, origin.Y + rightFloorY + d, woodTile);
                 }
 
-                DrawColoredPanel(origin.X + LandingWidth - 4, origin.Y + 12, 5, CorridorHeight + 5);
-                DrawColoredPanel(origin.X + LandingWidth + 0, origin.Y + 8, 5, CorridorHeight + 5);
-                DrawColoredPanel(origin.X + LandingWidth + 4, origin.Y + 4, 5, CorridorHeight + 5);
-                DrawColoredPanel(origin.X + LandingWidth + 8, origin.Y + 0, 5, CorridorHeight + 5);
-                DrawColoredPanel(origin.X + LandingWidth + 12, origin.Y + 0, 5, CorridorHeight + 1);
+                DrawColoredPanel(origin.X + LandingWidth - 4, origin.Y + 12, 5, CorridorHeight + 5, 3);
+                DrawColoredPanel(origin.X + LandingWidth + 0, origin.Y + 8, 5, CorridorHeight + 5, 3);
+                DrawColoredPanel(origin.X + LandingWidth + 4, origin.Y + 4, 5, CorridorHeight + 5, 3);
+                DrawColoredPanel(origin.X + LandingWidth + 8, origin.Y + 0, 5, CorridorHeight + 5, 3);
+                DrawColoredPanel(origin.X + LandingWidth + 12, origin.Y + 0, 5, CorridorHeight + 1, 3);
+
+                // Platforms on the gap row in each panel (5 wide to span both panel borders)
+                for (int lx = 0; lx < 5; lx++)
+                {
+                    WorldGen.PlaceTile(origin.X + LandingWidth - 4 + lx, origin.Y + 12 + (CorridorHeight + 5) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + LandingWidth + 0 + lx, origin.Y + 8 + (CorridorHeight + 5) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + LandingWidth + 4 + lx, origin.Y + 4 + (CorridorHeight + 5) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + LandingWidth + 8 + lx, origin.Y + 0 + (CorridorHeight + 5) - 4, platformType, true, true);
+                    WorldGen.PlaceTile(origin.X + LandingWidth + 12 + lx, origin.Y + 0 + (CorridorHeight + 1) - 4, platformType, true, true);
+                }
+
+                // Vases on top of each platform
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth - 4, origin.Y + 12 + (CorridorHeight + 5) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth + 0, origin.Y + 8 + (CorridorHeight + 5) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth + 4, origin.Y + 4 + (CorridorHeight + 5) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth + 8, origin.Y + 0 + (CorridorHeight + 5) - 5);
+                GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth + 12, origin.Y + 0 + (CorridorHeight + 1) - 5);
 
                 for (int x = 0; x <= 4; x++)
                     for (int y = 0; y < 4; y++)
