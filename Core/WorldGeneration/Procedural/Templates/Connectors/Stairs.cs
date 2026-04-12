@@ -39,6 +39,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
             ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
             ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
             int platformType = ModContent.TileType<CastlePlatform>();
+            int sconceType = ModContent.TileType<WaxSconce>();
 
             void DrawColoredPanel(int rx, int ry, int w, int h, int skipRowFromBottom = -1)
             {
@@ -122,7 +123,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 DrawColoredPanel(origin.X + TopLandingWidth + 12, origin.Y + 8, 5, CorridorHeight + 5, 3);
                 DrawColoredPanel(origin.X + TopLandingWidth + 16, origin.Y + 12, 5, CorridorHeight + 5, 3);
 
-                // Platforms on the gap row in each panel (5 wide to span both panel borders)
+                // Platforms on the gap row in each panel
                 for (int lx = 0; lx < 5; lx++)
                 {
                     WorldGen.PlaceTile(origin.X + TopLandingWidth + lx, origin.Y + 0 + (CorridorHeight + 1) - 4, platformType, true, true);
@@ -138,6 +139,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth + 8, origin.Y + 4 + (CorridorHeight + 5) - 5);
                 GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth + 12, origin.Y + 8 + (CorridorHeight + 5) - 5);
                 GrandArchiveRoom.PlaceVaseGroup(origin.X + TopLandingWidth + 16, origin.Y + 12 + (CorridorHeight + 5) - 5);
+
+                // Wax sconce on the middle (3rd) panel, 5 tiles above the platform
+                WorldGen.PlaceObject(origin.X + TopLandingWidth + 8 + 1, origin.Y + 4 + (CorridorHeight + 5) - 4 - 5, sconceType);
 
                 for (int x = 0; x <= 4; x++)
                     for (int y = 0; y < 4; y++)
@@ -168,7 +172,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
             }
             else
             {
-                // Left landing (low side - mirror of right landing, 9 tiles)
+                // Left landing
                 for (int x = 0; x < LandingWidth + 1; x++)
                 {
                     int ceilingY = x < 4 ? 16 : x < 8 ? 12 : 8;
@@ -257,6 +261,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors
                 GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth + 4, origin.Y + 4 + (CorridorHeight + 5) - 5);
                 GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth + 8, origin.Y + 0 + (CorridorHeight + 5) - 5);
                 GrandArchiveRoom.PlaceVaseGroup(origin.X + LandingWidth + 12, origin.Y + 0 + (CorridorHeight + 1) - 5);
+
+                // Wax sconce on the middle (3rd) panel, 5 tiles above the platform
+                WorldGen.PlaceObject(origin.X + LandingWidth + 4 + 1, origin.Y + 4 + (CorridorHeight + 5) - 4 - 5, sconceType);
 
                 for (int x = 0; x <= 4; x++)
                     for (int y = 0; y < 4; y++)
