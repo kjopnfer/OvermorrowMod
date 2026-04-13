@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
@@ -39,8 +40,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     if (!left.IsEmpty && !right.IsEmpty)
                     {
-                        // Two different cells: wood panel wall between them
-                        PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
+                        if (left.Room is CorridorCell && right.Room is CorridorCell)
+                            PlaceCorridorPadding(padX, padY, DungeonGrid.HorizontalPadding, woodWall, blueWall);
+                        else
+                            PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
                     else
                     {
@@ -82,6 +85,34 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         FillSolid(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
                     }
                 }
+            }
+        }
+
+        private static void PlaceCorridorPadding(int x, int y, int w, ushort woodWall, ushort blueWall)
+        {
+            int ceilingY = y + 17;
+            int floorY = ceilingY + 8;
+
+            for (int lx = 0; lx < w; lx++)
+                for (int ly = ceilingY; ly <= floorY; ly++)
+                    WorldGenUtils.ClearTile(x + lx, ly);
+
+            int wallTop = ceilingY + 1;
+            int wallBottom = floorY - 1;
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int ly = wallTop; ly <= wallBottom; ly++)
+                {
+                    bool isBorder = false;
+                    if (!isBorder)
+                        WorldGenUtils.SetWall(x + lx, ly, blueWall);
+                }
+            }
+
+            for (int lx = 0; lx < w; lx++)
+            {
+                WorldGenUtils.SetWall(x + lx, ceilingY - 1, woodWall);
+                WorldGenUtils.SetWall(x + lx, floorY + 1, woodWall);
             }
         }
 
