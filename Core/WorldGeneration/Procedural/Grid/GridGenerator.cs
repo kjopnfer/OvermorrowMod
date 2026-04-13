@@ -3,6 +3,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
+using Terraria.ID;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
@@ -57,6 +58,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             // Build padding between cells
             PaddingBuilder.BuildAll(grid, fillTileType);
+
+            // Debug: place corner markers at each grid cell
+            for (int col = 0; col < grid.Cols; col++)
+            {
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    Point p = grid.GridToWorld(col, row);
+                    int w = DungeonGrid.CellTileWidth - 1;
+                    int h = DungeonGrid.CellTileHeight - 1;
+                    WorldGenUtils.PlaceTile(p.X, p.Y, (ushort)TileID.Adamantite);
+                    WorldGenUtils.PlaceTile(p.X + w, p.Y, (ushort)TileID.Adamantite);
+                    WorldGenUtils.PlaceTile(p.X, p.Y + h, (ushort)TileID.Adamantite);
+                    WorldGenUtils.PlaceTile(p.X + w, p.Y + h, (ushort)TileID.Adamantite);
+                }
+            }
         }
 
         private const int MaxConsecutiveCorridor = 2;
