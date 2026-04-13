@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Core.WorldGeneration.Procedural;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Templates;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Connectors;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Templates.Rooms;
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -32,32 +30,31 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
             var rand = new Random(Environment.TickCount);
 
-            var flatCorridor = new FlatCorridor();
-            var verticalStairs = new VerticalStairs();
-            var descendingStairs = new DescendingStairs();
-            var ascendingStairs = new AscendingStairs();
+            var cellPool = new List<GridRoom>
+            {
+                new BookshelfCell(),
+                new BookshelfCell(),
+                new BookshelfCell(),
+                new CorridorCell()
+            };
 
-            var archiveSmallRoom = new ArchiveSmallRoom(
-                leftAccepted: new List<IProceduralRoom> { flatCorridor },
-                rightAccepted: new List<IProceduralRoom> { flatCorridor, descendingStairs, ascendingStairs },
-                downAccepted: new List<IProceduralRoom> { verticalStairs }
-            );
-
-            var roomPool = new List<IProceduralRoom> { archiveSmallRoom };
-
+            int gridCols = 8;
+            int gridRows = 3;
             int startX = 100;
-            int startY = centerY;
+            int startY = centerY - (gridRows * DungeonGrid.VerticalSpacing) / 2;
 
-            ProceduralChain.Build(
-                start: new Point(startX, startY),
-                target: new Point(startX + 200, startY),
-                roomCount: 4,
-                roomPool: roomPool,
-                fillTile, liningTile, rand
+            GridGenerator.Build(
+                worldOrigin: new Point(startX, startY),
+                gridCols: gridCols,
+                gridRows: gridRows,
+                cellPool: cellPool,
+                fillTileType: fillTile,
+                liningTileType: liningTile,
+                rand: rand
             );
 
-            Main.spawnTileX = startX + archiveSmallRoom.Width / 2;
-            Main.spawnTileY = startY + archiveSmallRoom.Height / 2;
+            Main.spawnTileX = startX + DungeonGrid.CellTileWidth / 2;
+            Main.spawnTileY = startY + (gridRows / 2) * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight / 2;
         }
     }
 }
