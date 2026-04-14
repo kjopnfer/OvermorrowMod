@@ -9,10 +9,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
     /// <summary>
     /// Generates a dungeon on a DungeonGrid by placing cells and building them.
-    /// Currently supports horizontal-only chains on a single row.
+    /// Supports horizontal chains with vertical branching via StairBlocks.
     /// </summary>
     public static class GridGenerator
     {
+        private const int BranchChance = 3;
+        private const int MaxDepth = 2;
+
         public static void Build(
             Point worldOrigin,
             int gridCols,
@@ -34,9 +37,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int y = 0; y < totalHeight; y++)
                     WorldGenUtils.PlaceTile(worldOrigin.X + x, worldOrigin.Y + y, fill);
 
-            // Place cells in a horizontal chain on the middle row
             int startRow = gridRows / 2;
-            PlaceHorizontalChain(grid, cellPool, startRow, 0, gridCols, rand);
+            PlaceSpineWithBranches(grid, cellPool, startRow, 0, gridCols, rand, 0);
 
             // Build all placed cells
             for (int col = 0; col < grid.Cols; col++)
@@ -78,22 +80,56 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private const int MaxConsecutiveCorridor = 2;
         private const int MaxConsecutiveBookshelf = 3;
 
-        private static void PlaceHorizontalChain(
+        private static void PlaceSpineWithBranches(
             DungeonGrid grid,
             List<GridRoom> cellPool,
             int row,
             int startCol,
             int endCol,
-            Random rand)
+            Random rand,
+            int depth)
         {
             int consecutiveCorridors = 0;
             int consecutiveBookshelves = 0;
+            int cellsSinceBranch = 0;
 
             for (int col = startCol; col < endCol; col++)
             {
                 var slot = grid.GetSlot(col, row);
                 if (!slot.IsEmpty)
                     continue;
+
+                // Try placing a stair to branch to another row
+                if (depth < MaxDepth && cellsSinceBranch >= 2 && rand.Next(10) < BranchChance)
+                {
+                    bool goDown = row + 1 < grid.Rows;
+                    bool goUp = row - 1 >= 0;
+
+                    if (goDown || goUp)
+                    {
+                        bool descend = goDown && (!goUp || rand.Next(2) == 0);
+                        int stairRow = descend ? row : row - 1;
+
+                        var stairBlock = new StairBlock(descendLeftToRight: descend);
+                        if (grid.CanPlace(stairBlock, col, stairRow))
+                        {
+                            int groupId = grid.NextGroupId();
+                            grid.Place(stairBlock, col, stairRow, groupId);
+
+                            int newRow = descend ? row + 1 : row - 1;
+                            int chainStart = col + 2;
+                            if (chainStart < endCol)
+                                PlaceSpineWithBranches(grid, cellPool, newRow, chainStart, endCol, rand, depth + 1);
+
+                            // Skip past the 2-wide stair and continue on the same row
+                            col += 1;
+                            cellsSinceBranch = 0;
+                            consecutiveCorridors = 0;
+                            consecutiveBookshelves = 0;
+                            continue;
+                        }
+                    }
+                }
 
                 var shuffled = new List<GridRoom>(cellPool);
                 Shuffle(shuffled, rand);
@@ -136,6 +172,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                             consecutiveBookshelves = 0;
                         }
 
+                        cellsSinceBranch++;
                         placed = true;
                         break;
                     }

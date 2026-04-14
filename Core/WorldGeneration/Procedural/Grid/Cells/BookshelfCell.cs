@@ -15,7 +15,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         private static readonly HashSet<Type> HorizontalAccepted = new()
         {
             typeof(BookshelfCell),
-            typeof(CorridorCell)
+            typeof(CorridorCell),
+            typeof(StairBlock)
         };
 
         private static readonly HashSet<Type> VerticalAccepted = new()

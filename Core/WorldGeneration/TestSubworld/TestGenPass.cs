@@ -39,8 +39,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 new CorridorCell()
             };
 
-            int gridCols = 8;
-            int gridRows = 3;
+            int gridCols = 12;
+            int gridRows = 6;
             int startX = 100;
             int startY = centerY - (gridRows * DungeonGrid.VerticalSpacing) / 2;
 
@@ -54,62 +54,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 rand: rand
             );
 
-            // Test StairBlock placement (below the horizontal chain)
-            int stairW = DungeonGrid.CellTileWidth * 2 + DungeonGrid.HorizontalPadding;
-            int stairH = DungeonGrid.CellTileHeight * 2 + DungeonGrid.VerticalPadding;
-            int margin = DungeonGrid.HorizontalPadding;
-            int stairX = startX;
-            int stairY = startY + gridRows * DungeonGrid.VerticalSpacing + margin * 2;
-            var stairBlock = new StairBlock(descendLeftToRight: true);
-            ushort fill = (ushort)fillTile;
-            for (int x = 0; x < stairW + margin * 2; x++)
-                for (int y = 0; y < stairH + margin * 2; y++)
-                    WorldGenUtils.PlaceTile(stairX + x, stairY + y, fill);
-            Point stairOrigin = new Point(stairX + margin, stairY + margin);
-            stairBlock.Build(stairOrigin, fillTile, liningTile);
-
-            // Corner markers for the 2x2 stair block sub-cells
-            ushort marker = (ushort)Terraria.ID.TileID.Adamantite;
-            for (int sc = 0; sc < 2; sc++)
-            {
-                for (int sr = 0; sr < 2; sr++)
-                {
-                    int cx = stairOrigin.X + sc * DungeonGrid.HorizontalSpacing;
-                    int cy = stairOrigin.Y + sr * DungeonGrid.VerticalSpacing;
-                    int w = DungeonGrid.CellTileWidth - 1;
-                    int h = DungeonGrid.CellTileHeight - 1;
-                    WorldGenUtils.PlaceTile(cx, cy, marker);
-                    WorldGenUtils.PlaceTile(cx + w, cy, marker);
-                    WorldGenUtils.PlaceTile(cx, cy + h, marker);
-                    WorldGenUtils.PlaceTile(cx + w, cy + h, marker);
-                }
-            }
-
-            // Test ascending StairBlock (to the right of descending)
-            int aStairX = stairX + stairW + margin * 3;
-            var ascStairBlock = new StairBlock(descendLeftToRight: false);
-            for (int x = 0; x < stairW + margin * 2; x++)
-                for (int y = 0; y < stairH + margin * 2; y++)
-                    WorldGenUtils.PlaceTile(aStairX + x, stairY + y, fill);
-            Point ascOrigin = new Point(aStairX + margin, stairY + margin);
-            ascStairBlock.Build(ascOrigin, fillTile, liningTile);
-
-            for (int sc = 0; sc < 2; sc++)
-            {
-                for (int sr = 0; sr < 2; sr++)
-                {
-                    int cx = ascOrigin.X + sc * DungeonGrid.HorizontalSpacing;
-                    int cy = ascOrigin.Y + sr * DungeonGrid.VerticalSpacing;
-                    int w = DungeonGrid.CellTileWidth - 1;
-                    int h = DungeonGrid.CellTileHeight - 1;
-                    WorldGenUtils.PlaceTile(cx, cy, marker);
-                    WorldGenUtils.PlaceTile(cx + w, cy, marker);
-                    WorldGenUtils.PlaceTile(cx, cy + h, marker);
-                    WorldGenUtils.PlaceTile(cx + w, cy + h, marker);
-                }
-            }
-
-            Main.spawnTileX = startX + DungeonGrid.CellTileWidth / 2;
+            Main.spawnTileX = startX + DungeonGrid.HorizontalPadding + DungeonGrid.CellTileWidth / 2;
             Main.spawnTileY = startY + (gridRows / 2) * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight / 2;
         }
     }
