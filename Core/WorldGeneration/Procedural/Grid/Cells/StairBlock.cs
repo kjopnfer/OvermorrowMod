@@ -276,7 +276,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 // Bottom landing (left side)
                 for (int x = 0; x < bottomLanding; x++)
                 {
-                    int ceilingY = x >= bottomLanding - 4 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
+                    int ceilingY = x >= bottomLanding - 2 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
                     for (int y = ceilingY; y < leftFloorY; y++)
                         WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
                     for (int d = 0; d < 4; d++)
@@ -284,6 +284,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 }
 
                 // Bridge tile (flat at bottom floor level)
+                int ascBridgeCeiling = ((StepCount - 1) / 4) * 4 - 4;
+                for (int y = ascBridgeCeiling; y < leftFloorY; y++)
+                    WorldGenUtils.ClearTile(origin.X + bottomLanding, origin.Y + y);
                 for (int d = 0; d < 4; d++)
                     WorldGenUtils.PlaceTile(origin.X + bottomLanding, origin.Y + leftFloorY + d, woodTile);
 
@@ -312,7 +315,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 // Wood panels behind ceiling
                 for (int x = 0; x < bottomLanding; x++)
                 {
-                    int ceilingY = x >= bottomLanding - 4 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
+                    int ceilingY = x >= bottomLanding - 2 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
                     for (int y = 0; y < ceilingY; y++)
                         WorldGenUtils.SetWall(origin.X + x, origin.Y + y, woodWall);
                 }
@@ -327,7 +330,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 // Clear walls in open space
                 for (int x = 0; x < bottomLanding; x++)
                 {
-                    int ceilingY = x >= bottomLanding - 4 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
+                    int ceilingY = x >= bottomLanding - 2 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
                     for (int y = ceilingY; y < leftFloorY; y++)
                         WorldGenUtils.ClearWall(origin.X + x, origin.Y + y);
                 }
@@ -341,17 +344,22 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 }
 
                 // Colored panels (8 panels, ascending = reversed Y progression)
+                // Mirror of descending offsets: 0,0,4,8,12,16,20,24 -> 24,20,16,12,8,4,0,0
                 int corridorH = TopFloorY + 1;
                 int[] panelYOffsets = new int[PanelCount];
                 for (int p = 0; p < PanelCount; p++)
-                    panelYOffsets[p] = (PanelCount - 1 - p) * 4;
+                {
+                    int rp = PanelCount - 1 - p;
+                    panelYOffsets[p] = rp <= 1 ? 0 : (rp - 1) * 4;
+                }
 
                 for (int p = 0; p < PanelCount; p++)
                 {
                     int panelX = origin.X + bottomLanding + 1 + p * 4 - 3;
                     int panelY = origin.Y + panelYOffsets[p];
-                    int panelH = (p == PanelCount - 1) ? corridorH : corridorH + 4;
-                    DrawColoredPanel(panelX, panelY, 5, panelH, 3);
+                    int panelH = (p == 0) ? corridorH + 5 : (p == PanelCount - 1) ? corridorH : corridorH + 4;
+                    int skipRow = (p == 0) ? 4 : 3;
+                    DrawColoredPanel(panelX, panelY, 5, panelH, skipRow);
                 }
 
                 // Platforms on gap row of each panel
@@ -373,35 +381,48 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     GrandArchiveRoom.PlaceVaseGroup(panelX, panelY + panelH - 5);
                 }
 
-                // Sconces on panels 2 and 7
-                int sP2X = origin.X + bottomLanding + 1 + 2 * 4 - 3 + 1;
-                int sP2Y = origin.Y + panelYOffsets[2] + (corridorH + 4) - 4 - 5;
-                WorldGen.PlaceObject(sP2X, sP2Y, sconceType);
+                // Sconces on 2nd and 7th panels (0-indexed: 1 and 6)
+                int sP1X = origin.X + bottomLanding + 1 + 1 * 4 - 3 + 1;
+                int sP1Y = origin.Y + panelYOffsets[1] + (corridorH + 4) - 4 - 5;
+                WorldGen.PlaceObject(sP1X, sP1Y, sconceType);
 
-                int sP7X = origin.X + bottomLanding + 1 + 7 * 4 - 3 + 1;
-                int sP7Y = origin.Y + panelYOffsets[7] + (corridorH + 4) - 4 - 5;
-                WorldGen.PlaceObject(sP7X, sP7Y, sconceType);
+                int sP6X = origin.X + bottomLanding + 1 + 6 * 4 - 3 + 1;
+                int sP6Y = origin.Y + panelYOffsets[6] + (corridorH + 4) - 4 - 5;
+                WorldGen.PlaceObject(sP6X, sP6Y, sconceType);
 
                 // Wood wall bands under steps (ascending = reversed offsets)
                 for (int x = 0; x <= 4; x++)
                     for (int y = 0; y < 4; y++)
                     {
-                        WorldGenUtils.SetWall(origin.X + bottomLanding + 1 + x, origin.Y + rightFloorY + y + 25, woodWall);
-                        WorldGenUtils.SetWall(origin.X + bottomLanding + 1 + x + 4, origin.Y + rightFloorY + y + 21, woodWall);
-                        WorldGenUtils.SetWall(origin.X + bottomLanding + 1 + x + 8, origin.Y + rightFloorY + y + 17, woodWall);
-                        WorldGenUtils.SetWall(origin.X + bottomLanding + 1 + x + 12, origin.Y + rightFloorY + y + 13, woodWall);
-                        WorldGenUtils.SetWall(origin.X + bottomLanding + 1 + x + 16, origin.Y + rightFloorY + y + 9, woodWall);
-                        WorldGenUtils.SetWall(origin.X + bottomLanding + 1 + x + 20, origin.Y + rightFloorY + y + 5, woodWall);
-                        WorldGenUtils.SetWall(origin.X + bottomLanding + 1 + x + 24, origin.Y + rightFloorY + y + 1, woodWall);
+                        WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x, origin.Y + rightFloorY + y + 25, woodWall);
+                        WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x + 4, origin.Y + rightFloorY + y + 21, woodWall);
+                        WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x + 8, origin.Y + rightFloorY + y + 17, woodWall);
+                        WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x + 12, origin.Y + rightFloorY + y + 13, woodWall);
+                        WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x + 16, origin.Y + rightFloorY + y + 9, woodWall);
+                        WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x + 20, origin.Y + rightFloorY + y + 5, woodWall);
+                        WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x + 24, origin.Y + rightFloorY + y + 1, woodWall);
                     }
 
-                // Floor trim at bottom landing
-                for (int x = 0; x < bottomLanding; x++)
+                // Floor trim at bottom landing (extend right by 1)
+                for (int x = 0; x < bottomLanding + 1; x++)
                     WorldGenUtils.SetWall(origin.X + x, origin.Y + leftFloorY, woodWall);
 
-                // Ceiling trim at top landing
-                for (int x = 0; x < topLanding; x++)
-                    WorldGenUtils.SetWall(origin.X + totalWidth - topLanding + x, origin.Y - 1, woodWall);
+                // Ceiling trim at top landing (extend 7 tiles left)
+                for (int x = 0; x < topLanding + 7; x++)
+                    WorldGenUtils.SetWall(origin.X + totalWidth - topLanding - 7 + x, origin.Y - 1, woodWall);
+
+                // Wood panel on bottom landing (left, extends into ceiling)
+                int bottomPanelCeilingY = ((StepCount - 1) / 4) * 4;
+                for (int x = 0; x < bottomLanding - 2; x++)
+                    for (int y = bottomPanelCeilingY; y <= leftFloorY; y++)
+                        WorldGenUtils.SetWall(origin.X + x, origin.Y + y, woodWall);
+
+                // Wood panel on top landing (right, extends into ceiling)
+                int topPanelStart = bottomLanding + 1 + StepCount + 1;
+                int topPanelW = totalWidth - topPanelStart;
+                for (int x = 0; x < topPanelW; x++)
+                    for (int y = 0; y <= rightFloorY; y++)
+                        WorldGenUtils.SetWall(origin.X + topPanelStart + x, origin.Y + y, woodWall);
             }
         }
     }
