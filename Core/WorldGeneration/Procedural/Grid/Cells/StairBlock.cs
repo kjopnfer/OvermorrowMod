@@ -50,17 +50,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
             if (_descendLeftToRight)
             {
-                // Sub-cell (1,1) spans block X=26-43; last step at block X=topLanding+StepCount-1=35
-                // Local X = 35 - 26 = 9
+                // Descending bottom landing is in sub-cell (1,1). Convert the block-relative
+                // X of the last step to the sub-cell-local X, then extend leftward so the
+                // wood run starts slightly before the final step.
                 int blockX = TopLandingWidth + StepCount - 1;
                 int localX = blockX - DungeonGrid.HorizontalSpacing;
-                // Extend left by 3
                 return (localX - extend, baseWidth + extend);
             }
             else
             {
-                // Sub-cell (0,1) spans block X=0-17; bottom landing starts at X=0
-                // Extend right by 3
+                // Ascending bottom landing is in sub-cell (0,1) starting at local X=0.
+                // Extend rightward past the landing so the wood run continues under the bridge/step.
                 return (0, baseWidth + extend);
             }
         }
@@ -386,7 +386,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 }
 
                 // Colored panels (8 panels, ascending = reversed Y progression)
-                // Mirror of descending offsets: 0,0,4,8,12,16,20,24 -> 24,20,16,12,8,4,0,0
+                // Ascending offsets mirror the descending pattern (0,0,4,8,12,16,20,24).
+                // The two panels at the top of the stairs share the same Y, matching the
+                // shared-Y pair at the bottom of a descending stair.
                 int corridorH = TopFloorY + 1;
                 int[] panelYOffsets = new int[PanelCount];
                 for (int p = 0; p < PanelCount; p++)
@@ -445,11 +447,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.SetWall(origin.X + bottomLanding + 3 + x + 24, origin.Y + rightFloorY + y + 1, woodWall);
                     }
 
-                // Floor trim at bottom landing (extend right by 1)
+                // Floor trim spans the bottom landing plus one additional tile on the right.
                 for (int x = 0; x < bottomLanding + 1; x++)
                     WorldGenUtils.SetWall(origin.X + x, origin.Y + leftFloorY, woodWall);
 
-                // Ceiling trim at top landing (extend 7 tiles left)
+                // Ceiling trim spans the top landing plus 7 additional tiles to the left.
                 for (int x = 0; x < topLanding + 7; x++)
                     WorldGenUtils.SetWall(origin.X + totalWidth - topLanding - 7 + x, origin.Y - 1, woodWall);
 

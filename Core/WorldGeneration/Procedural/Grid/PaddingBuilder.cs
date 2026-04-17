@@ -44,17 +44,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         if (left.Room is CorridorCell && right.Room is CorridorCell)
                             PlaceCorridorPadding(padX, padY, DungeonGrid.HorizontalPadding, woodWall, blueWall);
                         else if (left.Room is ShaftCell || right.Room is ShaftCell)
-                            ClearPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight);
+                            PlaceShaftSidePadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                         else
                             PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
                     else if (!left.IsEmpty && left.Room is ShaftCell)
                     {
-                        ClearPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight);
+                        PlaceShaftSidePadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
                     else if (!right.IsEmpty && right.Room is ShaftCell)
                     {
-                        ClearPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight);
+                        PlaceShaftSidePadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
                     else
                     {
@@ -163,25 +163,38 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static void PlaceShaftFloorPadding(int x, int y, int w, int h, int tileType)
         {
             ushort tile = (ushort)tileType;
-            int wallWidth = 2;
+            int stoneWidth = 2;
 
+            // Tiles: solid stone at the outer 2-tile edges, cleared in the middle for stair passage
             for (int lx = 0; lx < w; lx++)
             {
                 for (int ly = 0; ly < h; ly++)
                 {
-                    if (lx < wallWidth || lx >= w - wallWidth)
+                    if (lx < stoneWidth || lx >= w - stoneWidth)
                         WorldGenUtils.PlaceTile(x + lx, y + ly, tile);
                     else
                         WorldGenUtils.ClearTile(x + lx, y + ly);
                 }
             }
 
+            // Walls: fill entire padding with wood, with gap columns just inside the stone edges
             ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
-            for (int lx = 0; lx < wallWidth; lx++)
+            for (int lx = 0; lx < w; lx++)
+            {
+                if (lx == stoneWidth || lx == w - 1 - stoneWidth)
+                    continue; // gap columns just inside the stone
+                for (int ly = 0; ly < h; ly++)
+                    WorldGenUtils.SetWall(x + lx, y + ly, woodWall);
+            }
+
+            // Extend wood wall panels into the adjacent horizontal padding zones so the
+            // shaft's side edge walls remain visually continuous across the seam.
+            int sidePanelWidth = DungeonGrid.HorizontalPadding;
+            for (int lx = 0; lx < sidePanelWidth; lx++)
                 for (int ly = 0; ly < h; ly++)
                 {
-                    WorldGenUtils.SetWall(x + lx, y + ly, woodWall);
-                    WorldGenUtils.SetWall(x + w - 1 - lx, y + ly, woodWall);
+                    WorldGenUtils.SetWall(x - sidePanelWidth + lx, y + ly, woodWall);
+                    WorldGenUtils.SetWall(x + w + lx, y + ly, woodWall);
                 }
         }
 
@@ -191,6 +204,50 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int lx = 0; lx < w; lx++)
                 for (int ly = 0; ly < h; ly++)
                     WorldGenUtils.PlaceTile(x + lx, y + ly, woodTile);
+        }
+
+        private static void PlaceShaftSidePadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall)
+        {
+            // Clear tiles through the padding
+            for (int lx = 0; lx < w; lx++)
+                for (int ly = 0; ly < h; ly++)
+                    WorldGenUtils.ClearTile(x + lx, y + ly);
+
+            // Narrower version of ShaftCell's DrawShaftWallPanel pattern:
+            // outer wood border on sides and bottom, a 1-tile gap inset, and an inner fill
+            // split by cut rows into top wood / middle blue / bottom wood sections.
+            int drawHeight = h + 2; // panel extends one row above and one row below padY
+            int drawStartY = y - 1;
+            int innerTopCutY = 5;
+            int innerBottomCutY = drawHeight - 4;
+
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int ly = 0; ly < drawHeight; ly++)
+                {
+                    int worldX = x + lx;
+                    int worldY = drawStartY + ly;
+
+                    bool isOuterBorder = (lx == 0 || lx == w - 1 || ly == drawHeight - 1);
+                    // Top inner gap: inner columns are empty at the top while outer borders stay.
+                    bool isTopInnerGap = (ly == 0 || ly == 1) && lx >= 1 && lx <= w - 2;
+                    bool isGap = !isOuterBorder && (lx == 1 || lx == w - 2 || ly == drawHeight - 2);
+                    bool isInner = (lx >= 2 && lx <= w - 3 && ly >= 2 && ly <= drawHeight - 3);
+                    bool isCutRow = isInner && (ly == innerTopCutY || ly == innerBottomCutY);
+
+                    if (isTopInnerGap)
+                        continue;
+                    else if (isOuterBorder)
+                        WorldGenUtils.SetWall(worldX, worldY, woodWall);
+                    else if (isGap || isCutRow)
+                        continue;
+                    else if (isInner)
+                    {
+                        bool isMiddleSection = ly > innerTopCutY && ly < innerBottomCutY;
+                        WorldGenUtils.SetWall(worldX, worldY, isMiddleSection ? blueWall : woodWall);
+                    }
+                }
+            }
         }
 
         private static void ClearPadding(int x, int y, int w, int h)
