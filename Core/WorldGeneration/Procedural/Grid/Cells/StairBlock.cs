@@ -23,6 +23,48 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 2;
         public override int CellHeight => 2;
 
+        /// <summary>
+        /// Returns true if the given sub-cell contains the bottom landing
+        /// (where the floor continues off the final step).
+        /// </summary>
+        public bool IsBottomLandingSubCell(int subCol, int subRow)
+        {
+            if (subRow != 1) return false;
+            return _descendLeftToRight ? subCol == 1 : subCol == 0;
+        }
+
+        /// <summary>
+        /// For the bottom landing sub-cell, returns the sub-cell-relative X range
+        /// where the stair floor touches the vertical padding below.
+        /// Returns (startX, width) or (-1, 0) if this sub-cell has no floor continuation.
+        /// The range covers the last step + bridge + bottom landing columns.
+        /// </summary>
+        public (int startX, int width) GetFloorPaddingRange(int subCol, int subRow)
+        {
+            if (!IsBottomLandingSubCell(subCol, subRow))
+                return (-1, 0);
+
+            int bottomLanding = _descendLeftToRight ? BottomLandingWidth : TopLandingWidth;
+            int baseWidth = 1 + 1 + bottomLanding; // last step + bridge + bottom landing
+            int extend = 2;
+
+            if (_descendLeftToRight)
+            {
+                // Sub-cell (1,1) spans block X=26-43; last step at block X=topLanding+StepCount-1=35
+                // Local X = 35 - 26 = 9
+                int blockX = TopLandingWidth + StepCount - 1;
+                int localX = blockX - DungeonGrid.HorizontalSpacing;
+                // Extend left by 3
+                return (localX - extend, baseWidth + extend);
+            }
+            else
+            {
+                // Sub-cell (0,1) spans block X=0-17; bottom landing starts at X=0
+                // Extend right by 3
+                return (0, baseWidth + extend);
+            }
+        }
+
         private static readonly HashSet<Type> FloorAccepted = new()
         {
             typeof(BookshelfCell),
@@ -109,16 +151,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 // Top landing (left side)
                 for (int x = 0; x < topLanding; x++)
                 {
-                    for (int y = 0; y < leftFloorY; y++)
+                    for (int y = 0; y < leftFloorY + 1; y++)
                         WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
                     for (int d = 0; d < 4; d++)
-                        WorldGenUtils.PlaceTile(origin.X + x, origin.Y + leftFloorY + d, woodTile);
+                        WorldGenUtils.PlaceTile(origin.X + x, origin.Y + leftFloorY + 1 + d, woodTile);
                 }
 
                 // Steps
                 for (int i = 0; i < StepCount; i++)
                 {
-                    int stepY = leftFloorY + 1 + i;
+                    int stepY = leftFloorY + 2 + i;
                     int ci = i > 0 ? i - 1 : 0;
                     int ceilingY = (ci / 4) * 4 >= 4 ? ((ci / 4) * 4) - 4 : 0;
                     for (int y = ceilingY; y < stepY; y++)
@@ -130,20 +172,20 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 // Bridge tile (flat at bottom floor level, ceiling matches landing transition)
                 int bridgeX = origin.X + topLanding + StepCount;
                 int bridgeCeiling = ((StepCount - 1) / 4) * 4 - 4;
-                for (int y = bridgeCeiling; y < rightFloorY; y++)
+                for (int y = bridgeCeiling; y < rightFloorY + 1; y++)
                     WorldGenUtils.ClearTile(bridgeX, origin.Y + y);
                 for (int d = 0; d < 4; d++)
-                    WorldGenUtils.PlaceTile(bridgeX, origin.Y + rightFloorY + d, woodTile);
+                    WorldGenUtils.PlaceTile(bridgeX, origin.Y + rightFloorY + 1 + d, woodTile);
 
                 // Bottom landing (right side)
                 for (int x = 0; x < bottomLanding; x++)
                 {
                     int landingX = topLanding + StepCount + 1 + x;
                     int ceilingY = x < 3 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
-                    for (int y = ceilingY; y < rightFloorY; y++)
+                    for (int y = ceilingY; y < rightFloorY + 1; y++)
                         WorldGenUtils.ClearTile(origin.X + landingX, origin.Y + y);
                     for (int d = 0; d < 4; d++)
-                        WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y + rightFloorY + d, woodTile);
+                        WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y + rightFloorY + 1 + d, woodTile);
                 }
 
                 // Wood panels behind ceiling
@@ -277,23 +319,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 for (int x = 0; x < bottomLanding; x++)
                 {
                     int ceilingY = x >= bottomLanding - 2 ? ((StepCount - 1) / 4) * 4 - 4 : ((StepCount - 1) / 4) * 4;
-                    for (int y = ceilingY; y < leftFloorY; y++)
+                    for (int y = ceilingY; y < leftFloorY + 1; y++)
                         WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
                     for (int d = 0; d < 4; d++)
-                        WorldGenUtils.PlaceTile(origin.X + x, origin.Y + leftFloorY + d, woodTile);
+                        WorldGenUtils.PlaceTile(origin.X + x, origin.Y + leftFloorY + 1 + d, woodTile);
                 }
 
                 // Bridge tile (flat at bottom floor level)
                 int ascBridgeCeiling = ((StepCount - 1) / 4) * 4 - 4;
-                for (int y = ascBridgeCeiling; y < leftFloorY; y++)
+                for (int y = ascBridgeCeiling; y < leftFloorY + 1; y++)
                     WorldGenUtils.ClearTile(origin.X + bottomLanding, origin.Y + y);
                 for (int d = 0; d < 4; d++)
-                    WorldGenUtils.PlaceTile(origin.X + bottomLanding, origin.Y + leftFloorY + d, woodTile);
+                    WorldGenUtils.PlaceTile(origin.X + bottomLanding, origin.Y + leftFloorY + 1 + d, woodTile);
 
                 // Steps (ascending)
                 for (int i = 0; i < StepCount; i++)
                 {
-                    int stepY = leftFloorY - 1 - i;
+                    int stepY = leftFloorY - i;
                     int j = StepCount - 1 - i;
                     int ceilingY = (j / 4) * 4 >= 4 ? ((j / 4) * 4) - 4 : 0;
                     for (int y = ceilingY; y < stepY; y++)
@@ -306,10 +348,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 for (int x = 0; x < topLanding; x++)
                 {
                     int landingX = bottomLanding + 1 + StepCount + x;
-                    for (int y = 0; y < rightFloorY; y++)
+                    for (int y = 0; y < rightFloorY + 1; y++)
                         WorldGenUtils.ClearTile(origin.X + landingX, origin.Y + y);
                     for (int d = 0; d < 4; d++)
-                        WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y + rightFloorY + d, woodTile);
+                        WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y + rightFloorY + 1 + d, woodTile);
                 }
 
                 // Wood panels behind ceiling

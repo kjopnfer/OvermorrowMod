@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using Terraria.ModLoader;
 
@@ -42,8 +43,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     {
                         if (left.Room is CorridorCell && right.Room is CorridorCell)
                             PlaceCorridorPadding(padX, padY, DungeonGrid.HorizontalPadding, woodWall, blueWall);
+                        else if (left.Room is ShaftCell || right.Room is ShaftCell)
+                            ClearPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight);
                         else
                             PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
+                    }
+                    else if (!left.IsEmpty && left.Room is ShaftCell)
+                    {
+                        ClearPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight);
+                    }
+                    else if (!right.IsEmpty && right.Room is ShaftCell)
+                    {
+                        ClearPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight);
                     }
                     else
                     {
@@ -74,10 +85,33 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         continue;
                     }
 
+                    StairBlock topStair = !top.IsEmpty ? top.Room as StairBlock : null;
+                    (int woodStartX, int woodWidth) = topStair != null
+                        ? topStair.GetFloorPaddingRange(top.SubCol, top.SubRow)
+                        : (-1, 0);
+
                     if (!top.IsEmpty && !bottom.IsEmpty)
                     {
-                        // Two different cells vertically: floor/ceiling tiles
-                        FillFloor(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
+                        bool eitherShaft = top.Room is ShaftCell || bottom.Room is ShaftCell;
+
+                        if (eitherShaft)
+                        {
+                            PlaceShaftFloorPadding(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
+                        }
+                        else if (woodWidth > 0)
+                        {
+                            FillFloor(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
+                            FillWoodFloor(padX + woodStartX, padY, woodWidth, DungeonGrid.VerticalPadding);
+                        }
+                        else
+                        {
+                            FillFloor(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
+                        }
+                    }
+                    else if (woodWidth > 0)
+                    {
+                        FillSolid(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
+                        FillWoodFloor(padX + woodStartX, padY, woodWidth, DungeonGrid.VerticalPadding);
                     }
                     else
                     {
@@ -124,6 +158,46 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     WorldGenUtils.ClearTile(x + lx, y + ly);
 
             ProceduralUtils.DrawWallPanel(x, y, w, h, woodWall, blueWall);
+        }
+
+        private static void PlaceShaftFloorPadding(int x, int y, int w, int h, int tileType)
+        {
+            ushort tile = (ushort)tileType;
+            int wallWidth = 2;
+
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int ly = 0; ly < h; ly++)
+                {
+                    if (lx < wallWidth || lx >= w - wallWidth)
+                        WorldGenUtils.PlaceTile(x + lx, y + ly, tile);
+                    else
+                        WorldGenUtils.ClearTile(x + lx, y + ly);
+                }
+            }
+
+            ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
+            for (int lx = 0; lx < wallWidth; lx++)
+                for (int ly = 0; ly < h; ly++)
+                {
+                    WorldGenUtils.SetWall(x + lx, y + ly, woodWall);
+                    WorldGenUtils.SetWall(x + w - 1 - lx, y + ly, woodWall);
+                }
+        }
+
+        private static void FillWoodFloor(int x, int y, int w, int h)
+        {
+            ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
+            for (int lx = 0; lx < w; lx++)
+                for (int ly = 0; ly < h; ly++)
+                    WorldGenUtils.PlaceTile(x + lx, y + ly, woodTile);
+        }
+
+        private static void ClearPadding(int x, int y, int w, int h)
+        {
+            for (int lx = 0; lx < w; lx++)
+                for (int ly = 0; ly < h; ly++)
+                    WorldGenUtils.ClearTile(x + lx, y + ly);
         }
 
         private static void FillSolid(int x, int y, int w, int h, int tileType)

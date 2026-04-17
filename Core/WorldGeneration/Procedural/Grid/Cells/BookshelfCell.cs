@@ -21,8 +21,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         private static readonly HashSet<Type> VerticalAccepted = new()
         {
-            typeof(BookshelfCell),
-            typeof(CorridorCell)
+            typeof(ShaftCell)
         };
 
         public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)

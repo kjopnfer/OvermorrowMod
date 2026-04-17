@@ -1,9 +1,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
@@ -40,6 +43,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             int startRow = gridRows / 2;
             PlaceSpineWithBranches(grid, cellPool, startRow, 0, gridCols, rand, 0);
 
+            // Place shafts below bookshelf cells
+            PlaceShafts(grid, rand);
+
             // Build all placed cells
             for (int col = 0; col < grid.Cols; col++)
             {
@@ -61,6 +67,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Build padding between cells
             PaddingBuilder.BuildAll(grid, fillTileType);
 
+            // Place diagonal stairs in shaft columns
+            DecorateShafts(grid);
+
             // Debug: place corner markers at each grid cell
             for (int col = 0; col < grid.Cols; col++)
             {
@@ -73,6 +82,129 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     WorldGenUtils.PlaceTile(p.X + w, p.Y, (ushort)TileID.Adamantite);
                     WorldGenUtils.PlaceTile(p.X, p.Y + h, (ushort)TileID.Adamantite);
                     WorldGenUtils.PlaceTile(p.X + w, p.Y + h, (ushort)TileID.Adamantite);
+                }
+            }
+        }
+
+        private const int ShaftChance = 3;
+
+        private static void PlaceShafts(DungeonGrid grid, Random rand)
+        {
+            var shaftCell = new ShaftCell();
+
+            for (int col = 0; col < grid.Cols; col++)
+            {
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot.IsEmpty || slot.Room is not BookshelfCell)
+                        continue;
+
+                    if (rand.Next(10) >= ShaftChance)
+                        continue;
+
+                    int shaftRow = row + 1;
+                    int bottomRow = shaftRow + 1;
+
+                    // Both slots must be in bounds and empty before committing
+                    if (shaftRow >= grid.Rows || bottomRow >= grid.Rows)
+                        continue;
+
+                    var shaftSlot = grid.GetSlot(col, shaftRow);
+                    var bottomSlot = grid.GetSlot(col, bottomRow);
+                    if (shaftSlot == null || !shaftSlot.IsEmpty)
+                        continue;
+                    if (bottomSlot == null || !bottomSlot.IsEmpty)
+                        continue;
+
+                    if (!grid.CanPlace(shaftCell, col, shaftRow))
+                        continue;
+
+                    int groupId = grid.NextGroupId();
+                    grid.Place(shaftCell, col, shaftRow, groupId);
+
+                    var bottomBookshelf = new BookshelfCell();
+                    if (grid.CanPlace(bottomBookshelf, col, bottomRow))
+                    {
+                        int bottomGroupId = grid.NextGroupId();
+                        grid.Place(bottomBookshelf, col, bottomRow, bottomGroupId);
+                    }
+                    else
+                    {
+                        // Bookshelf can't fit; remove the shaft to avoid an orphaned shaft
+                        shaftSlot.Room = null;
+                        shaftSlot.GroupId = 0;
+                    }
+                }
+            }
+        }
+
+        private static void DecorateShafts(DungeonGrid grid)
+        {
+            int diagonalStairsType = ModContent.TileType<DiagonalStairs>();
+            int stairCapType = ModContent.TileType<StairCap>();
+
+            for (int col = 0; col < grid.Cols; col++)
+            {
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot.IsEmpty || slot.Room is not ShaftCell)
+                        continue;
+
+                    // Find the top of this shaft chain (walk up through consecutive shafts)
+                    int topRow = row;
+                    while (topRow > 0)
+                    {
+                        var above = grid.GetSlot(col, topRow - 1);
+                        if (above != null && !above.IsEmpty && above.Room is ShaftCell)
+                            topRow--;
+                        else
+                            break;
+                    }
+
+                    // Only process from the topmost shaft in a chain
+                    if (row != topRow)
+                        continue;
+
+                    // Find the bottom of the chain
+                    int bottomRow = row;
+                    while (bottomRow < grid.Rows - 1)
+                    {
+                        var below = grid.GetSlot(col, bottomRow + 1);
+                        if (below != null && !below.IsEmpty && below.Room is ShaftCell)
+                            bottomRow++;
+                        else
+                            break;
+                    }
+
+                    // Find the room above the top shaft (for floor Y)
+                    var topRoom = grid.GetSlot(col, topRow - 1);
+                    // Find the room below the bottom shaft (for floor Y)
+                    var bottomRoom = grid.GetSlot(col, bottomRow + 1);
+
+                    if (topRoom == null || topRoom.IsEmpty || bottomRoom == null || bottomRoom.IsEmpty)
+                        continue;
+
+                    Point topRoomOrigin = grid.GridToWorld(col, topRow - 1);
+                    Point bottomRoomOrigin = grid.GridToWorld(col, bottomRow + 1);
+
+                    // Top Y = floor of the room above the shaft
+                    int topY = topRoomOrigin.Y + DungeonGrid.CellTileHeight - 1;
+                    // Bottom Y = floor of the room below the shaft
+                    int bottomY = bottomRoomOrigin.Y + DungeonGrid.CellTileHeight - 1;
+
+                    int segmentCount = (bottomY - topY) / 10;
+                    int shaftCenterX = grid.GridToWorld(col, topRow).X + DungeonGrid.CellTileWidth / 2;
+                    int stairX = shaftCenterX - 7;
+                    int capX = shaftCenterX - 2;
+
+                    // Place stairs from bottom to top
+                    for (int s = segmentCount - 1; s >= 0; s--)
+                        WorldGen.PlaceObject(stairX, topY + s * 10 + 10, diagonalStairsType);
+
+                    // Place cap at top of chain
+                    WorldGen.PlaceObject(capX, topY, stairCapType);
                 }
             }
         }
