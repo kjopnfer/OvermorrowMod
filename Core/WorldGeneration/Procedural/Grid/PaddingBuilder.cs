@@ -90,33 +90,33 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         ? topStair.GetFloorPaddingRange(top.SubCol, top.SubRow)
                         : (-1, 0);
 
-                    if (!top.IsEmpty && !bottom.IsEmpty)
-                    {
-                        bool eitherShaft = top.Room is ShaftCell || bottom.Room is ShaftCell;
+                    bool eitherShaft = (!top.IsEmpty && top.Room is ShaftCell)
+                                    || (!bottom.IsEmpty && bottom.Room is ShaftCell);
+                    bool bottomIsCorridor = !bottom.IsEmpty && bottom.Room is CorridorCell;
 
-                        if (eitherShaft)
-                        {
-                            PlaceShaftFloorPadding(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
-                        }
-                        else if (woodWidth > 0)
-                        {
-                            FillFloor(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
-                            FillWoodFloor(padX + woodStartX, padY, woodWidth, DungeonGrid.VerticalPadding);
-                        }
-                        else
-                        {
-                            FillFloor(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
-                        }
-                    }
-                    else if (woodWidth > 0)
+                    // Step-void stair sub-cell (non-landing) above or below this padding keeps it solid.
+                    bool bottomIsStairVoid = !bottom.IsEmpty && bottom.Room is StairBlock bs
+                                             && !bs.IsTopLandingSubCell(bottom.SubCol, bottom.SubRow);
+                    bool topIsStairVoid = !top.IsEmpty && top.Room is StairBlock ts
+                                             && !ts.IsBottomLandingSubCell(top.SubCol, top.SubRow);
+
+                    if (eitherShaft)
                     {
+                        PlaceShaftFloorPadding(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
+                    }
+                    else if (bottomIsCorridor)
+                    {
+                        // Corridor builds its own wood ceiling; leave the padding as solid fill.
                         FillSolid(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
-                        FillWoodFloor(padX + woodStartX, padY, woodWidth, DungeonGrid.VerticalPadding);
+                    }
+                    else if (bottomIsStairVoid || topIsStairVoid)
+                    {
+                        // Stair step-void edge on one side: keep the padding as solid stone.
+                        FillSolid(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
                     }
                     else
                     {
-                        // One side empty: solid fill
-                        FillSolid(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
+                        FillWoodFloor(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding);
                     }
                 }
             }
@@ -130,6 +130,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int lx = 0; lx < w; lx++)
                 for (int ly = ceilingY; ly <= floorY; ly++)
                     WorldGenUtils.ClearTile(x + lx, ly);
+
+            // Wood tiles forming 4-tile thick top (above ceiling) and bottom (below floor) trim strips.
+            ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
+            int trim = DungeonGrid.VerticalPadding;
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int d = 0; d < trim; d++)
+                {
+                    WorldGenUtils.PlaceTile(x + lx, ceilingY - 1 - d, woodTile);
+                    WorldGenUtils.PlaceTile(x + lx, floorY + 1 + d, woodTile);
+                }
+            }
 
             int wallTop = ceilingY + 1;
             int wallBottom = floorY - 1;
@@ -150,8 +162,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
         }
 
-        private static void PlaceWoodPanelPadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall)
+        private static void PlaceWoodPanelPadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall, bool skipAbove = false, bool skipBelow = false)
         {
+            ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
+            int trim = DungeonGrid.VerticalPadding;
+
+            // Wood ceiling and floor strips framing the panel
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int ly = 0; ly < trim; ly++)
+                {
+                    if (!skipAbove)
+                        WorldGenUtils.PlaceTile(x + lx, y - trim + ly, woodTile);
+                    if (!skipBelow)
+                        WorldGenUtils.PlaceTile(x + lx, y + h + ly, woodTile);
+                }
+            }
+
             // Clear tiles in the padding area
             for (int lx = 0; lx < w; lx++)
                 for (int ly = 0; ly < h; ly++)
@@ -162,16 +189,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         private static void PlaceShaftFloorPadding(int x, int y, int w, int h, int tileType)
         {
-            ushort tile = (ushort)tileType;
-            int stoneWidth = 2;
+            ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
+            int edgeWidth = 2;
 
-            // Tiles: solid stone at the outer 2-tile edges, cleared in the middle for stair passage
+            // Tiles: solid wood at the outer 2-tile edges, cleared in the middle for stair passage
             for (int lx = 0; lx < w; lx++)
             {
                 for (int ly = 0; ly < h; ly++)
                 {
-                    if (lx < stoneWidth || lx >= w - stoneWidth)
-                        WorldGenUtils.PlaceTile(x + lx, y + ly, tile);
+                    if (lx < edgeWidth || lx >= w - edgeWidth)
+                        WorldGenUtils.PlaceTile(x + lx, y + ly, woodTile);
                     else
                         WorldGenUtils.ClearTile(x + lx, y + ly);
                 }
@@ -181,7 +208,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
             for (int lx = 0; lx < w; lx++)
             {
-                if (lx == stoneWidth || lx == w - 1 - stoneWidth)
+                if (lx == edgeWidth || lx == w - 1 - edgeWidth)
                     continue; // gap columns just inside the stone
                 for (int ly = 0; ly < h; ly++)
                     WorldGenUtils.SetWall(x + lx, y + ly, woodWall);
@@ -212,6 +239,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int lx = 0; lx < w; lx++)
                 for (int ly = 0; ly < h; ly++)
                     WorldGenUtils.ClearTile(x + lx, y + ly);
+
+            // Wood floor below and wood ceiling above this horizontal padding strip,
+            // matching the vertical padding height so they blend with the shaft's top/bottom padding.
+            ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
+            int trim = DungeonGrid.VerticalPadding;
+            for (int lx = 0; lx < w; lx++)
+            {
+                for (int ly = 0; ly < trim; ly++)
+                {
+                    WorldGenUtils.PlaceTile(x + lx, y - trim + ly, woodTile);
+                    WorldGenUtils.PlaceTile(x + lx, y + h + ly, woodTile);
+                }
+            }
 
             // Narrower version of ShaftCell's DrawShaftWallPanel pattern:
             // outer wood border on sides and bottom, a 1-tile gap inset, and an inner fill

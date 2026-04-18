@@ -34,6 +34,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         }
 
         /// <summary>
+        /// Returns true if the given sub-cell contains the top landing
+        /// (where the stair enters from the upper floor).
+        /// </summary>
+        public bool IsTopLandingSubCell(int subCol, int subRow)
+        {
+            if (subRow != 0) return false;
+            return _descendLeftToRight ? subCol == 0 : subCol == 1;
+        }
+
+        /// <summary>
         /// For the bottom landing sub-cell, returns the sub-cell-relative X range
         /// where the stair floor touches the vertical padding below.
         /// Returns (startX, width) or (-1, 0) if this sub-cell has no floor continuation.
@@ -103,6 +113,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             return null;
         }
 
+        private const int BaselineCeilingDepth = 4;
+
         public override bool IsInternalEdge(int subCol, int subRow, Direction side)
         {
             // Right edge of left column is internal
@@ -148,6 +160,26 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
             if (_descendLeftToRight)
             {
+                // Tracks the current drop-group cycling state. Depths cycle 9,8,7,6 within
+                // each contiguous run of columns sharing the same ceilingY > 0. Flat ceiling
+                // sections (ceilingY == 0) use the baseline depth instead.
+                int descPrevCeilingY = -1;
+                int descPosInGroup = -1;
+
+                int DescCeilingDepth(int ceilingY)
+                {
+                    if (ceilingY > 0)
+                    {
+                        if (ceilingY != descPrevCeilingY) descPosInGroup = 0;
+                        else descPosInGroup++;
+                        descPrevCeilingY = ceilingY;
+                        return 9 - (descPosInGroup % 4);
+                    }
+                    descPrevCeilingY = ceilingY;
+                    descPosInGroup = -1;
+                    return BaselineCeilingDepth;
+                }
+
                 // Top landing (left side)
                 for (int x = 0; x < topLanding; x++)
                 {
@@ -155,6 +187,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
                     for (int d = 0; d < 4; d++)
                         WorldGenUtils.PlaceTile(origin.X + x, origin.Y + leftFloorY + 1 + d, woodTile);
+                    int topDepth = DescCeilingDepth(0);
+                    for (int d = 0; d < topDepth; d++)
+                        WorldGenUtils.PlaceTile(origin.X + x, origin.Y - 1 - d, woodTile);
                 }
 
                 // Steps
@@ -167,6 +202,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.ClearTile(origin.X + topLanding + i, origin.Y + y);
                     for (int d = 0; d < 4; d++)
                         WorldGenUtils.PlaceTile(origin.X + topLanding + i, origin.Y + stepY + d, woodTile);
+                    int stepDepth = DescCeilingDepth(ceilingY);
+                    for (int d = 0; d < stepDepth; d++)
+                        WorldGenUtils.PlaceTile(origin.X + topLanding + i, origin.Y + ceilingY - 1 - d, woodTile);
                 }
 
                 // Bridge tile (flat at bottom floor level, ceiling matches landing transition)
@@ -176,6 +214,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     WorldGenUtils.ClearTile(bridgeX, origin.Y + y);
                 for (int d = 0; d < 4; d++)
                     WorldGenUtils.PlaceTile(bridgeX, origin.Y + rightFloorY + 1 + d, woodTile);
+                int bridgeDepth = DescCeilingDepth(bridgeCeiling);
+                for (int d = 0; d < bridgeDepth; d++)
+                    WorldGenUtils.PlaceTile(bridgeX, origin.Y + bridgeCeiling - 1 - d, woodTile);
 
                 // Bottom landing (right side)
                 for (int x = 0; x < bottomLanding; x++)
@@ -186,6 +227,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.ClearTile(origin.X + landingX, origin.Y + y);
                     for (int d = 0; d < 4; d++)
                         WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y + rightFloorY + 1 + d, woodTile);
+                    int landDepth = DescCeilingDepth(ceilingY);
+                    for (int d = 0; d < landDepth; d++)
+                        WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y + ceilingY - 1 - d, woodTile);
                 }
 
                 // Wood panels behind ceiling
@@ -314,7 +358,81 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             }
             else
             {
-                // Ascending: mirror of descending
+                // Ascending: mirror of descending. Depth pattern within each drop group is
+                // reversed (6,7,8,9) so that the thickest wood ceiling tile aligns with the
+                // right edge of each stair step instead of the left.
+                // Precompute ceilingY for every world column in the block so depths can be
+                // assigned right-to-left within each drop group. This avoids off-by-one issues
+                // when iterating forward across landing/bridge/step transitions.
+                int totalCols = totalWidth;
+                int[] ascCeilingYs = new int[totalCols];
+                int ascFlatCeilingY = ((StepCount - 1) / 4) * 4;
+
+                for (int col = 0; col < totalCols; col++)
+                {
+                    if (col < bottomLanding)
+                    {
+                        int lx = col;
+                        ascCeilingYs[col] = lx >= bottomLanding - 2
+                            ? ((StepCount - 1) / 4) * 4 - 4
+                            : ((StepCount - 1) / 4) * 4;
+                    }
+                    else if (col == bottomLanding)
+                    {
+                        ascCeilingYs[col] = ((StepCount - 1) / 4) * 4 - 4;
+                    }
+                    else if (col < bottomLanding + 1 + StepCount)
+                    {
+                        int stepIndex = col - (bottomLanding + 1);
+                        int jj = StepCount - 1 - stepIndex;
+                        ascCeilingYs[col] = (jj / 4) * 4 >= 4 ? ((jj / 4) * 4) - 4 : 0;
+                    }
+                    else
+                    {
+                        ascCeilingYs[col] = 0;
+                    }
+                }
+
+                // Iterate right-to-left. Within each drop-group run, depths cycle 9, 8, 7, 6
+                // starting from the rightmost column. The flat-top landing run cycles 4, 3, 2, 1
+                // (same right-to-left taper) so the wood ceiling eases into the corner.
+                int[] ascDepths = new int[totalCols];
+                int ascRunCount = 0;
+                int ascRunCeilingY = -1;
+                for (int col = totalCols - 1; col >= 0; col--)
+                {
+                    int ceilingY = ascCeilingYs[col];
+                    if (ceilingY <= 0)
+                    {
+                        ascDepths[col] = BaselineCeilingDepth;
+                        ascRunCount = 0;
+                        ascRunCeilingY = -1;
+                        continue;
+                    }
+                    if (ceilingY != ascRunCeilingY)
+                    {
+                        ascRunCount = 0;
+                        ascRunCeilingY = ceilingY;
+                    }
+                    if (ceilingY == ascFlatCeilingY)
+                    {
+                        // Flat-top run cycles 4, 3, 2, 1 right-to-left.
+                        ascDepths[col] = 4 - (ascRunCount % 4);
+                    }
+                    else
+                    {
+                        ascDepths[col] = 9 - (ascRunCount % 4);
+                    }
+                    ascRunCount++;
+                }
+
+                int AscCeilingDepth(int col)
+                {
+                    if (col < 0 || col >= totalCols)
+                        return BaselineCeilingDepth;
+                    return ascDepths[col];
+                }
+
                 // Bottom landing (left side)
                 for (int x = 0; x < bottomLanding; x++)
                 {
@@ -323,6 +441,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
                     for (int d = 0; d < 4; d++)
                         WorldGenUtils.PlaceTile(origin.X + x, origin.Y + leftFloorY + 1 + d, woodTile);
+
+                    // Hardcoded: leftmost 5 columns get depths 5, 6, 7, 8, 9 above ceilingY.
+                    // Everything else uses the regular AscCeilingDepth cycling.
+                    int ascLandDepth;
+                    if (x == 0) ascLandDepth = 5;
+                    else if (x == 1) ascLandDepth = 6;
+                    else if (x == 2) ascLandDepth = 7;
+                    else if (x == 3) ascLandDepth = 8;
+                    else if (x == 4) ascLandDepth = 9;
+                    else ascLandDepth = AscCeilingDepth(x);
+                    for (int d = 0; d < ascLandDepth; d++)
+                        WorldGenUtils.PlaceTile(origin.X + x, origin.Y + ceilingY - 1 - d, woodTile);
                 }
 
                 // Bridge tile (flat at bottom floor level)
@@ -331,6 +461,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     WorldGenUtils.ClearTile(origin.X + bottomLanding, origin.Y + y);
                 for (int d = 0; d < 4; d++)
                     WorldGenUtils.PlaceTile(origin.X + bottomLanding, origin.Y + leftFloorY + 1 + d, woodTile);
+                int ascBridgeDepth = AscCeilingDepth(bottomLanding);
+                for (int d = 0; d < ascBridgeDepth; d++)
+                    WorldGenUtils.PlaceTile(origin.X + bottomLanding, origin.Y + ascBridgeCeiling - 1 - d, woodTile);
 
                 // Steps (ascending)
                 for (int i = 0; i < StepCount; i++)
@@ -342,6 +475,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.ClearTile(origin.X + bottomLanding + 1 + i, origin.Y + y);
                     for (int d = 0; d < 4; d++)
                         WorldGenUtils.PlaceTile(origin.X + bottomLanding + 1 + i, origin.Y + stepY + d, woodTile);
+                    int ascStepDepth = AscCeilingDepth(bottomLanding + 1 + i);
+                    for (int d = 0; d < ascStepDepth; d++)
+                        WorldGenUtils.PlaceTile(origin.X + bottomLanding + 1 + i, origin.Y + ceilingY - 1 - d, woodTile);
                 }
 
                 // Top landing (right side)
@@ -352,6 +488,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.ClearTile(origin.X + landingX, origin.Y + y);
                     for (int d = 0; d < 4; d++)
                         WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y + rightFloorY + 1 + d, woodTile);
+                    int ascTopDepth = AscCeilingDepth(landingX);
+                    for (int d = 0; d < ascTopDepth; d++)
+                        WorldGenUtils.PlaceTile(origin.X + landingX, origin.Y - 1 - d, woodTile);
                 }
 
                 // Wood panels behind ceiling

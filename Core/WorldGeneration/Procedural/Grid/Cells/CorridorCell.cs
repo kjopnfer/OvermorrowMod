@@ -42,6 +42,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 for (int y = ceilingY; y <= floorY; y++)
                     WorldGenUtils.ClearTile(x, y);
 
+            // Replace the 4 tiles directly above the walkable ceiling with wood.
+            ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
+            int woodThickness = DungeonGrid.VerticalPadding;
+            for (int x = origin.X; x < origin.X + width; x++)
+                for (int y = ceilingY - woodThickness; y < ceilingY; y++)
+                    WorldGenUtils.PlaceTile(x, y, woodTile);
+
             ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
             ushort castleWall = (ushort)ModContent.WallType<CastleWall>();
             ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
