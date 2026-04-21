@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using Terraria.ModLoader;
 
@@ -55,6 +54,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     else if (!right.IsEmpty && right.Room is ShaftCell)
                     {
                         PlaceShaftSidePadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
+                    }
+                    else if (!left.IsEmpty && left.Room is BookshelfCell)
+                    {
+                        // Bookshelf claims its right-side padding even when the
+                        // adjacent cell is empty — matches the look it has when
+                        // sitting next to another bookshelf.
+                        PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
+                    }
+                    else if (!right.IsEmpty && right.Room is BookshelfCell)
+                    {
+                        // Same on the other side — bookshelf claims its left-side padding.
+                        PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
                     else
                     {

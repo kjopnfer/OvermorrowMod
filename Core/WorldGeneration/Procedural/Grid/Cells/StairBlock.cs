@@ -113,6 +113,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             return null;
         }
 
+        /// <summary>
+        /// Descending: cursor sits at the anchor (top-left of 2x2).
+        /// Ascending:  cursor sits at bottom-left, so the anchor is one row above.
+        /// </summary>
+        public override Point AnchorOffsetFromCursor =>
+            _descendLeftToRight ? Point.Zero : new Point(0, -1);
+
+        /// <summary>
+        /// Stairs are inherently directional: one exit only.
+        /// Descending: cursor moves (+2, +1) to the lower-right landing's east neighbor.
+        /// Ascending:  cursor moves (+2, -1) to the upper-right landing's east neighbor.
+        /// </summary>
+        public override CellExit[] Exits => new[]
+        {
+            new CellExit(
+                _descendLeftToRight ? new Point(2, 1) : new Point(2, -1),
+                new GridRoom[] { new BookshelfCell(), new CorridorCell() })
+        };
+
         private const int BaselineCeilingDepth = 4;
 
         public override bool IsInternalEdge(int subCol, int subRow, Direction side)

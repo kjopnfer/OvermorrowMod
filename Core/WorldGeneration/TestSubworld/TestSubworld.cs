@@ -1,6 +1,5 @@
 using SubworldLibrary;
 using System.Collections.Generic;
-using Terraria;
 using Terraria.DataStructures;
 using Terraria.WorldBuilding;
 
@@ -8,8 +7,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 {
     public class TestSubworld : Subworld
     {
-        public override int Width => 1600;
-        public override int Height => 800;
+        public override int Width => 4800;
+        public override int Height => 2400;
 
         public override List<GenPass> Tasks =>
         [

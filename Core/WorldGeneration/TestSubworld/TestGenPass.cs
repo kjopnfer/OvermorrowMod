@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
@@ -39,8 +38,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 new CorridorCell()
             };
 
-            int gridCols = 12;
-            int gridRows = 6;
+            int gridCols = 108;
+            int gridRows = 30;
             int startX = 100;
             int startY = centerY - (gridRows * DungeonGrid.VerticalSpacing) / 2;
 

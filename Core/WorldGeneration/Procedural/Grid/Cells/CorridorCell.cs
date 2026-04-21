@@ -31,6 +31,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             };
         }
 
+        public override CellExit[] Exits => new[]
+        {
+            new CellExit(new Point( 1, 0), new GridRoom[] { new BookshelfCell(), new CorridorCell() }),
+            new CellExit(new Point(-1, 0), new GridRoom[] { new BookshelfCell(), new CorridorCell() }),
+        };
+
         public override void Build(Point origin, int fillTileType, int liningTileType)
         {
             int width = DungeonGrid.CellTileWidth;
