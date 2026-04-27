@@ -70,6 +70,43 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Each exit contains a cursor delta and the cell types valid through it.
         /// </summary>
         public virtual CellExit[] Exits => Array.Empty<CellExit>();
+
+        /// <summary>
+        /// Structural validity check against neighbors that aren't in the
+        /// walker's forward direction. Default accepts any placement; cells
+        /// with strict neighbor rules (shafts need bookshelves above/below,
+        /// corridors/stairs can't sit next to shafts vertically) override this.
+        /// The walker calls it after <c>FitsFootprint</c> — only a candidate
+        /// that both fits and is structurally valid gets placed.
+        /// <para/>
+        /// <paramref name="pendingLookup"/> lets the planner expose
+        /// in-progress placements that aren't yet committed to the grid —
+        /// e.g., other cells in the same A* path. Returning a non-null cell
+        /// means "treat this position as if that cell were placed". When
+        /// null (or returns null), the check falls back to the committed
+        /// grid only.
+        /// </summary>
+        public virtual bool IsValidPlacement(DungeonGrid grid, Microsoft.Xna.Framework.Point anchor,
+                                              System.Func<int, int, GridRoom> pendingLookup = null) => true;
+
+        /// <summary>
+        /// Helper for IsValidPlacement overrides: resolves what cell (if any)
+        /// is at a given grid position, considering in-progress placements
+        /// first and the committed grid second.
+        /// </summary>
+        protected static GridRoom GetEffectiveRoomAt(DungeonGrid grid,
+                                                    System.Func<int, int, GridRoom> pendingLookup,
+                                                    int x, int y)
+        {
+            if (pendingLookup != null)
+            {
+                var pending = pendingLookup(x, y);
+                if (pending != null) return pending;
+            }
+            var slot = grid.GetSlot(x, y);
+            if (slot == null || slot.IsEmpty) return null;
+            return slot.Room;
+        }
     }
 
     /// <summary>

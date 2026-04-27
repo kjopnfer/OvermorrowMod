@@ -43,8 +43,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             {
                 new BookshelfCell(),
                 new CorridorCell(),
-                new StairBlock(descendLeftToRight: true),
-                new StairBlock(descendLeftToRight: false),
+                new DescendingStair(),
+                new AscendingStair(),
             }),
             new CellExit(new Point(-1, 0), new GridRoom[]
             {

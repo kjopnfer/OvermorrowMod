@@ -38,7 +38,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 new CorridorCell()
             };
 
-            int gridCols = 108;
+            int gridCols = 25;
             int gridRows = 30;
             int startX = 100;
             int startY = centerY - (gridRows * DungeonGrid.VerticalSpacing) / 2;

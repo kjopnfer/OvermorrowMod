@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 {
-    public class StairBlock : GridRoom
+    public abstract class StairBlock : GridRoom
     {
         private const int StepCount = 29;
         private const int TopLandingWidth = 7;
@@ -18,7 +18,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         private const int BottomFloorY = 55;
         private const int PanelCount = 8;
 
-        private readonly bool _descendLeftToRight;
+        /// <summary>
+        /// Subclasses set this to indicate stair direction:
+        /// <c>true</c> for descending (top-left to bottom-right),
+        /// <c>false</c> for ascending (bottom-left to top-right).
+        /// All shared geometry, exits, and rendering branch on this.
+        /// </summary>
+        protected abstract bool DescendsLeftToRight { get; }
+
+        // Local alias used throughout the rest of the file so the rename
+        // doesn't cascade through hundreds of lines of stair geometry.
+        private bool _descendLeftToRight => DescendsLeftToRight;
 
         public override int CellWidth => 2;
         public override int CellHeight => 2;
@@ -81,11 +91,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             typeof(CorridorCell)
         };
 
-        public StairBlock(bool descendLeftToRight)
-        {
-            _descendLeftToRight = descendLeftToRight;
-        }
-
         public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
         {
             if (IsInternalEdge(subCol, subRow, side))
@@ -131,6 +136,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 _descendLeftToRight ? new Point(2, 1) : new Point(2, -1),
                 new GridRoom[] { new BookshelfCell(), new CorridorCell() })
         };
+
+        /// <summary>
+        /// A stair's 2×2 top row must not sit immediately below a shaft —
+        /// shafts only accept bookshelves on their vertical ends. Same rule
+        /// for the bottom row sitting above a shaft.
+        /// </summary>
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, System.Func<int, int, GridRoom> pendingLookup = null)
+        {
+            // Check the 2 cells above the top row and below the bottom row.
+            for (int dc = 0; dc < 2; dc++)
+            {
+                var above = GetEffectiveRoomAt(grid, pendingLookup, anchor.X + dc, anchor.Y - 1);
+                if (above is ShaftCell) return false;
+
+                var below = GetEffectiveRoomAt(grid, pendingLookup, anchor.X + dc, anchor.Y + 2);
+                if (below is ShaftCell) return false;
+            }
+            return true;
+        }
 
         private const int BaselineCeilingDepth = 4;
 
@@ -627,5 +651,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                         WorldGenUtils.SetWall(origin.X + topPanelStart + x, origin.Y + y, woodWall);
             }
         }
+    }
+
+    /// <summary>
+    /// A 2x2 staircase that goes down from left to right. Cursor enters at
+    /// the top-left landing and exits at the bottom-right landing.
+    /// All actual geometry and rendering live in <see cref="StairBlock"/>.
+    /// </summary>
+    public class DescendingStair : StairBlock
+    {
+        protected override bool DescendsLeftToRight => true;
+    }
+
+    /// <summary>
+    /// A 2x2 staircase that goes up from left to right. Cursor enters at
+    /// the bottom-left landing and exits at the top-right landing.
+    /// All actual geometry and rendering live in <see cref="StairBlock"/>.
+    /// </summary>
+    public class AscendingStair : StairBlock
+    {
+        protected override bool DescendsLeftToRight => false;
     }
 }

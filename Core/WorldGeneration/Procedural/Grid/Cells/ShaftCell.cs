@@ -35,6 +35,22 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             new CellExit(new Point(0, -1), new GridRoom[] { new ShaftCell(), new BookshelfCell() }),
         };
 
+        /// <summary>
+        /// A shaft can only be placed if its vertical neighbors are empty,
+        /// other shafts, or bookshelves. Rejects corridors, stairs, or any
+        /// other non-compatible cell above or below.
+        /// </summary>
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, System.Func<int, int, GridRoom> pendingLookup = null)
+        {
+            var above = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y - 1);
+            var below = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y + 1);
+            if (above != null && above is not (BookshelfCell or ShaftCell))
+                return false;
+            if (below != null && below is not (BookshelfCell or ShaftCell))
+                return false;
+            return true;
+        }
+
         public override void Build(Point origin, int fillTileType, int liningTileType)
         {
             int width = DungeonGrid.CellTileWidth;
