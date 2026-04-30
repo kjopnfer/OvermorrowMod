@@ -53,9 +53,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         // Cells expose a list of directional exits. Each exit says:
         //   (1) how the cursor moves if the walker takes this exit, and
         //   (2) what cell types are legal to place on the other side.
-        // Bidirectional cells (shafts, corridors) have two opposite exits,
-        // neutral w.r.t. direction of travel — the walker's backtrack-prevention
-        // picks which one is "forward" based on where it came from.
+        // Bidirectional cells (shafts, corridors) have two opposite exits and
+        // are neutral with respect to direction of travel. The walker's
+        // backtrack-prevention picks which one is "forward" based on where it
+        // came from.
 
         /// <summary>
         /// Offset from the walker's cursor position to this cell's anchor
@@ -76,15 +77,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// walker's forward direction. Default accepts any placement; cells
         /// with strict neighbor rules (shafts need bookshelves above/below,
         /// corridors/stairs can't sit next to shafts vertically) override this.
-        /// The walker calls it after <c>FitsFootprint</c> — only a candidate
+        /// The walker calls it after <c>FitsFootprint</c>; only a candidate
         /// that both fits and is structurally valid gets placed.
         /// <para/>
         /// <paramref name="pendingLookup"/> lets the planner expose
-        /// in-progress placements that aren't yet committed to the grid —
-        /// e.g., other cells in the same A* path. Returning a non-null cell
-        /// means "treat this position as if that cell were placed". When
-        /// null (or returns null), the check falls back to the committed
-        /// grid only.
+        /// in-progress placements that aren't yet committed to the grid
+        /// (for example, other cells in the same A* path). Returning a
+        /// non-null cell means "treat this position as if that cell were
+        /// placed". When null (or returns null), the check falls back to
+        /// the committed grid only.
         /// </summary>
         public virtual bool IsValidPlacement(DungeonGrid grid, Microsoft.Xna.Framework.Point anchor,
                                               System.Func<int, int, GridRoom> pendingLookup = null) => true;
@@ -107,6 +108,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             if (slot == null || slot.IsEmpty) return null;
             return slot.Room;
         }
+
+        /// <summary>
+        /// Returns whether the given side of the given sub-cell is physically
+        /// open (a doorway in the rendered tiles) or closed (a wall).
+        /// <para/>
+        /// This is independent of pathfinding direction: it describes the
+        /// cell's geometry, not where the walker is going. Two adjacent
+        /// cells must agree on the shared side: both open (a passable
+        /// connection) or both closed (back-to-back walls). A mismatch
+        /// produces a "wall facing open side" disconnect.
+        /// <para/>
+        /// Default: every cardinal side is closed. Each cell type overrides
+        /// this to expose its actual openings.
+        /// </summary>
+        public virtual bool IsOpenSide(int subCol, int subRow, Direction side) => false;
+
+        /// <summary>
+        /// Whether this cell is acceptable to leave standing next to an
+        /// empty neighbor. True for rooms that finish their own edges
+        /// visually (bookshelves, doors, future standalone rooms). False
+        /// for connector pieces (corridors, shafts, stairs) whose open
+        /// sides must connect to another cell or the dungeon reads as
+        /// having broken hallways.
+        /// </summary>
+        public virtual bool AllowsEmptyNeighbors => true;
     }
 
     /// <summary>

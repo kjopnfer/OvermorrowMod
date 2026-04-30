@@ -31,6 +31,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             };
         }
 
+        /// <summary>
+        /// Corridors are open on the horizontal sides only. Top and bottom
+        /// are walls (the corridor's ceiling and floor).
+        /// </summary>
+        public override bool IsOpenSide(int subCol, int subRow, Direction side) =>
+            side == Direction.Left || side == Direction.Right;
+
+        public override bool AllowsEmptyNeighbors => false;
+
         public override CellExit[] Exits => new[]
         {
             new CellExit(new Point( 1, 0), new GridRoom[] { new BookshelfCell(), new CorridorCell() }),
@@ -38,8 +47,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         };
 
         /// <summary>
-        /// A corridor must not sit directly above or below a shaft — shafts
-        /// only accept bookshelves on their vertical ends.
+        /// A corridor cannot sit directly above or below a shaft, since
+        /// shafts only accept bookshelves on their vertical ends.
         /// </summary>
         public override bool IsValidPlacement(DungeonGrid grid, Point anchor, System.Func<int, int, GridRoom> pendingLookup = null)
         {

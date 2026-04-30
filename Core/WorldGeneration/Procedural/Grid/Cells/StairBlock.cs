@@ -26,8 +26,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         /// </summary>
         protected abstract bool DescendsLeftToRight { get; }
 
-        // Local alias used throughout the rest of the file so the rename
-        // doesn't cascade through hundreds of lines of stair geometry.
+        // Local alias kept short because stair geometry below references it
+        // on nearly every line.
         private bool _descendLeftToRight => DescendsLeftToRight;
 
         public override int CellWidth => 2;
@@ -138,9 +138,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         };
 
         /// <summary>
-        /// A stair's 2×2 top row must not sit immediately below a shaft —
-        /// shafts only accept bookshelves on their vertical ends. Same rule
-        /// for the bottom row sitting above a shaft.
+        /// A stair's 2x2 top row cannot sit immediately below a shaft, since
+        /// shafts only accept bookshelves on their vertical ends. The same
+        /// rule applies to the bottom row sitting above a shaft.
         /// </summary>
         public override bool IsValidPlacement(DungeonGrid grid, Point anchor, System.Func<int, int, GridRoom> pendingLookup = null)
         {
@@ -157,6 +157,42 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         }
 
         private const int BaselineCeilingDepth = 4;
+
+        /// <summary>
+        /// Stairs are open on exactly two external sides (the entry and the
+        /// exit) and walled on every other external side.
+        /// <para/>
+        /// Descending (top-left to bottom-right):
+        ///   - sub (0,0) [top landing]: Left side open (walker enters from upper floor).
+        ///   - sub (1,1) [bottom landing]: Right side open (walker exits to lower floor).
+        /// Ascending (bottom-left to top-right):
+        ///   - sub (0,1) [bottom landing]: Left side open (walker enters from lower floor).
+        ///   - sub (1,0) [top landing]: Right side open (walker exits to upper floor).
+        /// All other external sides are walls.
+        /// </summary>
+        public override bool IsOpenSide(int subCol, int subRow, Direction side)
+        {
+            // Internal sides face other sub-cells of the same stair piece,
+            // not the outside world. Neighbor-compatibility checks skip
+            // internal edges, so this method only reports external geometry.
+            if (IsInternalEdge(subCol, subRow, side)) return false;
+
+            if (_descendLeftToRight)
+            {
+                // Descending: entry top-left, exit bottom-right.
+                if (subCol == 0 && subRow == 0 && side == Direction.Left) return true;
+                if (subCol == 1 && subRow == 1 && side == Direction.Right) return true;
+            }
+            else
+            {
+                // Ascending: entry bottom-left, exit top-right.
+                if (subCol == 0 && subRow == 1 && side == Direction.Left) return true;
+                if (subCol == 1 && subRow == 0 && side == Direction.Right) return true;
+            }
+            return false;
+        }
+
+        public override bool AllowsEmptyNeighbors => false;
 
         public override bool IsInternalEdge(int subCol, int subRow, Direction side)
         {

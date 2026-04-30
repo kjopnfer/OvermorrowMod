@@ -13,7 +13,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     ///   - Per-type cell counts
     ///   - Dead-end corridor list (corridor with empty/stone on left or right)
     ///   - Lateral adjacency mismatches (cell exit pointing at a neighbor that
-    ///     doesn't reciprocate — exposes "wall facing open side" disconnects)
+    ///     doesn't reciprocate, exposing "wall facing open side" disconnects)
     ///   - Connected-component analysis (isolated regions by reciprocal exits)
     ///   - Per-column shaft listing
     ///
@@ -102,7 +102,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine($"Note: rows are wide ({grid.Cols} cells x {CellLabelInnerWidth + 2} chars = {grid.Cols * (CellLabelInnerWidth + 2)} chars). Use a wide editor.");
             sb.AppendLine();
 
-            // Column header — col index centered in each cell's width.
+            // Column header: col index centered in each cell's width.
             sb.Append("        ");
             for (int col = 0; col < grid.Cols; col++)
             {
@@ -187,49 +187,42 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static void WriteAdjacencyMismatches(StringBuilder sb, DungeonGrid grid)
         {
             sb.AppendLine("--- Adjacency mismatches ---");
-            sb.AppendLine("(Cell exit points at a neighbor that doesn't reciprocate. Indicates a 'wall facing open side' disconnect.)");
+            sb.AppendLine("(Two adjacent cells disagree on whether their shared border is open or closed.)");
 
             int count = 0;
+            var dirs = new (Direction side, int dx, int dy, Direction opposite)[]
+            {
+                (Direction.Right,  1, 0, Direction.Left),
+                (Direction.Bottom, 0, 1, Direction.Top),
+                // Top/Left omitted because they are the symmetric pair and
+                // would double-count.
+            };
+
             for (int row = 0; row < grid.Rows; row++)
             {
                 for (int col = 0; col < grid.Cols; col++)
                 {
                     var slot = grid.GetSlot(col, row);
                     if (slot == null || slot.IsEmpty) continue;
-                    if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
-                    foreach (var exit in slot.Room.Exits)
+                    foreach (var d in dirs)
                     {
-                        int nx = col + exit.CursorDelta.X;
-                        int ny = row + exit.CursorDelta.Y;
+                        int nx = col + d.dx;
+                        int ny = row + d.dy;
                         var neighbor = grid.GetSlot(nx, ny);
+                        if (neighbor == null || neighbor.IsEmpty) continue;
 
-                        if (neighbor == null)
+                        // Internal seams between sub-cells of the same piece
+                        // are intentional and should not be flagged.
+                        if (object.ReferenceEquals(slot.Room, neighbor.Room)) continue;
+
+                        bool ourSide = slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side);
+                        bool theirSide = neighbor.Room.IsOpenSide(neighbor.SubCol, neighbor.SubRow, d.opposite);
+
+                        if (ourSide != theirSide)
                         {
                             count++;
-                            sb.AppendLine($"  ({col},{row}) {slot.Room.GetType().Name} exit→({nx},{ny}) OOB");
-                            continue;
-                        }
-                        if (neighbor.IsEmpty)
-                        {
-                            // Empty neighbor isn't strictly a "mismatch" — many
-                            // exits land on stone by design (last cell before
-                            // arrival, dead-end stretches). Logged for context
-                            // but not counted toward connection failures below.
-                            continue;
-                        }
-
-                        var inverse = new Point(-exit.CursorDelta.X, -exit.CursorDelta.Y);
-                        bool reciprocal = false;
-                        foreach (var nExit in neighbor.Room.Exits)
-                        {
-                            if (nExit.CursorDelta == inverse) { reciprocal = true; break; }
-                        }
-
-                        if (!reciprocal)
-                        {
-                            count++;
-                            sb.AppendLine($"  ({col},{row}) {slot.Room.GetType().Name} exit→({nx},{ny}) {neighbor.Room.GetType().Name} (no return exit)");
+                            sb.AppendLine($"  ({col},{row}) {slot.Room.GetType().Name} {d.side}={(ourSide ? "open" : "wall")} ↔ ({nx},{ny}) {neighbor.Room.GetType().Name} {d.opposite}={(theirSide ? "open" : "wall")}");
                         }
                     }
                 }
@@ -243,8 +236,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static void WriteConnectedComponents(StringBuilder sb, DungeonGrid grid)
         {
             sb.AppendLine("--- Connected components ---");
-            sb.AppendLine("(Cells reachable via reciprocal exits. >1 component = isolated regions.)");
+            sb.AppendLine("(Cells reachable via matched-open shared borders. >1 component = isolated regions.)");
 
+            // BFS visits sub-cell positions, not anchors, so multi-cell pieces
+            // get crossed correctly via their internal seams.
             var visited = new HashSet<Point>();
             var componentSizes = new List<(int size, Point representative)>();
 
@@ -254,13 +249,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     var slot = grid.GetSlot(col, row);
                     if (slot == null || slot.IsEmpty) continue;
-                    if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
-                    var anchor = new Point(col, row);
-                    if (visited.Contains(anchor)) continue;
+                    var pos = new Point(col, row);
+                    if (visited.Contains(pos)) continue;
 
-                    int size = FloodFillComponent(grid, anchor, visited);
-                    componentSizes.Add((size, anchor));
+                    int size = FloodFillComponent(grid, pos, visited);
+                    componentSizes.Add((size, pos));
                 }
             }
 
@@ -268,7 +262,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int i = 0; i < componentSizes.Count; i++)
             {
                 var (size, rep) = componentSizes[i];
-                sb.AppendLine($"    #{i + 1}: {size} cells (anchor at {rep})");
+                sb.AppendLine($"    #{i + 1}: {size} sub-cells (seed at {rep})");
             }
             sb.AppendLine();
         }
@@ -280,6 +274,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             visited.Add(seed);
             int size = 0;
 
+            var dirs = new (Direction side, int dx, int dy, Direction opposite)[]
+            {
+                (Direction.Top,    0, -1, Direction.Bottom),
+                (Direction.Bottom, 0,  1, Direction.Top),
+                (Direction.Left,  -1, 0, Direction.Right),
+                (Direction.Right,  1, 0, Direction.Left),
+            };
+
             while (queue.Count > 0)
             {
                 var p = queue.Dequeue();
@@ -288,32 +290,33 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 var slot = grid.GetSlot(p.X, p.Y);
                 if (slot == null || slot.IsEmpty) continue;
 
-                foreach (var exit in slot.Room.Exits)
+                foreach (var d in dirs)
                 {
-                    int nx = p.X + exit.CursorDelta.X;
-                    int ny = p.Y + exit.CursorDelta.Y;
+                    int nx = p.X + d.dx;
+                    int ny = p.Y + d.dy;
                     var nSlot = grid.GetSlot(nx, ny);
                     if (nSlot == null || nSlot.IsEmpty) continue;
 
-                    var inverse = new Point(-exit.CursorDelta.X, -exit.CursorDelta.Y);
-                    bool reciprocal = false;
-                    foreach (var nExit in nSlot.Room.Exits)
+                    // Same-piece adjacency: always traverse internal seams.
+                    if (object.ReferenceEquals(slot.Room, nSlot.Room))
                     {
-                        if (nExit.CursorDelta == inverse) { reciprocal = true; break; }
+                        var nPos = new Point(nx, ny);
+                        if (visited.Add(nPos)) queue.Enqueue(nPos);
+                        continue;
                     }
-                    if (!reciprocal) continue;
 
-                    // Walk up to the neighbor's anchor so we visit each
-                    // multi-cell piece once.
-                    var nAnchor = new Point(nx - nSlot.SubCol, ny - nSlot.SubRow);
-                    if (visited.Contains(nAnchor)) continue;
-                    visited.Add(nAnchor);
-                    queue.Enqueue(nAnchor);
+                    // Different pieces: traverse only if both sides agree the
+                    // shared border is open.
+                    bool ourSide = slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side);
+                    bool theirSide = nSlot.Room.IsOpenSide(nSlot.SubCol, nSlot.SubRow, d.opposite);
+                    if (!ourSide || !theirSide) continue;
+
+                    var nPos2 = new Point(nx, ny);
+                    if (visited.Add(nPos2)) queue.Enqueue(nPos2);
                 }
             }
             return size;
         }
-
         // ─── Shaft columns ──────────────────────────────────────────────────
 
         private static void WriteShaftColumns(StringBuilder sb, DungeonGrid grid)

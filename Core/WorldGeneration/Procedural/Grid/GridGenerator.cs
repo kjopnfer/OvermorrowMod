@@ -21,8 +21,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     ///          critical-path cells, routed through waypoints to form loops.
     ///          Each branch reuses the same cost field and streak rules so
     ///          the dungeon stays visually coherent.
-    /// Phase 3: render — each placed cell builds its tiles, padding fills
-    ///          the gaps, shaft chains get diagonal stairs.
+    /// Phase 3: render. Each placed cell builds its tiles, padding fills
+    ///          the gaps, and shaft chains get diagonal stairs.
     /// </summary>
     public static class GridGenerator
     {
@@ -37,6 +37,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         // without bookshelf landings between shafts) to this many rows.
         // Applied to both the spine and every branch.
         private const int MaxVerticalRun = 2;
+
+        // Width (in grid cells) of the un-buildable border around the entire
+        // grid. Cells in the outer ring are forbidden so the dungeon's outer
+        // edge is always padding/stone, never a cell pressed up against the
+        // canvas boundary. Doors live at the inner edge of this border.
+        private const int EdgeBorder = 1;
+
+        // Budget (in cells) for a single dead-end repair extension. Kept
+        // short so repairs grow a small connecting hallway rather than a
+        // whole new branch.
+        private const int RepairExtensionBudget = 6;
 
         public static void Build(
             Point worldOrigin,
@@ -72,35 +83,42 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             const int MaxDoorRowOffset = 2;
             int startRow = ClampRow(baseRow + rand.Next(-MaxDoorRowOffset, MaxDoorRowOffset + 1), gridRows);
             int endRow   = ClampRow(baseRow + rand.Next(-MaxDoorRowOffset, MaxDoorRowOffset + 1), gridRows);
-            var start = new Point(0, startRow);
-            var endTarget = new Point(gridCols - 1, endRow);
 
-            // Spine waypoints — intermediate columns with row offsets near
+            // Doors live at the inner edge of the canvas border
+            var start = new Point(EdgeBorder, startRow);
+            var endTarget = new Point(gridCols - 1 - EdgeBorder, endRow);
+
+            // Spine waypoints: intermediate columns with row offsets near
             // baseRow so the spine takes the occasional dip or climb without
-            // constantly changing elevation.
+            // constantly changing elevation. Columns are spread between the
+            // inner edges of the border so waypoints never land in the
+            // forbidden ring.
             const int SpineWaypointCount = 2;
             const int MaxWaypointRowOffset = 4;
+            int playableLeft = EdgeBorder;
+            int playableRight = gridCols - 1 - EdgeBorder;
+            int playableSpan = playableRight - playableLeft;
             var spineWaypoints = new List<Point>();
             for (int w = 1; w <= SpineWaypointCount; w++)
             {
-                int wpCol = (gridCols * w) / (SpineWaypointCount + 1);
+                int wpCol = playableLeft + (playableSpan * w) / (SpineWaypointCount + 1);
                 int wpRow = ClampRow(baseRow + rand.Next(-MaxWaypointRowOffset, MaxWaypointRowOffset + 1), gridRows);
                 spineWaypoints.Add(new Point(wpCol, wpRow));
             }
 
-            // Pre-stamp doors at both edges. A* plans a path from the west
-            // door to the east door; the east door's pre-existence is what
-            // triggers the type-match arrival check inside A*.
+            // Block the entire outer ring of cells. A* refuses to place any
+            // candidate whose footprint touches a blocked cell, so the
+            // dungeon's outer border is guaranteed empty.
+            var borderBlocked = BuildBorderBlockedSet(gridCols, gridRows);
+
+            // Pre-stamp doors at both edges before planning. A* plans from
+            // the start door to the end door.
             var startDoor = new DoorRoom();
             grid.Place(startDoor, start.X, start.Y, grid.NextGroupId());
 
             var endDoor = new DoorRoom();
             grid.Place(endDoor, endTarget.X, endTarget.Y, grid.NextGroupId());
 
-            // Build a smooth per-cell cost map. Same field is reused for every
-            // path planned this generation so the spine and branches feel
-            // visually coherent (they all flow around the same expensive zones).
-            //
             // Type weights tilt A* toward a stair/shaft mix without making
             // stairs so cheap that A* prefers them over flat horizontal travel.
             //
@@ -109,7 +127,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             //   - Stair:  4 cells × 2.0 × 0.7 = 5.6 per stair = 5.6 per row drop
             // Per 2 cols of horizontal advance:
             //   - Bookshelves only: 2 × 2.0 = 4.0
-            //   - Stair down-right: 5.6 (drops 1 row as side effect — wasted)
+            //   - Stair down-right: 5.6 (drops 1 row as a side effect, wasted)
             // So stairs lose against flat horizontal but stay viable for
             // vertical demand. Result: spine stays mostly flat, dips into
             // stairs only when waypoints force a row change.
@@ -123,11 +141,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             double[,] noiseField = PathfindingCost.BuildSimplexNoiseField(grid.Cols, grid.Rows, rand.Next());
             EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, typeWeights);
 
-            // Wrap the noise cost so shaft candidates cost infinity (i.e. are
-            // unreachable) when the candidate's own column or either adjacent
-            // column already contains a shaft. This blocks both two shaft
-            // chains in neighbouring columns AND a second shaft chain in the
-            // same column from a different branch.
+            // Wrap the noise cost so shaft candidates cost infinity when
+            // the candidate's own column or either adjacent column already contains a shaft.
+            // This blocks both two shaft chains in neighbouring columns
+            // AND a second shaft chain in the same column from a different branch.
             EdgeCost shaftAdjacencyAwareCost = (anchor, candidate) =>
             {
                 if (candidate is ShaftCell
@@ -157,16 +174,46 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // anchor positions so branches can pick endpoints from them.
             // The spine routes through randomized waypoints so it zigzags
             // vertically; each waypoint must end on a cell type that the
-            // next segment can keep moving from (bookshelves only — corridors
-            // would dead-end the next segment because they have no vertical
-            // exits).
+            // next segment can keep moving from (bookshelves only, since
+            // corridors would dead-end the next segment because they have
+            // no vertical exits).
+            //
+            // Fallback chain: try waypointed first; if that fails, try
+            // without waypoints; if THAT fails, try without waypoints AND
+            // without the streak/vertical-run caps. A connected spine is
+            // required, so a less-shapely spine is preferred over no spine
+            // at all.
             var spineWaypointAcceptableTypes = new HashSet<Type> { typeof(BookshelfCell) };
             var criticalPath = new List<Point> { start };
-            var spineSteps = GridAStar.FindPath(grid, start, endTarget, startDoor, spineCostFn,
-                                                waypoints: spineWaypoints,
-                                                streakLimits: streakLimits,
-                                                waypointAcceptableTypes: spineWaypointAcceptableTypes,
-                                                maxVerticalRun: MaxVerticalRun);
+
+            List<PathStep> spineSteps = GridAStar.FindPath(
+                grid, start, endTarget, startDoor, spineCostFn,
+                waypoints: spineWaypoints,
+                blocked: borderBlocked,
+                streakLimits: streakLimits,
+                waypointAcceptableTypes: spineWaypointAcceptableTypes,
+                maxVerticalRun: MaxVerticalRun);
+
+            if (spineSteps == null)
+            {
+                // First fallback: drop waypoints. Spine becomes a direct path with no forced detours.
+                spineSteps = GridAStar.FindPath(
+                    grid, start, endTarget, startDoor, spineCostFn,
+                    blocked: borderBlocked,
+                    streakLimits: streakLimits,
+                    maxVerticalRun: MaxVerticalRun);
+            }
+
+            if (spineSteps == null)
+            {
+                // Second fallback: drop streak and vertical-run caps.
+                // Path may have long shaft chains or runs of one cell type,
+                // but at least the dungeon has a connected spine.
+                spineSteps = GridAStar.FindPath(
+                    grid, start, endTarget, startDoor, spineCostFn,
+                    blocked: borderBlocked);
+            }
+
             if (spineSteps != null)
             {
                 foreach (var step in spineSteps)
@@ -178,16 +225,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             // ─── Phase 2: branches (loops) ───────────────────────────────────
             // Each "slot" gets up to RetriesPerBranchSlot internal attempts
-            // with different random endpoints — A* can return null for
-            // unlucky pairs (e.g. when one endpoint is a stair anchor) and
-            // a quick retry usually finds a valid pair.
+            // with different random endpoints. A* can return null for
+            // unlucky pairs (for example, when one endpoint is a stair
+            // anchor), and a quick retry usually finds a valid pair.
             int branchesPlaced = 0;
             for (int slot = 0; slot < BranchCount; slot++)
             {
                 if (criticalPath.Count <= MinBranchSpan + 1) break;
                 for (int attempt = 0; attempt < RetriesPerBranchSlot; attempt++)
                 {
-                    if (TryPlaceBranchViaAStar(grid, criticalPath, branchCostFn, streakLimits, rand, relaxed: false))
+                    if (TryPlaceBranchViaAStar(grid, criticalPath, branchCostFn, streakLimits, borderBlocked, rand, relaxed: false))
                     {
                         branchesPlaced++;
                         break;
@@ -196,14 +243,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
 
             // Guarantee at least one branch. If every regular attempt failed,
-            // try harder with a maximum-span unrelaxed shape, and if that
+            // retry with a maximum-span unrelaxed shape, and if that
             // still fails, drop the waypoints entirely and let A* find any
             // valid loop between the two ends of the spine.
             if (branchesPlaced == 0 && criticalPath.Count > MinBranchSpan + 1)
             {
-                if (!TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, streakLimits, rand, relaxed: false))
-                    TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, streakLimits, rand, relaxed: true);
+                if (!TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, streakLimits, borderBlocked, rand, relaxed: false))
+                    TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, streakLimits, borderBlocked, rand, relaxed: true);
             }
+
+            // ─── Phase 2.5: dead-end repair ──────────────────────────────────
+            // Walk every placed cell. Each open side facing empty stone is a
+            // visible dead-end. Shaft-chain landings get a short A* extension
+            // so their decorative staircase leads into a real hallway; other
+            // dead-ends get rendered as walls in the next phase.
+            var sidesToCap = RepairDeadEnds(grid, branchCostFn, streakLimits, borderBlocked, rand);
 
             // ─── Phase 3: render ─────────────────────────────────────────────
             for (int col = 0; col < grid.Cols; col++)
@@ -221,6 +275,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             PaddingBuilder.BuildAll(grid, fillTileType);
             DecorateShafts(grid);
+
+            // Seal capped sides with stone walls so dead-end open sides no
+            // longer read as broken doorways onto rock.
+            ApplySideCaps(grid, sidesToCap, fillTileType);
 
             // Diagnostic dump of the final grid state. Output sits next to
             // the existing shaft dump in the tModLoader root folder.
@@ -254,17 +312,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Plans one branch via A*. Picks two random points on the critical
         /// path that are at least <see cref="MinBranchSpan"/> COLUMNS apart
-        /// (column distance, not list-index distance — the spine can wiggle
-        /// vertically through stairs, so adjacent indices may be on the same
-        /// column). Generates U-shape waypoints in a detour zone below the
-        /// spine, runs A* from start through the waypoints back to end, and
-        /// stamps every step on success.
+        /// (column distance, not list-index distance, since the spine can
+        /// wiggle vertically through stairs and adjacent indices may share
+        /// a column). Generates U-shape waypoints in a detour zone below
+        /// the spine, runs A* from start through the waypoints back to end,
+        /// and stamps every step on success.
         /// </summary>
         private static bool TryPlaceBranchViaAStar(
             DungeonGrid grid,
             List<Point> criticalPath,
             EdgeCost costFn,
             IReadOnlyDictionary<Type, int> streakLimits,
+            HashSet<Point> blocked,
             Random rand,
             bool relaxed)
         {
@@ -285,7 +344,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             int iEnd = candidates[rand.Next(candidates.Count)];
             return TryPlaceBranchBetween(grid, criticalPath, iStart, iEnd,
-                                         costFn, streakLimits, rand, relaxed);
+                                         costFn, streakLimits, blocked, rand, relaxed);
         }
 
         /// <summary>
@@ -299,6 +358,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             List<Point> criticalPath,
             EdgeCost costFn,
             IReadOnlyDictionary<Type, int> streakLimits,
+            HashSet<Point> blocked,
             Random rand,
             bool relaxed)
         {
@@ -314,7 +374,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     int iEnd = criticalPath.Count - 1 - backOffset;
                     if (iEnd <= iStart) continue;
                     if (TryPlaceBranchBetween(grid, criticalPath, iStart, iEnd,
-                                              costFn, streakLimits, rand, relaxed))
+                                              costFn, streakLimits, blocked, rand, relaxed))
                         return true;
                 }
             }
@@ -334,6 +394,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             int iEnd,
             EdgeCost costFn,
             IReadOnlyDictionary<Type, int> streakLimits,
+            HashSet<Point> blocked,
             Random rand,
             bool relaxed)
         {
@@ -358,12 +419,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             // U-shape waypoints: drop down at the start column, then across
             // at the bottom, then implicit climb back up to branchEnd.
-            // Relaxed mode skips waypoints — A* finds any valid loop.
+            // Relaxed mode skips waypoints so A* finds any valid loop.
             List<Point> waypoints = null;
             if (!relaxed)
             {
                 int depth = MinBranchDepth + rand.Next(MaxBranchDepth - MinBranchDepth + 1);
-                int detourY = Math.Min(branchStart.Y + depth, grid.Rows - 2);
+                // Keep the detour row inside the playable area, leaving room
+                // for 2-row stair footprints to fit without touching the
+                // outer border ring.
+                int detourY = Math.Min(branchStart.Y + depth, grid.Rows - 2 - EdgeBorder);
                 waypoints = new List<Point>
                 {
                     new Point(branchStart.X, detourY),
@@ -372,9 +436,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
 
             // Branches must terminate each waypoint on a cell that can keep
-            // walking horizontally — otherwise the next segment can't turn.
-            // Shafts and stairs only have vertical or single-direction exits,
-            // so we whitelist bookshelf and corridor here.
+            // walking horizontally; otherwise the next segment cannot turn.
+            // Shafts and stairs only have vertical or single-direction
+            // exits, so this whitelist is restricted to bookshelf and
+            // corridor.
             var waypointAcceptableTypes = new HashSet<Type>
             {
                 typeof(BookshelfCell),
@@ -383,6 +448,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             var path = GridAStar.FindPath(grid, branchStart, branchEnd, startSlot.Room, costFn,
                                           waypoints: waypoints,
+                                          blocked: blocked,
                                           streakLimits: streakLimits,
                                           waypointAcceptableTypes: waypointAcceptableTypes,
                                           maxVerticalRun: MaxVerticalRun);
@@ -394,13 +460,331 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>
-        /// Clamps a row index into the legal grid range, leaving a 1-row
-        /// margin from the top and bottom so cells with vertical footprints
-        /// (e.g. 2-row stairs) still have room to fit.
+        /// Clamps a row index into the legal grid range, leaving the
+        /// EdgeBorder ring at the top and bottom unbuildable so cells with
+        /// 2-row footprints (stairs) still have room to fit inside the
+        /// playable area.
         /// </summary>
         private static int ClampRow(int row, int gridRows)
         {
-            return Math.Max(1, Math.Min(gridRows - 2, row));
+            int min = EdgeBorder;
+            int max = gridRows - 1 - EdgeBorder;
+            // Stairs need 1 extra row of margin from each edge so their
+            // 2-row footprint doesn't overlap the border ring.
+            min = Math.Max(min, 1);
+            max = Math.Min(max, gridRows - 2);
+            return Math.Max(min, Math.Min(max, row));
+        }
+
+        /// <summary>
+        /// Builds the set of grid positions that A* must never place a cell
+        /// on. Currently: every cell in the outer EdgeBorder ring, so the
+        /// dungeon's outer edge is always padding/stone instead of pressed
+        /// up against the canvas boundary.
+        /// </summary>
+        private static HashSet<Point> BuildBorderBlockedSet(int gridCols, int gridRows)
+        {
+            var blocked = new HashSet<Point>();
+            for (int b = 0; b < EdgeBorder; b++)
+            {
+                for (int x = 0; x < gridCols; x++)
+                {
+                    blocked.Add(new Point(x, b));
+                    blocked.Add(new Point(x, gridRows - 1 - b));
+                }
+                for (int y = 0; y < gridRows; y++)
+                {
+                    blocked.Add(new Point(b, y));
+                    blocked.Add(new Point(gridCols - 1 - b, y));
+                }
+            }
+            return blocked;
+        }
+
+        // ─── Phase 2.5: dead-end repair / capping ────────────────────────────
+
+        /// <summary>
+        /// Walks every placed cell. For each open side that faces empty
+        /// stone, picks the cheapest repair in priority order:
+        /// <list type="number">
+        /// <item>Extend a short hallway from a shaft landing into existing
+        /// dungeon, so the staircase leads somewhere real.</item>
+        /// <item>Convert connector cells (corridor, shaft, stair) to a
+        /// standalone bookshelf when the swap is structurally safe.</item>
+        /// <item>Cap the side with stone at render time as a last resort.</item>
+        /// </list>
+        /// Returns the list of (cellAnchor, side) pairs that fell all the
+        /// way through to capping.
+        /// </summary>
+        private static HashSet<(Point cell, Direction side)> RepairDeadEnds(
+            DungeonGrid grid, EdgeCost costFn,
+            IReadOnlyDictionary<Type, int> streakLimits,
+            HashSet<Point> blocked, Random rand)
+        {
+            var sidesToCap = new HashSet<(Point, Direction)>();
+            var dirs = new (Direction side, int dx, int dy)[]
+            {
+                (Direction.Top,    0, -1),
+                (Direction.Bottom, 0,  1),
+                (Direction.Left,  -1, 0),
+                (Direction.Right,  1, 0),
+            };
+
+            // Snapshot the current placements first. The extension loop
+            // mutates the grid, and feeding repaired cells back into the
+            // dead-end scan would create new false dead-ends.
+            var initialCells = new List<(Point pos, GridRoom room)>();
+            for (int row = 0; row < grid.Rows; row++)
+            {
+                for (int col = 0; col < grid.Cols; col++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot == null || slot.IsEmpty) continue;
+                    initialCells.Add((new Point(col, row), slot.Room));
+                }
+            }
+
+            foreach (var (pos, room) in initialCells)
+            {
+                // Re-fetch the slot so SubCol/SubRow are correct (the room
+                // reference is shared across the footprint of multi-cell pieces).
+                var slot = grid.GetSlot(pos.X, pos.Y);
+                if (slot == null || slot.IsEmpty) continue;
+
+                // Collect every open side of this cell whose neighbor is
+                // empty in-grid stone. Out-of-bounds is not a dead-end
+                // since the border ring is intentional.
+                var deadEndSides = new List<Direction>();
+                foreach (var d in dirs)
+                {
+                    if (!room.IsOpenSide(slot.SubCol, slot.SubRow, d.side)) continue;
+                    var neighbor = grid.GetSlot(pos.X + d.dx, pos.Y + d.dy);
+                    if (neighbor == null) continue;
+                    if (!neighbor.IsEmpty) continue;
+                    deadEndSides.Add(d.side);
+                }
+
+                if (deadEndSides.Count == 0) continue;
+
+                // Shaft-landing dead-ends (Bookshelf above/below a shaft
+                // chain with empty left/right) get a short A* extension
+                // attempt so the staircase leads somewhere real.
+                var unrepairedSides = new List<Direction>();
+                foreach (var side in deadEndSides)
+                {
+                    if (IsShaftLandingDeadEnd(grid, pos, room, side)
+                        && TryRepairShaftLanding(grid, pos, side, costFn, streakLimits, blocked, rand))
+                    {
+                        continue;
+                    }
+                    unrepairedSides.Add(side);
+                }
+
+                if (unrepairedSides.Count == 0) continue;
+
+                // Standalone rooms finish their own edges via padding, so
+                // an empty neighbor still reads as a finished wall.
+                if (room.AllowsEmptyNeighbors) continue;
+
+                // Connector cell with at least one dead-end side. Convert
+                // it to a standalone bookshelf when the swap is structurally
+                // safe; otherwise fall back to stone-capping each dead-end
+                // side at render time.
+                if (TryConvertToBookshelf(grid, pos)) continue;
+
+                foreach (var side in unrepairedSides)
+                    sidesToCap.Add((pos, side));
+            }
+
+            return sidesToCap;
+        }
+
+        /// <summary>
+        /// Replaces a 1x1 connector cell with a BookshelfCell when the
+        /// swap creates no adjacency mismatches. A bookshelf reports every
+        /// side open, so each non-empty neighbor's facing side must also
+        /// be open and both rooms must whitelist each other on the shared
+        /// edge.
+        /// </summary>
+        private static bool TryConvertToBookshelf(DungeonGrid grid, Point pos)
+        {
+            var slot = grid.GetSlot(pos.X, pos.Y);
+            if (slot == null || slot.IsEmpty) return false;
+
+            // Multi-cell pieces cannot be cleanly replaced by a 1x1
+            // bookshelf without orphaning the rest of the footprint.
+            if (slot.Room.CellWidth != 1 || slot.Room.CellHeight != 1) return false;
+
+            var bookshelf = new BookshelfCell();
+            var dirs = new (Direction side, int dx, int dy, Direction opposite)[]
+            {
+                (Direction.Top,    0, -1, Direction.Bottom),
+                (Direction.Bottom, 0,  1, Direction.Top),
+                (Direction.Left,  -1, 0, Direction.Right),
+                (Direction.Right,  1, 0, Direction.Left),
+            };
+
+            foreach (var d in dirs)
+            {
+                var n = grid.GetSlot(pos.X + d.dx, pos.Y + d.dy);
+                if (n == null || n.IsEmpty) continue;
+
+                // Open-side agreement: every bookshelf side will be open,
+                // so the neighbor's facing side must also report open.
+                if (!n.Room.IsOpenSide(n.SubCol, n.SubRow, d.opposite)) return false;
+
+                // Mutual neighbor whitelist: both rooms must accept the
+                // other's type on the shared edge.
+                var weAccept = bookshelf.GetAcceptedNeighbors(0, 0, d.side);
+                if (weAccept == null || !weAccept.Contains(n.Room.GetType())) return false;
+
+                var theyAccept = n.Room.GetAcceptedNeighbors(n.SubCol, n.SubRow, d.opposite);
+                if (theyAccept == null || !theyAccept.Contains(typeof(BookshelfCell))) return false;
+            }
+
+            grid.Place(bookshelf, pos.X, pos.Y, grid.NextGroupId());
+            return true;
+        }
+
+        /// <summary>
+        /// Returns true if <paramref name="pos"/> holds a Bookshelf that
+        /// sits directly above OR below a ShaftCell, AND the dead-end side
+        /// is horizontal (Left or Right). These are the cells whose
+        /// decorative diagonal staircase emerges into an open side facing
+        /// stone, the case where capping with a wall would seal off the
+        /// staircase's destination.
+        /// </summary>
+        private static bool IsShaftLandingDeadEnd(DungeonGrid grid, Point pos, GridRoom room, Direction side)
+        {
+            if (room is not BookshelfCell) return false;
+            if (side != Direction.Left && side != Direction.Right) return false;
+
+            var above = grid.GetSlot(pos.X, pos.Y - 1);
+            var below = grid.GetSlot(pos.X, pos.Y + 1);
+            bool shaftAbove = above != null && !above.IsEmpty && above.Room is ShaftCell;
+            bool shaftBelow = below != null && !below.IsEmpty && below.Room is ShaftCell;
+            return shaftAbove || shaftBelow;
+        }
+
+        /// <summary>
+        /// Attempts to grow a short Bookshelf/Corridor extension from the
+        /// landing cell in the dead-end direction. The extension's goal is
+        /// "any non-empty cell within budget steps that is not part of the
+        /// landing's own shaft column", which biases the result toward
+        /// connecting into existing dungeon rather than wandering off into
+        /// new dead-ends.
+        /// <para/>
+        /// Returns true on success (cells stamped to the grid), false if no
+        /// valid extension fit (caller falls back to wall capping).
+        /// </summary>
+        private static bool TryRepairShaftLanding(DungeonGrid grid, Point landing, Direction outwardSide,
+                                                  EdgeCost costFn, IReadOnlyDictionary<Type, int> streakLimits,
+                                                  HashSet<Point> blocked, Random rand)
+        {
+            int dx = outwardSide == Direction.Left ? -1 : (outwardSide == Direction.Right ? 1 : 0);
+            int dy = outwardSide == Direction.Top  ? -1 : (outwardSide == Direction.Bottom ? 1 : 0);
+            if (dx == 0 && dy == 0) return false;
+
+            // Look outward up to RepairExtensionBudget cells, find any
+            // non-empty cell that's a valid attachment target.
+            for (int step = 1; step <= RepairExtensionBudget; step++)
+            {
+                int tx = landing.X + dx * step;
+                int ty = landing.Y + dy * step;
+                var target = grid.GetSlot(tx, ty);
+                if (target == null) break; // OOB
+                if (target.IsEmpty) continue;
+
+                // The target must have an open side facing back toward the
+                // landing; otherwise the extension would create a fresh
+                // adjacency mismatch.
+                Direction inverseSide = outwardSide switch
+                {
+                    Direction.Left => Direction.Right,
+                    Direction.Right => Direction.Left,
+                    Direction.Top => Direction.Bottom,
+                    _ => Direction.Top
+                };
+                if (!target.Room.IsOpenSide(target.SubCol, target.SubRow, inverseSide))
+                    continue;
+
+                var path = GridAStar.FindPath(grid, landing, new Point(tx, ty),
+                                              grid.GetSlot(landing.X, landing.Y).Room,
+                                              costFn,
+                                              blocked: blocked,
+                                              streakLimits: streakLimits,
+                                              maxVerticalRun: MaxVerticalRun);
+                if (path == null) continue;
+                if (path.Count == 0) continue; // trivial: same cell
+
+                foreach (var pstep in path)
+                    grid.Place(pstep.Cell, pstep.Anchor.X, pstep.Anchor.Y, grid.NextGroupId());
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Paints stone over the boundary tiles of every (cell, side) pair
+        /// in <paramref name="sidesToCap"/>. Runs AFTER PaddingBuilder so it
+        /// can override any opening the padding logic might have placed
+        /// when one side of a gap was empty.
+        /// </summary>
+        private static void ApplySideCaps(DungeonGrid grid,
+                                          HashSet<(Point cell, Direction side)> sidesToCap,
+                                          int fillTileType)
+        {
+            ushort fill = (ushort)fillTileType;
+
+            foreach (var (cellPos, side) in sidesToCap)
+            {
+                var slot = grid.GetSlot(cellPos.X, cellPos.Y);
+                if (slot == null || slot.IsEmpty) continue;
+
+                Point cellOrigin = grid.GridToWorld(cellPos.X, cellPos.Y);
+
+                // Compute the world-space rectangle of the boundary strip
+                // between this cell and its (empty) neighbor.
+                int x, y, w, h;
+                switch (side)
+                {
+                    case Direction.Top:
+                        x = cellOrigin.X;
+                        y = cellOrigin.Y - DungeonGrid.VerticalPadding;
+                        w = DungeonGrid.CellTileWidth;
+                        h = DungeonGrid.VerticalPadding;
+                        break;
+                    case Direction.Bottom:
+                        x = cellOrigin.X;
+                        y = cellOrigin.Y + DungeonGrid.CellTileHeight;
+                        w = DungeonGrid.CellTileWidth;
+                        h = DungeonGrid.VerticalPadding;
+                        break;
+                    case Direction.Left:
+                        x = cellOrigin.X - DungeonGrid.HorizontalPadding;
+                        y = cellOrigin.Y;
+                        w = DungeonGrid.HorizontalPadding;
+                        h = DungeonGrid.CellTileHeight;
+                        break;
+                    case Direction.Right:
+                    default:
+                        x = cellOrigin.X + DungeonGrid.CellTileWidth;
+                        y = cellOrigin.Y;
+                        w = DungeonGrid.HorizontalPadding;
+                        h = DungeonGrid.CellTileHeight;
+                        break;
+                }
+
+                for (int lx = 0; lx < w; lx++)
+                {
+                    for (int ly = 0; ly < h; ly++)
+                    {
+                        WorldGenUtils.PlaceTile(x + lx, y + ly, fill);
+                        WorldGenUtils.ClearWall(x + lx, y + ly);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -504,11 +888,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     var topRoom = grid.GetSlot(col, topRow - 1);
                     var bottomRoom = grid.GetSlot(col, bottomRow + 1);
 
-                    // A shaft chain that doesn't have a real room on both
-                    // ends has nowhere meaningful for stairs to lead, so we
-                    // skip decoration. A* should not produce these — if it
-                    // does, the missing room is the bug to fix, not the
-                    // stairs to fake.
+                    // A shaft chain that does not have a real room on both
+                    // ends has nowhere meaningful for stairs to lead, so
+                    // decoration is skipped. A* should not produce these;
+                    // if it does, the missing room is the bug to fix
+                    // rather than something to paper over with fake stairs.
                     if (topRoom == null || topRoom.IsEmpty || bottomRoom == null || bottomRoom.IsEmpty)
                         continue;
 

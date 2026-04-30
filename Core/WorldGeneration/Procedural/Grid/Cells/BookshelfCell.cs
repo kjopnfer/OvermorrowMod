@@ -36,6 +36,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             };
         }
 
+        /// <summary>
+        /// Bookshelves are architectural rooms and accept connections on
+        /// every cardinal side. The actual neighbor type is constrained
+        /// separately by GetAcceptedNeighbors.
+        /// </summary>
+        public override bool IsOpenSide(int subCol, int subRow, Direction side) => true;
+
         public override CellExit[] Exits => new[]
         {
             // Horizontal exits
@@ -62,6 +69,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int width = DungeonGrid.CellTileWidth;
             int height = DungeonGrid.CellTileHeight;
 
+            // The cell's wood floor and ceiling are produced by
+            // PaddingBuilder filling the vertical padding strips above and
+            // below the cell. Drawing wood inside the cell here would
+            // double-thicken those strips.
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
                     WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
@@ -70,9 +81,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         }
 
         /// <summary>
-        /// Places a bookshelf wall panel. Wood frame on the sides, book wall fill
-        /// with shelf rows every 4 tiles from bottom.
-        /// Extracted from ArchiveSmallRoom.PlaceBookPanel.
+        /// Places a bookshelf wall panel: wood frame on the sides, book wall
+        /// fill with shelf rows every 4 tiles from the bottom.
         /// </summary>
         private static void PlaceBookPanel(int startX, int startY, int w, int h)
         {

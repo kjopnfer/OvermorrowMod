@@ -29,6 +29,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             };
         }
 
+        /// <summary>
+        /// Shafts are open on the vertical sides only. Left and right are
+        /// the wood-paneled side walls of the shaft column.
+        /// </summary>
+        public override bool IsOpenSide(int subCol, int subRow, Direction side) =>
+            side == Direction.Top || side == Direction.Bottom;
+
+        public override bool AllowsEmptyNeighbors => false;
+
         public override CellExit[] Exits => new[]
         {
             new CellExit(new Point(0,  1), new GridRoom[] { new ShaftCell(), new BookshelfCell() }),

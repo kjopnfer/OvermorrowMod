@@ -9,20 +9,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
     /// Lower numbers are preferred; higher numbers get avoided.
     /// </summary>
     /// <remarks>
-    /// Used to bias path shape — paths drift around expensive areas, prefer
+    /// Used to bias path shape: paths drift around expensive areas, prefer
     /// certain cell types, and stay out of zones marked as forbidden.
     /// </remarks>
     public delegate double EdgeCost(Point anchor, GridRoom candidate);
 
     /// <summary>
     /// Builders for the cost functions A* uses while planning a path.
-    /// Pick one based on what kind of variation you want.
+    /// Pick one based on what kind of variation is desired.
     /// </summary>
     public static class PathfindingCost
     {
         /// <summary>
         /// Every cell costs the same. A* will pick the path with the fewest
-        /// cells, no preference for one route over another. Mainly for testing.
+        /// cells with no preference for one route over another. Useful as
+        /// a baseline when shape variation is not wanted.
         /// </summary>
         public static EdgeCost Uniform()
         {
@@ -42,9 +43,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         /// with each entry holding the cost of that cell (typically between
         /// 1.0 and 3.0). Use <see cref="BuildSimplexNoiseField"/> to generate one.
         /// <para/>
-        /// <paramref name="typeWeights"/> (optional) lets you make some cell
-        /// types cheaper or more expensive overall — e.g. stairs cost twice
-        /// as much so A* uses them sparingly.
+        /// <paramref name="typeWeights"/> (optional) makes some cell types
+        /// cheaper or more expensive overall (for example, stairs cost twice
+        /// as much so A* uses them sparingly).
         /// </remarks>
         public static EdgeCost FromNoise(double[,] noise, IReadOnlyDictionary<Type, double> typeWeights = null)
         {
@@ -63,7 +64,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         int x = anchor.X + sc;
                         int y = anchor.Y + sr;
                         if (x < 0 || x >= width || y < 0 || y >= height)
-                            return double.PositiveInfinity; // off the grid — never pick this
+                            return double.PositiveInfinity; // off the grid; never pick this
                         sum += noise[x, y];
                     }
                 }
@@ -76,7 +77,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         }
 
         /// <summary>
-        /// Generates a "cost map" for the grid using OpenSimplex noise — a
+        /// Generates a "cost map" for the grid using OpenSimplex noise: a
         /// smooth random pattern of cheap and expensive regions that look
         /// natural rather than chaotic. A* flows through the cheap regions
         /// and curves around the expensive ones.
@@ -84,7 +85,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         /// <remarks>
         /// <paramref name="frequency"/> controls how big each cheap/expensive
         /// region is. Smaller numbers = bigger blobs. 0.08 gives features
-        /// roughly 10–15 cells wide; 0.2 gives smaller, busier variation.
+        /// roughly 10-15 cells wide; 0.2 gives smaller, busier variation.
         /// <para/>
         /// <paramref name="minCost"/> / <paramref name="maxCost"/> set how
         /// strong the variation is. Cells end up between those two values;
@@ -105,7 +106,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             {
                 for (int r = 0; r < rows; r++)
                 {
-                    // FastNoise gives -1..1; remap to our cost range.
+                    // FastNoise gives -1..1; remap to the cost range.
                     float n = fn.GetNoise(c, r);
                     double t = (n + 1.0) * 0.5;     // 0..1
                     field[c, r] = minCost + t * range;

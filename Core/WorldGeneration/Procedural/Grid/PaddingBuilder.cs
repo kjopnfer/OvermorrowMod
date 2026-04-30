@@ -47,24 +47,26 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         else
                             PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
-                    else if (!left.IsEmpty && left.Room is ShaftCell)
+                    else if ((!left.IsEmpty && left.Room is ShaftCell)
+                          || (!right.IsEmpty && right.Room is ShaftCell))
                     {
-                        PlaceShaftSidePadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
+                        // A shaft's horizontal side is structurally a wall
+                        // (IsOpenSide reports Left/Right as closed), so the
+                        // strip facing empty stone is filled solid rather
+                        // than punched with a decorative doorway.
+                        FillSolid(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, fillTileType);
                     }
-                    else if (!right.IsEmpty && right.Room is ShaftCell)
+                    else if (!left.IsEmpty && (left.Room is BookshelfCell || left.Room is DoorRoom))
                     {
-                        PlaceShaftSidePadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
-                    }
-                    else if (!left.IsEmpty && left.Room is BookshelfCell)
-                    {
-                        // Bookshelf claims its right-side padding even when the
-                        // adjacent cell is empty — matches the look it has when
-                        // sitting next to another bookshelf.
+                        // Bookshelves and doors claim their adjacent padding
+                        // even when the neighbor is empty so the outward
+                        // (border) side renders as a wood-paneled finish
+                        // rather than bare stone at the cell edge.
                         PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
-                    else if (!right.IsEmpty && right.Room is BookshelfCell)
+                    else if (!right.IsEmpty && (right.Room is BookshelfCell || right.Room is DoorRoom))
                     {
-                        // Same on the other side — bookshelf claims its left-side padding.
+                        // Mirror of the previous branch for the opposite side.
                         PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
                     }
                     else
