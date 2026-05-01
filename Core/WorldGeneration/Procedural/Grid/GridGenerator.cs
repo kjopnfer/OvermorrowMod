@@ -49,6 +49,32 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         // whole new branch.
         private const int RepairExtensionBudget = 6;
 
+        // Per-type cost multiplier applied during A* pathfinding.
+        // Higher = rarer (more expensive to place). Lower = more common.
+        // Default (no entry) is 1.0.
+        //
+        // Stairs sit below 1.0 so A* still picks them when vertical movement
+        // is needed. Without the discount, their 4-cell footprint would
+        // always lose to a single-cell shaft. Shafts sit above 1.0 so A*
+        // avoids carving long vertical chains except when descent is forced
+        // by a waypoint.
+        private static readonly Dictionary<Type, double> TypeWeights = new()
+        {
+            [typeof(ShaftCell)]       = 1.4,
+            [typeof(DescendingStair)] = 0.7,
+            [typeof(AscendingStair)]  = 0.7,
+            [typeof(FireplaceRoom)] = 4.0
+        };
+
+        // Max consecutive runs. Shafts use a vertical-run limit instead
+        // (see MaxVerticalRun) so the cap covers the visual chain length.
+        private static readonly Dictionary<Type, int> StreakLimits = new()
+        {
+            [typeof(BookshelfCell)] = 3,
+            [typeof(CorridorCell)]  = 5,
+            [typeof(FireplaceRoom)] = 1
+        };
+
         public static void Build(
             Point worldOrigin,
             int gridCols,
@@ -119,27 +145,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             var endDoor = new DoorRoom();
             grid.Place(endDoor, endTarget.X, endTarget.Y, grid.NextGroupId());
 
-            // Type weights tilt A* toward a stair/shaft mix without making
-            // stairs so cheap that A* prefers them over flat horizontal travel.
-            //
-            // Per row of pure descent (cost ÷ rows dropped):
-            //   - Shaft:  1 cell × 2.0 noise × 1.4 = ~2.8 per row
-            //   - Stair:  4 cells × 2.0 × 0.7 = 5.6 per stair = 5.6 per row drop
-            // Per 2 cols of horizontal advance:
-            //   - Bookshelves only: 2 × 2.0 = 4.0
-            //   - Stair down-right: 5.6 (drops 1 row as a side effect, wasted)
-            // So stairs lose against flat horizontal but stay viable for
-            // vertical demand. Result: spine stays mostly flat, dips into
-            // stairs only when waypoints force a row change.
-            var typeWeights = new Dictionary<Type, double>
-            {
-                [typeof(ShaftCell)]       = 1.4,
-                [typeof(DescendingStair)] = 0.7,
-                [typeof(AscendingStair)]  = 0.7,
-            };
-
             double[,] noiseField = PathfindingCost.BuildSimplexNoiseField(grid.Cols, grid.Rows, rand.Next());
-            EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, typeWeights);
+            EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, TypeWeights);
 
             // Wrap the noise cost so shaft candidates cost infinity when
             // the candidate's own column or either adjacent column already contains a shaft.
@@ -159,16 +166,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             EdgeCost spineCostFn = shaftAdjacencyAwareCost;
             EdgeCost branchCostFn = shaftAdjacencyAwareCost;
-
-            // Streak rules: max 3 bookshelves and 5 corridors in a row.
-            // Applied to both spine and branches. Shafts use a vertical-run
-            // limit instead (see MaxVerticalRun) so the cap covers the visual
-            // chain length, not just the count of consecutive shaft cells.
-            var streakLimits = new Dictionary<Type, int>
-            {
-                [typeof(BookshelfCell)] = 3,
-                [typeof(CorridorCell)]  = 5,
-            };
 
             // Plan the spine. On success, stamp every step and record the
             // anchor positions so branches can pick endpoints from them.
@@ -190,7 +187,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 grid, start, endTarget, startDoor, spineCostFn,
                 waypoints: spineWaypoints,
                 blocked: borderBlocked,
-                streakLimits: streakLimits,
+                streakLimits: StreakLimits,
                 waypointAcceptableTypes: spineWaypointAcceptableTypes,
                 maxVerticalRun: MaxVerticalRun);
 
@@ -200,7 +197,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 spineSteps = GridAStar.FindPath(
                     grid, start, endTarget, startDoor, spineCostFn,
                     blocked: borderBlocked,
-                    streakLimits: streakLimits,
+                    streakLimits: StreakLimits,
                     maxVerticalRun: MaxVerticalRun);
             }
 
@@ -234,7 +231,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (criticalPath.Count <= MinBranchSpan + 1) break;
                 for (int attempt = 0; attempt < RetriesPerBranchSlot; attempt++)
                 {
-                    if (TryPlaceBranchViaAStar(grid, criticalPath, branchCostFn, streakLimits, borderBlocked, rand, relaxed: false))
+                    if (TryPlaceBranchViaAStar(grid, criticalPath, branchCostFn, StreakLimits, borderBlocked, rand, relaxed: false))
                     {
                         branchesPlaced++;
                         break;
@@ -248,8 +245,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // valid loop between the two ends of the spine.
             if (branchesPlaced == 0 && criticalPath.Count > MinBranchSpan + 1)
             {
-                if (!TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, streakLimits, borderBlocked, rand, relaxed: false))
-                    TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, streakLimits, borderBlocked, rand, relaxed: true);
+                if (!TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, StreakLimits, borderBlocked, rand, relaxed: false))
+                    TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, StreakLimits, borderBlocked, rand, relaxed: true);
             }
 
             // ─── Phase 2.5: dead-end repair ──────────────────────────────────
@@ -257,7 +254,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // visible dead-end. Shaft-chain landings get a short A* extension
             // so their decorative staircase leads into a real hallway; other
             // dead-ends get rendered as walls in the next phase.
-            var sidesToCap = RepairDeadEnds(grid, branchCostFn, streakLimits, borderBlocked, rand);
+            var sidesToCap = RepairDeadEnds(grid, branchCostFn, StreakLimits, borderBlocked, rand);
 
             // ─── Phase 3: render ─────────────────────────────────────────────
             for (int col = 0; col < grid.Cols; col++)

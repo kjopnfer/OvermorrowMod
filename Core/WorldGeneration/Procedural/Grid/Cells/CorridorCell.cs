@@ -15,21 +15,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
-        private static readonly HashSet<Type> HorizontalAccepted = new()
+        private static readonly GridRoom[] HorizontalNeighbors =
         {
-            typeof(BookshelfCell),
-            typeof(CorridorCell)
+            new BookshelfCell(),
+            new CorridorCell(),
+            new FireplaceRoom(),
         };
 
-        public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
+        protected override GridRoom[] AllowedNeighbors(Direction side) => side switch
         {
-            return side switch
-            {
-                Direction.Left => HorizontalAccepted,
-                Direction.Right => HorizontalAccepted,
-                _ => null
-            };
-        }
+            Direction.Left or Direction.Right => HorizontalNeighbors,
+            _ => Array.Empty<GridRoom>(),
+        };
 
         /// <summary>
         /// Corridors are open on the horizontal sides only. Top and bottom
@@ -39,12 +36,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             side == Direction.Left || side == Direction.Right;
 
         public override bool AllowsEmptyNeighbors => false;
-
-        public override CellExit[] Exits => new[]
-        {
-            new CellExit(new Point( 1, 0), new GridRoom[] { new BookshelfCell(), new CorridorCell() }),
-            new CellExit(new Point(-1, 0), new GridRoom[] { new BookshelfCell(), new CorridorCell() }),
-        };
 
         /// <summary>
         /// A corridor cannot sit directly above or below a shaft, since
@@ -84,7 +75,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             // Wall stripe pattern scaled for 18 tiles:
             // gap(1) wood(2) gap(1) castle(3) gap(1) wood(1) blue(3) wood(1) gap(1) castle(3) gap(1)
             int[] widths = { 1, 2, 1, 3, 1, 1, 3, 1, 1, 3, 1 };
-            int[] types =  { -1, 0, -1, 1, -1, 0, 2, 0, -1, 1, -1 };
+            int[] types = { -1, 0, -1, 1, -1, 0, 2, 0, -1, 1, -1 };
 
             int wallTop = ceilingY + 1;
             int wallBottom = floorY - 1;

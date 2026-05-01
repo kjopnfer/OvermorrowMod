@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Core.WorldGeneration.Procedural;
+using System;
+using System.Collections.Generic;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
@@ -13,21 +12,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
-        private static readonly HashSet<Type> VerticalAccepted = new()
+        private static readonly GridRoom[] VerticalNeighbors =
         {
-            typeof(BookshelfCell),
-            typeof(ShaftCell)
+            new ShaftCell(),
+            new BookshelfCell(),
         };
 
-        public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
+        protected override GridRoom[] AllowedNeighbors(Direction side) => side switch
         {
-            return side switch
-            {
-                Direction.Top => VerticalAccepted,
-                Direction.Bottom => VerticalAccepted,
-                _ => null
-            };
-        }
+            Direction.Top or Direction.Bottom => VerticalNeighbors,
+            _ => Array.Empty<GridRoom>(),
+        };
 
         /// <summary>
         /// Shafts are open on the vertical sides only. Left and right are
@@ -37,12 +32,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             side == Direction.Top || side == Direction.Bottom;
 
         public override bool AllowsEmptyNeighbors => false;
-
-        public override CellExit[] Exits => new[]
-        {
-            new CellExit(new Point(0,  1), new GridRoom[] { new ShaftCell(), new BookshelfCell() }),
-            new CellExit(new Point(0, -1), new GridRoom[] { new ShaftCell(), new BookshelfCell() }),
-        };
 
         /// <summary>
         /// A shaft can only be placed if its vertical neighbors are empty,

@@ -18,24 +18,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
-        private static readonly HashSet<Type> HorizontalAccepted = new()
-        {
-            typeof(BookshelfCell),
-            typeof(CorridorCell),
-            typeof(StairBlock),
-        };
-
-        public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
-        {
-            return side switch
-            {
-                Direction.Left => HorizontalAccepted,
-                Direction.Right => HorizontalAccepted,
-                _ => null
-            };
-        }
-
-        private static readonly GridRoom[] HorizontalNeighborCells =
+        private static readonly GridRoom[] HorizontalNeighbors =
         {
             new BookshelfCell(),
             new CorridorCell(),
@@ -43,10 +26,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             new AscendingStair(),
         };
 
-        public override CellExit[] Exits => new[]
+        protected override GridRoom[] AllowedNeighbors(Direction side) => side switch
         {
-            new CellExit(new Point( 1, 0), HorizontalNeighborCells),
-            new CellExit(new Point(-1, 0), HorizontalNeighborCells),
+            Direction.Left or Direction.Right => HorizontalNeighbors,
+            _ => Array.Empty<GridRoom>(),
         };
 
         /// <summary>

@@ -25,12 +25,39 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract int CellHeight { get; }
 
         /// <summary>
+        /// Per-side list of cell types that may neighbor this room. The base
+        /// class derives both GetAcceptedNeighbors and the default Exits from
+        /// this single source so a room only declares its allowed neighbors
+        /// once.
+        /// <para/>
+        /// Rooms with sub-cell-specific rules (e.g. stairs, where only one
+        /// sub-cell accepts a given side) should override
+        /// GetAcceptedNeighbors directly and ignore this method.
+        /// <para/>
+        /// Default returns an empty array, meaning "no accepted neighbors on
+        /// any side." Override per-side via a switch on Direction.
+        /// </summary>
+        protected virtual GridRoom[] AllowedNeighbors(Direction side) => Array.Empty<GridRoom>();
+
+        /// <summary>
         /// Returns the set of GridRoom types accepted on the given edge of a sub-cell.
         /// For 1x1 rooms, subCol and subRow are always 0.
         /// For multi-cell rooms (e.g. 2x2 stairs), they identify which sub-cell.
         /// Return null or empty to reject all neighbors on that edge.
+        /// <para/>
+        /// Default impl skips internal edges (so multi-cell pieces don't try
+        /// to match against their own seam) and otherwise reads from
+        /// AllowedNeighbors. Sub-cell-aware rooms override this directly.
         /// </summary>
-        public abstract HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side);
+        public virtual HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
+        {
+            if (IsInternalEdge(subCol, subRow, side)) return null;
+            var neighbors = AllowedNeighbors(side);
+            if (neighbors == null || neighbors.Length == 0) return null;
+            var set = new HashSet<Type>();
+            foreach (var n in neighbors) set.Add(n.GetType());
+            return set;
+        }
 
         /// <summary>
         /// Returns true if the given edge is internal to a multi-cell piece.
@@ -69,8 +96,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Directional exits from this cell. The walker picks one per step.
         /// Each exit contains a cursor delta and the cell types valid through it.
+        /// <para/>
+        /// Default impl builds one cardinal exit per side that has any entries
+        /// in AllowedNeighbors. Cursor deltas are computed from CellWidth and
+        /// CellHeight so a 1-cell-wide room steps (+1, 0) on the right and a
+        /// 2-wide room steps (+2, 0). Rooms with non-cardinal exits (e.g.
+        /// the diagonal stair exit) override this directly.
         /// </summary>
-        public virtual CellExit[] Exits => Array.Empty<CellExit>();
+        public virtual CellExit[] Exits
+        {
+            get
+            {
+                var list = new List<CellExit>(4);
+                AddCardinalExit(list, Direction.Right,  new Point(CellWidth, 0));
+                AddCardinalExit(list, Direction.Left,   new Point(-1, 0));
+                AddCardinalExit(list, Direction.Bottom, new Point(0, CellHeight));
+                AddCardinalExit(list, Direction.Top,    new Point(0, -1));
+                return list.ToArray();
+            }
+        }
+
+        private void AddCardinalExit(List<CellExit> list, Direction side, Point delta)
+        {
+            var n = AllowedNeighbors(side);
+            if (n != null && n.Length > 0) list.Add(new CellExit(delta, n));
+        }
 
         /// <summary>
         /// Structural validity check against neighbors that aren't in the

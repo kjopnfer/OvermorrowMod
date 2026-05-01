@@ -12,57 +12,30 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
-        private static readonly HashSet<Type> HorizontalAccepted = new()
+        private static readonly GridRoom[] HorizontalNeighbors =
         {
-            typeof(BookshelfCell),
-            typeof(CorridorCell),
-            typeof(StairBlock)
+            new BookshelfCell(),
+            new CorridorCell(),
+            new DescendingStair(),
+            new AscendingStair(),
+            new FireplaceRoom(),
         };
 
-        private static readonly HashSet<Type> VerticalAccepted = new()
-        {
-            typeof(ShaftCell)
-        };
+        private static readonly GridRoom[] VerticalNeighbors = { new ShaftCell() };
 
-        public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
+        protected override GridRoom[] AllowedNeighbors(Direction side) => side switch
         {
-            return side switch
-            {
-                Direction.Left => HorizontalAccepted,
-                Direction.Right => HorizontalAccepted,
-                Direction.Top => VerticalAccepted,
-                Direction.Bottom => VerticalAccepted,
-                _ => null
-            };
-        }
+            Direction.Left or Direction.Right => HorizontalNeighbors,
+            Direction.Top or Direction.Bottom => VerticalNeighbors,
+            _ => Array.Empty<GridRoom>(),
+        };
 
         /// <summary>
         /// Bookshelves are architectural rooms and accept connections on
         /// every cardinal side. The actual neighbor type is constrained
-        /// separately by GetAcceptedNeighbors.
+        /// separately by AllowedNeighbors.
         /// </summary>
         public override bool IsOpenSide(int subCol, int subRow, Direction side) => true;
-
-        public override CellExit[] Exits => new[]
-        {
-            // Horizontal exits
-            new CellExit(new Point( 1, 0), new GridRoom[]
-            {
-                new BookshelfCell(),
-                new CorridorCell(),
-                new DescendingStair(),
-                new AscendingStair(),
-            }),
-            new CellExit(new Point(-1, 0), new GridRoom[]
-            {
-                new BookshelfCell(),
-                new CorridorCell(),
-            }),
-
-            // Vertical exits
-            new CellExit(new Point(0,  1), new GridRoom[] { new ShaftCell() }),
-            new CellExit(new Point(0, -1), new GridRoom[] { new ShaftCell() }),
-        };
 
         public override void Build(Point origin, int fillTileType, int liningTileType)
         {
