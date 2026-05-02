@@ -37,6 +37,74 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override bool AllowsEmptyNeighbors => false;
 
+        public override void BuildPadding(PaddingContext ctx)
+        {
+            switch (ctx.Side)
+            {
+                case Direction.Left:
+                    PaintHorizontalSide(ctx, neighborCol: ctx.Col - 1, neighborRow: ctx.Row);
+                    break;
+                case Direction.Right:
+                    PaintHorizontalSide(ctx, neighborCol: ctx.Col + 1, neighborRow: ctx.Row);
+                    break;
+
+                case Direction.Bottom:
+                    // Wood floor below the corridor so the strip continues
+                    // the corridor's floor visually rather than reading as
+                    // raw stone underneath the cell.
+                    PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
+                    break;
+
+                // Top is left as the initial stone fill: above the corridor's
+                // own ceiling there is no architectural feature to render.
+            }
+        }
+
+        /// <summary>
+        /// Decides which pattern to paint into the horizontal strip on one
+        /// side of the corridor based on the neighbor across that strip.
+        /// <para/>
+        /// The corridor's blue-wall passage pattern is meaningful only when
+        /// it meets another corridor: there it reads as a continuous hallway.
+        /// Against an architectural neighbor (bookshelf, door, fireplace,
+        /// stair landing) the corridor defers and lets the neighbor's panel
+        /// own the strip. Painting the corridor pattern in those cases would
+        /// overlay a passage stripe on top of the architectural panel, which
+        /// is the bug we are avoiding here.
+        /// </summary>
+        private static void PaintHorizontalSide(PaddingContext ctx, int neighborCol, int neighborRow)
+        {
+            var neighborSlot = ctx.Grid?.GetSlot(neighborCol, neighborRow);
+            var neighborRoom = neighborSlot?.Room;
+
+            if (neighborRoom is CorridorCell)
+            {
+                // Corridor-to-corridor: paint the full passage pattern
+                // (cleared walkway, blue side walls, wood ceiling and floor
+                // trim). Both corridors paint identical content into the
+                // shared strip, so order is irrelevant.
+                ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
+                ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
+                PaddingBuilder.PlaceCorridorPadding(
+                    ctx.X, ctx.Y, ctx.Width, ctx.Height, woodWall, blueWall);
+                return;
+            }
+
+            // Hook for stair-meets-corridor: a future visual goes here. The
+            // structure is ready; fill in the body when you decide what the
+            // transition should look like.
+            if (neighborRoom is DescendingStair || neighborRoom is AscendingStair)
+            {
+                // PaintCorridorToStairTransition(ctx);
+                return;
+            }
+
+            // Any other neighbor (bookshelf, door, fireplace, empty, off-grid):
+            // the architectural side owns the strip via its own BuildPadding.
+            // Painting nothing here means we leave the strip untouched and let
+            // the neighbor's panel render cleanly.
+        }
+
         /// <summary>
         /// A corridor cannot sit directly above or below a shaft, since
         /// shafts only accept bookshelves on their vertical ends.

@@ -63,7 +63,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             [typeof(ShaftCell)]       = 1.4,
             [typeof(DescendingStair)] = 0.7,
             [typeof(AscendingStair)]  = 0.7,
-            [typeof(FireplaceRoom)] = 4.0
+            [typeof(FireplaceRoom)] = 1.5
         };
 
         // Max consecutive runs. Shafts use a vertical-run limit instead

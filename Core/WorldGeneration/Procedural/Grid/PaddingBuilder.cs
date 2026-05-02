@@ -2,140 +2,66 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
+using System.Collections.Generic;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
     /// <summary>
-    /// Fills the gaps between grid cells with context-appropriate content.
-    /// Reads the cell types on both sides of each gap to decide what to render.
+    /// Iterates every placed room once and lets each render its outward
+    /// padding via <see cref="GridRoom.BuildPadding"/>. The builder itself
+    /// owns no rendering decisions: it just computes the four strip
+    /// rectangles around each room and dispatches.
+    /// <para/>
+    /// Rooms are blind to their neighbors. When two rooms share a strip,
+    /// both write into it and later writes overwrite earlier ones. Iteration
+    /// is column-major then row-major, so for any shared strip the room
+    /// further down or further right paints last and wins.
     /// </summary>
     public static class PaddingBuilder
     {
         public static void BuildAll(DungeonGrid grid, int fillTileType)
         {
-            ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
-            ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
+            var processed = new HashSet<int>();
 
-            // Horizontal padding between columns
-            for (int col = 0; col < grid.Cols - 1; col++)
+            for (int col = 0; col < grid.Cols; col++)
             {
                 for (int row = 0; row < grid.Rows; row++)
                 {
-                    var left = grid.GetSlot(col, row);
-                    var right = grid.GetSlot(col + 1, row);
+                    var slot = grid.GetSlot(col, row);
+                    if (slot == null || slot.IsEmpty) continue;
 
-                    if (left.IsEmpty && right.IsEmpty)
-                        continue;
+                    // Only fire once per multi-cell room (group ids are
+                    // shared across sub-cells).
+                    if (!processed.Add(slot.GroupId)) continue;
 
-                    Point leftWorld = grid.GridToWorld(col, row);
-                    int padX = leftWorld.X + DungeonGrid.CellTileWidth;
-                    int padY = leftWorld.Y;
+                    var room = slot.Room;
 
-                    if (!left.IsEmpty && !right.IsEmpty && left.GroupId == right.GroupId)
-                    {
-                        // Same group: internal padding handled by the multi-cell Build
-                        continue;
-                    }
+                    // Anchor is the room's top-left in world coords, found by
+                    // backing out the sub-cell offset from the current slot.
+                    Point anchor = grid.GridToWorld(col - slot.SubCol, row - slot.SubRow);
 
-                    if (!left.IsEmpty && !right.IsEmpty)
-                    {
-                        if (left.Room is CorridorCell && right.Room is CorridorCell)
-                            PlaceCorridorPadding(padX, padY, DungeonGrid.HorizontalPadding, woodWall, blueWall);
-                        else if (left.Room is ShaftCell || right.Room is ShaftCell)
-                            PlaceShaftSidePadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
-                        else
-                            PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
-                    }
-                    else if ((!left.IsEmpty && left.Room is ShaftCell)
-                          || (!right.IsEmpty && right.Room is ShaftCell))
-                    {
-                        // A shaft's horizontal side is structurally a wall
-                        // (IsOpenSide reports Left/Right as closed), so the
-                        // strip facing empty stone is filled solid rather
-                        // than punched with a decorative doorway.
-                        FillSolid(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, fillTileType);
-                    }
-                    else if (!left.IsEmpty && (left.Room is BookshelfCell || left.Room is DoorRoom))
-                    {
-                        // Bookshelves and doors claim their adjacent padding
-                        // even when the neighbor is empty so the outward
-                        // (border) side renders as a wood-paneled finish
-                        // rather than bare stone at the cell edge.
-                        PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
-                    }
-                    else if (!right.IsEmpty && (right.Room is BookshelfCell || right.Room is DoorRoom))
-                    {
-                        // Mirror of the previous branch for the opposite side.
-                        PlaceWoodPanelPadding(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, woodWall, blueWall);
-                    }
-                    else
-                    {
-                        // One side empty: solid wall
-                        FillSolid(padX, padY, DungeonGrid.HorizontalPadding, DungeonGrid.CellTileHeight, fillTileType);
-                    }
-                }
-            }
+                    int w = room.FootprintWidth;
+                    int h = room.FootprintHeight;
+                    int hp = DungeonGrid.HorizontalPadding;
+                    int vp = DungeonGrid.VerticalPadding;
 
-            // Vertical padding between rows
-            for (int col = 0; col < grid.Cols; col++)
-            {
-                for (int row = 0; row < grid.Rows - 1; row++)
-                {
-                    var top = grid.GetSlot(col, row);
-                    var bottom = grid.GetSlot(col, row + 1);
+                    int anchorCol = col - slot.SubCol;
+                    int anchorRow = row - slot.SubRow;
 
-                    if (top.IsEmpty && bottom.IsEmpty)
-                        continue;
-
-                    Point topWorld = grid.GridToWorld(col, row);
-                    int padX = topWorld.X;
-                    int padY = topWorld.Y + DungeonGrid.CellTileHeight;
-
-                    if (!top.IsEmpty && !bottom.IsEmpty && top.GroupId == bottom.GroupId)
-                    {
-                        // Same group: internal padding handled by the multi-cell Build
-                        continue;
-                    }
-
-                    StairBlock topStair = !top.IsEmpty ? top.Room as StairBlock : null;
-                    (int woodStartX, int woodWidth) = topStair != null
-                        ? topStair.GetFloorPaddingRange(top.SubCol, top.SubRow)
-                        : (-1, 0);
-
-                    bool eitherShaft = (!top.IsEmpty && top.Room is ShaftCell)
-                                    || (!bottom.IsEmpty && bottom.Room is ShaftCell);
-                    bool bottomIsCorridor = !bottom.IsEmpty && bottom.Room is CorridorCell;
-
-                    // Step-void stair sub-cell (non-landing) above or below this padding keeps it solid.
-                    bool bottomIsStairVoid = !bottom.IsEmpty && bottom.Room is StairBlock bs
-                                             && !bs.IsTopLandingSubCell(bottom.SubCol, bottom.SubRow);
-                    bool topIsStairVoid = !top.IsEmpty && top.Room is StairBlock ts
-                                             && !ts.IsBottomLandingSubCell(top.SubCol, top.SubRow);
-
-                    if (eitherShaft)
-                    {
-                        PlaceShaftFloorPadding(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
-                    }
-                    else if (bottomIsCorridor)
-                    {
-                        // Corridor builds its own wood ceiling; leave the padding as solid fill.
-                        FillSolid(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
-                    }
-                    else if (bottomIsStairVoid || topIsStairVoid)
-                    {
-                        // Stair step-void edge on one side: keep the padding as solid stone.
-                        FillSolid(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding, fillTileType);
-                    }
-                    else
-                    {
-                        FillWoodFloor(padX, padY, DungeonGrid.CellTileWidth, DungeonGrid.VerticalPadding);
-                    }
+                    room.BuildPadding(new PaddingContext(
+                        Direction.Top,    anchor.X,      anchor.Y - vp, w,  vp, fillTileType, grid, anchorCol, anchorRow));
+                    room.BuildPadding(new PaddingContext(
+                        Direction.Bottom, anchor.X,      anchor.Y + h,  w,  vp, fillTileType, grid, anchorCol, anchorRow));
+                    room.BuildPadding(new PaddingContext(
+                        Direction.Left,   anchor.X - hp, anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
+                    room.BuildPadding(new PaddingContext(
+                        Direction.Right,  anchor.X + w,  anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
                 }
             }
         }
 
-        private static void PlaceCorridorPadding(int x, int y, int w, ushort woodWall, ushort blueWall)
+        public static void PlaceCorridorPadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall)
         {
             int ceilingY = y + 17;
             int floorY = ceilingY + 8;
@@ -144,15 +70,24 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int ly = ceilingY; ly <= floorY; ly++)
                     WorldGenUtils.ClearTile(x + lx, ly);
 
-            // Wood tiles forming 4-tile thick top (above ceiling) and bottom (below floor) trim strips.
+            // Wood tiles forming 4-tile thick top (above ceiling) and bottom
+            // (below floor) trim strips. The "below" strip extends into the
+            // vertical padding zone below the corridor cell so corridor-to-
+            // corridor connections show wood floor under the gap, mirroring
+            // the wood ceiling above. ReplaceTile keeps this safe: positions
+            // a neighbor cleared (an opening, a shaft passage) are preserved,
+            // never re-sealed by this paint pass.
             ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
             int trim = DungeonGrid.VerticalPadding;
+            int stripBottom = y + h;
             for (int lx = 0; lx < w; lx++)
             {
                 for (int d = 0; d < trim; d++)
                 {
-                    WorldGenUtils.PlaceTile(x + lx, ceilingY - 1 - d, woodTile);
-                    WorldGenUtils.PlaceTile(x + lx, floorY + 1 + d, woodTile);
+                    int aboveY = ceilingY - 1 - d;
+                    int belowY = floorY + 1 + d;
+                    if (aboveY >= y) WorldGenUtils.ReplaceTile(x + lx, aboveY, woodTile);
+                    WorldGenUtils.ReplaceTile(x + lx, belowY, woodTile);
                 }
             }
 
@@ -168,27 +103,35 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
 
+            // Wall trim above the ceiling and below the floor. Clamp both to
+            // stay inside the strip so this helper never bleeds wall paint
+            // into the row above or below.
             for (int lx = 0; lx < w; lx++)
             {
-                WorldGenUtils.SetWall(x + lx, ceilingY - 1, woodWall);
-                WorldGenUtils.SetWall(x + lx, floorY + 1, woodWall);
+                int aboveY = ceilingY - 1;
+                int belowY = floorY + 1;
+                if (aboveY >= y) WorldGenUtils.SetWall(x + lx, aboveY, woodWall);
+                if (belowY < stripBottom) WorldGenUtils.SetWall(x + lx, belowY, woodWall);
             }
         }
 
-        private static void PlaceWoodPanelPadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall, bool skipAbove = false, bool skipBelow = false)
+        public static void PlaceWoodPanelPadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall, bool skipAbove = false, bool skipBelow = false)
         {
             ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
             int trim = DungeonGrid.VerticalPadding;
 
-            // Wood ceiling and floor strips framing the panel
+            // Wood ceiling and floor strips framing the panel.
+            // ReplaceTile so adjacent padding that already carved an opening
+            // (a shaft's vertical padding, a corridor's cleared walkway) is
+            // not sealed by this wood trim.
             for (int lx = 0; lx < w; lx++)
             {
                 for (int ly = 0; ly < trim; ly++)
                 {
                     if (!skipAbove)
-                        WorldGenUtils.PlaceTile(x + lx, y - trim + ly, woodTile);
+                        WorldGenUtils.ReplaceTile(x + lx, y - trim + ly, woodTile);
                     if (!skipBelow)
-                        WorldGenUtils.PlaceTile(x + lx, y + h + ly, woodTile);
+                        WorldGenUtils.ReplaceTile(x + lx, y + h + ly, woodTile);
                 }
             }
 
@@ -197,21 +140,33 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int ly = 0; ly < h; ly++)
                     WorldGenUtils.ClearTile(x + lx, y + ly);
 
+            // Clear walls in the strip before drawing the panel. DrawWallPanel
+            // intentionally leaves its gap rows and cut rows un-painted, so
+            // any wall written into the strip by an earlier helper (e.g. a
+            // corridor's blue side wall) would show through those gaps. A
+            // pre-clear guarantees the panel reads clean regardless of who
+            // painted before us.
+            for (int lx = 0; lx < w; lx++)
+                for (int ly = 0; ly < h; ly++)
+                    WorldGenUtils.ClearWall(x + lx, y + ly);
+
             ProceduralUtils.DrawWallPanel(x, y, w, h, woodWall, blueWall);
         }
 
-        private static void PlaceShaftFloorPadding(int x, int y, int w, int h, int tileType)
+        public static void PlaceShaftFloorPadding(int x, int y, int w, int h, int tileType)
         {
             ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
             int edgeWidth = 2;
 
-            // Tiles: solid wood at the outer 2-tile edges, cleared in the middle for stair passage
+            // Tiles: solid wood at the outer 2-tile edges, cleared in the middle for stair passage.
+            // ReplaceTile on the wood edges so this never seals an opening
+            // a neighbor already carved.
             for (int lx = 0; lx < w; lx++)
             {
                 for (int ly = 0; ly < h; ly++)
                 {
                     if (lx < edgeWidth || lx >= w - edgeWidth)
-                        WorldGenUtils.PlaceTile(x + lx, y + ly, woodTile);
+                        WorldGenUtils.ReplaceTile(x + lx, y + ly, woodTile);
                     else
                         WorldGenUtils.ClearTile(x + lx, y + ly);
                 }
@@ -238,15 +193,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
         }
 
-        private static void FillWoodFloor(int x, int y, int w, int h)
+        public static void FillWoodFloor(int x, int y, int w, int h)
         {
+            // ReplaceTile so a neighbor's earlier carve (a shaft connection,
+            // a corridor opening) is preserved through this paint pass.
             ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
             for (int lx = 0; lx < w; lx++)
                 for (int ly = 0; ly < h; ly++)
-                    WorldGenUtils.PlaceTile(x + lx, y + ly, woodTile);
+                    WorldGenUtils.ReplaceTile(x + lx, y + ly, woodTile);
         }
 
-        private static void PlaceShaftSidePadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall)
+        public static void PlaceShaftSidePadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall)
         {
             // Clear tiles through the padding
             for (int lx = 0; lx < w; lx++)
@@ -255,14 +212,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             // Wood floor below and wood ceiling above this horizontal padding strip,
             // matching the vertical padding height so they blend with the shaft's top/bottom padding.
+            // ReplaceTile so we do not seal openings a neighbor carved.
             ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
             int trim = DungeonGrid.VerticalPadding;
             for (int lx = 0; lx < w; lx++)
             {
                 for (int ly = 0; ly < trim; ly++)
                 {
-                    WorldGenUtils.PlaceTile(x + lx, y - trim + ly, woodTile);
-                    WorldGenUtils.PlaceTile(x + lx, y + h + ly, woodTile);
+                    WorldGenUtils.ReplaceTile(x + lx, y - trim + ly, woodTile);
+                    WorldGenUtils.ReplaceTile(x + lx, y + h + ly, woodTile);
                 }
             }
 
@@ -303,14 +261,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
         }
 
-        private static void ClearPadding(int x, int y, int w, int h)
+        public static void ClearPadding(int x, int y, int w, int h)
         {
             for (int lx = 0; lx < w; lx++)
                 for (int ly = 0; ly < h; ly++)
                     WorldGenUtils.ClearTile(x + lx, y + ly);
         }
 
-        private static void FillSolid(int x, int y, int w, int h, int tileType)
+        public static void FillSolid(int x, int y, int w, int h, int tileType)
         {
             ushort tile = (ushort)tileType;
             for (int lx = 0; lx < w; lx++)
@@ -318,7 +276,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     WorldGenUtils.PlaceTile(x + lx, y + ly, tile);
         }
 
-        private static void FillFloor(int x, int y, int w, int h, int tileType)
+        public static void FillFloor(int x, int y, int w, int h, int tileType)
         {
             ushort tile = (ushort)tileType;
             for (int lx = 0; lx < w; lx++)

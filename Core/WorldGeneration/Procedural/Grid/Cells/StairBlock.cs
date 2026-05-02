@@ -157,6 +157,65 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             return true;
         }
 
+        public override void BuildPadding(PaddingContext ctx)
+        {
+            // Top: above the stair is whatever cell sits on the upper floor;
+            // let it paint its own bottom side. Stair leaves Top untouched.
+            if (ctx.Side == Direction.Top) return;
+
+            if (ctx.Side == Direction.Left || ctx.Side == Direction.Right)
+            {
+                // Only paint the half adjacent to a landing sub-cell. The
+                // step-void half stays as the initial stone fill so the
+                // stair's outline reads as wood-paneled at the landings and
+                // open stone above/below the step run.
+                int landingSubRow = LandingSubRowForHorizontalSide(ctx.Side);
+                if (landingSubRow < 0) return;
+
+                int subRowYOffset = landingSubRow
+                    * (DungeonGrid.CellTileHeight + DungeonGrid.VerticalPadding);
+                int panelY = ctx.Y + subRowYOffset;
+
+                ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
+                ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
+                PaddingBuilder.PlaceWoodPanelPadding(
+                    ctx.X, panelY, ctx.Width, DungeonGrid.CellTileHeight, woodWall, blueWall);
+                return;
+            }
+
+            // Bottom: paint wood floor only on the bottom-landing's range.
+            // The step-void portion of the bottom row stays as initial stone.
+            int landingSubCol = _descendLeftToRight ? 1 : 0;
+            var (localX, woodWidth) = GetFloorPaddingRange(landingSubCol, 1);
+            if (woodWidth <= 0) return;
+
+            int subColOriginX = landingSubCol * (DungeonGrid.CellTileWidth + DungeonGrid.HorizontalPadding);
+            int startX = ctx.X + subColOriginX + localX;
+            PaddingBuilder.FillWoodFloor(startX, ctx.Y, woodWidth, ctx.Height);
+        }
+
+        /// <summary>
+        /// For the Left or Right outward side, returns the sub-row index of
+        /// the landing sub-cell on that side, or -1 if none. Step-void
+        /// sub-cells return -1 implicitly because no landing sits there.
+        /// </summary>
+        private int LandingSubRowForHorizontalSide(Direction side)
+        {
+            if (_descendLeftToRight)
+            {
+                // Descending: top landing at (0,0), bottom landing at (1,1).
+                if (side == Direction.Left)  return 0;
+                if (side == Direction.Right) return 1;
+            }
+            else
+            {
+                // Ascending: bottom landing at (0,1), top landing at (1,0).
+                if (side == Direction.Left)  return 1;
+                if (side == Direction.Right) return 0;
+            }
+            return -1;
+        }
+
         private const int BaselineCeilingDepth = 4;
 
         /// <summary>

@@ -37,6 +37,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         /// </summary>
         public override bool IsOpenSide(int subCol, int subRow, Direction side) => true;
 
+        public override void BuildPadding(PaddingContext ctx)
+        {
+            ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
+            ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
+
+            switch (ctx.Side)
+            {
+                case Direction.Left:
+                case Direction.Right:
+                    PaddingBuilder.PlaceWoodPanelPadding(
+                        ctx.X, ctx.Y, ctx.Width, ctx.Height, woodWall, blueWall);
+                    break;
+                case Direction.Top:
+                case Direction.Bottom:
+                    PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
+                    break;
+            }
+        }
+
         public override void Build(Point origin, int fillTileType, int liningTileType)
         {
             int width = DungeonGrid.CellTileWidth;

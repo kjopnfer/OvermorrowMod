@@ -37,6 +37,21 @@ namespace OvermorrowMod.Common.Utilities
         }
 
         /// <summary>
+        /// Replaces a tile's type only if a tile is already present at the position.
+        /// If the position is empty (HasTile == false), this is a no-op.
+        /// <para/>
+        /// Use this from contexts that should never seal an opening, such as
+        /// padding renderers running after the room's Build phase. Cleared
+        /// positions stay cleared; existing tiles are repainted with the new type.
+        /// </summary>
+        public static void ReplaceTile(int x, int y, ushort tileType)
+        {
+            Tile t = Main.tile[x, y];
+            if (!t.HasTile) return;
+            t.TileType = tileType;
+        }
+
+        /// <summary>
         /// Places a wall by directly setting the WallType property.
         /// Bypasses WorldGen.PlaceWall which performs bounds checking, framing,
         /// neighbor wall updates, and sync calls on every invocation. Use this when bulk-placing

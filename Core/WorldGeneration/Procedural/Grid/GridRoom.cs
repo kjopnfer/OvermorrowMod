@@ -25,6 +25,37 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract int CellHeight { get; }
 
         /// <summary>
+        /// Total tile width of this room's footprint, including any internal
+        /// horizontal padding between sub-cells. A 1x1 room is one cell wide;
+        /// a 2x1 room is two cells plus one internal seam.
+        /// </summary>
+        public int FootprintWidth =>
+            DungeonGrid.CellTileWidth * CellWidth
+            + DungeonGrid.HorizontalPadding * (CellWidth - 1);
+
+        /// <summary>
+        /// Total tile height of this room's footprint, including any internal
+        /// vertical padding between sub-cells.
+        /// </summary>
+        public int FootprintHeight =>
+            DungeonGrid.CellTileHeight * CellHeight
+            + DungeonGrid.VerticalPadding * (CellHeight - 1);
+
+        /// <summary>
+        /// Renders the padding strip on one outward side of this room.
+        /// PaddingBuilder calls this once per side per placed room.
+        /// <para/>
+        /// Contract: use <see cref="OvermorrowMod.Common.Utilities.WorldGenUtils.ReplaceTile"/>
+        /// rather than PlaceTile for tile writes, so that openings cleared by
+        /// Build cannot be accidentally sealed. SetWall and ClearWall are free
+        /// to use since walls do not block movement.
+        /// <para/>
+        /// Default: do nothing, leaving the strip as the initial stone fill.
+        /// </summary>
+        /// <param name="ctx">Describes the strip to paint and which side it is on.</param>
+        public virtual void BuildPadding(PaddingContext ctx) { }
+
+        /// <summary>
         /// Per-side list of cell types that may neighbor this room. The base
         /// class derives both GetAcceptedNeighbors and the default Exits from
         /// this single source so a room only declares its allowed neighbors
@@ -183,6 +214,97 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// having broken hallways.
         /// </summary>
         public virtual bool AllowsEmptyNeighbors => true;
+    }
+
+    /// <summary>
+    /// One outward side of a placed room, passed to <see cref="GridRoom.BuildPadding"/>
+    /// so the room can paint its own padding strip.
+    /// <para/>
+    /// PaddingBuilder calls BuildPadding once per side per room (Top, Bottom,
+    /// Left, Right). Multi-cell rooms see one strip per side that already
+    /// covers the internal-seam corners, so a 2x1 room's Top is 44 wide
+    /// rather than two disjoint 18-wide strips.
+    /// <para/>
+    /// The context also exposes the dungeon grid and this room's grid
+    /// position so a room can look up its neighbors when its visual depends
+    /// on what is across the strip (for example, corridors only render their
+    /// passage pattern when their neighbor is also a corridor).
+    /// </summary>
+    public readonly struct PaddingContext
+    {
+        /// <summary>
+        /// Which outward side of the room this strip sits on. The strip lies
+        /// just outside the room's footprint on that side.
+        /// </summary>
+        public readonly Direction Side;
+
+        /// <summary>
+        /// World-space X of the strip's top-left corner.
+        /// </summary>
+        public readonly int X;
+
+        /// <summary>
+        /// World-space Y of the strip's top-left corner.
+        /// </summary>
+        public readonly int Y;
+
+        /// <summary>
+        /// Strip width in tiles. For Top and Bottom this equals the room's
+        /// full footprint width (including any internal horizontal seam).
+        /// For Left and Right this equals <see cref="DungeonGrid.HorizontalPadding"/>.
+        /// </summary>
+        public readonly int Width;
+
+        /// <summary>
+        /// Strip height in tiles. For Left and Right this equals the room's
+        /// full footprint height (including any internal vertical seam).
+        /// For Top and Bottom this equals <see cref="DungeonGrid.VerticalPadding"/>.
+        /// </summary>
+        public readonly int Height;
+
+        /// <summary>
+        /// The dungeon's default solid fill tile (typically stone). Padding
+        /// renderers rarely need this since the canvas-wide initial fill
+        /// already stamps every gap with this tile, but it is provided for
+        /// the occasional renderer that wants to explicitly reset a region.
+        /// </summary>
+        public readonly int FillTileType;
+
+        /// <summary>
+        /// The dungeon grid this room lives in. Use together with
+        /// <see cref="Col"/> and <see cref="Row"/> to look up neighbors when
+        /// the room's painting depends on what is on the other side of the
+        /// strip.
+        /// </summary>
+        public readonly DungeonGrid Grid;
+
+        /// <summary>
+        /// Grid column of this room's anchor (its top-left sub-cell). For a
+        /// 1x1 room this is the cell's column; for a 2x1 room at columns
+        /// (C, C+1), this is C.
+        /// </summary>
+        public readonly int Col;
+
+        /// <summary>
+        /// Grid row of this room's anchor (its top-left sub-cell). For a 1x1
+        /// room this is the cell's row; for a 2x2 room at rows (R, R+1),
+        /// this is R.
+        /// </summary>
+        public readonly int Row;
+
+        public PaddingContext(Direction side, int x, int y, int width, int height,
+                              int fillTileType, DungeonGrid grid, int col, int row)
+        {
+            Side = side;
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
+            FillTileType = fillTileType;
+            Grid = grid;
+            Col = col;
+            Row = row;
+        }
     }
 
     /// <summary>

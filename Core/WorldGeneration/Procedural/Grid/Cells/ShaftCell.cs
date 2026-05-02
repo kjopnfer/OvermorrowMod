@@ -33,6 +33,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override bool AllowsEmptyNeighbors => false;
 
+        public override void BuildPadding(PaddingContext ctx)
+        {
+            // Shaft sides are walls; let neighbors paint horizontal strips.
+            if (ctx.Side == Direction.Left || ctx.Side == Direction.Right) return;
+
+            // Top and Bottom render the wood-floor extension that lets the
+            // shaft connect cleanly to bookshelves above and below.
+            PaddingBuilder.PlaceShaftFloorPadding(ctx.X, ctx.Y, ctx.Width, ctx.Height, ctx.FillTileType);
+        }
+
         /// <summary>
         /// A shaft can only be placed if its vertical neighbors are empty,
         /// other shafts, or bookshelves. Rejects corridors, stairs, or any
