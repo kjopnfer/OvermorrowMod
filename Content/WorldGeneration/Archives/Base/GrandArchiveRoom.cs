@@ -431,7 +431,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 8, y, ModContent.TileType<HallwayPillar>());
         }
 
-        protected void PlaceCozyArea(int x, int y, RoomID room)
+        public static void PlaceCozyArea(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>
             {

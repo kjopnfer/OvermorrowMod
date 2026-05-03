@@ -3,6 +3,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using System;
 using System.Collections.Generic;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
@@ -24,10 +25,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             _ => Array.Empty<GridRoom>(),
         };
 
-        /// <summary>
-        /// Shafts are open on the vertical sides only. Left and right are
-        /// the wood-paneled side walls of the shaft column.
-        /// </summary>
         public override bool IsOpenSide(int subCol, int subRow, Direction side) =>
             side == Direction.Top || side == Direction.Bottom;
 
@@ -35,19 +32,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override void BuildPadding(PaddingContext ctx)
         {
-            // Shaft sides are walls; let neighbors paint horizontal strips.
-            if (ctx.Side == Direction.Left || ctx.Side == Direction.Right) return;
+            switch (ctx.Side)
+            {
+                case Direction.Left:
+                case Direction.Right:
+                    {
+                        ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
+                        ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
+                        PaddingBuilder.PlaceWoodPanelPadding(
+                            ctx.X, ctx.Y, ctx.Width, ctx.Height, woodWall, blueWall);
 
-            // Top and Bottom render the wood-floor extension that lets the
-            // shaft connect cleanly to bookshelves above and below.
-            PaddingBuilder.PlaceShaftFloorPadding(ctx.X, ctx.Y, ctx.Width, ctx.Height, ctx.FillTileType);
+                        int sconceRow = ctx.Y + ctx.Height - 1 - 11;
+                        int sconceCol = ctx.X + 3;
+                        WorldGen.PlaceObject(sconceCol, sconceRow, ModContent.TileType<WaxSconceEven>());
+                        break;
+                    }
+                case Direction.Top:
+                case Direction.Bottom:
+                    // PlaceShaftFloorPadding leaves the diagonal-stair gap; FillWoodFloor would seal it.
+                    PaddingBuilder.PlaceShaftFloorPadding(
+                        ctx.X, ctx.Y, ctx.Width, ctx.Height, ctx.FillTileType);
+                    break;
+            }
         }
 
-        /// <summary>
-        /// A shaft can only be placed if its vertical neighbors are empty,
-        /// other shafts, or bookshelves. Rejects corridors, stairs, or any
-        /// other non-compatible cell above or below.
-        /// </summary>
+        /// <summary>Vertical neighbors must be empty, another shaft, or a bookshelf.</summary>
         public override bool IsValidPlacement(DungeonGrid grid, Point anchor, System.Func<int, int, GridRoom> pendingLookup = null)
         {
             var above = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y - 1);
@@ -72,14 +81,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int blueWallId = ModContent.WallType<ArchiveWoodWallBlue>();
             ushort woodWall = (ushort)woodWallId;
 
-            // Wall panels on left and right sides (1 tile wide each, leaves 16 tiles for panel)
+            // Side edge walls (1 wide each).
             for (int y = 0; y < height; y++)
             {
                 WorldGenUtils.SetWall(origin.X, origin.Y + y, woodWall);
                 WorldGenUtils.SetWall(origin.X + width - 1, origin.Y + y, woodWall);
             }
 
-            // Decorative wall panel filling the open shaft area between the side edge walls.
             DrawShaftWallPanel(origin.X + 1, origin.Y + 1, 16, 25, woodWall, (ushort)blueWallId);
         }
 
@@ -89,8 +97,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int drawEndY = ry + h;
             int drawHeight = drawEndY - drawStartY + 1;
 
-            // Top row is an open gap (no outer wood border), matching the padding above.
-            // Inner top-cut row separates top wood section from middle blue.
+            // Top row is an open gap matching the padding above.
             int innerTopCutY = 5;
             int innerBottomCutY = drawHeight - 4;
 
@@ -101,7 +108,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     int worldX = rx + lx;
                     int worldY = drawStartY + ly;
 
-                    // Top row is entirely empty (no walls)
                     if (ly == 0)
                         continue;
 

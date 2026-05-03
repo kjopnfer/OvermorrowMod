@@ -5,51 +5,19 @@ using System.Collections.Generic;
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 {
     /// <summary>
-    /// Plans the cheapest sequence of cells to place to get from a start
-    /// position to a goal position, using a caller-provided cost function.
+    /// A* over grid cells with project-specific extensions:
+    /// multi-cell footprints (stairs span multiple squares and must not collide
+    /// with the grid, blocked zones, or earlier placements in the same path);
+    /// waypoint segmentation (start → wp1 → ... → goal, with the previous cell
+    /// and streak counter carrying across segment boundaries); and occupied-goal
+    /// arrival, where the goal already holds a pre-placed cell (e.g. a door)
+    /// and the path must physically dock against its facing exit.
     /// </summary>
-    /// <remarks>
-    /// How it works at a high level:
-    /// <list type="number">
-    /// <item>Start at the start position. Look at every cell type that is
-    /// legal to place next (the previous cell announces its options via
-    /// its Exits).</item>
-    /// <item>For each option, compute its cost and remember it.</item>
-    /// <item>Pick the cheapest option so far, move to that position, and
-    /// repeat. Always picking the cheapest known option produces the
-    /// cheapest path overall.</item>
-    /// <item>Stop on reaching the goal. Walk back through the "came from"
-    /// links to reconstruct the actual sequence of placements.</item>
-    /// </list>
-    /// <para/>
-    /// Multi-cell support: because some cells (like stairs) span multiple
-    /// grid squares, the planner makes sure a candidate's full footprint
-    /// doesn't collide with the grid, blocked zones, or earlier placements
-    /// in this same path.
-    /// <para/>
-    /// Waypoints: if you pass them, the planner runs once per segment
-    /// (start → waypoint1 → waypoint2 → goal). The "previous cell" carries
-    /// across segments so the path stays connected.
-    /// <para/>
-    /// Goal arrival on the final segment: the goal cell must already exist
-    /// in the grid (e.g. a pre-placed door), and its facing exit must accept
-    /// the type of cell that arrived next to it. This guarantees the path
-    /// physically connects to the goal rather than just landing nearby.
-    /// </remarks>
     public static class GridAStar
     {
-        /// <summary>
-        /// Safety limit. If the planner explores more places than this without
-        /// finding the goal it gives up.
-        /// </summary>
         private const int MaxExpansionsPerSegment = 50000;
 
-        /// <summary>
-        /// Plans a path from <paramref name="start"/> to <paramref name="goal"/>,
-        /// optionally routing through <paramref name="waypoints"/> in order.
-        /// Returns the list of placements to stamp, or <c>null</c> if no
-        /// valid path exists.
-        /// </summary>
+        /// <summary>Plans a path from start to goal through optional waypoints. Returns null if none exists.</summary>
         public static List<PathStep> FindPath(
             DungeonGrid grid,
             Point start,
@@ -68,19 +36,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             blocked ??= new HashSet<Point>();
             streakLimits ??= new Dictionary<Type, int>();
 
-            // Full ordered list of stops the planner must hit: start, each
-            // waypoint, then the goal.
+            // Stops: start, waypoints in order, goal.
             var stops = new List<Point> { start };
             if (waypoints != null) stops.AddRange(waypoints);
             stops.Add(goal);
 
-            // Plan one segment at a time (start → first waypoint, then first
-            // waypoint → second waypoint, ..., then last waypoint → goal).
-            // After each segment finishes, the last cell placed becomes the
-            // "previous cell" for the next segment so the path links cleanly.
-            // The streak counter also carries across; otherwise a chain of
-            // same-type cells split by a waypoint could exceed the streak
-            // cap because each segment would start counting from 1.
+            // Plan one segment at a time. Previous cell and streak carry across
+            // boundaries so streak caps hold and the path stays connected.
             var fullPath = new List<PathStep>();
             GridRoom prevForSegment = startCell;
             Point segmentStart = start;
@@ -96,21 +58,26 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     edgeCost, blocked, streakLimits, isFinalSegment,
                     waypointAcceptableTypes, maxVerticalRun, fullPath);
 
-                if (segmentSteps == null) return null; // any segment fails -> whole plan fails
+                if (segmentSteps == null) return null;
 
                 fullPath.AddRange(segmentSteps);
 
                 if (segmentSteps.Count > 0)
                 {
-                    // Compute streak BEFORE updating prevForSegment, because
-                    // the streak walk needs the cell that was at segmentStart
-                    // before this segment ran (the current value of
-                    // prevForSegment). prevForSegment is then updated to this
-                    // segment's last cell for the next iteration.
+                    // Streak must be computed BEFORE prevForSegment is reassigned.
                     startStreak = ComputeFinalStreak(segmentSteps, startStreak, prevForSegment);
                     prevForSegment = segmentSteps[segmentSteps.Count - 1].Cell;
                 }
-                // If 0 cells placed (arrival-without-placement), prev and streak stay as-is.
+                else
+                {
+                    // Empty segment: arrived at a pre-placed waypoint. Continue from inside it.
+                    var goalSlot = grid.GetSlot(segmentGoal.X, segmentGoal.Y);
+                    if (goalSlot != null && !goalSlot.IsEmpty)
+                    {
+                        prevForSegment = goalSlot.Room;
+                        startStreak = 1;
+                    }
+                }
 
                 segmentStart = segmentGoal;
             }
@@ -118,16 +85,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return fullPath;
         }
 
-        /// <summary>
-        /// Replays a segment's placements to determine the streak count of
-        /// the very last cell. The streak represents how many of the same
-        /// type were placed in a row ending at the segment's last cell, used
-        /// to seed the next segment so streak rules stay continuous across
-        /// waypoint boundaries.
-        /// </summary>
+        /// <summary>Replays a segment to find the trailing streak count, used to seed the next segment.</summary>
         private static int ComputeFinalStreak(List<PathStep> steps, int startStreak, GridRoom startCell)
         {
-            // Walk the placements, updating streak the same way A* does.
             int streak = startStreak;
             Type prevType = startCell.GetType();
             foreach (var step in steps)
@@ -139,9 +99,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return streak;
         }
 
-        // Plans a single segment with no internal waypoints. The outer
-        // FindPath splits multi-waypoint paths into segments and calls this
-        // once per segment.
+        // Plans a single segment between two stops.
         private static List<PathStep> FindSegment(
             DungeonGrid grid,
             Point start,
@@ -156,41 +114,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             int maxVerticalRun,
             List<PathStep> priorSegmentSteps)
         {
-            // A "node" is one state in the search: a position on the grid,
-            // what cell was last placed there, and how many of that same
-            // type have been placed in a row to get here. Two paths reaching
-            // the same position via different last cells (or different
-            // streak counts) are different nodes because their next legal
-            // moves differ.
             var startNode = new Node(start, startCell.GetType(), startStreak, 0);
-
-            // Cheapest total cost found so far to reach each node.
             var bestKnownCost = new Dictionary<Node, double> { [startNode] = 0.0 };
-
-            // For each node, what cell was placed and where, and which earlier node it came from.
-            // Used to walk back and rebuild the path once the goal is reached.
             var cameFrom = new Dictionary<Node, EdgeRecord>();
-
-            // Frontier queue ordered by estimated total path cost (cheapest first).
             var toExplore = new PriorityQueue<Node, double>();
             toExplore.Enqueue(startNode, Heuristic(start, goal));
 
             int expansions = 0;
             while (toExplore.Count > 0 && expansions++ < MaxExpansionsPerSegment)
             {
-                // Pull out the most promising (cheapest estimated) node.
                 var current = toExplore.Dequeue();
 
-                // Goal reached by placing a cell on it (happens for empty
-                // waypoints / empty goals).
+                // Goal reached by placing a cell on it (empty goal/waypoint).
                 if (current.Position == goal)
                 {
-                    // For intermediate waypoints, also require the cell at
-                    // this position to be one the next segment can continue
-                    // from. If a shaft lands on a waypoint where the next
-                    // segment needs to walk horizontally, the next segment
-                    // cannot proceed, so the search continues for a path
-                    // that ends the segment on a horizontal-friendly cell.
+                    // Intermediate waypoints must end on a type the next segment can continue from.
                     if (!isFinalSegment
                         && waypointAcceptableTypes != null
                         && !waypointAcceptableTypes.Contains(current.PrevType))
@@ -200,32 +138,32 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     return ReconstructPath(current, cameFrom);
                 }
 
-                // Resolve the cell at the current position so its allowed
-                // next moves can be read. For the very first step this is
-                // startCell; otherwise it is whatever was placed to reach
-                // here.
                 GridRoom prevCell = current.Equals(startNode)
                     ? startCell
                     : cameFrom[current].Cell;
 
-                // Final-segment arrival at an already-occupied goal (for
-                // example, the pre-placed east DoorRoom). No cell is placed
-                // on top of the goal. If any of prev's exits would step the
-                // cursor exactly onto the goal AND the goal's facing exit
-                // accepts the arriving type, that counts as a valid arrival
-                // at zero cost.
-                if (isFinalSegment)
+                // Arrival at an already-occupied goal (e.g. pre-placed door or required room).
+                // Valid if any of prev's exits steps onto the goal and the goal accepts the arriving type.
                 {
                     foreach (var exit in prevCell.Exits)
                     {
                         var landing = new Point(current.Position.X + exit.CursorDelta.X,
                                                 current.Position.Y + exit.CursorDelta.Y);
-                        if (landing == goal && TargetAcceptsArrivalFromExit(grid, goal, exit, current.PrevType))
-                            return ReconstructPath(current, cameFrom);
+                        if (landing != goal) continue;
+                        if (!TargetAcceptsArrivalFromExit(grid, goal, exit, current.PrevType)) continue;
+
+                        if (!isFinalSegment && waypointAcceptableTypes != null)
+                        {
+                            var goalSlot = grid.GetSlot(goal.X, goal.Y);
+                            var goalType = goalSlot?.Room?.GetType();
+                            if (goalType == null || !waypointAcceptableTypes.Contains(goalType))
+                                continue;
+                        }
+
+                        return ReconstructPath(current, cameFrom);
                     }
                 }
 
-                // Try every legal next move from this cell.
                 foreach (var exit in prevCell.Exits)
                 {
                     var candNext = new Point(current.Position.X + exit.CursorDelta.X,
@@ -233,19 +171,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
                     foreach (var candidate in exit.AllowedNext)
                     {
-                        // Where would the candidate cell's anchor (top-left
-                        // of its footprint) actually land?
                         var anchor = new Point(
                             candNext.X + candidate.AnchorOffsetFromCursor.X,
                             candNext.Y + candidate.AnchorOffsetFromCursor.Y);
 
-                        // Skip placements that don't physically fit or that
-                        // violate the cell's own placement rules. The
-                        // pending-lookup lambda exposes cells planned earlier
-                        // in this same FindPath (current segment via cameFrom,
-                        // prior segments via priorSegmentSteps) so structural
-                        // checks see the in-progress path, not just the
-                        // committed grid.
+                        // pendingLookup exposes in-progress path cells so structural checks see them too.
                         if (!FootprintIsAvailable(grid, candidate, anchor, blocked, current, cameFrom))
                             continue;
                         var capturedCurrent = current;
@@ -253,69 +183,40 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                                 (x, y) => LookupPathCell(capturedCurrent, cameFrom, priorSegmentSteps, x, y)))
                             continue;
 
-                        // Entry-side rule: the candidate must be physically
-                        // open on the side the walker is entering from. The
-                        // source's exit authorizes which TYPES are allowed
-                        // through it, but a corridor approached from above
-                        // (or a shaft approached from the side) would be
-                        // sealed on the entry face and the walker would hit
-                        // a wall. The candidate must therefore expose an
-                        // exit whose direction is the inverse of the source's
-                        // cursor delta; that exit represents an open face on
-                        // the entry side.
-                        //
-                        // Only enforced for cardinal source moves. Stairs
-                        // step diagonally (delta like (2,1)) and do not model
-                        // their entry as an exit, so the source's
-                        // AllowedNext authorization is trusted in that case.
-                        // The check is also skipped if the candidate has no
-                        // cardinal exits at all (for example, stair
-                        // candidates), since there is nothing meaningful to
-                        // compare against.
+                        // Cardinal entries: candidate must expose an exit on the entry face.
+                        // Compare signs, not deltas, so a 1-wide cell can dock against a 2-wide source.
+                        // Skipped for diagonal (stair) sources and for candidates with no cardinal exits.
                         bool isCardinalSource = (exit.CursorDelta.X == 0) ^ (exit.CursorDelta.Y == 0);
                         if (isCardinalSource)
                         {
-                            var inverse = new Point(-exit.CursorDelta.X, -exit.CursorDelta.Y);
+                            int srcSignX = System.Math.Sign(exit.CursorDelta.X);
+                            int srcSignY = System.Math.Sign(exit.CursorDelta.Y);
                             bool candHasCardinalExit = false;
                             bool candHasMatchingExit = false;
                             foreach (var ce in candidate.Exits)
                             {
                                 bool ceCardinal = (ce.CursorDelta.X == 0) ^ (ce.CursorDelta.Y == 0);
                                 if (ceCardinal) candHasCardinalExit = true;
-                                if (ce.CursorDelta == inverse) { candHasMatchingExit = true; break; }
+                                int ceSignX = System.Math.Sign(ce.CursorDelta.X);
+                                int ceSignY = System.Math.Sign(ce.CursorDelta.Y);
+                                if (ceCardinal && ceSignX == -srcSignX && ceSignY == -srcSignY)
+                                { candHasMatchingExit = true; break; }
                             }
                             if (candHasCardinalExit && !candHasMatchingExit) continue;
                         }
 
-                        // Open-side compatibility rule: every shared border
-                        // between the candidate's footprint and a non-empty
-                        // neighbor must agree, with both sides open (a
-                        // passable connection) or both closed (back-to-back
-                        // walls). A mismatch produces "wall facing open
-                        // side" disconnects, where one cell has a doorway
-                        // opening onto a neighbor's solid wall. This catches
-                        // both intra-path mistakes and cross-path collisions
-                        // (where two separate FindPath calls each placed
-                        // legal cells that happen to clash at the seam).
+                        // Shared borders must agree: both open or both closed. Catches intra- and cross-path collisions.
                         if (!OpenSidesMatch(candidate, anchor, grid,
                                 (x, y) => LookupPathCellWithAnchor(capturedCurrent, cameFrom, priorSegmentSteps, x, y)))
                             continue;
 
-                        // Streak rule: if the candidate is the same type as
-                        // the last placed cell, increment the streak;
-                        // otherwise it resets. Placements that exceed a
-                        // configured limit are skipped.
+                        // Streak: same type increments, different resets, exceed-limit skips.
                         var candType = candidate.GetType();
                         int newStreak = (candType == current.PrevType) ? current.Streak + 1 : 1;
                         if (streakLimits.TryGetValue(candType, out int maxStreak) && newStreak > maxStreak)
                             continue;
 
-                        // Vertical-run rule: count consecutive moves whose
-                        // exit goes straight up or down. Resets to 0 the
-                        // moment the walker moves horizontally. Caps the
-                        // visual depth of any shaft chain (including any
-                        // bookshelf landings inside it) since those landings
-                        // also contribute to the vertical run.
+                        // Vertical run: counts consecutive vertical moves; horizontal resets to 0.
                         int newVerticalRun = (exit.CursorDelta.Y != 0 && exit.CursorDelta.X == 0)
                             ? current.VerticalRun + 1
                             : 0;
@@ -327,13 +228,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         var neighbor = new Node(candNext, candType, newStreak, newVerticalRun);
                         double newCost = bestKnownCost[current] + cost;
 
-                        // A cheaper way to this node was already found;
-                        // discard this longer one.
                         if (bestKnownCost.TryGetValue(neighbor, out double existingCost) && newCost >= existingCost)
                             continue;
 
-                        // Otherwise record this as the new best and queue it.
-                        // The priority is "cost so far + estimate of cost to reach the goal from here"
                         bestKnownCost[neighbor] = newCost;
                         cameFrom[neighbor] = new EdgeRecord(current, candidate, anchor);
                         toExplore.Enqueue(neighbor, newCost + Heuristic(candNext, goal));
@@ -341,29 +238,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 }
             }
 
-            return null; // exhausted everything without reaching the goal
+            return null;
         }
 
-        /// <summary>
-        /// Estimated remaining cost from one position to another. 
-        /// Uses the straight-line "city block" distance (how many grid steps apart they are). 
-        /// Helps as a hint to prefer paths that look like they're heading toward the goal.
-        /// </summary>
+        /// <summary>Manhattan distance heuristic.</summary>
         private static double Heuristic(Point from, Point to) =>
             Math.Abs(from.X - to.X) + Math.Abs(from.Y - to.Y);
 
         /// <summary>
-        /// Returns true if the candidate cell can fit at the given anchor:
-        /// Every grid square must be in-bounds, empty, not in the
-        /// blocked zone, and not already used by an earlier placement in this same path. 
-        /// The last check matters for multi-cell pieces like 2x2 stairs 
-        /// where a smaller earlier piece could occupy a square the new piece's footprint wants.
+        /// True if the candidate fits: every square in-bounds, empty, not blocked,
+        /// and not overlapping any earlier placement in this path (matters for multi-cell pieces).
         /// </summary>
         private static bool FootprintIsAvailable(
             DungeonGrid grid, GridRoom candidate, Point anchor,
             HashSet<Point> blocked, Node current, Dictionary<Node, EdgeRecord> cameFrom)
         {
-            // Check each square the candidate would cover.
             for (int sc = 0; sc < candidate.CellWidth; sc++)
             {
                 for (int sr = 0; sr < candidate.CellHeight; sr++)
@@ -371,20 +260,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     int x = anchor.X + sc;
                     int y = anchor.Y + sr;
                     var slot = grid.GetSlot(x, y);
-                    
-                    if (slot == null) 
-                        return false;            // off the grid
-                    
-                    if (!slot.IsEmpty) 
-                        return false;           // something else is there
 
-                    if (blocked.Contains(new Point(x, y))) 
-                        return false; // forbidden zone
+                    if (slot == null) return false;
+                    if (!slot.IsEmpty) return false;
+                    if (blocked.Contains(new Point(x, y))) return false;
                 }
             }
 
-            // Walk back through the path so far and ensure no earlier
-            // placement's footprint overlaps this candidate's footprint.
+            // Walk the in-progress path for footprint overlap.
             var node = current;
             while (cameFrom.TryGetValue(node, out var rec))
             {
@@ -395,10 +278,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return true;
         }
 
-        /// <summary>
-        /// Returns true if two cells' footprints share any grid square.
-        /// Standard rectangle-overlap test.
-        /// </summary>
+        /// <summary>Rectangle-overlap test on two footprints.</summary>
         private static bool FootprintsOverlap(GridRoom a, Point aAnchor, GridRoom b, Point bAnchor)
         {
             int aRight = aAnchor.X + a.CellWidth;
@@ -411,17 +291,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         }
 
         /// <summary>
-        /// Walks every external border of the candidate's footprint and
-        /// returns false if any neighbor disagrees on whether the shared
-        /// border is open or closed. "Open" = a doorway in the rendered
-        /// tiles. "Closed" = a wall. Two cells touching at a side must vote
-        /// the same way: both open (the doorways line up) or both closed
-        /// (back-to-back walls). One open + one closed is a disconnect.
-        /// <para/>
-        /// Empty neighbors are ignored: they are stone, and a future cell
-        /// will have to pass this same check when placed there. Internal
-        /// edges between sub-cells of the same multi-cell candidate are
-        /// also ignored.
+        /// True if every external border of the candidate's footprint agrees with its neighbor:
+        /// both open or both closed. Empty neighbors and internal sub-cell edges are ignored.
         /// </summary>
         private static bool OpenSidesMatch(GridRoom candidate, Point anchor,
                                            DungeonGrid grid,
@@ -441,8 +312,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 {
                     foreach (var d in dirs)
                     {
-                        // Sides that face another sub-cell of the same
-                        // candidate are internal seams, not external borders.
+                        // Internal seams between sub-cells of the same candidate.
                         int neighborSubCol = sc + d.dx;
                         int neighborSubRow = sr + d.dy;
                         if (neighborSubCol >= 0 && neighborSubCol < candidate.CellWidth
@@ -452,10 +322,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         int gx = anchor.X + sc + d.dx;
                         int gy = anchor.Y + sr + d.dy;
 
-                        // Find what cell occupies the neighbor position.
-                        // First check pending placements (current path's
-                        // unstamped cells, with their actual anchors), then
-                        // fall back to the grid.
+                        // Pending placements first, then committed grid.
                         GridRoom neighbor = null;
                         int neighborSubX = 0, neighborSubY = 0;
 
@@ -472,7 +339,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         if (neighbor == null)
                         {
                             var slot = grid.GetSlot(gx, gy);
-                            if (slot == null || slot.IsEmpty) continue; // OOB or empty: fine
+                            if (slot == null || slot.IsEmpty) continue;
                             neighbor = slot.Room;
                             neighborSubX = slot.SubCol;
                             neighborSubY = slot.SubRow;
@@ -488,14 +355,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return true;
         }
 
-        /// <summary>
-        /// Resolves what cell (if any) is planned at the given position, by
-        /// walking the active node's cameFrom chain (cells planned earlier
-        /// in the current segment) and the priorSegmentSteps list (cells
-        /// planned in earlier segments of the same FindPath). Returns null
-        /// if no cell is planned there. The caller falls back to the
-        /// committed grid when this returns null.
-        /// </summary>
+        /// <summary>Returns the in-progress path cell at (x, y), or null. Caller falls back to the grid.</summary>
         private static GridRoom LookupPathCell(Node node, Dictionary<Node, EdgeRecord> cameFrom,
                                                List<PathStep> priorSegmentSteps, int x, int y)
         {
@@ -503,13 +363,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return found?.cell;
         }
 
-        /// <summary>
-        /// Same as <see cref="LookupPathCell"/> but also returns the cell's
-        /// anchor (top-left of footprint). Needed for sub-cell math when
-        /// looking up a multi-cell piece via one of its non-anchor sub-cells,
-        /// since reference equality alone cannot tell which sub-cell (x,y)
-        /// represents.
-        /// </summary>
+        /// <summary>Like <see cref="LookupPathCell"/> but also returns the cell's anchor for sub-cell math.</summary>
         private static (GridRoom cell, Point anchor)? LookupPathCellWithAnchor(
             Node node, Dictionary<Node, EdgeRecord> cameFrom,
             List<PathStep> priorSegmentSteps, int x, int y)
@@ -539,21 +393,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return null;
         }
 
-        /// <summary>
-        /// Checks if the planner can step from the current position straight
-        /// onto an already-occupied goal cell using the given exit. Used when
-        /// the goal already has a cell on it (for example, a pre-placed
-        /// door). No new cell is placed on top; the check only verifies the
-        /// connection is physically valid: the goal's side facing the walker
-        /// must accept the arriving cell type.
-        /// </summary>
+        /// <summary>True if the occupied goal accepts the walker's arriving cell type on its facing exit.</summary>
         private static bool TargetAcceptsArrivalFromExit(DungeonGrid grid, Point goal, CellExit walkerExit, Type walkerType)
         {
             var slot = grid.GetSlot(goal.X, goal.Y);
             if (slot == null || slot.IsEmpty) return false;
 
-            // The goal's side facing the walker is the opposite of the
-            // walker's cursor delta.
             var oppositeDelta = new Point(-walkerExit.CursorDelta.X, -walkerExit.CursorDelta.Y);
             foreach (var targetExit in slot.Room.Exits)
             {
@@ -567,12 +412,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return false;
         }
 
-        /// <summary>
-        /// Walks back from the goal node through the cameFrom chain to
-        /// rebuild the sequence of placements. The chain starts at the
-        /// goal and ends at the start, so the result is reversed before
-        /// returning.
-        /// </summary>
+        /// <summary>Walks the cameFrom chain back from goal to start, then reverses to placement order.</summary>
         private static List<PathStep> ReconstructPath(Node end, Dictionary<Node, EdgeRecord> cameFrom)
         {
             var steps = new List<PathStep>();
@@ -587,13 +427,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return steps;
         }
 
-        /// <summary>
-        /// One state in the A* search: a grid position, the C# type of the
-        /// cell last placed there, and how many of that same type were
-        /// placed in a row to get here. Two paths arriving at the same
-        /// position with different last-cell types or different streak
-        /// counts are distinct states because their next moves differ.
-        /// </summary>
+        /// <summary>One A* search state: position, last cell type, streak, vertical run.</summary>
         private readonly struct Node : IEquatable<Node>
         {
             public Point Position { get; }
@@ -618,18 +452,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             public override int GetHashCode() => HashCode.Combine(Position.X, Position.Y, PrevType, Streak, VerticalRun);
         }
 
-        /// <summary>
-        /// One step in the path the planner discovered:
-        ///   - <see cref="Cell"/>: which cell was placed.
-        ///   - <see cref="Anchor"/>: the top-left grid square of that cell's
-        ///     footprint (where <c>grid.Place</c> needs to start stamping).
-        ///     For 1x1 cells this is the same as the cursor position. For
-        ///     multi-cell pieces like a 2x2 ascending stair, the anchor sits
-        ///     one row above the cursor, since the cursor enters the stair
-        ///     at its bottom-left while the footprint extends up-and-right.
-        ///   - <see cref="Parent"/>: which earlier state this came from.
-        /// Linking these backward from the goal rebuilds the full path.
-        /// </summary>
+        /// <summary>cameFrom record: parent node, placed cell, and footprint anchor.</summary>
         private readonly struct EdgeRecord
         {
             public Node Parent { get; }
