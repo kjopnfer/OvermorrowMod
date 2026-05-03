@@ -107,6 +107,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         public abstract void Build(Point origin, int fillTileType, int liningTileType);
 
+        /// <summary>
+        /// Decoration pass run after Build, BuildPadding, DecorateShafts, and
+        /// ApplySideCaps. Use it to drop furniture and props that depend on
+        /// neighbor context (e.g. sconces in a bookshelf's side padding only
+        /// when a shaft sits above or below). Default: no-op.
+        /// </summary>
+        public virtual void PlaceFurniture(FurnitureContext ctx) { }
+
         // ─── Walker interface ────────────────────────────────────────────────
         // Cells expose a list of directional exits. Each exit says:
         //   (1) how the cursor moves if the walker takes this exit, and
@@ -304,6 +312,33 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Grid = grid;
             Col = col;
             Row = row;
+        }
+    }
+
+    /// <summary>
+    /// Context passed to <see cref="GridRoom.PlaceFurniture"/>. Exposes the
+    /// room's world origin, its grid position, and the dungeon grid so
+    /// neighbor-aware placements can branch on what sits above, below, or
+    /// beside the room.
+    /// </summary>
+    public readonly struct FurnitureContext
+    {
+        public readonly Point Origin;
+        public readonly DungeonGrid Grid;
+        public readonly int Col;
+        public readonly int Row;
+        public readonly int FillTileType;
+        public readonly int LiningTileType;
+
+        public FurnitureContext(Point origin, DungeonGrid grid, int col, int row,
+                                int fillTileType, int liningTileType)
+        {
+            Origin = origin;
+            Grid = grid;
+            Col = col;
+            Row = row;
+            FillTileType = fillTileType;
+            LiningTileType = liningTileType;
         }
     }
 

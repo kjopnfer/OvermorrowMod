@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
@@ -19,6 +20,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             new DescendingStair(),
             new AscendingStair(),
             new FireplaceRoom(),
+            new LoungeRoom(),
         };
 
         private static readonly GridRoom[] VerticalNeighbors = { new ShaftCell() };
@@ -54,6 +56,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
                     break;
             }
+        }
+
+        public override void PlaceFurniture(FurnitureContext ctx)
+        {
+            var above = ctx.Grid.GetSlot(ctx.Col, ctx.Row - 1);
+            var below = ctx.Grid.GetSlot(ctx.Col, ctx.Row + 1);
+            bool shaftAbove = above != null && !above.IsEmpty && above.Room is ShaftCell;
+            bool shaftBelow = below != null && !below.IsEmpty && below.Room is ShaftCell;
+            if (!shaftAbove && !shaftBelow) return;
+
+            int sconceRow = ctx.Origin.Y + DungeonGrid.CellTileHeight - 12;
+            int leftStripCol = ctx.Origin.X - DungeonGrid.HorizontalPadding + 3;
+            int rightStripCol = ctx.Origin.X + DungeonGrid.CellTileWidth + 3;
+            int sconceType = ModContent.TileType<WaxSconceEven>();
+
+            WorldGen.PlaceObject(leftStripCol, sconceRow, sconceType);
+            WorldGen.PlaceObject(rightStripCol, sconceRow, sconceType);
         }
 
         public override void Build(Point origin, int fillTileType, int liningTileType)

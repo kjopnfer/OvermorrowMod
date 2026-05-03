@@ -27,6 +27,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             IReadOnlyList<Point> waypoints = null,
             HashSet<Point> blocked = null,
             IReadOnlyDictionary<Type, int> streakLimits = null,
+            IReadOnlyDictionary<Type, int> minStreakLimits = null,
             HashSet<Type> waypointAcceptableTypes = null,
             int maxVerticalRun = int.MaxValue)
         {
@@ -35,6 +36,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
             blocked ??= new HashSet<Point>();
             streakLimits ??= new Dictionary<Type, int>();
+            minStreakLimits ??= new Dictionary<Type, int>();
 
             // Stops: start, waypoints in order, goal.
             var stops = new List<Point> { start };
@@ -55,7 +57,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
                 var segmentSteps = FindSegment(
                     grid, segmentStart, segmentGoal, prevForSegment, startStreak,
-                    edgeCost, blocked, streakLimits, isFinalSegment,
+                    edgeCost, blocked, streakLimits, minStreakLimits, isFinalSegment,
                     waypointAcceptableTypes, maxVerticalRun, fullPath);
 
                 if (segmentSteps == null) return null;
@@ -109,6 +111,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             EdgeCost edgeCost,
             HashSet<Point> blocked,
             IReadOnlyDictionary<Type, int> streakLimits,
+            IReadOnlyDictionary<Type, int> minStreakLimits,
             bool isFinalSegment,
             HashSet<Type> waypointAcceptableTypes,
             int maxVerticalRun,
@@ -135,6 +138,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     {
                         continue;
                     }
+                    // Min-streak: cannot end the path on a type that has not
+                    // satisfied its minimum chain length.
+                    if (minStreakLimits.TryGetValue(current.PrevType, out int minS)
+                        && current.Streak < minS)
+                        continue;
                     return ReconstructPath(current, cameFrom);
                 }
 
@@ -151,6 +159,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                                                 current.Position.Y + exit.CursorDelta.Y);
                         if (landing != goal) continue;
                         if (!TargetAcceptsArrivalFromExit(grid, goal, exit, current.PrevType)) continue;
+
+                        // Min-streak applies when arriving at an occupied goal too.
+                        if (minStreakLimits.TryGetValue(current.PrevType, out int minA)
+                            && current.Streak < minA)
+                            continue;
 
                         if (!isFinalSegment && waypointAcceptableTypes != null)
                         {
@@ -214,6 +227,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         var candType = candidate.GetType();
                         int newStreak = (candType == current.PrevType) ? current.Streak + 1 : 1;
                         if (streakLimits.TryGetValue(candType, out int maxStreak) && newStreak > maxStreak)
+                            continue;
+
+                        // Min-streak: leaving a type before its minimum is satisfied is rejected.
+                        if (candType != current.PrevType
+                            && minStreakLimits.TryGetValue(current.PrevType, out int minPrev)
+                            && current.Streak < minPrev)
                             continue;
 
                         // Vertical run: counts consecutive vertical moves; horizontal resets to 0.

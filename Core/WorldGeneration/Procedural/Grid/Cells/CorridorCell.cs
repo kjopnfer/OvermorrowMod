@@ -15,11 +15,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
+        // Cozy rooms (Fireplace, Lounge) deliberately omitted: those rooms
+        // require bookshelves on both horizontal sides, so corridors cannot
+        // be the cell that introduces one.
         private static readonly GridRoom[] HorizontalNeighbors =
         {
             new BookshelfCell(),
             new CorridorCell(),
-            new FireplaceRoom(),
         };
 
         protected override GridRoom[] AllowedNeighbors(Direction side) => side switch

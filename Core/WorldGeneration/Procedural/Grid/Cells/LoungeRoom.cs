@@ -9,10 +9,15 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 {
-    public class FireplaceRoom : GridRoom
+    public class LoungeRoom : GridRoom
     {
         public override int CellWidth => 2;
         public override int CellHeight => 1;
+
+        // Caps and spacing rules used by IsValidPlacement.
+        private const int MaxInstancesPerDungeon = 2;
+        private const int MinSpacingBetweenLounges = 5;
+        private const int MinDistanceFromDoor = 2;
 
         public override void Build(Point origin, int fillTileType, int liningTileType)
         {
@@ -27,41 +32,37 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 for (int y = 0; y < height; y++)
                     WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
 
-            // Mirrored layout, 18 + 8 firebox + 18 = 44.
-            //   Sub-cell:   castle(2) gap(1) wood(3) gap(1) panel(2) gap(1) panel(6) gap(1) wood(1)
-            //   Middle:     gap(1) castle(6) gap(1)
+            // Layout from pixel2.png. Three colored panels (6, 10, 6) sit
+            // contiguous in the middle, flanked by 2-wide wood-only panels,
+            // 3-wide wood columns, gaps, and 2-wide castle edges.
+            //
+            //   castle(2) gap wood(3) gap panel(2) gap panel(6) gap panel(10)
+            //   gap panel(6) gap panel(2) gap wood(3) gap castle(2)
             int cursor = 0;
             cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 2, castleWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
             cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 3, woodWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
             cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 2, woodWall, blueWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
             cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 6, woodWall, blueWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 1, woodWall);
-
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 6, castleWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
-
-            cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 1, woodWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 10, woodWall, blueWall);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
             cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 6, woodWall, blueWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
             cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 2, woodWall, blueWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
             cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 3, woodWall);
-            cursor += DrawWallGap(origin.X + cursor, origin.Y, height, 1);
+            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
             cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 2, castleWall);
 
-            // Anchored so PlaceCozyArea's pillars bracket cols 19-24 where the Fireplace tile sits.
+            // Furniture: PlaceLoungeArea spans roughly x..x+23, so anchor
+            // at origin.X + 10 to center the lounge inside the 44-wide room.
             int floorRow = origin.Y + height - 1;
-            GrandArchiveRoom.PlaceCozyArea(origin.X + 8, floorRow, GrandArchiveRoom.RoomID.Yellow);
-            WorldGen.PlaceObject(origin.X + 19, floorRow, ModContent.TileType<Fireplace>());
+            GrandArchiveRoom.PlaceLoungeArea(origin.X + 10, floorRow, GrandArchiveRoom.RoomID.Yellow);
         }
 
-        /// <summary>Paints a solid block of one wall type.</summary>
         private static int DrawSolidWall(int worldX, int worldY, int height, int width, ushort wall)
         {
             for (int dx = 0; dx < width; dx++)
@@ -70,7 +71,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             return width;
         }
 
-        /// <summary>Clears walls in a vertical strip (gap columns).</summary>
         private static int DrawWallGap(int worldX, int worldY, int height, int width)
         {
             for (int dx = 0; dx < width; dx++)
@@ -79,7 +79,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             return width;
         }
 
-        /// <summary>Draws a colored panel body. Vertical framing is supplied by surrounding gap columns.</summary>
         private static int DrawColoredBody(int worldX, int worldY, int height,
                                             int bodyWidth, ushort woodWall, ushort blueWall)
         {
@@ -121,8 +120,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     PaintFullWidthWoodRow(ctx, rowOffset: ctx.Height - 1);
                     break;
                 case Direction.Bottom:
-                    PaintSeamFloor(ctx);
-                    // Trim line directly under the room; overrides PaintSeamFloor's seam-skip on this row.
+                    PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
                     PaintFullWidthWoodRow(ctx, rowOffset: 0);
                     break;
             }
@@ -137,22 +135,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 WorldGenUtils.SetWall(ctx.X + dx, wy, woodWall);
         }
 
-        /// <summary>Paints wood across the strip, leaving the inner 6 cols of the internal seam as stone.</summary>
-        private static void PaintSeamFloor(PaddingContext ctx)
-        {
-            ushort wood = (ushort)ModContent.TileType<ArchiveWood>();
-            int seamInteriorStart = DungeonGrid.CellTileWidth + 1;
-            int seamInteriorEnd = DungeonGrid.CellTileWidth + DungeonGrid.HorizontalPadding - 1;
-
-            for (int lx = 0; lx < ctx.Width; lx++)
-            {
-                if (lx >= seamInteriorStart && lx < seamInteriorEnd) continue;
-                for (int ly = 0; ly < ctx.Height; ly++)
-                    WorldGenUtils.ReplaceTile(ctx.X + lx, ctx.Y + ly, wood);
-            }
-        }
-
-        // Cozy rooms always sit between bookshelves on both horizontal sides.
+        // Lounges must always sit between bookshelves, so they accept
+        // bookshelves only on both horizontal sides.
         private static readonly GridRoom[] HorizontalNeighbors =
         {
             new BookshelfCell(),
@@ -177,6 +161,48 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             if (subCol == 0 && side == Direction.Right) return true;
             if (subCol == 1 && side == Direction.Left) return true;
             return false;
+        }
+
+        /// <summary>
+        /// Cap total lounges, enforce minimum spacing between them, and keep
+        /// them away from doors. Counts unique room instances across the
+        /// committed grid AND in-progress placements via pendingLookup.
+        /// </summary>
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor,
+                                              Func<int, int, GridRoom> pendingLookup = null)
+        {
+            // Bounded proximity scan covers door distance and lounge spacing.
+            int radius = Math.Max(MinSpacingBetweenLounges, MinDistanceFromDoor);
+            int cMin = Math.Max(0, anchor.X - radius);
+            int cMax = Math.Min(grid.Cols - 1, anchor.X + radius);
+            int rMin = Math.Max(0, anchor.Y - radius);
+            int rMax = Math.Min(grid.Rows - 1, anchor.Y + radius);
+
+            for (int c = cMin; c <= cMax; c++)
+            {
+                for (int r = rMin; r <= rMax; r++)
+                {
+                    var room = GetEffectiveRoomAt(grid, pendingLookup, c, r);
+                    if (room == null) continue;
+                    int dist = Math.Max(Math.Abs(c - anchor.X), Math.Abs(r - anchor.Y));
+                    if (room is LoungeRoom && dist < MinSpacingBetweenLounges) return false;
+                    if (room is DoorRoom && dist < MinDistanceFromDoor) return false;
+                }
+            }
+
+            // Lounge count cap: cheap grid-only pass (no pendingLookup walk).
+            var seen = new HashSet<GridRoom>();
+            int loungeCount = 0;
+            for (int c = 0; c < grid.Cols; c++)
+            {
+                for (int r = 0; r < grid.Rows; r++)
+                {
+                    var slot = grid.GetSlot(c, r);
+                    if (slot == null || slot.IsEmpty) continue;
+                    if (slot.Room is LoungeRoom && seen.Add(slot.Room)) loungeCount++;
+                }
+            }
+            return loungeCount < MaxInstancesPerDungeon;
         }
     }
 }

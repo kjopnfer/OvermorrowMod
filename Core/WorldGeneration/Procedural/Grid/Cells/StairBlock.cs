@@ -89,7 +89,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         {
             typeof(BookshelfCell),
             typeof(CorridorCell),
-            typeof(FireplaceRoom)
         };
 
         public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
@@ -135,7 +134,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         {
             new CellExit(
                 _descendLeftToRight ? new Point(2, 1) : new Point(2, -1),
-                new GridRoom[] { new BookshelfCell(), new CorridorCell(), new FireplaceRoom() })
+                new GridRoom[] { new BookshelfCell(), new CorridorCell() })
         };
 
         /// <summary>

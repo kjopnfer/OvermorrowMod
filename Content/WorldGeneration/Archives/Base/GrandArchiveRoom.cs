@@ -260,7 +260,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             SpawnPoints.Add(spawnPoint);
         }
 
-        protected void PlaceLoungeArea(int x, int y, RoomID room)
+        public static void PlaceLoungeArea(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>
             {
@@ -289,12 +289,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 23, y, cozyChairType);
 
-            if (Main.rand.NextBool())
-                WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
-            else
-                PlaceHauntedChandelier(x + 11, y - 25);
-
-            //WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
+            // Wax chandelier only; haunted variant requires instance state.
+            WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
         }
 
         /// <summary>
