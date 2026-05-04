@@ -8,6 +8,21 @@ using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
     /// <summary>
+    /// Configuration snapshot recorded during generation. Lets the diagnostic
+    /// dump explain why a given layout came out the way it did, so good rolls
+    /// can be reverse-engineered into tighter parameter ranges.
+    /// </summary>
+    public class GenerationConfig
+    {
+        public int BaseRow;
+        public Point StartDoor;
+        public Point EndDoor;
+        public List<Point> SpineWaypoints = new();
+        public List<Point> RequiredRoomAnchors = new();
+        public double[] Elevation;
+    }
+
+    /// <summary>
     /// Dumps the final state of a generated dungeon grid to a text file:
     ///   - 2D ASCII layout (one char per cell)
     ///   - Per-type cell counts
@@ -25,7 +40,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Writes a full grid diagnostic report to <paramref name="filePath"/>.
         /// </summary>
-        public static void DumpFullGrid(DungeonGrid grid, string filePath)
+        public static void DumpFullGrid(DungeonGrid grid, string filePath, GenerationConfig config = null)
         {
             var sb = new StringBuilder();
 
@@ -34,6 +49,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine($"Grid size: {grid.Cols} cols x {grid.Rows} rows");
             sb.AppendLine();
 
+            if (config != null) WriteGenerationConfig(sb, config);
             WriteCellCounts(sb, grid);
             WriteAsciiLayout(sb, grid);
             WriteDeadEndCorridors(sb, grid);
@@ -45,12 +61,54 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             File.WriteAllText(filePath, sb.ToString());
         }
 
+        private static void WriteGenerationConfig(StringBuilder sb, GenerationConfig c)
+        {
+            sb.AppendLine("--- Generation config ---");
+            sb.AppendLine($"  Base row: {c.BaseRow}");
+            sb.AppendLine($"  Start door: ({c.StartDoor.X}, {c.StartDoor.Y})    End door: ({c.EndDoor.X}, {c.EndDoor.Y})");
+            sb.Append("  Spine waypoints: ");
+            if (c.SpineWaypoints.Count == 0) sb.AppendLine("(none)");
+            else
+            {
+                for (int i = 0; i < c.SpineWaypoints.Count; i++)
+                {
+                    var p = c.SpineWaypoints[i];
+                    sb.Append($"({p.X}, {p.Y})");
+                    if (i < c.SpineWaypoints.Count - 1) sb.Append(", ");
+                }
+                sb.AppendLine();
+            }
+            sb.Append("  Required-room anchors: ");
+            if (c.RequiredRoomAnchors.Count == 0) sb.AppendLine("(none)");
+            else
+            {
+                for (int i = 0; i < c.RequiredRoomAnchors.Count; i++)
+                {
+                    var p = c.RequiredRoomAnchors[i];
+                    sb.Append($"({p.X}, {p.Y})");
+                    if (i < c.RequiredRoomAnchors.Count - 1) sb.Append(", ");
+                }
+                sb.AppendLine();
+            }
+
+            if (c.Elevation != null && c.Elevation.Length > 0)
+            {
+                sb.AppendLine("  Elevation curve (row by col):");
+                sb.Append("   ");
+                for (int col = 0; col < c.Elevation.Length; col++)
+                    sb.Append($" {c.Elevation[col],5:F1}");
+                sb.AppendLine();
+            }
+            sb.AppendLine();
+        }
+
         // ─── Cell counts ────────────────────────────────────────────────────
 
         private static void WriteCellCounts(StringBuilder sb, DungeonGrid grid)
         {
             int bookshelf = 0, corridor = 0, shaft = 0;
             int descStair = 0, ascStair = 0, door = 0;
+            int lounge = 0, fireplace = 0, combat = 0;
             int totalAnchors = 0, totalSlots = 0, emptySlots = 0;
 
             for (int row = 0; row < grid.Rows; row++)
@@ -72,6 +130,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         case DescendingStair:  descStair++; break;
                         case AscendingStair:   ascStair++;  break;
                         case DoorRoom:         door++;      break;
+                        case LoungeRoom:       lounge++;    break;
+                        case FireplaceRoom:    fireplace++; break;
+                        case CombatRoom:       combat++;    break;
                     }
                 }
             }
@@ -82,6 +143,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine($"  Shaft:            {shaft}");
             sb.AppendLine($"  Descending Stair: {descStair}");
             sb.AppendLine($"  Ascending Stair:  {ascStair}");
+            sb.AppendLine($"  Lounge:           {lounge}");
+            sb.AppendLine($"  Fireplace:        {fireplace}");
+            sb.AppendLine($"  Combat:           {combat}");
             sb.AppendLine($"  Door:             {door}");
             sb.AppendLine($"  Total anchors:    {totalAnchors}");
             sb.AppendLine($"  Empty slots:      {emptySlots} / {totalSlots}");

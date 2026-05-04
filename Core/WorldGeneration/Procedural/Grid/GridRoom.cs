@@ -42,6 +42,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             + DungeonGrid.VerticalPadding * (CellHeight - 1);
 
         /// <summary>
+        /// Padding rendering priority. Higher values are painted later by
+        /// <see cref="PaddingBuilder.BuildAll"/>, so a higher-priority room
+        /// always wins shared strips against a lower-priority neighbor.
+        /// Default 0; rooms whose padding must override neighbor styling
+        /// (e.g. CombatRoom's corridor-style entry passage) raise this.
+        /// </summary>
+        public virtual int PaddingPriority => 0;
+
+        /// <summary>
         /// Renders the padding strip on one outward side of this room.
         /// PaddingBuilder calls this once per side per placed room.
         /// <para/>

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
 
@@ -223,11 +224,55 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                                 (x, y) => LookupPathCellWithAnchor(capturedCurrent, cameFrom, priorSegmentSteps, x, y)))
                             continue;
 
+                        // Path-aware shaft adjacency: the cost function rejects
+                        // shafts whose adjacent columns already contain shafts
+                        // in the committed grid, but a single A* call's
+                        // placements aren't committed until FindPath returns.
+                        // Walk this path's cameFrom plus prior-segment steps
+                        // so two shafts placed within the same FindPath also
+                        // get caught.
+                        if (candidate is ShaftCell)
+                        {
+                            if (PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X - 1)
+                                || PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X + 1))
+                                continue;
+                        }
+
                         // Streak: same type increments, different resets, exceed-limit skips.
                         var candType = candidate.GetType();
                         int newStreak = (candType == current.PrevType) ? current.Streak + 1 : 1;
                         if (streakLimits.TryGetValue(candType, out int maxStreak) && newStreak > maxStreak)
                             continue;
+
+                        // Grid-aware horizontal chain check: counts already-committed
+                        // same-type cells extending left and right of the anchor's row.
+                        // Catches the case where two separate paths each respect the
+                        // path-level streak but stitch their placements into one long
+                        // visual chain. Bounded walks with early exit so this stays
+                        // cheap (~10 array reads per candidate worst case).
+                        if (streakLimits.TryGetValue(candType, out int hMax))
+                        {
+                            int chain = 1;
+                            int x = anchor.X - 1;
+                            while (x >= 0 && chain <= hMax)
+                            {
+                                var s = grid.GetSlot(x, anchor.Y);
+                                if (s == null || s.IsEmpty) break;
+                                if (s.Room.GetType() != candType) break;
+                                chain++;
+                                x--;
+                            }
+                            x = anchor.X + candidate.CellWidth;
+                            while (x < grid.Cols && chain <= hMax)
+                            {
+                                var s = grid.GetSlot(x, anchor.Y);
+                                if (s == null || s.IsEmpty) break;
+                                if (s.Room.GetType() != candType) break;
+                                chain++;
+                                x++;
+                            }
+                            if (chain > hMax) continue;
+                        }
 
                         // Min-streak: leaving a type before its minimum is satisfied is rejected.
                         if (candType != current.PrevType
@@ -368,10 +413,56 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         bool theirSide = neighbor.IsOpenSide(neighborSubX, neighborSubY, d.opposite);
 
                         if (ourSide != theirSide) return false;
+
+                        // When both sides are open, also enforce mutual
+                        // AllowedNeighbors acceptance. Geometric agreement
+                        // is necessary but not sufficient: e.g. CombatRoom
+                        // accepts only Bookshelf so a Corridor candidate
+                        // adjacent to a pre-placed CombatRoom should be
+                        // rejected here even though their shared sides are
+                        // both open.
+                        // <para/>
+                        // DoorRoom is exempt: doors are boundary cells that
+                        // get pre-placed at the start/end of the spine.
+                        // Listing Door in every standard room's
+                        // AllowedNeighbors would let A* spawn doors mid-
+                        // dungeon as ordinary candidates. Trusting the
+                        // door's own AllowedNext to gate adjacency is
+                        // sufficient on the door side.
+                        if (ourSide && neighbor is not DoorRoom && candidate is not DoorRoom)
+                        {
+                            var weAccept = candidate.GetAcceptedNeighbors(sc, sr, d.side);
+                            if (weAccept == null || !weAccept.Contains(neighbor.GetType()))
+                                return false;
+                            var theyAccept = neighbor.GetAcceptedNeighbors(neighborSubX, neighborSubY, d.opposite);
+                            if (theyAccept == null || !theyAccept.Contains(candidate.GetType()))
+                                return false;
+                        }
                     }
                 }
             }
             return true;
+        }
+
+        /// <summary>True if any in-progress placement (current segment or prior) is a ShaftCell at the given column.</summary>
+        private static bool PathHasShaftInColumn(Node node, Dictionary<Node, EdgeRecord> cameFrom,
+                                                 List<PathStep> priorSegmentSteps, int col)
+        {
+            var n = node;
+            while (cameFrom.TryGetValue(n, out var rec))
+            {
+                if (rec.Cell is ShaftCell && rec.Anchor.X == col) return true;
+                n = rec.Parent;
+            }
+            if (priorSegmentSteps != null)
+            {
+                for (int i = 0; i < priorSegmentSteps.Count; i++)
+                {
+                    var step = priorSegmentSteps[i];
+                    if (step.Cell is ShaftCell && step.Anchor.X == col) return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>Returns the in-progress path cell at (x, y), or null. Caller falls back to the grid.</summary>

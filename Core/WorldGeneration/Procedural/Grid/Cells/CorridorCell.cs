@@ -17,11 +17,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         // Cozy rooms (Fireplace, Lounge) deliberately omitted: those rooms
         // require bookshelves on both horizontal sides, so corridors cannot
-        // be the cell that introduces one.
+        // be the cell that introduces one. Combat is fine because it
+        // accepts corridors as horizontal neighbors.
         private static readonly GridRoom[] HorizontalNeighbors =
         {
             new BookshelfCell(),
             new CorridorCell(),
+            new CombatRoom(),
         };
 
         protected override GridRoom[] AllowedNeighbors(Direction side) => side switch

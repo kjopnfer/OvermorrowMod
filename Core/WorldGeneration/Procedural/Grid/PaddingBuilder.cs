@@ -22,6 +22,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     {
         public static void BuildAll(DungeonGrid grid, int fillTileType)
         {
+            // Collect every room anchor first so we can sort by
+            // PaddingPriority before painting. Rooms with higher priority
+            // paint last and win shared strips against lower-priority
+            // neighbors. Within the same priority, original column-major
+            // order is preserved (List.Sort is stable on equal keys when
+            // we use a tuple sort key).
+            var anchors = new List<(int priority, int col, int row, GridSlot slot)>();
             var processed = new HashSet<int>();
 
             for (int col = 0; col < grid.Cols; col++)
@@ -30,34 +37,40 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     var slot = grid.GetSlot(col, row);
                     if (slot == null || slot.IsEmpty) continue;
-
-                    // Only fire once per multi-cell room (group ids are
-                    // shared across sub-cells).
                     if (!processed.Add(slot.GroupId)) continue;
-
-                    var room = slot.Room;
-
-                    // Anchor is the room's top-left in world coords, found by
-                    // backing out the sub-cell offset from the current slot.
-                    Point anchor = grid.GridToWorld(col - slot.SubCol, row - slot.SubRow);
-
-                    int w = room.FootprintWidth;
-                    int h = room.FootprintHeight;
-                    int hp = DungeonGrid.HorizontalPadding;
-                    int vp = DungeonGrid.VerticalPadding;
-
                     int anchorCol = col - slot.SubCol;
                     int anchorRow = row - slot.SubRow;
-
-                    room.BuildPadding(new PaddingContext(
-                        Direction.Top,    anchor.X,      anchor.Y - vp, w,  vp, fillTileType, grid, anchorCol, anchorRow));
-                    room.BuildPadding(new PaddingContext(
-                        Direction.Bottom, anchor.X,      anchor.Y + h,  w,  vp, fillTileType, grid, anchorCol, anchorRow));
-                    room.BuildPadding(new PaddingContext(
-                        Direction.Left,   anchor.X - hp, anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
-                    room.BuildPadding(new PaddingContext(
-                        Direction.Right,  anchor.X + w,  anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
+                    anchors.Add((slot.Room.PaddingPriority, anchorCol, anchorRow, slot));
                 }
+            }
+
+            anchors.Sort((a, b) =>
+            {
+                int cmp = a.priority.CompareTo(b.priority);
+                if (cmp != 0) return cmp;
+                cmp = a.col.CompareTo(b.col);
+                if (cmp != 0) return cmp;
+                return a.row.CompareTo(b.row);
+            });
+
+            foreach (var (_, anchorCol, anchorRow, slot) in anchors)
+            {
+                var room = slot.Room;
+                Point anchor = grid.GridToWorld(anchorCol, anchorRow);
+
+                int w = room.FootprintWidth;
+                int h = room.FootprintHeight;
+                int hp = DungeonGrid.HorizontalPadding;
+                int vp = DungeonGrid.VerticalPadding;
+
+                room.BuildPadding(new PaddingContext(
+                    Direction.Top,    anchor.X,      anchor.Y - vp, w,  vp, fillTileType, grid, anchorCol, anchorRow));
+                room.BuildPadding(new PaddingContext(
+                    Direction.Bottom, anchor.X,      anchor.Y + h,  w,  vp, fillTileType, grid, anchorCol, anchorRow));
+                room.BuildPadding(new PaddingContext(
+                    Direction.Left,   anchor.X - hp, anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
+                room.BuildPadding(new PaddingContext(
+                    Direction.Right,  anchor.X + w,  anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
             }
         }
 
