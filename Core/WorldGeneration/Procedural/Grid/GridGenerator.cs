@@ -14,8 +14,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     /// <summary>A*-based dungeon generator. See inline phase headers in Build().</summary>
     public static class GridGenerator
     {
-        private const int BranchCount = 8;
-        private const int RetriesPerBranchSlot = 3;
+        private const int BranchCount = 12;
+        private const int RetriesPerBranchSlot = 5;
         private const int MinBranchSpan = 8;     // critical-path indices apart, minimum
         private const int MinBranchDepth = 3;
         private const int MaxBranchDepth = 5;    // depth = MinBranchDepth..MaxBranchDepth (rows below spine)
@@ -85,15 +85,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     WorldGenUtils.PlaceTile(worldOrigin.X + x, worldOrigin.Y + y, fill);
 
             // ─── Phase 1: critical path (planned by A*) ──────────────────────
-            // Door and waypoint rows hover near baseRow so the spine reads
-            // mostly flat instead of zigzagging end to end.
+            // Door rows hover near baseRow so the spine reads mostly flat
+            // instead of zigzagging end to end.
             int doorRowMin = gridRows / 3;
             int doorRowMax = (gridRows * 2) / 3;
             const int MaxDoorRowOffset = 2;
 
             // 1D elevation curve over columns. Sampled from OpenSimplex noise
-            // and remapped to a row band centered on baseRow. The spine
-            // waypoints sample directly from this curve, and the cost
+            // and remapped to a row band centered on baseRow. The cost
             // function adds a penalty proportional to deviation from it, so
             // A* is pulled toward the curve rather than picking the cheapest
             // flat shortcut. Endpoints are pinned to the actual door rows.
@@ -101,19 +100,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             const int MinCurveSpan = 4;
             const int MaxNoiseRetries = 20;
             // Spine retry: if the planned spine ends up flat (small row range)
-            // we re-roll noise + waypoints + required-room placement and try
-            // again. Capped because the spine A* is the most expensive step.
+            // we re-roll noise and try again.
             const int MinSpineSpan = 5;
             const int MaxSpinePlanAttempts = 8;
             // Build retry: if no spine attempt produced a non-orphaning,
             // sufficiently varied path, restart Phase 1 with new door rows.
-            // Orphaned required rooms are unacceptable.
-            const int MaxBuildRetries = 3;
+            const int MaxBuildRetries = 5;
 
-            const int SpineWaypointCount = 2;
-            int playableLeft = EdgeBorder;
-            int playableRight = gridCols - 1 - EdgeBorder;
-            int playableSpan = playableRight - playableLeft;
+            // Required rooms must sit far enough from either door that the
+            // spine A* has room to climb/descend to reach them.
+            const int MinDoorDistance = 6;
+            // Required rooms must sit apart from each other so each
+            // segment has room to satisfy bookshelf min-streak (≥2)
+            // before docking. With CombatRoom now 3 wide, two adjacent
+            // required rooms need anchor distance ≥ 5 to leave 2 cells
+            // of bookshelf landing between them.
+            const int MinSubgoalSpacing = 5;
+
+            // Outer-loop retry: Phase 1 + Phase 2 together are an attempt.
+            // After Phase 2 we count actual anchors on the grid and accept
+            // only if the dungeon ended up densely populated. This is the
+            // only signal that reliably distinguishes good runs from bad
+            // ones; pre-Phase-2 metrics (spine bookshelf count, free
+            // vertical band) all proved tautological in practice.
+            const int MaxFullAttempts = 5;
+            const int MinTotalAnchors = 60;
 
             var borderBlocked = BuildBorderBlockedSet(gridCols, gridRows);
 
@@ -132,9 +143,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Point start = default, endTarget = default;
             DoorRoom startDoor = null;
             double[] elevation = null;
-            List<Point> spineWaypoints = null;
-            HashSet<Type> spineWaypointAcceptableTypes = null;
-            List<Point> requiredWaypoints = null;
+            List<Point> requiredAnchors = null;
             List<PathStep> spineSteps = null;
             EdgeCost spineCostFn = null;
             EdgeCost branchCostFn = null;
@@ -149,11 +158,57 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             (GridRoom room, int subCol, int subRow, int groupId)[,] bestGridSnapshot = null;
             List<PathStep> bestSpineSteps = null;
             double[] bestElevation = null;
-            List<Point> bestSpineWaypoints = null;
-            List<Point> bestRequiredWaypoints = null;
+            List<Point> bestRequiredAnchors = null;
             int bestBaseRow = 0;
             Point bestStart = default, bestEndTarget = default;
             int bestStartRow = 0, bestEndRow = 0;
+
+            // Outer attempt: full Phase 1 + Phase 2 sequence, judged by
+            // post-Phase-2 anchor count. The only metric that empirically
+            // separates good runs from bad ones; everything pre-Phase-2
+            // turned out tautological.
+            bool fullAccepted = false;
+            int bestFullAnchors = -1;
+            int bestFullBranchesPlaced = 0;
+            (GridRoom room, int subCol, int subRow, int groupId)[,] bestFullGridSnapshot = null;
+            List<PathStep> bestFullSpineSteps = null;
+            List<Point> bestFullRequiredAnchors = null;
+            double[] bestFullElevation = null;
+            int bestFullBaseRow = 0;
+            Point bestFullStart = default, bestFullEndTarget = default;
+            int bestFullStartRow = 0, bestFullEndRow = 0;
+            int finalBranchesPlaced = 0;
+            int finalAnchorsCount = 0;
+
+            for (int fullAttempt = 0; fullAttempt < MaxFullAttempts && !fullAccepted; fullAttempt++)
+            {
+                // Wipe everything from the previous full attempt so Phase 2
+                // cells from the prior run don't survive into this one.
+                if (fullAttempt > 0)
+                {
+                    for (int c = 0; c < gridCols; c++)
+                    {
+                        for (int r = 0; r < gridRows; r++)
+                        {
+                            var s = grid.GetSlot(c, r);
+                            if (s == null) continue;
+                            s.Room = null;
+                            s.SubCol = 0;
+                            s.SubRow = 0;
+                            s.GroupId = 0;
+                        }
+                    }
+                }
+
+                // Reset internal state populated by the Phase 1 loops.
+                buildAccepted = false;
+                bestScore = int.MinValue;
+                bestGridSnapshot = null;
+                bestSpineSteps = null;
+                bestElevation = null;
+                bestRequiredAnchors = null;
+                spineSteps = null;
+                requiredAnchors = null;
 
             for (int buildAttempt = 0; buildAttempt < MaxBuildRetries && !buildAccepted; buildAttempt++)
             {
@@ -175,7 +230,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         }
                     }
                     spineSteps = null;
-                    requiredWaypoints = null;
+                    requiredAnchors = null;
                 }
 
                 baseRow = rand.Next(doorRowMin, doorRowMax + 1);
@@ -184,225 +239,139 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 start = new Point(EdgeBorder, startRow);
                 endTarget = new Point(gridCols - 1 - EdgeBorder, endRow);
 
-                startDoor = new DoorRoom();
+                startDoor = new DoorRoom { IsFeature = true };
                 grid.Place(startDoor, start.X, start.Y, grid.NextGroupId());
-                var endDoor = new DoorRoom();
+                var endDoor = new DoorRoom { IsFeature = true };
                 grid.Place(endDoor, endTarget.X, endTarget.Y, grid.NextGroupId());
 
                 for (int spineAttempt = 0; spineAttempt < MaxSpinePlanAttempts; spineAttempt++)
                 {
-                // Un-place required rooms left over from the previous attempt
-                // so re-rolled curves can position them differently.
-                if (requiredWaypoints != null)
-                {
-                    foreach (var anchor in requiredWaypoints)
+                    // Wipe leftovers from the previous spine attempt: path
+                    // steps and required rooms. Doors are reused.
+                    if (spineSteps != null)
                     {
-                        var slot = grid.GetSlot(anchor.X, anchor.Y);
-                        if (slot == null || slot.IsEmpty) continue;
-                        var room = slot.Room;
-                        for (int sc = 0; sc < room.CellWidth; sc++)
+                        foreach (var step in spineSteps)
                         {
-                            for (int sr = 0; sr < room.CellHeight; sr++)
-                            {
-                                var s = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
-                                if (s == null) continue;
-                                s.Room = null;
-                                s.SubCol = 0;
-                                s.SubRow = 0;
-                                s.GroupId = 0;
-                            }
+                            for (int sc = 0; sc < step.Cell.CellWidth; sc++)
+                                for (int sr = 0; sr < step.Cell.CellHeight; sr++)
+                                {
+                                    var s = grid.GetSlot(step.Anchor.X + sc, step.Anchor.Y + sr);
+                                    if (s == null) continue;
+                                    s.Room = null;
+                                    s.SubCol = 0;
+                                    s.SubRow = 0;
+                                    s.GroupId = 0;
+                                }
                         }
+                        spineSteps = null;
                     }
-                }
-
-                // Re-roll the elevation noise until the curve spans enough
-                // rows. Cheap (a few microseconds per retry) so we don't
-                // bother bailing early; the cap is just a safety net.
-                for (int retry = 0; retry < MaxNoiseRetries; retry++)
-                {
-                    var fnElev = new FastNoiseLite(rand.Next());
-                    fnElev.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-                    fnElev.SetFrequency(0.10f);
-                    elevation = new double[gridCols];
-                    for (int c = 0; c < gridCols; c++)
+                    if (requiredAnchors != null)
                     {
-                        float n = fnElev.GetNoise(c, 0f); // -1..1
-                        elevation[c] = baseRow + n * ElevationAmplitude;
-                    }
-                    elevation[start.X] = startRow;
-                    elevation[endTarget.X] = endRow;
-
-                    double cMin = double.MaxValue, cMax = double.MinValue;
-                    for (int c = 0; c < gridCols; c++)
-                    {
-                        if (elevation[c] < cMin) cMin = elevation[c];
-                        if (elevation[c] > cMax) cMax = elevation[c];
-                    }
-                    if (cMax - cMin >= MinCurveSpan) break;
-                }
-
-                spineWaypoints = new List<Point>();
-                for (int w = 1; w <= SpineWaypointCount; w++)
-                {
-                    int wpCol = playableLeft + (playableSpan * w) / (SpineWaypointCount + 1);
-                    int wpRow = ClampRow((int)System.Math.Round(elevation[wpCol]), gridRows);
-                    spineWaypoints.Add(new Point(wpCol, wpRow));
-                }
-
-                spineWaypointAcceptableTypes = new HashSet<Type> { typeof(BookshelfCell) };
-                requiredWaypoints = new List<Point>();
-                foreach (var factory in RequiredRooms)
-                {
-                    var prototype = factory();
-                    spineWaypointAcceptableTypes.Add(prototype.GetType());
-
-                    if (!TryPrePlaceRequiredRoom(grid, prototype, baseRow, gridCols, gridRows,
-                                                  start, endTarget, elevation, borderBlocked, rand, out Point anchor))
-                    {
-                        continue;
-                    }
-
-                    requiredWaypoints.Add(anchor);
-
-                    if (spineWaypoints.Count > 0)
-                    {
-                        int bestIdx = 0;
-                        int bestDist = System.Math.Abs(spineWaypoints[0].X - anchor.X);
-                        for (int i = 1; i < spineWaypoints.Count; i++)
+                        foreach (var anchor in requiredAnchors)
                         {
-                            int d = System.Math.Abs(spineWaypoints[i].X - anchor.X);
-                            if (d < bestDist) { bestDist = d; bestIdx = i; }
+                            var slot = grid.GetSlot(anchor.X, anchor.Y);
+                            if (slot == null || slot.IsEmpty) continue;
+                            var room = slot.Room;
+                            for (int sc = 0; sc < room.CellWidth; sc++)
+                                for (int sr = 0; sr < room.CellHeight; sr++)
+                                {
+                                    var s = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
+                                    if (s == null) continue;
+                                    s.Room = null;
+                                    s.SubCol = 0;
+                                    s.SubRow = 0;
+                                    s.GroupId = 0;
+                                }
                         }
-                        spineWaypoints[bestIdx] = anchor;
+                        requiredAnchors = null;
                     }
-                    else
+
+                    // Re-roll the elevation noise until the curve spans enough
+                    // rows. Cheap (a few microseconds per retry) so we don't
+                    // bother bailing early; the cap is just a safety net.
+                    for (int retry = 0; retry < MaxNoiseRetries; retry++)
                     {
-                        spineWaypoints.Add(anchor);
+                        var fnElev = new FastNoiseLite(rand.Next());
+                        fnElev.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+                        fnElev.SetFrequency(0.10f);
+                        elevation = new double[gridCols];
+                        for (int c = 0; c < gridCols; c++)
+                        {
+                            float n = fnElev.GetNoise(c, 0f); // -1..1
+                            elevation[c] = baseRow + n * ElevationAmplitude;
+                        }
+                        elevation[start.X] = startRow;
+                        elevation[endTarget.X] = endRow;
+
+                        double cMin = double.MaxValue, cMax = double.MinValue;
+                        for (int c = 0; c < gridCols; c++)
+                        {
+                            if (elevation[c] < cMin) cMin = elevation[c];
+                            if (elevation[c] > cMax) cMax = elevation[c];
+                        }
+                        if (cMax - cMin >= MinCurveSpan) break;
                     }
-                }
 
-                spineWaypoints.Sort((a, b) => a.X.CompareTo(b.X));
-                requiredWaypoints.Sort((a, b) => a.X.CompareTo(b.X));
+                    noiseField = PathfindingCost.BuildSimplexNoiseField(grid.Cols, grid.Rows, rand.Next());
+                    EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, TypeWeights);
 
-                noiseField = PathfindingCost.BuildSimplexNoiseField(grid.Cols, grid.Rows, rand.Next());
-                EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, TypeWeights);
-
-                EdgeCost shaftAdjacencyAwareCost = (anchor, candidate) =>
-                {
-                    if (candidate is ShaftCell
-                        && (ColumnContainsShaft(grid, anchor.X - 1)
-                         || ColumnContainsShaft(grid, anchor.X)
-                         || ColumnContainsShaft(grid, anchor.X + 1)))
+                    EdgeCost shaftAdjacencyAwareCost = (anchor, candidate) =>
                     {
-                        return double.PositiveInfinity;
-                    }
-                    return noiseCostFn(anchor, candidate);
-                };
+                        if (candidate is ShaftCell
+                            && (ColumnContainsShaft(grid, anchor.X - 1)
+                             || ColumnContainsShaft(grid, anchor.X)
+                             || ColumnContainsShaft(grid, anchor.X + 1)))
+                        {
+                            return double.PositiveInfinity;
+                        }
+                        return noiseCostFn(anchor, candidate);
+                    };
 
-                // Capture the current elevation array in the lambda so
-                // each retry sees its own curve.
-                double[] capturedElevation = elevation;
-                EdgeCost MakeElevationAware(double multiplier) => (anchor, candidate) =>
-                {
-                    double baseCost = shaftAdjacencyAwareCost(anchor, candidate);
-                    if (double.IsPositiveInfinity(baseCost)) return baseCost;
-                    int colSafe = anchor.X < 0 ? 0 : (anchor.X >= gridCols ? gridCols - 1 : anchor.X);
-                    double dev = System.Math.Abs(anchor.Y - capturedElevation[colSafe]);
-                    return baseCost + dev * multiplier;
-                };
-
-                spineCostFn = MakeElevationAware(SpineElevationPenalty);
-                branchCostFn = MakeElevationAware(BranchElevationPenalty);
-
-                bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
-
-                // Tier 1: full waypointed plan (random + required-room waypoints).
-                spineSteps = GridAStar.FindPath(
-                    grid, start, endTarget, startDoor, spineCostFn,
-                    waypoints: spineWaypoints,
-                    blocked: borderBlocked,
-                    streakLimits: StreakLimits,
-                    minStreakLimits: MinStreakLimits,
-                    waypointAcceptableTypes: spineWaypointAcceptableTypes,
-                    maxVerticalRun: MaxVerticalRun);
-
-                // Tier 2: required-only waypoints.
-                if (spineSteps == null && requiredWaypoints.Count > 0)
-                {
-                    spineSteps = GridAStar.FindPath(
-                        grid, start, endTarget, startDoor, spineCostFn,
-                        waypoints: requiredWaypoints,
-                        blocked: borderBlocked,
-                        streakLimits: StreakLimits,
-                        minStreakLimits: MinStreakLimits,
-                        waypointAcceptableTypes: spineWaypointAcceptableTypes,
-                        maxVerticalRun: MaxVerticalRun);
-                }
-
-                // Tier 3 and 4 orphan required rooms (no waypoints / no caps).
-                // Reserve them for the last attempt only so the retry loop
-                // gets a chance to find a configuration where tier 1 or 2
-                // works and the required rooms stay on the spine.
-                if (isFinalSpineAttempt)
-                {
-                    if (spineSteps == null)
+                    // Capture the current elevation array in the lambda so
+                    // each retry sees its own curve.
+                    double[] capturedElevation = elevation;
+                    EdgeCost MakeElevationAware(double multiplier) => (anchor, candidate) =>
                     {
-                        spineSteps = GridAStar.FindPath(
-                            grid, start, endTarget, startDoor, spineCostFn,
-                            blocked: borderBlocked,
-                            streakLimits: StreakLimits,
-                            minStreakLimits: MinStreakLimits,
-                            maxVerticalRun: MaxVerticalRun);
-                    }
-                    if (spineSteps == null)
+                        double baseCost = shaftAdjacencyAwareCost(anchor, candidate);
+                        if (double.IsPositiveInfinity(baseCost)) return baseCost;
+                        int colSafe = anchor.X < 0 ? 0 : (anchor.X >= gridCols ? gridCols - 1 : anchor.X);
+                        double dev = System.Math.Abs(anchor.Y - capturedElevation[colSafe]);
+                        return baseCost + dev * multiplier;
+                    };
+
+                    spineCostFn = MakeElevationAware(SpineElevationPenalty);
+                    branchCostFn = MakeElevationAware(BranchElevationPenalty);
+
+                    bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
+
+                    // SpinePlanner runs per-segment A* between subgoals
+                    // (doors + required rooms), retrying with relocated
+                    // required-room candidates on segment failure. On
+                    // success the plan is already stamped onto the grid.
+                    var plan = SpinePlanner.TryPlanSpine(
+                        grid, start, endTarget, startDoor, endDoor,
+                        RequiredRooms, elevation, gridCols, gridRows,
+                        spineCostFn, borderBlocked, StreakLimits, MinStreakLimits,
+                        MaxVerticalRun, EdgeBorder, MinDoorDistance, MinSubgoalSpacing);
+
+                    spineSteps = plan.Steps;
+                    requiredAnchors = plan.RequiredAnchors ?? new List<Point>();
+
+                    if (spineSteps == null) continue;
+
+                    int minR = startRow, maxR = startRow;
+                    foreach (var step in spineSteps)
                     {
-                        spineSteps = GridAStar.FindPath(
-                            grid, start, endTarget, startDoor, spineCostFn,
-                            blocked: borderBlocked);
+                        if (step.Anchor.Y < minR) minR = step.Anchor.Y;
+                        if (step.Anchor.Y > maxR) maxR = step.Anchor.Y;
                     }
-                }
+                    if (endRow < minR) minR = endRow;
+                    if (endRow > maxR) maxR = endRow;
+                    bool spanOk = (maxR - minR) >= MinSpineSpan;
 
-                if (spineSteps == null) continue;
+                    int missingRequiredCount = RequiredRooms.Count - requiredAnchors.Count;
+                    if (missingRequiredCount < 0) missingRequiredCount = 0;
 
-                int minR = startRow, maxR = startRow;
-                foreach (var step in spineSteps)
-                {
-                    if (step.Anchor.Y < minR) minR = step.Anchor.Y;
-                    if (step.Anchor.Y > maxR) maxR = step.Anchor.Y;
-                }
-                if (endRow < minR) minR = endRow;
-                if (endRow > maxR) maxR = endRow;
-                bool spanOk = (maxR - minR) >= MinSpineSpan;
-
-                // Required rooms must sit ON the spine (entered from one
-                // side, exited from the other). Build the set of spine
-                // cells and check both sides of each required room.
-                var spineCells = new HashSet<Point> { start, endTarget };
-                foreach (var step in spineSteps) spineCells.Add(step.Anchor);
-                bool requiredOk = true;
-                foreach (var anchor in requiredWaypoints)
-                {
-                    var slot = grid.GetSlot(anchor.X, anchor.Y);
-                    if (slot == null || slot.IsEmpty) { requiredOk = false; break; }
-                    var room = slot.Room;
-                    bool leftOnSpine = spineCells.Contains(new Point(anchor.X - 1, anchor.Y));
-                    bool rightOnSpine = spineCells.Contains(new Point(anchor.X + room.CellWidth, anchor.Y));
-                    if (!leftOnSpine || !rightOnSpine) { requiredOk = false; break; }
-                }
-
-                    // Score this attempt and snapshot if it's the best so far.
-                    // Heavy orphan penalty makes orphan-free attempts strictly
-                    // better than orphaned ones regardless of span / cell count.
-                    int orphanCount = 0;
-                    foreach (var anchor in requiredWaypoints)
-                    {
-                        var s = grid.GetSlot(anchor.X, anchor.Y);
-                        if (s == null || s.IsEmpty) { orphanCount++; continue; }
-                        var room = s.Room;
-                        bool left = spineCells.Contains(new Point(anchor.X - 1, anchor.Y));
-                        bool right = spineCells.Contains(new Point(anchor.X + room.CellWidth, anchor.Y));
-                        if (!left || !right) orphanCount++;
-                    }
                     int totalAnchors = 0;
                     for (int c = 0; c < gridCols; c++)
                     {
@@ -414,8 +383,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         }
                     }
                     int spineSpanRows = maxR - minR;
-                    int score = -1000 * orphanCount + 10 * spineSpanRows + totalAnchors;
-                    if (spineSteps != null && score > bestScore)
+
+                    int score = 10 * spineSpanRows + totalAnchors;
+                    score -= 10000 * missingRequiredCount;
+                    if (spineSpanRows < MinSpineSpan) score -= 5000;
+
+                    if (score > bestScore)
                     {
                         bestScore = score;
                         bestGridSnapshot = new (GridRoom, int, int, int)[gridCols, gridRows];
@@ -429,8 +402,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         }
                         bestSpineSteps = new List<PathStep>(spineSteps);
                         bestElevation = (double[])elevation.Clone();
-                        bestSpineWaypoints = new List<Point>(spineWaypoints);
-                        bestRequiredWaypoints = new List<Point>(requiredWaypoints);
+                        bestRequiredAnchors = new List<Point>(requiredAnchors);
                         bestBaseRow = baseRow;
                         bestStart = start;
                         bestEndTarget = endTarget;
@@ -438,14 +410,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         bestEndRow = endRow;
                     }
 
-                    if (spanOk && requiredOk) { buildAccepted = true; break; }
-                    if (isFinalSpineAttempt) break; // give the build retry a chance with new doors
+                    if (spanOk && missingRequiredCount == 0) { buildAccepted = true; break; }
+                    if (isFinalSpineAttempt) break;
                 }
-
-                // If the spine still hasn't met both checks, the outer build
-                // retry loop will pick fresh door rows and try Phase 1 again.
-                // After the retry budget is exhausted we restore the best
-                // snapshot we ever saw.
             }
 
             // Restore the best snapshot if the final attempt wasn't the best
@@ -468,8 +435,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
                 spineSteps = bestSpineSteps;
                 elevation = bestElevation;
-                spineWaypoints = bestSpineWaypoints;
-                requiredWaypoints = bestRequiredWaypoints;
+                requiredAnchors = bestRequiredAnchors;
                 baseRow = bestBaseRow;
                 start = bestStart;
                 endTarget = bestEndTarget;
@@ -503,20 +469,48 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 branchCostFn = MakeElev(BranchElevationPenalty);
             }
 
+            // Spine cells are already on the grid (SpinePlanner stamps as it
+            // plans). Build criticalPath from spineSteps anchors so Phase 2
+            // branches have the spine geometry to attach to.
             var criticalPath = new List<Point> { start };
-
             if (spineSteps != null)
             {
                 foreach (var step in spineSteps)
-                {
-                    grid.Place(step.Cell, step.Anchor.X, step.Anchor.Y, grid.NextGroupId());
                     criticalPath.Add(step.Anchor);
-                }
             }
+
+            // ─── Phase 1.5: branch-combat anchor ─────────────────────────────
+            // Pre-place a CombatRoom in a clean spot below the spine so one
+            // Phase 2 branch can be deterministically routed through it.
+            // Without this, the second combat is purely emergent (A* getting
+            // lucky enough to slot one inside a U-shape) and shows up only
+            // sometimes. The pre-placed instance is flagged IsFeature=true
+            // so neighbors don't have to whitelist it.
+            var branchCombat = TryPrePlaceBranchCombat(
+                grid, criticalPath, gridCols, gridRows, borderBlocked, rand);
 
             // ─── Phase 2: branches (loops) ───────────────────────────────────
             // Each slot retries with different endpoints since A* can fail on unlucky pairs.
             int branchesPlaced = 0;
+            // Try to route one branch through the pre-placed branch combat
+            // first. Counts toward the BranchCount budget on success.
+            // Rollback the combat if no route reaches it; an orphan combat
+            // would split the connected component.
+            if (branchCombat.HasValue)
+            {
+                bool linked = criticalPath.Count > MinBranchSpan + 1
+                    && TryPlaceBranchThroughCombat(
+                        grid, criticalPath, branchCombat.Value, branchCostFn,
+                        StreakLimits, borderBlocked);
+                if (linked)
+                {
+                    branchesPlaced++;
+                }
+                else
+                {
+                    ClearFootprint(grid, branchCombat.Value.room, branchCombat.Value.anchor);
+                }
+            }
             for (int slot = 0; slot < BranchCount; slot++)
             {
                 if (criticalPath.Count <= MinBranchSpan + 1) break;
@@ -533,9 +527,121 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Guarantee at least one branch via max-span fallback.
             if (branchesPlaced == 0 && criticalPath.Count > MinBranchSpan + 1)
             {
-                if (!TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, StreakLimits, borderBlocked, rand, relaxed: false))
-                    TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, StreakLimits, borderBlocked, rand, relaxed: true);
+                if (TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, StreakLimits, borderBlocked, rand, relaxed: false)
+                    || TryPlaceMaxSpanBranch(grid, criticalPath, branchCostFn, StreakLimits, borderBlocked, rand, relaxed: true))
+                {
+                    branchesPlaced++;
+                }
             }
+
+                // Count anchors across the whole grid. This is the gate
+                // that decides whether the full attempt is good enough.
+                int totalAnchorsAfterPhase2 = 0;
+                for (int c = 0; c < gridCols; c++)
+                {
+                    for (int r = 0; r < gridRows; r++)
+                    {
+                        var s = grid.GetSlot(c, r);
+                        if (s == null || s.IsEmpty) continue;
+                        if (s.SubCol == 0 && s.SubRow == 0) totalAnchorsAfterPhase2++;
+                    }
+                }
+
+                Terraria.ModLoader.Logging.PublicLogger.Info(
+                    $"OvermorrowDungeon fullAttempt {fullAttempt}: branches={branchesPlaced}, anchors={totalAnchorsAfterPhase2} (need {MinTotalAnchors}).");
+
+                if (totalAnchorsAfterPhase2 >= MinTotalAnchors)
+                {
+                    fullAccepted = true;
+                    finalBranchesPlaced = branchesPlaced;
+                    finalAnchorsCount = totalAnchorsAfterPhase2;
+                    break;
+                }
+
+                // Snapshot if this is the best attempt so far. Used as a
+                // fallback if every attempt fails the gate.
+                if (totalAnchorsAfterPhase2 > bestFullAnchors)
+                {
+                    bestFullAnchors = totalAnchorsAfterPhase2;
+                    bestFullBranchesPlaced = branchesPlaced;
+                    bestFullGridSnapshot = new (GridRoom, int, int, int)[gridCols, gridRows];
+                    for (int c = 0; c < gridCols; c++)
+                    {
+                        for (int r = 0; r < gridRows; r++)
+                        {
+                            var s = grid.GetSlot(c, r);
+                            bestFullGridSnapshot[c, r] = (s.Room, s.SubCol, s.SubRow, s.GroupId);
+                        }
+                    }
+                    bestFullSpineSteps = spineSteps != null ? new List<PathStep>(spineSteps) : null;
+                    bestFullRequiredAnchors = requiredAnchors != null ? new List<Point>(requiredAnchors) : null;
+                    bestFullElevation = elevation != null ? (double[])elevation.Clone() : null;
+                    bestFullBaseRow = baseRow;
+                    bestFullStart = start;
+                    bestFullEndTarget = endTarget;
+                    bestFullStartRow = startRow;
+                    bestFullEndRow = endRow;
+                }
+            }
+
+            // Restore the best full attempt if no run cleared the gate.
+            if (!fullAccepted && bestFullGridSnapshot != null)
+            {
+                for (int c = 0; c < gridCols; c++)
+                {
+                    for (int r = 0; r < gridRows; r++)
+                    {
+                        var s = grid.GetSlot(c, r);
+                        if (s == null) continue;
+                        var (room, sc, sr, gid) = bestFullGridSnapshot[c, r];
+                        s.Room = room;
+                        s.SubCol = sc;
+                        s.SubRow = sr;
+                        s.GroupId = gid;
+                    }
+                }
+                spineSteps = bestFullSpineSteps;
+                elevation = bestFullElevation;
+                requiredAnchors = bestFullRequiredAnchors;
+                baseRow = bestFullBaseRow;
+                start = bestFullStart;
+                endTarget = bestFullEndTarget;
+                startRow = bestFullStartRow;
+                endRow = bestFullEndRow;
+                finalBranchesPlaced = bestFullBranchesPlaced;
+                finalAnchorsCount = bestFullAnchors;
+
+                // Rebuild branch cost function so downstream phases (2.5 and
+                // anything else that takes branchCostFn) have a working
+                // reference. Cheap to rebuild.
+                noiseField = PathfindingCost.BuildSimplexNoiseField(grid.Cols, grid.Rows, rand.Next());
+                EdgeCost noiseCostFn2 = PathfindingCost.FromNoise(noiseField, TypeWeights);
+                EdgeCost shaftAdj = (anchor, candidate) =>
+                {
+                    if (candidate is ShaftCell
+                        && (ColumnContainsShaft(grid, anchor.X - 1)
+                         || ColumnContainsShaft(grid, anchor.X)
+                         || ColumnContainsShaft(grid, anchor.X + 1)))
+                    {
+                        return double.PositiveInfinity;
+                    }
+                    return noiseCostFn2(anchor, candidate);
+                };
+                double[] capturedElevFinal = elevation;
+                branchCostFn = (anchor, candidate) =>
+                {
+                    double baseCost = shaftAdj(anchor, candidate);
+                    if (double.IsPositiveInfinity(baseCost)) return baseCost;
+                    int colSafe = anchor.X < 0 ? 0 : (anchor.X >= gridCols ? gridCols - 1 : anchor.X);
+                    double dev = capturedElevFinal != null
+                        ? System.Math.Abs(anchor.Y - capturedElevFinal[colSafe])
+                        : 0.0;
+                    return baseCost + dev * BranchElevationPenalty;
+                };
+            }
+
+            Terraria.ModLoader.Logging.PublicLogger.Info(
+                $"OvermorrowDungeon final: branches={finalBranchesPlaced}, anchors={finalAnchorsCount}, accepted={fullAccepted}.");
 
             // ─── Phase 2.5: dead-end repair ──────────────────────────────────
             // Shaft landings get a short A* extension; other dead-ends get capped with walls.
@@ -586,12 +692,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     BaseRow = baseRow,
                     StartDoor = start,
                     EndDoor = endTarget,
-                    SpineWaypoints = new List<Point>(spineWaypoints),
-                    RequiredRoomAnchors = new List<Point>(requiredWaypoints),
+                    SpineWaypoints = new List<Point>(requiredAnchors),
+                    RequiredRoomAnchors = new List<Point>(requiredAnchors),
                     Elevation = elevation,
                 };
-                string dumpPath = System.IO.Path.Combine(
-                    Terraria.Main.SavePath, "OvermorrowDungeonGridDump.txt");
+                string dumpFolder = System.IO.Path.Combine(
+                    Terraria.Main.SavePath, "OvermorrowDungeonDumps");
+                System.IO.Directory.CreateDirectory(dumpFolder);
+                System.IO.Directory.CreateDirectory(System.IO.Path.Combine(dumpFolder, "good"));
+                System.IO.Directory.CreateDirectory(System.IO.Path.Combine(dumpFolder, "bad"));
+                string fileName = $"dump_{System.DateTime.Now:yyyyMMdd_HHmmss_fff}.txt";
+                string dumpPath = System.IO.Path.Combine(dumpFolder, fileName);
                 GridDiagnostics.DumpFullGrid(grid, dumpPath, config);
             }
             catch (System.Exception ex)
@@ -699,18 +810,40 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             if (Math.Abs(branchEnd.X - branchStart.X) < 2) return false;
 
-            // U-shape waypoints: down, across, implicit climb back up. Relaxed mode skips them.
+            // U-shape waypoints: down, across, implicit climb back up.
+            // Half the time the across portion gets a mid-waypoint at a
+            // different depth so the branch wanders vertically instead of
+            // being a flat rectangle. Relaxed mode skips waypoints entirely.
             List<Point> waypoints = null;
             if (!relaxed)
             {
-                int depth = MinBranchDepth + rand.Next(MaxBranchDepth - MinBranchDepth + 1);
-                // Leave room for 2-row stair footprints inside the border.
-                int detourY = Math.Min(branchStart.Y + depth, grid.Rows - 2 - EdgeBorder);
-                waypoints = new List<Point>
+                int maxDetourY = grid.Rows - 2 - EdgeBorder;
+                int depthA = MinBranchDepth + rand.Next(MaxBranchDepth - MinBranchDepth + 1);
+                int detourYA = Math.Min(branchStart.Y + depthA, maxDetourY);
+
+                bool wander = rand.Next(2) == 0
+                    && Math.Abs(branchEnd.X - branchStart.X) >= 4;
+
+                if (wander)
                 {
-                    new Point(branchStart.X, detourY),
-                    new Point(branchEnd.X,   detourY),
-                };
+                    int depthB = MinBranchDepth + rand.Next(MaxBranchDepth - MinBranchDepth + 1);
+                    int detourYB = Math.Min(branchStart.Y + depthB, maxDetourY);
+                    int midX = (branchStart.X + branchEnd.X) / 2;
+                    waypoints = new List<Point>
+                    {
+                        new Point(branchStart.X, detourYA),
+                        new Point(midX,          detourYB),
+                        new Point(branchEnd.X,   detourYA),
+                    };
+                }
+                else
+                {
+                    waypoints = new List<Point>
+                    {
+                        new Point(branchStart.X, detourYA),
+                        new Point(branchEnd.X,   detourYA),
+                    };
+                }
             }
 
             // Waypoints must end on a horizontally-walkable cell so the next segment can turn.
@@ -732,6 +865,179 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var step in path)
                 grid.Place(step.Cell, step.Anchor.X, step.Anchor.Y, grid.NextGroupId());
             return true;
+        }
+
+        /// <summary>
+        /// Picks a column where the spine spans wide enough for a U-shape
+        /// (≥6 columns) and drops a CombatRoom 3-5 rows below the most-
+        /// populous spine row. Returns null if no clean spot fits the
+        /// IsValidPlacement constraints (door distance, combat spacing).
+        /// </summary>
+        private static (CombatRoom room, Point anchor)? TryPrePlaceBranchCombat(
+            DungeonGrid grid, List<Point> criticalPath, int gridCols, int gridRows,
+            HashSet<Point> blocked, Random rand)
+        {
+            if (criticalPath.Count < MinBranchSpan + 1) return null;
+
+            // Bucket spine cells by row, sort rows by population descending.
+            var rowBuckets = new Dictionary<int, List<int>>();
+            foreach (var p in criticalPath)
+            {
+                if (!rowBuckets.TryGetValue(p.Y, out var list))
+                {
+                    list = new List<int>();
+                    rowBuckets[p.Y] = list;
+                }
+                list.Add(p.X);
+            }
+            var sortedRows = new List<KeyValuePair<int, List<int>>>(rowBuckets);
+            sortedRows.Sort((a, b) => b.Value.Count.CompareTo(a.Value.Count));
+
+            var prototype = new CombatRoom();
+            int w = prototype.CellWidth;
+            int h = prototype.CellHeight;
+
+            foreach (var kv in sortedRows)
+            {
+                int spineRow = kv.Key;
+                var cols = kv.Value;
+                cols.Sort();
+                int spanCols = cols[cols.Count - 1] - cols[0];
+                // Need at least Combat width + 2 stair landings worth of horizontal span.
+                if (spanCols < w + 4) continue;
+
+                for (int depth = MinBranchDepth; depth <= MaxBranchDepth; depth++)
+                {
+                    int targetRow = spineRow + depth;
+                    if (targetRow + h - 1 >= gridRows - EdgeBorder) continue;
+                    if (targetRow < EdgeBorder) continue;
+
+                    int colMin = cols[0] + 2;
+                    int colMax = cols[cols.Count - 1] - w - 1;
+                    if (colMin > colMax) continue;
+
+                    for (int attempt = 0; attempt < 10; attempt++)
+                    {
+                        int col = rand.Next(colMin, colMax + 1);
+
+                        bool clear = true;
+                        for (int sc = 0; sc < w && clear; sc++)
+                        {
+                            for (int sr = 0; sr < h; sr++)
+                            {
+                                var pos = new Point(col + sc, targetRow + sr);
+                                if (blocked.Contains(pos)) { clear = false; break; }
+                                var slot = grid.GetSlot(pos.X, pos.Y);
+                                if (slot == null || !slot.IsEmpty) { clear = false; break; }
+                            }
+                        }
+                        if (!clear) continue;
+
+                        var anchor = new Point(col, targetRow);
+                        if (!prototype.IsValidPlacement(grid, anchor)) continue;
+
+                        var combat = new CombatRoom { IsFeature = true };
+                        grid.Place(combat, col, targetRow, grid.NextGroupId());
+                        return (combat, anchor);
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Routes a branch from one spine cell down through the pre-placed
+        /// combat and back up to another spine cell. The combat is the
+        /// middle waypoint; A* dock against it from the left and exits from
+        /// the right.
+        /// </summary>
+        private static bool TryPlaceBranchThroughCombat(
+            DungeonGrid grid, List<Point> criticalPath,
+            (CombatRoom room, Point anchor) branchCombat,
+            EdgeCost costFn, IReadOnlyDictionary<Type, int> streakLimits,
+            HashSet<Point> blocked)
+        {
+            int combatRow = branchCombat.anchor.Y;
+            int combatLeft = branchCombat.anchor.X;
+            int combatRight = branchCombat.anchor.X + branchCombat.room.CellWidth - 1;
+
+            // Spine cells above the combat that could serve as descent / ascent endpoints.
+            var leftCandidates = new List<Point>();
+            var rightCandidates = new List<Point>();
+            foreach (var p in criticalPath)
+            {
+                if (p.Y >= combatRow) continue;
+                var slot = grid.GetSlot(p.X, p.Y);
+                if (slot == null || slot.IsEmpty) continue;
+                if (slot.Room is not (BookshelfCell or CorridorCell)) continue;
+                if (p.X <= combatLeft - 2) leftCandidates.Add(p);
+                else if (p.X >= combatRight + 2) rightCandidates.Add(p);
+            }
+            if (leftCandidates.Count == 0 || rightCandidates.Count == 0) return false;
+
+            // Prefer endpoints close to the combat for tighter U-shapes.
+            leftCandidates.Sort((a, b) =>
+                (combatLeft - a.X).CompareTo(combatLeft - b.X));
+            rightCandidates.Sort((a, b) =>
+                (a.X - combatRight).CompareTo(b.X - combatRight));
+
+            var waypointAcceptableTypes = new HashSet<Type>
+            {
+                typeof(BookshelfCell),
+                typeof(CorridorCell),
+                typeof(CombatRoom),
+            };
+
+            int leftTries = Math.Min(3, leftCandidates.Count);
+            int rightTries = Math.Min(3, rightCandidates.Count);
+            for (int li = 0; li < leftTries; li++)
+            {
+                for (int ri = 0; ri < rightTries; ri++)
+                {
+                    var startPoint = leftCandidates[li];
+                    var endPoint = rightCandidates[ri];
+                    var startSlot = grid.GetSlot(startPoint.X, startPoint.Y);
+                    if (startSlot == null || startSlot.IsEmpty) continue;
+
+                    var waypoints = new List<Point>
+                    {
+                        new Point(startPoint.X, combatRow),
+                        branchCombat.anchor,
+                        new Point(endPoint.X,   combatRow),
+                    };
+
+                    var path = GridAStar.FindPath(grid, startPoint, endPoint, startSlot.Room, costFn,
+                                                  waypoints: waypoints,
+                                                  blocked: blocked,
+                                                  streakLimits: streakLimits,
+                                                  minStreakLimits: MinStreakLimits,
+                                                  waypointAcceptableTypes: waypointAcceptableTypes,
+                                                  maxVerticalRun: MaxVerticalRun);
+                    if (path == null) continue;
+
+                    foreach (var step in path)
+                        grid.Place(step.Cell, step.Anchor.X, step.Anchor.Y, grid.NextGroupId());
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>Clears every sub-cell of <paramref name="room"/>'s footprint at <paramref name="anchor"/>.</summary>
+        private static void ClearFootprint(DungeonGrid grid, GridRoom room, Point anchor)
+        {
+            for (int sc = 0; sc < room.CellWidth; sc++)
+            {
+                for (int sr = 0; sr < room.CellHeight; sr++)
+                {
+                    var s = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
+                    if (s == null) continue;
+                    s.Room = null;
+                    s.SubCol = 0;
+                    s.SubRow = 0;
+                    s.GroupId = 0;
+                }
+            }
         }
 
         /// <summary>Clamps a row inside the playable area, leaving room for 2-row stair footprints.</summary>
@@ -1069,84 +1375,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     }
                 }
             }
-        }
-
-        /// <summary>Places a required room on the elevation curve. Returns false if no valid position fits.</summary>
-        private static bool TryPrePlaceRequiredRoom(
-            DungeonGrid grid, GridRoom prototype, int baseRow, int gridCols, int gridRows,
-            Point startDoor, Point endDoor, double[] elevation,
-            HashSet<Point> borderBlocked, Random rand, out Point anchor)
-        {
-            int w = prototype.CellWidth;
-            int h = prototype.CellHeight;
-
-            const int Attempts = 50;
-            // Required rooms must sit far enough from either door that they
-            // never become an awkward first/last room in the run.
-            const int MinDistanceFromDoor = 6;
-
-            int playableLeft = EdgeBorder + 2;
-            int playableRight = gridCols - 1 - EdgeBorder - w - 1;
-            if (playableLeft > playableRight)
-            {
-                anchor = default;
-                return false;
-            }
-
-            for (int attempt = 0; attempt < Attempts; attempt++)
-            {
-                int col = rand.Next(playableLeft, playableRight + 1);
-
-                // Sample the row from the elevation curve so the room sits
-                // on the spine's intended path and waypoint replacement
-                // preserves the curve's vertical character.
-                int row = ClampRow((int)Math.Round(elevation[col]), gridRows);
-                if (row + h - 1 >= gridRows - EdgeBorder) continue;
-                if (row < EdgeBorder) continue;
-
-                bool tooCloseToDoor = false;
-                for (int sc = 0; sc < w && !tooCloseToDoor; sc++)
-                {
-                    for (int sr = 0; sr < h; sr++)
-                    {
-                        int cc = col + sc;
-                        int cr = row + sr;
-                        int distStart = Math.Max(Math.Abs(cc - startDoor.X), Math.Abs(cr - startDoor.Y));
-                        int distEnd = Math.Max(Math.Abs(cc - endDoor.X), Math.Abs(cr - endDoor.Y));
-                        if (distStart < MinDistanceFromDoor || distEnd < MinDistanceFromDoor)
-                        {
-                            tooCloseToDoor = true;
-                            break;
-                        }
-                    }
-                }
-                if (tooCloseToDoor) continue;
-
-                if (!FootprintIsClear(grid, prototype, col, row, borderBlocked)) continue;
-
-                grid.Place(prototype, col, row, grid.NextGroupId());
-                anchor = new Point(col, row);
-                return true;
-            }
-
-            anchor = default;
-            return false;
-        }
-
-        /// <summary>True if the prototype's footprint at (col, row) is empty and outside the border.</summary>
-        private static bool FootprintIsClear(DungeonGrid grid, GridRoom prototype, int col, int row, HashSet<Point> borderBlocked)
-        {
-            for (int sc = 0; sc < prototype.CellWidth; sc++)
-            {
-                for (int sr = 0; sr < prototype.CellHeight; sr++)
-                {
-                    var pos = new Point(col + sc, row + sr);
-                    if (borderBlocked.Contains(pos)) return false;
-                    var slot = grid.GetSlot(pos.X, pos.Y);
-                    if (slot == null || !slot.IsEmpty) return false;
-                }
-            }
-            return true;
         }
 
         /// <summary>True if any ShaftCell sits in this column.</summary>

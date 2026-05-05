@@ -25,6 +25,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract int CellHeight { get; }
 
         /// <summary>
+        /// Placed directly by the planner. Neighbors don't have to whitelist
+        /// features in AllowedNeighbors; the feature's own AllowedNeighbors
+        /// still controls what can dock against it. Per-instance flag so a
+        /// type can appear both as an emergent A* candidate (false) and as
+        /// a planner anchor (true) in the same dungeon.
+        /// </summary>
+        public bool IsFeature { get; set; } = false;
+
+        /// <summary>
         /// Total tile width of this room's footprint, including any internal
         /// horizontal padding between sub-cells. A 1x1 room is one cell wide;
         /// a 2x1 room is two cells plus one internal seam.

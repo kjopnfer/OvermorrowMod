@@ -190,7 +190,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                             candNext.Y + candidate.AnchorOffsetFromCursor.Y);
 
                         // pendingLookup exposes in-progress path cells so structural checks see them too.
-                        if (!FootprintIsAvailable(grid, candidate, anchor, blocked, current, cameFrom))
+                        if (!FootprintIsAvailable(grid, candidate, anchor, blocked, current, cameFrom, priorSegmentSteps))
                             continue;
                         var capturedCurrent = current;
                         if (!candidate.IsValidPlacement(grid, anchor,
@@ -315,7 +315,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         /// </summary>
         private static bool FootprintIsAvailable(
             DungeonGrid grid, GridRoom candidate, Point anchor,
-            HashSet<Point> blocked, Node current, Dictionary<Node, EdgeRecord> cameFrom)
+            HashSet<Point> blocked, Node current, Dictionary<Node, EdgeRecord> cameFrom,
+            List<PathStep> priorSegmentSteps)
         {
             for (int sc = 0; sc < candidate.CellWidth; sc++)
             {
@@ -331,7 +332,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 }
             }
 
-            // Walk the in-progress path for footprint overlap.
+            // Walk the current segment's in-progress path for footprint overlap.
             var node = current;
             while (cameFrom.TryGetValue(node, out var rec))
             {
@@ -339,6 +340,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     return false;
                 node = rec.Parent;
             }
+
+            // Also walk earlier segments of the same FindPath. Their cells
+            // aren't committed to the grid yet (FindPath stamps everything
+            // only after returning), so the grid check above doesn't see
+            // them. Without this walk a 2-segment spine could place a
+            // 2x2 stair in segment 1 and another 2x2 stair in segment 2
+            // whose footprints overlap.
+            if (priorSegmentSteps != null)
+            {
+                for (int i = 0; i < priorSegmentSteps.Count; i++)
+                {
+                    var step = priorSegmentSteps[i];
+                    if (FootprintsOverlap(step.Cell, step.Anchor, candidate, anchor))
+                        return false;
+                }
+            }
+
             return true;
         }
 
@@ -414,29 +432,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
                         if (ourSide != theirSide) return false;
 
-                        // When both sides are open, also enforce mutual
-                        // AllowedNeighbors acceptance. Geometric agreement
-                        // is necessary but not sufficient: e.g. CombatRoom
-                        // accepts only Bookshelf so a Corridor candidate
-                        // adjacent to a pre-placed CombatRoom should be
-                        // rejected here even though their shared sides are
-                        // both open.
-                        // <para/>
-                        // DoorRoom is exempt: doors are boundary cells that
-                        // get pre-placed at the start/end of the spine.
-                        // Listing Door in every standard room's
-                        // AllowedNeighbors would let A* spawn doors mid-
-                        // dungeon as ordinary candidates. Trusting the
-                        // door's own AllowedNext to gate adjacency is
-                        // sufficient on the door side.
-                        if (ourSide && neighbor is not DoorRoom && candidate is not DoorRoom)
+                        // Mutual AllowedNeighbors check on top of geometry.
+                        // Asymmetric IsFeature exemption: when one side is a
+                        // planner-placed feature (door, anchor combat, etc.)
+                        // we skip the candidate's own whitelist so standard
+                        // rooms don't have to list every feature type, but
+                        // the feature's whitelist still gates what can dock
+                        // against it.
+                        if (ourSide)
                         {
-                            var weAccept = candidate.GetAcceptedNeighbors(sc, sr, d.side);
-                            if (weAccept == null || !weAccept.Contains(neighbor.GetType()))
-                                return false;
-                            var theyAccept = neighbor.GetAcceptedNeighbors(neighborSubX, neighborSubY, d.opposite);
-                            if (theyAccept == null || !theyAccept.Contains(candidate.GetType()))
-                                return false;
+                            if (!neighbor.IsFeature)
+                            {
+                                var weAccept = candidate.GetAcceptedNeighbors(sc, sr, d.side);
+                                if (weAccept == null || !weAccept.Contains(neighbor.GetType()))
+                                    return false;
+                            }
+                            if (!candidate.IsFeature)
+                            {
+                                var theyAccept = neighbor.GetAcceptedNeighbors(neighborSubX, neighborSubY, d.opposite);
+                                if (theyAccept == null || !theyAccept.Contains(candidate.GetType()))
+                                    return false;
+                            }
                         }
                     }
                 }
