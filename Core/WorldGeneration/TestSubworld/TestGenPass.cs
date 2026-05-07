@@ -50,11 +50,12 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 cellPool: cellPool,
                 fillTileType: fillTile,
                 liningTileType: liningTile,
-                rand: rand
+                rand: rand,
+                startDoorTile: out Point startDoorTile
             );
 
-            Main.spawnTileX = startX + DungeonGrid.HorizontalPadding + DungeonGrid.CellTileWidth / 2;
-            Main.spawnTileY = startY + (gridRows / 2) * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight / 2;
+            Main.spawnTileX = startDoorTile.X;
+            Main.spawnTileY = startDoorTile.Y;
         }
     }
 }
