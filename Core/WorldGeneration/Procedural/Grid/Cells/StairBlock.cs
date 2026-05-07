@@ -135,7 +135,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         {
             new CellExit(
                 _descendLeftToRight ? new Point(2, 1) : new Point(2, -1),
-                new GridRoom[] { new BookshelfCell(), new CorridorCell(), new CombatRoom() })
+                // CombatRoom intentionally excluded: planner-placed only.
+                new GridRoom[] { new BookshelfCell(), new CorridorCell() })
         };
 
         /// <summary>

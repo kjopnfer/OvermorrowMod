@@ -21,7 +21,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             new AscendingStair(),
             new FireplaceRoom(),
             new LoungeRoom(),
-            new CombatRoom(),
+            // CombatRoom intentionally excluded: combats are planner-placed
+            // features only, never spontaneously selected by A*.
         };
 
         private static readonly GridRoom[] VerticalNeighbors = { new ShaftCell() };
@@ -39,6 +40,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         /// separately by AllowedNeighbors.
         /// </summary>
         public override bool IsOpenSide(int subCol, int subRow, Direction side) => true;
+
+        public override bool OwnsPadding => true;
 
         public override void BuildPadding(PaddingContext ctx)
         {

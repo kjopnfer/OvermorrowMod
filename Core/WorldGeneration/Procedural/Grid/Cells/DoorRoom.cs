@@ -40,6 +40,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override bool IsOpenSide(int subCol, int subRow, Direction side) =>
             side == Direction.Left || side == Direction.Right;
 
+        public override bool OwnsPadding => true;
+
         public override void BuildPadding(PaddingContext ctx)
         {
             ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();

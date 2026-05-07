@@ -240,6 +240,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// having broken hallways.
         /// </summary>
         public virtual bool AllowsEmptyNeighbors => true;
+
+        /// <summary>
+        /// Whether this room paints a self-sufficient padding visual that
+        /// reads correctly even when the side faces an empty neighbor.
+        /// True for standalone rooms (bookshelves, doors, fireplaces) whose
+        /// BuildPadding already produces a complete look. False for
+        /// connector pieces (corridors, shafts, stairs) whose padding only
+        /// makes sense when there's a neighbor on the other end. The
+        /// downstream side-cap pass paints stone walls over rooms that
+        /// return false on a dead-end side.
+        /// </summary>
+        public virtual bool OwnsPadding => false;
     }
 
     /// <summary>

@@ -175,43 +175,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 for (int spineAttempt = 0; spineAttempt < MaxSpinePlanAttempts; spineAttempt++)
                 {
-                    // Wipe leftovers from the previous spine attempt: path
-                    // steps and required rooms. Doors are reused.
-                    if (spineSteps != null)
+                    // Wipe everything from the previous spine attempt except
+                    // the two doors. Branch cells (placed inside this loop
+                    // via TryPlaceBranchThroughSecondCombat) aren't tracked
+                    // in spineSteps or requiredAnchors, so a whole-grid
+                    // clear is the simplest way to reset.
+                    if (spineSteps != null || requiredAnchors != null)
                     {
-                        foreach (var step in spineSteps)
+                        for (int c = 0; c < gridCols; c++)
                         {
-                            for (int sc = 0; sc < step.Cell.CellWidth; sc++)
-                                for (int sr = 0; sr < step.Cell.CellHeight; sr++)
-                                {
-                                    var s = grid.GetSlot(step.Anchor.X + sc, step.Anchor.Y + sr);
-                                    if (s == null) continue;
-                                    s.Room = null;
-                                    s.SubCol = 0;
-                                    s.SubRow = 0;
-                                    s.GroupId = 0;
-                                }
+                            for (int r = 0; r < gridRows; r++)
+                            {
+                                var s = grid.GetSlot(c, r);
+                                if (s == null || s.IsEmpty) continue;
+                                if (s.Room is DoorRoom) continue;  // doors stay
+                                s.Room = null;
+                                s.SubCol = 0;
+                                s.SubRow = 0;
+                                s.GroupId = 0;
+                            }
                         }
                         spineSteps = null;
-                    }
-                    if (requiredAnchors != null)
-                    {
-                        foreach (var anchor in requiredAnchors)
-                        {
-                            var slot = grid.GetSlot(anchor.X, anchor.Y);
-                            if (slot == null || slot.IsEmpty) continue;
-                            var room = slot.Room;
-                            for (int sc = 0; sc < room.CellWidth; sc++)
-                                for (int sr = 0; sr < room.CellHeight; sr++)
-                                {
-                                    var s = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
-                                    if (s == null) continue;
-                                    s.Room = null;
-                                    s.SubCol = 0;
-                                    s.SubRow = 0;
-                                    s.GroupId = 0;
-                                }
-                        }
                         requiredAnchors = null;
                     }
 
@@ -313,20 +297,35 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     // Hard invariants for the critical path:
                     //  - exactly one CombatRoom on the grid (the required one)
                     //  - no path from start door to end door that skips the combat
-                    int combatCount = CountCombatRooms(grid);
-                    bool combatCountOk = combatCount == 1;
+                    int spineCombatCount = CountCombatRooms(grid);
+                    bool spineHasOneCombat = spineCombatCount == 1;
                     bool combatMandatory = !HasCombatBypass(grid, start, endTarget);
+
+                    // Phase 1.5 inside the spine attempt: try to place a
+                    // closed-loop branch through a second combat. If the
+                    // current spine geometry doesn't allow a branch, this
+                    // attempt scores below alternatives that do, and the
+                    // retry pool will pick a branchable spine.
+                    bool branchPlaced = false;
+                    if (spineHasOneCombat && combatMandatory)
+                    {
+                        branchPlaced = TryPlaceBranchThroughSecondCombat(
+                            grid, spineSteps, requiredAnchors, spineCostFn,
+                            borderBlocked, gridCols, gridRows, rand);
+                    }
 
                     int score = 10 * spineSpanRows + totalAnchors;
                     score -= 10000 * missingRequiredCount;
                     if (spineSpanRows < MinSpineSpan) score -= 5000;
-                    if (!combatCountOk) score -= 8000;
+                    if (!spineHasOneCombat) score -= 8000;
                     if (!combatMandatory) score -= 9000;
+                    if (!branchPlaced) score -= 7000;
 
                     Terraria.ModLoader.Logging.PublicLogger.Info(
                         $"OvermorrowDungeon spine attempt build={buildAttempt} spine={spineAttempt}: " +
                         $"span={spineSpanRows} required={requiredAnchors.Count}/{RequiredRooms.Count} " +
-                        $"combats={combatCount} mandatory={combatMandatory} score={score}");
+                        $"spineCombat={spineCombatCount} mandatory={combatMandatory} " +
+                        $"branch={branchPlaced} score={score}");
 
                     if (score > bestScore)
                     {
@@ -350,7 +349,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         bestEndRow = endRow;
                     }
 
-                    if (spanOk && missingRequiredCount == 0 && combatCountOk && combatMandatory)
+                    if (spanOk && missingRequiredCount == 0 && spineHasOneCombat
+                        && combatMandatory && branchPlaced)
                     {
                         buildAccepted = true;
                         break;
@@ -419,13 +419,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // an open side facing an empty neighbor. ApplySideCaps paints
             // stone tiles over those borders. No cell modifications, no A*,
             // no filler placements — anything that could mutate the grid is
-            // gone. The grid the spine A* committed is the grid that ships.
+            // gone. The grid spine + branch committed is the grid that ships.
             var sidesToCap = CollectDeadEndSides(grid);
 
-            // Final invariant log. The side-cap scan doesn't mutate cells, so
-            // these values should match what the accepted spine produced.
-            // Anything other than combats=1, mandatory=True, tree=True is a
-            // bug in the spine planner or a placement-rule failure.
+            // Final invariant log. With the branch we expect combats=2 and
+            // mandatory=true (every start-to-end path crosses some combat).
+            // tree-shaped is now expected to be false (branch loop is by
+            // design); kept in the log as a structural readout.
             int finalCombats = CountCombatRooms(grid);
             bool finalMandatory = !HasCombatBypass(grid, start, endTarget);
             bool finalTreeShaped = IsTreeShaped(grid, start);
@@ -612,6 +612,198 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return true;
         }
 
+        /// <summary>
+        /// Phase 1.5: places a second CombatRoom in a clean spot off the
+        /// spine and routes a branch through it. The branch endpoints sit
+        /// on the spine — one before the spine combat (X less than spine
+        /// combat anchor X), one after — so the resulting graph has two
+        /// paths from start to end, each gated by its own combat.
+        /// On any failure the function rolls back partial placements and
+        /// returns false; the spine is left untouched.
+        /// </summary>
+        private static bool TryPlaceBranchThroughSecondCombat(
+            DungeonGrid grid,
+            List<PathStep> spineSteps,
+            List<Point> requiredAnchors,
+            EdgeCost costFn,
+            HashSet<Point> borderBlocked,
+            int gridCols, int gridRows,
+            Random rand)
+        {
+            // Find the spine combat anchor.
+            Point spineCombatAnchor = default;
+            bool found = false;
+            foreach (var anchor in requiredAnchors)
+            {
+                var slot = grid.GetSlot(anchor.X, anchor.Y);
+                if (slot != null && !slot.IsEmpty && slot.Room is CombatRoom)
+                {
+                    spineCombatAnchor = anchor;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+
+            int spineCombatRight = spineCombatAnchor.X + 2;  // CombatRoom is 3 wide
+
+            // Partition spine steps by X relative to the spine combat. Skip
+            // feature cells (pre-placed required rooms) so we don't try to
+            // attach to one. Skip cells immediately adjacent to the spine
+            // combat — they're its docking neighbors and the branch must
+            // attach further out so it routes around the combat, not into it.
+            var beforeNodes = new List<PathStep>();
+            var afterNodes = new List<PathStep>();
+            foreach (var step in spineSteps)
+            {
+                if (step.Cell.IsFeature) continue;
+                if (step.Cell is not (BookshelfCell or CorridorCell)) continue;
+                int x = step.Anchor.X;
+                if (x < spineCombatAnchor.X - 1) beforeNodes.Add(step);
+                else if (x > spineCombatRight + 1) afterNodes.Add(step);
+            }
+            if (beforeNodes.Count == 0 || afterNodes.Count == 0) return false;
+
+            // Pick a candidate position for the branch combat, biased below
+            // Try multiple branch combat positions. For each viable
+            // position pre-place combat, attempt every (nodeA, nodeB)
+            // combination until both legs route, and roll back fully if
+            // none does. Outer loop guarantees we don't give up after one
+            // unfortunate position pick.
+            var branchCombatProto = new CombatRoom { IsFeature = true };
+            int bw = branchCombatProto.CellWidth;
+            int bh = branchCombatProto.CellHeight;
+            const int BranchDepthMin = 4;
+            const int BranchDepthMax = 6;
+            const int MaxPositionAttempts = 20;
+            int beforeCap = System.Math.Min(8, beforeNodes.Count);
+            int afterCap = System.Math.Min(8, afterNodes.Count);
+
+            for (int posAttempt = 0; posAttempt < MaxPositionAttempts; posAttempt++)
+            {
+                // Generate one candidate position. Randomize whether we try
+                // below or above the spine combat. If the chosen direction
+                // clips a grid edge, fall back to the opposite direction.
+                int depth = BranchDepthMin + rand.Next(BranchDepthMax - BranchDepthMin + 1);
+                bool below = rand.Next(2) == 0;
+                int row = below
+                    ? spineCombatAnchor.Y + depth
+                    : spineCombatAnchor.Y - depth;
+                if (row < EdgeBorder || row + bh - 1 >= gridRows - EdgeBorder)
+                    row = below
+                        ? spineCombatAnchor.Y - depth
+                        : spineCombatAnchor.Y + depth;
+                if (row < EdgeBorder) continue;
+                if (row + bh - 1 >= gridRows - EdgeBorder) continue;
+
+                // Wider column jitter than the original ±3: gives the
+                // branch combat room to land in clearer columns when the
+                // spine's column is congested.
+                int colJitter = rand.Next(-6, 7);
+                int col = spineCombatAnchor.X + colJitter;
+                if (col < EdgeBorder + 1) continue;
+                if (col + bw > gridCols - EdgeBorder - 1) continue;
+
+                bool clear = true;
+                for (int sc = 0; sc < bw && clear; sc++)
+                {
+                    for (int sr = 0; sr < bh; sr++)
+                    {
+                        var slot = grid.GetSlot(col + sc, row + sr);
+                        if (slot == null || !slot.IsEmpty) { clear = false; break; }
+                    }
+                }
+                if (!clear) continue;
+
+                var posCandidate = new Point(col, row);
+                if (!branchCombatProto.IsValidPlacement(grid, posCandidate)) continue;
+
+                // Pre-place this position's combat and attempt legs.
+                var branchCombat = new CombatRoom { IsFeature = true };
+                grid.Place(branchCombat, posCandidate.X, posCandidate.Y, grid.NextGroupId());
+
+                // Try every (nodeA, nodeB) combination at this position. Leg
+                // 1 is tentatively stamped before leg 2 runs (so leg 2's
+                // anti-fusion check sees it); rolled back if leg 2 fails.
+                ShuffleInPlace(beforeNodes, rand);
+                ShuffleInPlace(afterNodes, rand);
+
+                bool closedLoopPlaced = false;
+                for (int aIdx = 0; aIdx < beforeCap && !closedLoopPlaced; aIdx++)
+                {
+                    var nodeA = beforeNodes[aIdx];
+                    var leg1 = GridAStar.FindPath(
+                        grid, nodeA.Anchor, posCandidate, nodeA.Cell, costFn,
+                        blocked: borderBlocked,
+                        streakLimits: StreakLimits, minStreakLimits: MinStreakLimits,
+                        maxVerticalRun: MaxVerticalRun);
+                    if (leg1 == null) continue;
+
+                    foreach (var step in leg1)
+                        grid.Place(step.Cell, step.Anchor.X, step.Anchor.Y, grid.NextGroupId());
+
+                    List<PathStep> leg2 = null;
+                    for (int bIdx = 0; bIdx < afterCap; bIdx++)
+                    {
+                        var nodeB = afterNodes[bIdx];
+                        leg2 = GridAStar.FindPath(
+                            grid, posCandidate, nodeB.Anchor, branchCombat, costFn,
+                            blocked: borderBlocked,
+                            streakLimits: StreakLimits, minStreakLimits: MinStreakLimits,
+                            maxVerticalRun: MaxVerticalRun);
+                        if (leg2 != null) break;
+                    }
+
+                    if (leg2 != null)
+                    {
+                        foreach (var step in leg2)
+                            grid.Place(step.Cell, step.Anchor.X, step.Anchor.Y, grid.NextGroupId());
+                        closedLoopPlaced = true;
+                    }
+                    else
+                    {
+                        foreach (var step in leg1)
+                            ClearFootprint(grid, step.Cell, step.Anchor);
+                    }
+                }
+
+                if (closedLoopPlaced) return true;
+
+                // Every (nodeA, nodeB) at this position failed to close.
+                // Roll the combat back and try a fresh position.
+                ClearFootprint(grid, branchCombat, posCandidate);
+            }
+
+            return false;
+        }
+
+        /// <summary>Clears every sub-cell of <paramref name="room"/>'s footprint at <paramref name="anchor"/>.</summary>
+        private static void ClearFootprint(DungeonGrid grid, GridRoom room, Point anchor)
+        {
+            for (int sc = 0; sc < room.CellWidth; sc++)
+            {
+                for (int sr = 0; sr < room.CellHeight; sr++)
+                {
+                    var s = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
+                    if (s == null) continue;
+                    s.Room = null;
+                    s.SubCol = 0;
+                    s.SubRow = 0;
+                    s.GroupId = 0;
+                }
+            }
+        }
+
+        /// <summary>Fisher-Yates in-place shuffle.</summary>
+        private static void ShuffleInPlace<T>(List<T> list, Random rand)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = rand.Next(i + 1);
+                (list[i], list[j]) = (list[j], list[i]);
+            }
+        }
+
         /// <summary>Counts CombatRoom anchors on the grid (sub-cells excluded).</summary>
         private static int CountCombatRooms(DungeonGrid grid)
         {
@@ -696,6 +888,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             {
                 var slot = grid.GetSlot(cellPos.X, cellPos.Y);
                 if (slot == null || slot.IsEmpty) continue;
+
+                // Rooms that own their padding visuals (bookshelves, doors,
+                // any future room type opting in via OwnsPadding) skip
+                // side-capping. Without this skip the cap would stamp stone
+                // over their wood framing.
+                if (slot.Room.OwnsPadding) continue;
 
                 Point cellOrigin = grid.GridToWorld(cellPos.X, cellPos.Y);
 
