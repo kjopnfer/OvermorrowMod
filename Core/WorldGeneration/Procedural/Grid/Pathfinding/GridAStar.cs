@@ -197,6 +197,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                                 (x, y) => LookupPathCell(capturedCurrent, cameFrom, priorSegmentSteps, x, y)))
                             continue;
 
+                        // Anti-fusion: a candidate's footprint must not border
+                        // a foreign cell (one that's neither in this A* call's
+                        // path nor part of the segment's start/goal subgoal).
+                        // Without this, two A* calls placing cells side-by-side
+                        // produce a connected hallway via shared open sides,
+                        // which is the mechanism behind every accidental loop
+                        // we've seen.
+                        if (!AntiFusionOk(grid, candidate, anchor, start, startCell, goal,
+                                          current, cameFrom, priorSegmentSteps))
+                            continue;
+
                         // Cardinal entries: candidate must expose an exit on the entry face.
                         // Compare signs, not deltas, so a 1-wide cell can dock against a 2-wide source.
                         // Skipped for diagonal (stair) sources and for candidates with no cardinal exits.
@@ -234,6 +245,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         if (candidate is ShaftCell)
                         {
                             if (PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X - 1)
+                                || PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X)
                                 || PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X + 1))
                                 continue;
                         }
@@ -454,6 +466,83 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                                     return false;
                             }
                         }
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Anti-fusion: rejects candidates whose footprint borders a foreign
+        /// cell (a cell that's not part of this segment's path and not the
+        /// segment's start or goal subgoal). Endpoint cells are exempt because
+        /// docking against them is the whole point. Without this check, two
+        /// A* segments placing cells side-by-side connect via shared open
+        /// sides into accidental loops. Cardinal neighbors only — diagonals
+        /// don't form connections through grid-cell borders.
+        /// </summary>
+        private static bool AntiFusionOk(
+            DungeonGrid grid,
+            GridRoom candidate, Point anchor,
+            Point start, GridRoom startCell,
+            Point goal,
+            Node current, Dictionary<Node, EdgeRecord> cameFrom,
+            List<PathStep> priorSegmentSteps)
+        {
+            int candW = candidate.CellWidth;
+            int candH = candidate.CellHeight;
+
+            // Footprint of the segment's start subgoal. If startCell is null,
+            // treat as 1x1 (door / arbitrary point).
+            int startW = startCell?.CellWidth ?? 1;
+            int startH = startCell?.CellHeight ?? 1;
+
+            // Footprint of the segment's goal subgoal. Look up the grid; if
+            // the goal hasn't been pre-placed (rare), treat as 1x1.
+            int goalW = 1, goalH = 1;
+            var goalSlot = grid.GetSlot(goal.X, goal.Y);
+            if (goalSlot != null && !goalSlot.IsEmpty)
+            {
+                goalW = goalSlot.Room.CellWidth;
+                goalH = goalSlot.Room.CellHeight;
+            }
+
+            for (int sc = 0; sc < candW; sc++)
+            {
+                for (int sr = 0; sr < candH; sr++)
+                {
+                    int ix = anchor.X + sc;
+                    int iy = anchor.Y + sr;
+
+                    // Four cardinal neighbors of this footprint sub-cell.
+                    var neighbors = new (int x, int y)[]
+                    {
+                        (ix + 1, iy), (ix - 1, iy), (ix, iy + 1), (ix, iy - 1),
+                    };
+                    foreach (var (nx, ny) in neighbors)
+                    {
+                        // Inside the candidate's own footprint? Same room, skip.
+                        if (nx >= anchor.X && nx < anchor.X + candW
+                         && ny >= anchor.Y && ny < anchor.Y + candH) continue;
+
+                        // Inside the segment's start subgoal footprint? Allowed.
+                        if (nx >= start.X && nx < start.X + startW
+                         && ny >= start.Y && ny < start.Y + startH) continue;
+
+                        // Inside the segment's goal subgoal footprint? Allowed.
+                        if (nx >= goal.X && nx < goal.X + goalW
+                         && ny >= goal.Y && ny < goal.Y + goalH) continue;
+
+                        var nSlot = grid.GetSlot(nx, ny);
+                        if (nSlot == null) continue;       // off-grid
+                        if (nSlot.IsEmpty) continue;       // empty cell, no fusion possible
+
+                        // In this segment's own in-progress path? Same A* run, OK.
+                        if (LookupPathCell(current, cameFrom, priorSegmentSteps, nx, ny) != null)
+                            continue;
+
+                        // Foreign occupied cell. Reject this candidate.
+                        return false;
                     }
                 }
             }

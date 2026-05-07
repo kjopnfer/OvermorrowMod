@@ -22,7 +22,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         // Two combat rooms must sit at least this many cells apart
         // (Chebyshev distance). Prevents combat-corridor-combat clusters
         // near the spine end where A* would otherwise pack them tightly.
-        private const int MinSpacingBetweenCombatRooms = 6;
+        private const int MinSpacingBetweenCombatRooms = 3;
         // Up to 3 per dungeon: one mandatory on the spine and at most
         // two more spread across branches. MinSpacingBetweenCombatRooms
         // keeps them from clustering.
