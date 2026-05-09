@@ -9,34 +9,16 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 {
-    /// <summary>
-    /// Mandatory-encounter room. Same 2x1 footprint and bookshelf-sandwich
-    /// connection rules as <see cref="LoungeRoom"/>, currently rendered as a
-    /// fully cleared, wall-less space so it visually pops in the dungeon
-    /// during placement testing. Decoration and enemy spawns will be added
-    /// once placement is dialled in.
-    /// </summary>
     public class CombatRoom : GridRoom
     {
         public override int CellWidth => 3;
         public override int CellHeight => 1;
 
-        // Two combat rooms must sit at least this many cells apart
-        // (Chebyshev distance). Prevents combat-corridor-combat clusters
-        // near the spine end where A* would otherwise pack them tightly.
+        // Prevents combat-corridor-combat clusters
         private const int MinSpacingBetweenCombatRooms = 3;
-        // Up to 3 per dungeon: one mandatory on the spine and at most
-        // two more spread across branches. MinSpacingBetweenCombatRooms
-        // keeps them from clustering.
         private const int MaxInstancesPerDungeon = 3;
-        // Reject combat placements within this Chebyshev distance of any
-        // door. Without this, A* segments / branches cheerfully drop a
-        // CombatRoom 3-4 columns from a door because CombatRoom's cost
-        // weight (0.7) makes it the cheapest non-bookshelf option.
-        private const int MinDistanceFromDoor = 5;
 
-        // Painted last so combat's corridor-style entry passages win the
-        // shared strip against neighboring bookshelves' wood-panel padding.
+        private const int MinDistanceFromDoor = 5;
         public override int PaddingPriority => 10;
 
         public override void Build(Point origin, int fillTileType, int liningTileType)
@@ -60,11 +42,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int leftTile = origin.X - 2;
             int rightTile = origin.X + width + 1;
 
-            int leftId  = ModContent.GetInstance<CombatDoor_TE>().Place(leftTile,  floorRow);
+            int leftId = ModContent.GetInstance<CombatDoor_TE>().Place(leftTile, floorRow);
             int rightId = ModContent.GetInstance<CombatDoor_TE>().Place(rightTile, floorRow);
 
-            if (TileEntity.ByID.TryGetValue(leftId,  out var leftTE)  && leftTE  is Common.RoomManager.CombatDoor_TE leftDoor)
-                leftDoor.SiblingTEID  = rightId;
+            if (TileEntity.ByID.TryGetValue(leftId, out var leftTE) && leftTE is Common.RoomManager.CombatDoor_TE leftDoor)
+                leftDoor.SiblingTEID = rightId;
 
             if (TileEntity.ByID.TryGetValue(rightId, out var rightTE) && rightTE is Common.RoomManager.CombatDoor_TE rightDoor)
                 rightDoor.SiblingTEID = leftId;
@@ -82,9 +64,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 case Direction.Left:
                 case Direction.Right:
                     {
-                        // Wipe and refill the shared strip plus the vertical
-                        // padding above it, overriding whatever the neighbor's
-                        // BuildPadding wrote.
                         ushort fill = (ushort)ctx.FillTileType;
                         int trim = DungeonGrid.VerticalPadding;
                         for (int lx = 0; lx < ctx.Width; lx++)
@@ -101,14 +80,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                             }
                         }
 
-                        int neighborCol = ctx.Side == Direction.Left
-                            ? ctx.Col - 1
-                            : ctx.Col + CellWidth;
+                        int neighborCol = ctx.Side == Direction.Left ? ctx.Col - 1 : ctx.Col + CellWidth;
                         var neighborSlot = ctx.Grid?.GetSlot(neighborCol, ctx.Row);
                         bool hasNeighbor = neighborSlot != null && !neighborSlot.IsEmpty;
 
-                        // skipAbove kills the wood ceiling above the opening
-                        // so it reads as stone, matching the surrounding fill.
                         if (hasNeighbor)
                         {
                             PaddingBuilder.PlaceCorridorPadding(
@@ -130,8 +105,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             }
         }
 
-        // Combat rooms accept the standard architectural neighbors so the
-        // spine and branches have flexibility in routing through them.
         private static readonly GridRoom[] HorizontalNeighbors =
         {
             new BookshelfCell(),
@@ -163,12 +136,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         }
 
         /// <summary>
-        /// Enforce minimum spacing between combat rooms and a per-dungeon
-        /// instance cap. Bounded proximity scan around the candidate
-        /// anchor (radius = MinSpacingBetweenCombatRooms) covers spacing;
-        /// a cheap grid-only pass counts total combat instances for the cap.
-        /// Considers both committed grid cells and the in-progress A* path
-        /// via <paramref name="pendingLookup"/>.
+        /// Enforce minimum spacing between combat rooms and the cap. 
         /// </summary>
         public override bool IsValidPlacement(DungeonGrid grid, Point anchor,
                                               Func<int, int, GridRoom> pendingLookup = null)
@@ -214,9 +182,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 }
             }
 
-            // Total combat-room count cap. Cheap grid-only scan; pending
-            // path placements aren't counted, but the spacing constraint
-            // already prevents clustering within a single path.
             var seen = new HashSet<GridRoom>();
             int combatCount = 0;
             for (int c = 0; c < grid.Cols; c++)
@@ -224,10 +189,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 for (int r = 0; r < grid.Rows; r++)
                 {
                     var slot = grid.GetSlot(c, r);
-                    if (slot == null || slot.IsEmpty) continue;
-                    if (slot.Room is CombatRoom && seen.Add(slot.Room)) combatCount++;
+                    if (slot == null || slot.IsEmpty) 
+                        continue;
+                    
+                    if (slot.Room is CombatRoom && seen.Add(slot.Room)) 
+                        combatCount++;
                 }
             }
+
             return combatCount < MaxInstancesPerDungeon;
         }
     }

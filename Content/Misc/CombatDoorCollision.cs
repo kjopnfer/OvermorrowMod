@@ -92,6 +92,7 @@ namespace OvermorrowMod.Content.Misc
                 Main.LocalPlayer.cursorItemIconEnabled = true;
                 Main.LocalPlayer.cursorItemIconID = ItemID.WoodenDoor;
                 Main.LocalPlayer.noThrow = 2;
+                Main.LocalPlayer.mouseInterface = true;
 
                 if (Main.mouseRight && Main.mouseRightRelease)
                     DoorInstance?.Open();
