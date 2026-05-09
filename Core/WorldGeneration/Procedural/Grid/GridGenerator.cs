@@ -561,19 +561,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
 
             // Debug: corner markers at each grid cell.
-            for (int col = 0; col < grid.Cols; col++)
-            {
-                for (int row = 0; row < grid.Rows; row++)
-                {
-                    Point p = grid.GridToWorld(col, row);
-                    int w = DungeonGrid.CellTileWidth - 1;
-                    int h = DungeonGrid.CellTileHeight - 1;
-                    WorldGenUtils.PlaceTile(p.X, p.Y, (ushort)TileID.Adamantite);
-                    WorldGenUtils.PlaceTile(p.X + w, p.Y, (ushort)TileID.Adamantite);
-                    WorldGenUtils.PlaceTile(p.X, p.Y + h, (ushort)TileID.Adamantite);
-                    WorldGenUtils.PlaceTile(p.X + w, p.Y + h, (ushort)TileID.Adamantite);
-                }
-            }
+            //for (int col = 0; col < grid.Cols; col++)
+            //{
+            //    for (int row = 0; row < grid.Rows; row++)
+            //    {
+            //        Point p = grid.GridToWorld(col, row);
+            //        int w = DungeonGrid.CellTileWidth - 1;
+            //        int h = DungeonGrid.CellTileHeight - 1;
+            //        WorldGenUtils.PlaceTile(p.X, p.Y, (ushort)TileID.Adamantite);
+            //        WorldGenUtils.PlaceTile(p.X + w, p.Y, (ushort)TileID.Adamantite);
+            //        WorldGenUtils.PlaceTile(p.X, p.Y + h, (ushort)TileID.Adamantite);
+            //        WorldGenUtils.PlaceTile(p.X + w, p.Y + h, (ushort)TileID.Adamantite);
+            //    }
+            //}
         }
 
         /// <summary>Clamps a row inside the playable area, leaving room for 2-row stair footprints.</summary>
