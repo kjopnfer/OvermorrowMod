@@ -713,6 +713,8 @@ NPCs: {
 	ChainArm.DisplayName: Chain Arm
 	Waxhead.DisplayName: Waxhead
 	HauntedChandelier.DisplayName: Haunted Chandelier
+	CombatDoorCollision.DisplayName: Combat Door Collision
+	CombatOrchestrator.DisplayName: Combat Orchestrator
 }
 
 Bestiary: {

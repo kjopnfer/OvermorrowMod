@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using System;
 using System.Collections.Generic;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
@@ -42,8 +44,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int width = FootprintWidth;
             int height = FootprintHeight;
 
-            // Clear tiles AND walls across the entire footprint so the room
-            // reads as a void box; easy to spot during testing.
+            // Clear footprint to a void box.
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -52,18 +53,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     WorldGenUtils.ClearWall(origin.X + x, origin.Y + y);
                 }
             }
+
+            // Place a CombatDoor_TE 2 tiles outside each side, on the floor
+            // row, and link them as siblings so the pair opens/closes together.
+            int floorRow = origin.Y + height - 1;
+            int leftTile = origin.X - 2;
+            int rightTile = origin.X + width + 1;
+
+            int leftId  = ModContent.GetInstance<CombatDoor_TE>().Place(leftTile,  floorRow);
+            int rightId = ModContent.GetInstance<CombatDoor_TE>().Place(rightTile, floorRow);
+
+            if (TileEntity.ByID.TryGetValue(leftId,  out var leftTE)  && leftTE  is Common.RoomManager.CombatDoor_TE leftDoor)
+                leftDoor.SiblingTEID  = rightId;
+
+            if (TileEntity.ByID.TryGetValue(rightId, out var rightTE) && rightTE is Common.RoomManager.CombatDoor_TE rightDoor)
+                rightDoor.SiblingTEID = leftId;
         }
 
         public override void BuildPadding(PaddingContext ctx)
         {
-            // Side padding uses corridor-style geometry (low 8-tile-tall
-            // passage with wood ceiling/floor trim) so the combat room
-            // reads as a closed-off square: only a small entry/exit
-            // opening breaches each side. Once combat starts those
-            // openings can be sealed with doors. When the side faces
-            // empty stone (no neighbor cell), fall back to the standard
-            // wood-panel padding instead so the unused side reads like
-            // a normal room edge.
+            // Sides get corridor-style entry passages (or wood-panel on
+            // dead-end faces); top/bottom get a wood floor.
             ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
             ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
 
@@ -71,44 +81,48 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             {
                 case Direction.Left:
                 case Direction.Right:
-                {
-                    // Wipe whatever the neighbor's BuildPadding wrote into
-                    // the shared strip first, then refill with the dungeon
-                    // fill tile so the painters below have stone to carve
-                    // through. Without the refill the strip is empty air
-                    // and the corridor's wood trim (which uses ReplaceTile)
-                    // wouldn't have anything to replace, leaving an obvious
-                    // gap above and below the entry passage. PaddingBuilder
-                    // iterates column-major, so combat lands here AFTER its
-                    // left-side neighbor.
-                    ushort fill = (ushort)ctx.FillTileType;
-                    for (int lx = 0; lx < ctx.Width; lx++)
                     {
-                        for (int ly = 0; ly < ctx.Height; ly++)
+                        // Wipe and refill the shared strip plus the vertical
+                        // padding above it, overriding whatever the neighbor's
+                        // BuildPadding wrote.
+                        ushort fill = (ushort)ctx.FillTileType;
+                        int trim = DungeonGrid.VerticalPadding;
+                        for (int lx = 0; lx < ctx.Width; lx++)
                         {
-                            WorldGenUtils.ClearWall(ctx.X + lx, ctx.Y + ly);
-                            WorldGenUtils.PlaceTile(ctx.X + lx, ctx.Y + ly, fill);
+                            for (int ly = 0; ly < ctx.Height; ly++)
+                            {
+                                WorldGenUtils.ClearWall(ctx.X + lx, ctx.Y + ly);
+                                WorldGenUtils.PlaceTile(ctx.X + lx, ctx.Y + ly, fill);
+                            }
+                            for (int ly = 0; ly < trim; ly++)
+                            {
+                                WorldGenUtils.ClearWall(ctx.X + lx, ctx.Y - trim + ly);
+                                WorldGenUtils.PlaceTile(ctx.X + lx, ctx.Y - trim + ly, fill);
+                            }
                         }
-                    }
 
-                    int neighborCol = ctx.Side == Direction.Left
-                        ? ctx.Col - 1
-                        : ctx.Col + CellWidth;
-                    var neighborSlot = ctx.Grid?.GetSlot(neighborCol, ctx.Row);
-                    bool hasNeighbor = neighborSlot != null && !neighborSlot.IsEmpty;
+                        int neighborCol = ctx.Side == Direction.Left
+                            ? ctx.Col - 1
+                            : ctx.Col + CellWidth;
+                        var neighborSlot = ctx.Grid?.GetSlot(neighborCol, ctx.Row);
+                        bool hasNeighbor = neighborSlot != null && !neighborSlot.IsEmpty;
 
-                    if (hasNeighbor)
-                    {
-                        PaddingBuilder.PlaceCorridorPadding(
-                            ctx.X, ctx.Y, ctx.Width, ctx.Height, woodWall, blueWall);
+                        // skipAbove kills the wood ceiling above the opening
+                        // so it reads as stone, matching the surrounding fill.
+                        if (hasNeighbor)
+                        {
+                            PaddingBuilder.PlaceCorridorPadding(
+                                ctx.X, ctx.Y, ctx.Width, ctx.Height,
+                                woodWall, blueWall, skipAbove: true);
+                        }
+                        else
+                        {
+                            PaddingBuilder.PlaceWoodPanelPadding(
+                                ctx.X, ctx.Y, ctx.Width, ctx.Height,
+                                woodWall, blueWall, skipAbove: true);
+                        }
+                        break;
                     }
-                    else
-                    {
-                        PaddingBuilder.PlaceWoodPanelPadding(
-                            ctx.X, ctx.Y, ctx.Width, ctx.Height, woodWall, blueWall);
-                    }
-                    break;
-                }
                 case Direction.Top:
                 case Direction.Bottom:
                     PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
@@ -159,10 +173,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override bool IsValidPlacement(DungeonGrid grid, Point anchor,
                                               Func<int, int, GridRoom> pendingLookup = null)
         {
-            // Door-proximity check. Scans every grid slot for DoorRoom and
-            // measures Chebyshev distance from each footprint sub-cell of
-            // the candidate anchor. Cheap on dungeon grids (a 25x30 grid
-            // is 750 slots; doors are sparse so the inner test rarely fires).
+            // Door-proximity check.
             for (int dc = 0; dc < grid.Cols; dc++)
             {
                 for (int dr = 0; dr < grid.Rows; dr++)

@@ -74,7 +74,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
         }
 
-        public static void PlaceCorridorPadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall)
+        public static void PlaceCorridorPadding(int x, int y, int w, int h, ushort woodWall, ushort blueWall, bool skipAbove = false)
         {
             int ceilingY = y + 17;
             int floorY = ceilingY + 8;
@@ -83,13 +83,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int ly = ceilingY; ly <= floorY; ly++)
                     WorldGenUtils.ClearTile(x + lx, ly);
 
-            // Wood tiles forming 4-tile thick top (above ceiling) and bottom
-            // (below floor) trim strips. The "below" strip extends into the
-            // vertical padding zone below the corridor cell so corridor-to-
-            // corridor connections show wood floor under the gap, mirroring
-            // the wood ceiling above. ReplaceTile keeps this safe: positions
-            // a neighbor cleared (an opening, a shaft passage) are preserved,
-            // never re-sealed by this paint pass.
             ushort woodTile = (ushort)ModContent.TileType<ArchiveWood>();
             int trim = DungeonGrid.VerticalPadding;
             int stripBottom = y + h;
@@ -99,7 +92,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     int aboveY = ceilingY - 1 - d;
                     int belowY = floorY + 1 + d;
-                    if (aboveY >= y) WorldGenUtils.ReplaceTile(x + lx, aboveY, woodTile);
+                    if (!skipAbove && aboveY >= y)
+                        WorldGenUtils.ReplaceTile(x + lx, aboveY, woodTile);
                     WorldGenUtils.ReplaceTile(x + lx, belowY, woodTile);
                 }
             }
@@ -116,14 +110,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
 
-            // Wall trim above the ceiling and below the floor. Clamp both to
-            // stay inside the strip so this helper never bleeds wall paint
-            // into the row above or below.
+            // Wall trim above the ceiling and below the floor.
             for (int lx = 0; lx < w; lx++)
             {
                 int aboveY = ceilingY - 1;
                 int belowY = floorY + 1;
-                if (aboveY >= y) WorldGenUtils.SetWall(x + lx, aboveY, woodWall);
+                if (!skipAbove && aboveY >= y)
+                    WorldGenUtils.SetWall(x + lx, aboveY, woodWall);
                 if (belowY < stripBottom) WorldGenUtils.SetWall(x + lx, belowY, woodWall);
             }
         }
