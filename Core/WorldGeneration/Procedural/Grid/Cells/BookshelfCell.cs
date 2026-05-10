@@ -46,6 +46,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override void BuildPadding(PaddingContext ctx)
         {
+            // Skip the vertical strip when a shaft is on that side; the shaft
+            // carves the passage and we'd otherwise paint over it.
+            if (ctx.Side == Direction.Top || ctx.Side == Direction.Bottom)
+            {
+                int neighborRow = ctx.Side == Direction.Top ? ctx.Row - 1 : ctx.Row + 1;
+                var neighbor = ctx.Grid.GetSlot(ctx.Col, neighborRow);
+                if (neighbor != null && !neighbor.IsEmpty && neighbor.Room is ShaftCell)
+                    return;
+            }
+
             var wallMap = new Dictionary<(byte, byte, byte), (int, int)>
             {
                 [(67, 84, 50)]  = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
@@ -126,12 +136,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
             TexGen.PaintAsepriteLayer(SheetLayer.Objects, AssetDirectory.GrandArchives + "BookshelfCell.aseprite", paintX, paintY, objectMap);
 
-            PlaceBookshelfArch(ctx.Origin.X + 2, ctx.Origin.Y);
-
             var above = ctx.Grid.GetSlot(ctx.Col, ctx.Row - 1);
             var below = ctx.Grid.GetSlot(ctx.Col, ctx.Row + 1);
             bool shaftAbove = above != null && !above.IsEmpty && above.Room is ShaftCell;
             bool shaftBelow = below != null && !below.IsEmpty && below.Room is ShaftCell;
+
+            if (!shaftAbove)
+                PlaceBookshelfArch(ctx.Origin.X + 2, ctx.Origin.Y);
+
             if (shaftAbove || shaftBelow)
             {
                 // Sconces are mutually exclusive with book piles; a shaft

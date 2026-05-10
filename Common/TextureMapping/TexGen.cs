@@ -291,15 +291,19 @@ namespace OvermorrowMod.Common.TextureMapping
                         }
                         int wx = worldX + x;
                         int wy = worldY + y;
+                        // id < 0 = clear sentinel.
                         switch (sheet)
                         {
                             case SheetLayer.Walls:
-                                WorldGenUtils.SetWall(wx, wy, (ushort)entry.id);
+                                if (entry.id < 0) WorldGenUtils.ClearWall(wx, wy);
+                                else WorldGenUtils.SetWall(wx, wy, (ushort)entry.id);
                                 break;
                             case SheetLayer.Tiles:
-                                WorldGenUtils.PlaceTile(wx, wy, (ushort)entry.id);
+                                if (entry.id < 0) WorldGenUtils.ClearTile(wx, wy);
+                                else WorldGenUtils.PlaceTile(wx, wy, (ushort)entry.id);
                                 break;
                             case SheetLayer.Objects:
+                                if (entry.id < 0) break;
                                 int style = entry.styleRange > 1 ? Main.rand.Next(0, entry.styleRange) : 0;
                                 WorldGen.PlaceObject(wx, wy, entry.id, true, style);
                                 break;
