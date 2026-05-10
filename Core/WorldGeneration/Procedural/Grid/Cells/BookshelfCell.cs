@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common;
+using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using Terraria;
@@ -44,25 +46,88 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override void BuildPadding(PaddingContext ctx)
         {
-            ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
-            ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
+            var wallMap = new Dictionary<(byte, byte, byte), (int, int)>
+            {
+                [(67, 84, 50)]  = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
+                [(101, 66, 14)] = (ModContent.WallType<ArchiveWoodWall>(), 0),
+            };
+            var tileMap = new Dictionary<(byte, byte, byte), (int, int)>
+            {
+                [(105, 106, 106)] = (ModContent.TileType<CastleBrick>(), 0),
+                [(89, 86, 82)]    = (ModContent.TileType<DarkCastleBrick>(), 0),
+                [(138, 111, 48)]  = (ModContent.TileType<CastlePlatform>(), 0),
+                [(74, 47, 33)]    = (ModContent.TileType<ArchiveWood>(), 0),
+            };
 
+            // Top/Bottom extend horizontally to cover both corner squares.
+            int worldX, worldY, worldW, worldH;
+            int srcX, srcY, srcW, srcH;
             switch (ctx.Side)
             {
                 case Direction.Left:
+                    worldX = ctx.X; worldY = ctx.Y;
+                    worldW = ctx.Width; worldH = ctx.Height;
+                    srcX = 0;
+                    srcY = DungeonGrid.VerticalPadding;
+                    srcW = DungeonGrid.HorizontalPadding;
+                    srcH = DungeonGrid.CellTileHeight;
+                    break;
                 case Direction.Right:
-                    PaddingBuilder.PlaceWoodPanelPadding(
-                        ctx.X, ctx.Y, ctx.Width, ctx.Height, woodWall, blueWall);
+                    worldX = ctx.X; worldY = ctx.Y;
+                    worldW = ctx.Width; worldH = ctx.Height;
+                    srcX = DungeonGrid.HorizontalPadding + DungeonGrid.CellTileWidth;
+                    srcY = DungeonGrid.VerticalPadding;
+                    srcW = DungeonGrid.HorizontalPadding;
+                    srcH = DungeonGrid.CellTileHeight;
                     break;
                 case Direction.Top:
-                case Direction.Bottom:
-                    PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
+                    worldX = ctx.X - DungeonGrid.HorizontalPadding;
+                    worldY = ctx.Y;
+                    worldW = ctx.Width + 2 * DungeonGrid.HorizontalPadding;
+                    worldH = ctx.Height;
+                    srcX = 0;
+                    srcY = 0;
+                    srcW = DungeonGrid.HorizontalPadding * 2 + DungeonGrid.CellTileWidth;
+                    srcH = DungeonGrid.VerticalPadding;
                     break;
+                case Direction.Bottom:
+                    worldX = ctx.X - DungeonGrid.HorizontalPadding;
+                    worldY = ctx.Y;
+                    worldW = ctx.Width + 2 * DungeonGrid.HorizontalPadding;
+                    worldH = ctx.Height;
+                    srcX = 0;
+                    srcY = DungeonGrid.VerticalPadding + DungeonGrid.CellTileHeight;
+                    srcW = DungeonGrid.HorizontalPadding * 2 + DungeonGrid.CellTileWidth;
+                    srcH = DungeonGrid.VerticalPadding;
+                    break;
+                default:
+                    return;
             }
+
+            for (int lx = 0; lx < worldW; lx++)
+                for (int ly = 0; ly < worldH; ly++)
+                    WorldGenUtils.ClearTile(worldX + lx, worldY + ly);
+
+            string asepritePath = AssetDirectory.GrandArchives + "BookshelfCell.aseprite";
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, asepritePath, worldX, worldY, wallMap, srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, asepritePath, worldX, worldY, tileMap, srcX, srcY, srcW, srcH);
+
+            if (ctx.Side == Direction.Top || ctx.Side == Direction.Bottom)
+                PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
         }
 
         public override void PlaceFurniture(FurnitureContext ctx)
         {
+            var objectMap = new Dictionary<(byte, byte, byte), (int, int)>
+            {
+                [(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
+            };
+            int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
+            int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AssetDirectory.GrandArchives + "BookshelfCell.aseprite", paintX, paintY, objectMap);
+
+            PlaceBookshelfArch(ctx.Origin.X + 2, ctx.Origin.Y);
+
             var above = ctx.Grid.GetSlot(ctx.Col, ctx.Row - 1);
             var below = ctx.Grid.GetSlot(ctx.Col, ctx.Row + 1);
             bool shaftAbove = above != null && !above.IsEmpty && above.Room is ShaftCell;
@@ -120,7 +185,73 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 for (int y = 0; y < height; y++)
                     WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
 
-            PlaceBookPanel(origin.X, origin.Y, width, height);
+            var wallMap = new Dictionary<(byte, byte, byte), (int, int)>
+            {
+                [(54, 36, 11)]   = (ModContent.WallType<ArchiveBookWallFrame>(), 0),
+                [(118, 66, 138)] = (ModContent.WallType<ArchiveBookWall>(), 0),
+                [(101, 66, 14)]  = (ModContent.WallType<ArchiveWoodWall>(), 0),
+            };
+            var tileMap = new Dictionary<(byte, byte, byte), (int, int)>
+            {
+                [(105, 106, 106)] = (ModContent.TileType<CastleBrick>(), 0),
+                [(89, 86, 82)]    = (ModContent.TileType<DarkCastleBrick>(), 0),
+                [(138, 111, 48)]  = (ModContent.TileType<CastlePlatform>(), 0),
+                [(74, 47, 33)]    = (ModContent.TileType<ArchiveWood>(), 0),
+            };
+            string asepritePath = AssetDirectory.GrandArchives + "BookshelfCell.aseprite";
+            int sx = DungeonGrid.HorizontalPadding;
+            int sy = DungeonGrid.VerticalPadding;
+            int sw = DungeonGrid.CellTileWidth;
+            int sh = DungeonGrid.CellTileHeight;
+
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, asepritePath, origin.X, origin.Y, wallMap, sx, sy, sw, sh);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, asepritePath, origin.X, origin.Y, tileMap, sx, sy, sw, sh);
+        }
+
+        /// <summary>
+        /// 14-tile-wide wooden arch with a 7-tile gap in the middle for
+        /// objects underneath. Mirrored from GrandArchiveRoom.PlaceBookshelfArch.
+        /// </summary>
+        private static void PlaceBookshelfArch(int x, int y)
+        {
+            WorldGen.PlaceObject(x,      y, ModContent.TileType<WoodenArchL1>());
+            WorldGen.PlaceObject(x + 1,  y, ModContent.TileType<WoodenArchL2>());
+            WorldGen.PlaceObject(x + 2,  y, ModContent.TileType<WoodenArchL3>());
+            WorldGen.PlaceObject(x + 3,  y, ModContent.TileType<WoodenArchSplit>());
+            WorldGen.PlaceObject(x + 11, y, ModContent.TileType<WoodenArchR1>());
+            WorldGen.PlaceObject(x + 12, y, ModContent.TileType<WoodenArchR2>());
+            WorldGen.PlaceObject(x + 13, y, ModContent.TileType<WoodenArchR3>());
+
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 1, y + 5, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+            if (Main.rand.NextBool())
+                WorldGen.PlaceObject(x + 10, y + 5, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+
+            PlaceShelfArchObjects(x + 3, y + 5);
+            PlaceShelfArchObjects(x + 5, y + 5);
+            PlaceShelfArchObjects(x + 8, y + 5);
+        }
+
+        private static void PlaceShelfArchObjects(int x, int y)
+        {
+            switch (Main.rand.Next(0, 4))
+            {
+                case 0:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<Globe>());
+                    break;
+                case 1:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<Telescope>());
+                    break;
+                case 2:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+                    WorldGen.PlaceObject(x, y - 1, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+                    if (Main.rand.NextBool())
+                        WorldGen.PlaceObject(x, y - 2, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
+                    break;
+                case 3:
+                    WorldGen.PlaceObject(x, y, ModContent.TileType<Crates>(), true, Main.rand.Next(0, 3));
+                    break;
+            }
         }
 
         /// <summary>

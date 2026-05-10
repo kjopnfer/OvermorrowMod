@@ -1,5 +1,6 @@
 displayName = Overmorrow
 author = Japan
 version = 0.1
-buildIgnore = *.csproj, *.user, obj\*, bin\*, lib\*, .vs\*, *.gif
+buildIgnore = *.csproj, *.user, obj\*, bin\*, lib\CollisionLib.dll, lib\SubworldLibrary.dll, lib\SubworldLibrary.xml, .vs\*, *.gif
 modReferences = SubworldLibrary, CollisionLib
+dllReferences = AsepriteDotNet

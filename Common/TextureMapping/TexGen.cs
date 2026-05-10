@@ -1,6 +1,13 @@
+using AsepriteDotNet.Aseprite;
+using AsepriteDotNet.Aseprite.Types;
+using AsepriteDotNet.Common;
+using AsepriteDotNet.IO;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
@@ -11,6 +18,8 @@ using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.TextureMapping
 {
+    public enum SheetLayer { Walls, Tiles, Objects }
+
     // Code by GroxTheGreat, made functional on servers by Feldy
     public class TexGen
     {
@@ -251,6 +260,109 @@ namespace OvermorrowMod.Common.TextureMapping
                 if (y >= tileTex.Height) break; //you've somehow reached the end of the texture! (this shouldn't happen!)
             }
             return gen;
+        }
+
+        public static void PaintAsepriteLayer(
+            SheetLayer sheet,
+            string modPath, int worldX, int worldY,
+            Dictionary<(byte R, byte G, byte B), (int id, int styleRange)> colorMap,
+            int srcX = 0, int srcY = 0, int srcW = -1, int srcH = -1)
+        {
+            string layerName = sheet.ToString();
+            try
+            {
+                Rgba32[] canvas = LoadLayerPixels(modPath, layerName, out int cw, out int ch);
+                if (canvas == null) return;
+
+                int w = srcW > 0 ? srcW : cw;
+                int h = srcH > 0 ? srcH : ch;
+                var unknown = new HashSet<(byte, byte, byte)>();
+
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        Rgba32 c = canvas[(srcY + y) * cw + (srcX + x)];
+                        if (c.A == 0) continue;
+                        var key = (c.R, c.G, c.B);
+                        if (!colorMap.TryGetValue(key, out var entry))
+                        {
+                            unknown.Add(key);
+                            continue;
+                        }
+                        int wx = worldX + x;
+                        int wy = worldY + y;
+                        switch (sheet)
+                        {
+                            case SheetLayer.Walls:
+                                WorldGenUtils.SetWall(wx, wy, (ushort)entry.id);
+                                break;
+                            case SheetLayer.Tiles:
+                                WorldGenUtils.PlaceTile(wx, wy, (ushort)entry.id);
+                                break;
+                            case SheetLayer.Objects:
+                                int style = entry.styleRange > 1 ? Main.rand.Next(0, entry.styleRange) : 0;
+                                WorldGen.PlaceObject(wx, wy, entry.id, true, style);
+                                break;
+                        }
+                    }
+
+                LogUnmapped(modPath, layerName, unknown);
+            }
+            catch (Exception ex)
+            {
+                OvermorrowModFile.Instance.Logger.Error($"Aseprite paint failed for {modPath}: {ex.Message}");
+            }
+        }
+
+        private static Rgba32[] LoadLayerPixels(string modPath, string layerName, out int canvasWidth, out int canvasHeight)
+        {
+            canvasWidth = 0;
+            canvasHeight = 0;
+
+            string strippedPath = modPath.Replace(nameof(OvermorrowMod) + "/", "");
+            byte[] bytes = OvermorrowModFile.Instance.GetFileBytes(strippedPath);
+            using var ms = new MemoryStream(bytes);
+            AsepriteFile file = AsepriteFileLoader.FromStream(strippedPath, ms);
+
+            if (!file.TryGetLayer(layerName, out AsepriteLayer? _))
+            {
+                OvermorrowModFile.Instance.Logger.Warn($"Aseprite layer '{layerName}' not found in {modPath}");
+                return null;
+            }
+
+            canvasWidth = file.CanvasWidth;
+            canvasHeight = file.CanvasHeight;
+
+            Rgba32[] canvas = new Rgba32[canvasWidth * canvasHeight];
+            AsepriteFrame frame = file.Frames[0];
+            foreach (var cel in frame.Cels)
+            {
+                if (cel.Layer.Name != layerName) continue;
+                if (cel is not AsepriteImageCel imageCel) continue;
+
+                int celW = imageCel.Size.Width;
+                int celH = imageCel.Size.Height;
+                int celX = imageCel.Location.X;
+                int celY = imageCel.Location.Y;
+                ReadOnlySpan<Rgba32> celPixels = imageCel.Pixels;
+                for (int cy = 0; cy < celH; cy++)
+                    for (int cx = 0; cx < celW; cx++)
+                    {
+                        int canvasX = celX + cx;
+                        int canvasY = celY + cy;
+                        if (canvasX < 0 || canvasX >= canvasWidth) continue;
+                        if (canvasY < 0 || canvasY >= canvasHeight) continue;
+                        canvas[canvasY * canvasWidth + canvasX] = celPixels[cy * celW + cx];
+                    }
+            }
+            return canvas;
+        }
+
+        private static void LogUnmapped(string modPath, string layerName, HashSet<(byte, byte, byte)> unknown)
+        {
+            if (unknown.Count == 0) return;
+            string list = string.Join(", ", unknown.Select(t => $"({t.Item1},{t.Item2},{t.Item3})"));
+            OvermorrowModFile.Instance.Logger.Info($"Aseprite '{modPath}' layer '{layerName}' unmapped colors: {list}");
         }
     }
 }
