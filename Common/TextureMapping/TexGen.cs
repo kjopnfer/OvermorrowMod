@@ -318,7 +318,39 @@ namespace OvermorrowMod.Common.TextureMapping
             }
         }
 
-        private static Rgba32[] LoadLayerPixels(string modPath, string layerName, out int canvasWidth, out int canvasHeight)
+        /// <summary>
+        /// Clears the tile and wall at that world position using the spritesheet's Clear layer.
+        /// </summary>
+        public static void PaintClearLayer(
+            string modPath, int worldX, int worldY,
+            int srcX = 0, int srcY = 0, int srcW = -1, int srcH = -1)
+        {
+            try
+            {
+                Rgba32[] canvas = LoadLayerPixels(modPath, "Clear", out int cw, out int ch, optional: true);
+                if (canvas == null) return;
+
+                int w = srcW > 0 ? srcW : cw;
+                int h = srcH > 0 ? srcH : ch;
+
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        Rgba32 c = canvas[(srcY + y) * cw + (srcX + x)];
+                        if (c.A == 0) continue;
+                        int wx = worldX + x;
+                        int wy = worldY + y;
+                        WorldGenUtils.ClearTile(wx, wy);
+                        WorldGenUtils.ClearWall(wx, wy);
+                    }
+            }
+            catch (Exception ex)
+            {
+                OvermorrowModFile.Instance.Logger.Error($"Aseprite clear pass failed for {modPath}: {ex.Message}");
+            }
+        }
+
+        private static Rgba32[] LoadLayerPixels(string modPath, string layerName, out int canvasWidth, out int canvasHeight, bool optional = false)
         {
             canvasWidth = 0;
             canvasHeight = 0;
@@ -330,7 +362,8 @@ namespace OvermorrowMod.Common.TextureMapping
 
             if (!file.TryGetLayer(layerName, out AsepriteLayer? _))
             {
-                OvermorrowModFile.Instance.Logger.Warn($"Aseprite layer '{layerName}' not found in {modPath}");
+                if (!optional)
+                    OvermorrowModFile.Instance.Logger.Warn($"Aseprite layer '{layerName}' not found in {modPath}");
                 return null;
             }
 

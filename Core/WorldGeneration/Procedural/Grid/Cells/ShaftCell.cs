@@ -53,16 +53,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                                 WorldGenUtils.ClearWall(ctx.X + lx, ctx.Y + ly);
                             }
 
-                        int srcX = ctx.Side == Direction.Left
-                            ? 0
-                            : DungeonGrid.HorizontalPadding + DungeonGrid.CellTileWidth;
+                        int srcX = ctx.Side == Direction.Left ? 0 : DungeonGrid.HorizontalPadding + DungeonGrid.CellTileWidth;
                         int srcY = DungeonGrid.VerticalPadding;
                         int srcW = DungeonGrid.HorizontalPadding;
                         int srcH = DungeonGrid.CellTileHeight;
 
-                        TexGen.PaintAsepriteLayer(SheetLayer.Walls,
-                            AssetDirectory.GrandArchives + "ShaftCell.aseprite",
-                            ctx.X, ctx.Y, wallMap, srcX, srcY, srcW, srcH);
+                        TexGen.PaintAsepriteLayer(SheetLayer.Walls, AssetDirectory.GrandArchives + "ShaftCell.aseprite", ctx.X, ctx.Y, wallMap, srcX, srcY, srcW, srcH);
 
                         int sconceRow = ctx.Y + ctx.Height - 1 - 11;
                         int sconceCol = ctx.X + 3;
@@ -72,8 +68,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 case Direction.Top:
                 case Direction.Bottom:
                     // PlaceShaftFloorPadding leaves the diagonal-stair gap; FillWoodFloor would seal it.
-                    PaddingBuilder.PlaceShaftFloorPadding(
-                        ctx.X, ctx.Y, ctx.Width, ctx.Height, ctx.FillTileType);
+                    PaddingBuilder.PlaceShaftFloorPadding(ctx.X, ctx.Y, ctx.Width, ctx.Height, ctx.FillTileType);
                     break;
             }
         }
@@ -98,9 +93,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             };
             int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
-            TexGen.PaintAsepriteLayer(SheetLayer.Objects,
-                AssetDirectory.GrandArchives + "ShaftCell.aseprite",
-                paintX, paintY, objectMap);
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AssetDirectory.GrandArchives + "ShaftCell.aseprite", paintX, paintY, objectMap);
         }
 
         public override void Build(Point origin, int fillTileType, int liningTileType)

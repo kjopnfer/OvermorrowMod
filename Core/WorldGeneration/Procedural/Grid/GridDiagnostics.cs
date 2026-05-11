@@ -102,7 +102,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine();
         }
 
-        // ─── Cell counts ────────────────────────────────────────────────────
+        // Cell counts
 
         private static void WriteCellCounts(StringBuilder sb, DungeonGrid grid)
         {
@@ -152,7 +152,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine();
         }
 
-        // ─── 2D ASCII layout ────────────────────────────────────────────────
+        // 2D ASCII layout
 
         // Width of the longest stripped type name ("DescendingStair" = 15).
         // Each cell renders as "[name padded to 15]" = 17 chars. Empty/OOB
@@ -214,7 +214,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return new string(' ', left) + s + new string(' ', right);
         }
 
-        // ─── Dead-end corridors ─────────────────────────────────────────────
+        // Dead-end corridors
 
         private static void WriteDeadEndCorridors(StringBuilder sb, DungeonGrid grid)
         {
@@ -246,7 +246,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine();
         }
 
-        // ─── Adjacency mismatches ───────────────────────────────────────────
+        // Adjacency mismatches
 
         private static void WriteAdjacencyMismatches(StringBuilder sb, DungeonGrid grid)
         {
@@ -295,7 +295,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine();
         }
 
-        // ─── Connected components ───────────────────────────────────────────
+        // Connected components
 
         private static void WriteConnectedComponents(StringBuilder sb, DungeonGrid grid)
         {
@@ -381,7 +381,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
             return size;
         }
-        // ─── Shaft columns ──────────────────────────────────────────────────
+        // Shaft columns
 
         private static void WriteShaftColumns(StringBuilder sb, DungeonGrid grid)
         {
@@ -409,7 +409,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine();
         }
 
-        // ─── Per-row density ────────────────────────────────────────────────
+        // Per-row density
 
         private static void WritePerRowDensity(StringBuilder sb, DungeonGrid grid)
         {
@@ -429,7 +429,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine();
         }
 
-        // ─── Helpers ────────────────────────────────────────────────────────
+        // Helpers
 
         private static string DescribeCellTerse(DungeonGrid grid, int col, int row)
         {

@@ -70,21 +70,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             };
 
             // Top/Bottom extend horizontally to cover both corner squares.
-            int worldX, worldY, worldW, worldH;
-            int srcX, srcY, srcW, srcH;
+            int worldX;
+            int worldY;
+            int worldW;
+            int worldH;
+            int srcX;
+            int srcY;
+            int srcW;
+            int srcH;
             switch (ctx.Side)
             {
                 case Direction.Left:
-                    worldX = ctx.X; worldY = ctx.Y;
-                    worldW = ctx.Width; worldH = ctx.Height;
+                    worldX = ctx.X;
+                    worldY = ctx.Y;
+                    worldW = ctx.Width;
+                    worldH = ctx.Height;
                     srcX = 0;
                     srcY = DungeonGrid.VerticalPadding;
                     srcW = DungeonGrid.HorizontalPadding;
                     srcH = DungeonGrid.CellTileHeight;
                     break;
                 case Direction.Right:
-                    worldX = ctx.X; worldY = ctx.Y;
-                    worldW = ctx.Width; worldH = ctx.Height;
+                    worldX = ctx.X;
+                    worldY = ctx.Y;
+                    worldW = ctx.Width;
+                    worldH = ctx.Height;
                     srcX = DungeonGrid.HorizontalPadding + DungeonGrid.CellTileWidth;
                     srcY = DungeonGrid.VerticalPadding;
                     srcW = DungeonGrid.HorizontalPadding;

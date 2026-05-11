@@ -133,7 +133,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         public virtual void PlaceFurniture(FurnitureContext ctx) { }
 
-        // ─── Walker interface ────────────────────────────────────────────────
+        // Walker interface
         // Cells expose a list of directional exits. Each exit says:
         //   (1) how the cursor moves if the walker takes this exit, and
         //   (2) what cell types are legal to place on the other side.

@@ -77,7 +77,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int y = 0; y < totalHeight; y++)
                     WorldGenUtils.PlaceTile(worldOrigin.X + x, worldOrigin.Y + y, fill);
 
-            // ─── Phase 1: critical path (planned by A*) ──────────────────────
+            // Phase 1: critical path (planned by A*)
             // Door rows hover near baseRow so the spine reads mostly flat
             // instead of zigzagging end to end.
             int doorRowMin = gridRows / 3;
@@ -424,7 +424,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 };
             }
 
-            // ─── Spawn point ─────────────────────────────────────────────────
+            // Spawn point
             // Resolve the start door's world tile position (cell origin +
             // half-cell offset). The caller uses this for Main.spawnTileX/Y
             // so the player drops in at the door instead of a hardcoded
@@ -434,7 +434,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 startDoorOrigin.X + DungeonGrid.CellTileWidth / 2,
                 startDoorOrigin.Y + DungeonGrid.CellTileHeight / 2);
 
-            // ─── Build path graph ────────────────────────────────────────────
+            // Build path graph
             // Wrap spine + branch into DungeonPath objects so future aux
             // branches can address them by identity (parent path, side
             // of combat, etc.). The grid itself is the source of truth;
@@ -468,7 +468,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     combatAnchor: bp.CombatAnchor));
             }
 
-            // ─── Phase 1.6: aux branches ─────────────────────────────────────
+            // Phase 1.6: aux branches
             // Up to 4 short side-paths attached to spine or branch 1 only.
             // Each is either a closed loop (re-enters parent at two nodes)
             // or a dead-end terminating at a TreasureRoom placeholder. Per
@@ -478,7 +478,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             TryAddAuxBranches(grid, paths, spineCostFn, borderBlocked,
                               gridCols, gridRows, rand);
 
-            // ─── Phase 2.5: side-cap scan ────────────────────────────────────
+            // Phase 2.5: side-cap scan
             // Pure observation: collect every (cell, side) where the cell has
             // an open side facing an empty neighbor. ApplySideCaps paints
             // stone tiles over those borders. No cell modifications, no A*,
@@ -497,7 +497,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 $"OvermorrowDungeon final: combats={finalCombats} " +
                 $"mandatory={finalMandatory} tree={finalTreeShaped}");
 
-            // ─── Phase 3: render ─────────────────────────────────────────────
+            // Phase 3: render
             for (int col = 0; col < grid.Cols; col++)
             {
                 for (int row = 0; row < grid.Rows; row++)
@@ -516,7 +516,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             ApplySideCaps(grid, sidesToCap, fillTileType);
 
-            // ─── Phase 4: furniture ──────────────────────────────────────────
+            // Phase 4: furniture
             // Runs after padding and side caps so furniture can react to the
             // finished neighbor context (e.g. shaft above/below) without
             // racing against the strip painter.
@@ -848,7 +848,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return null;
         }
 
-        // ─── Aux branch tuning ───────────────────────────────────────────
+        // Aux branch tuning
         private const int MaxAuxBranchAttempts = 4;
         private const int MaxAuxNodeManhattan = 10;
         private const int MinAuxNodeManhattan = 3;
@@ -1223,7 +1223,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return blocked;
         }
 
-        // ─── Phase 2.5: side-cap scan ─────────────────────────────────────
+        // Phase 2.5: side-cap scan
 
         /// <summary>
         /// Returns every (cell, side) where the cell has an open side facing
