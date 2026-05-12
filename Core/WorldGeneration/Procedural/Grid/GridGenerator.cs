@@ -1422,13 +1422,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     int topY = topRoomOrigin.Y + DungeonGrid.CellTileHeight - 1;
                     int bottomY = bottomRoomOrigin.Y + DungeonGrid.CellTileHeight - 1;
 
-                    // Carve the connection row in adjacent bookshelves so the
-                    // floor tile doesn't seal the shaft or block the cap.
-                    if (topRoom.Room is BookshelfCell)
-                        ClearShaftConnectionRow(topRoomOrigin.X, topY);
-                    if (bottomRoom.Room is BookshelfCell)
-                        ClearShaftConnectionRow(bottomRoomOrigin.X, bottomY);
-
                     int segmentCount = (bottomY - topY) / 10;
                     int shaftCenterX = grid.GridToWorld(col, topRow).X + DungeonGrid.CellTileWidth / 2;
                     int stairX = shaftCenterX - 7;
@@ -1444,16 +1437,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     ClearObjectFootprint(capX, topY, 5, 4);
                     WorldGen.PlaceObject(capX, topY, stairCapType);
                 }
-            }
-        }
-
-        /// <summary>Clears tiles and walls across the inner columns of one row.</summary>
-        private static void ClearShaftConnectionRow(int originX, int rowY)
-        {
-            for (int lx = 1; lx < DungeonGrid.CellTileWidth - 1; lx++)
-            {
-                WorldGenUtils.ClearTile(originX + lx, rowY);
-                WorldGenUtils.ClearWall(originX + lx, rowY);
             }
         }
 

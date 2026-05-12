@@ -1,11 +1,9 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.TextureMapping;
-using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using System;
 using System.Collections.Generic;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
@@ -41,28 +39,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                     {
                         var wallMap = new Dictionary<(byte, byte, byte), (int, int)>
                         {
-                            [(32, 43, 46)]  = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
+                            [(32, 43, 46)] = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
                             [(101, 66, 14)] = (ModContent.WallType<ArchiveWoodWall>(), 0),
-                            [(0, 0, 0)]     = (-1, 0),
+                            [(0, 0, 0)] = (-1, 0),
+                        };
+                        var tileMap = new Dictionary<(byte, byte, byte), (int, int)>
+                        {
+                            [(74, 47, 33)] = (ModContent.TileType<ArchiveWood>(), 0),
+                            [(0, 0, 0)] = (-1, 0),
                         };
 
-                        for (int lx = 0; lx < ctx.Width; lx++)
-                            for (int ly = 0; ly < ctx.Height; ly++)
-                            {
-                                WorldGenUtils.ClearTile(ctx.X + lx, ctx.Y + ly);
-                                WorldGenUtils.ClearWall(ctx.X + lx, ctx.Y + ly);
-                            }
-
+                        int worldX = ctx.X;
+                        int worldY = ctx.Y - DungeonGrid.VerticalPadding;
                         int srcX = ctx.Side == Direction.Left ? 0 : DungeonGrid.HorizontalPadding + DungeonGrid.CellTileWidth;
-                        int srcY = DungeonGrid.VerticalPadding;
+                        int srcY = 0;
                         int srcW = DungeonGrid.HorizontalPadding;
-                        int srcH = DungeonGrid.CellTileHeight;
+                        int srcH = 2 * DungeonGrid.VerticalPadding + DungeonGrid.CellTileHeight;
 
-                        TexGen.PaintAsepriteLayer(SheetLayer.Walls, AssetDirectory.GrandArchives + "ShaftCell.aseprite", ctx.X, ctx.Y, wallMap, srcX, srcY, srcW, srcH);
-
-                        int sconceRow = ctx.Y + ctx.Height - 1 - 11;
-                        int sconceCol = ctx.X + 3;
-                        //WorldGen.PlaceObject(sconceCol, sconceRow, ModContent.TileType<WaxSconce>());
+                        string asepritePath = AssetDirectory.GrandArchives + "ShaftCell.aseprite";
+                        TexGen.PaintClearLayer(asepritePath, worldX, worldY, srcX, srcY, srcW, srcH);
+                        TexGen.PaintAsepriteLayer(SheetLayer.Walls, asepritePath, worldX, worldY, wallMap, srcX, srcY, srcW, srcH);
+                        TexGen.PaintAsepriteLayer(SheetLayer.Tiles, asepritePath, worldX, worldY, tileMap, srcX, srcY, srcW, srcH);
                         break;
                     }
                 case Direction.Top:
@@ -73,7 +70,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             }
         }
 
-        /// <summary>Vertical neighbors must be empty, another shaft, or a bookshelf.</summary>
         public override bool IsValidPlacement(DungeonGrid grid, Point anchor, System.Func<int, int, GridRoom> pendingLookup = null)
         {
             var above = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y - 1);
@@ -90,6 +86,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             var objectMap = new Dictionary<(byte, byte, byte), (int, int)>
             {
                 [(237, 152, 93)] = (ModContent.TileType<WaxSconce>(), 0),
+                [(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
             };
             int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
@@ -98,18 +95,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override void Build(Point origin, int fillTileType, int liningTileType)
         {
-            int width = DungeonGrid.CellTileWidth;
-            int height = DungeonGrid.CellTileHeight;
-
-            for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
-                    WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
-
             var wallMap = new Dictionary<(byte, byte, byte), (int, int)>
             {
-                [(32, 43, 46)]  = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
+                [(32, 43, 46)] = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
                 [(101, 66, 14)] = (ModContent.WallType<ArchiveWoodWall>(), 0),
-                [(0, 0, 0)]     = (-1, 0),
+                [(0, 0, 0)] = (-1, 0),
+            };
+
+            var objectMap = new Dictionary<(byte, byte, byte), (int, int)>
+            {
+                [(237, 152, 93)] = (ModContent.TileType<WaxSconce>(), 0),
+                [(74, 15, 56)] = (ModContent.TileType<WoodenPillar>(), 1),
             };
 
             string asepritePath = AssetDirectory.GrandArchives + "ShaftCell.aseprite";
@@ -118,7 +114,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int sw = DungeonGrid.CellTileWidth;
             int sh = DungeonGrid.CellTileHeight;
 
+            TexGen.PaintClearLayer(asepritePath, origin.X, origin.Y, sx, sy, sw, sh);
             TexGen.PaintAsepriteLayer(SheetLayer.Walls, asepritePath, origin.X, origin.Y, wallMap, sx, sy, sw, sh);
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, asepritePath, origin.X, origin.Y, wallMap, sx, sy, sw, sh);
         }
     }
 }
