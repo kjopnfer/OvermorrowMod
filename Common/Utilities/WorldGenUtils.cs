@@ -9,14 +9,7 @@ namespace OvermorrowMod.Common.Utilities
 {
     public static class WorldGenUtils
     {
-        /// <summary>
-        /// Places a single 1x1 tile by directly setting the tile type and active flag.
-        /// Bypasses WorldGen.PlaceTile which performs neighbor updates, framing, object data lookups,
-        /// dust effects, and sync calls on every invocation. Use this when bulk-placing simple tiles
-        /// in procedural generation where those side effects are unnecessary and would cause
-        /// significant performance overhead (e.g. hundreds of tiles in a single Build call).
-        /// Do not use for multi-tile objects or tiles that require framing (use WorldGen.PlaceTile for those).
-        /// </summary>
+        /// <summary>Sets tile type + HasTile directly. Skips framing/sync, for bulk worldgen.</summary>
         public static void PlaceTile(int x, int y, ushort tileType)
         {
             Tile t = Main.tile[x, y];
@@ -24,26 +17,14 @@ namespace OvermorrowMod.Common.Utilities
             t.HasTile = true;
         }
 
-        /// <summary>
-        /// Removes a tile by clearing its active flag.
-        /// Bypasses WorldGen.KillTile which performs drop checks, dust effects, sound,
-        /// neighbor updates, and sync calls. Use this for bulk-clearing tiles in procedural
-        /// generation where those side effects are unnecessary.
-        /// </summary>
+        /// <summary>Clears HasTile directly. Skips drops/dust/sync, for bulk worldgen.</summary>
         public static void ClearTile(int x, int y)
         {
             Tile t = Main.tile[x, y];
             t.HasTile = false;
         }
 
-        /// <summary>
-        /// Replaces a tile's type only if a tile is already present at the position.
-        /// If the position is empty (HasTile == false), this is a no-op.
-        /// <para/>
-        /// Use this from contexts that should never seal an opening, such as
-        /// padding renderers running after the room's Build phase. Cleared
-        /// positions stay cleared; existing tiles are repainted with the new type.
-        /// </summary>
+        /// <summary>Repaints an existing tile's type. No-op if the position is empty.</summary>
         public static void ReplaceTile(int x, int y, ushort tileType)
         {
             Tile t = Main.tile[x, y];
@@ -51,43 +32,21 @@ namespace OvermorrowMod.Common.Utilities
             t.TileType = tileType;
         }
 
-        /// <summary>
-        /// Places a wall by directly setting the WallType property.
-        /// Bypasses WorldGen.PlaceWall which performs bounds checking, framing,
-        /// neighbor wall updates, and sync calls on every invocation. Use this when bulk-placing
-        /// walls in procedural generation where those side effects are unnecessary and would cause
-        /// significant performance overhead.
-        /// </summary>
+        /// <summary>Sets WallType directly. Skips framing/sync, for bulk worldgen.</summary>
         public static void SetWall(int x, int y, ushort wallType)
         {
             Tile t = Main.tile[x, y];
             t.WallType = wallType;
         }
 
-        /// <summary>
-        /// Removes a wall by setting WallType to None.
-        /// Bypasses WorldGen.KillWall which performs drop checks, dust effects, sound,
-        /// neighbor updates, and sync calls. Use this for bulk-clearing walls in procedural generation.
-        /// </summary>
+        /// <summary>Clears the wall at the position.</summary>
         public static void ClearWall(int x, int y)
         {
             Tile t = Main.tile[x, y];
             t.WallType = WallID.None;
         }
 
-        // oh my god -Japan
-        /*
-         *  Generates a single tile and wall at the given coordinates. (if the tile is > 1 x 1 it assumes the passed in coordinate is the top left)
-         *  tile : type of tile to place. -1 means don't do anything tile related, -2 is used in conjunction with active == false to make air.
-         *  wall : type of wall to place. -1 means don't do anything wall related. -2 is used to remove the wall already there.
-         *  tileStyle : the style of the given tile. 
-         *  active : If false, will make the tile 'air' and show the wall only.
-         *  removeLiquid : If true, it will remove liquids in the generating area.
-		 *  slope : if -2, keep the current slope. if -1, make it a halfbrick, otherwise make it the slope given.
-		 *  tileFrame: if true and tile is a 1x1 block, will frame it and its neighbours
-		 *  silent : If true, will not display dust nor sound.
-         *  sync : If true, will sync the client and server.
-         */
+        // tile/wall sentinels: -1 = no-op, -2 = explicit clear. slope: -2 keep, -1 halfbrick, else slope id.
         public static void GenerateTile(int x, int y, int tile, int wall, int tileStyle = 0, bool active = true, bool removeLiquid = true, int slope = -2, bool tileFrame = true, bool silent = false, bool sync = true)
         {
             try
@@ -117,7 +76,8 @@ namespace OvermorrowMod.Common.Utilities
                             {
                                 int x2 = (int)newPos.X + x1;
                                 int y2 = (int)newPos.Y + y1;
-                                if (x1 == 0 && y1 == 0 && Main.tile[x2, y2].TileType == 21) //is a chest, special case to prevent dupe glitch
+                                // Chest: kill items first to avoid dupe glitch.
+                                if (x1 == 0 && y1 == 0 && Main.tile[x2, y2].TileType == 21)
                                 {
                                     KillChestAndItems(x2, y2);
                                 }
@@ -215,13 +175,7 @@ namespace OvermorrowMod.Common.Utilities
             }
         }
 
-        /// <summary>
-        /// Removes a chest at the specified coordinates and clears all items inside it.
-        /// This method does not remove the tile itself, only the chest and its contents.
-        /// </summary>
-        /// <param name="x">The X coordinate of the chest.</param>
-        /// <param name="y">The Y coordinate of the chest.</param>
-        /// <returns>True if the chest was found and removed, otherwise false.</returns>
+        /// <summary>Removes the chest at (x, y) and its contents. Does not remove the tile.</summary>
         public static bool KillChestAndItems(int x, int y)
         {
             for (int i = 0; i < 1000; i++)
@@ -235,15 +189,7 @@ namespace OvermorrowMod.Common.Utilities
             return false;
         }
 
-        /// <summary>
-        /// Generates a single tile of liquid at the specified coordinates.
-        /// </summary>
-        /// <param name="x">The X coordinate of the tile.</param>
-        /// <param name="y">The Y coordinate of the tile.</param>
-        /// <param name="liquidType">The type of liquid: 0 = Water, 1 = Lava, 2 = Honey, 3 = Shimmer.</param>
-        /// <param name="updateFlow">Whether to update the liquid flow after placement. Default is true.</param>
-        /// <param name="liquidHeight">The height of the liquid (0 - 255). Default is 255.</param>
-        /// <param name="sync">Whether to sync the change with other clients in multiplayer. Default is true.</param>
+        /// <summary>Places a liquid tile. liquidType: 0=Water, 1=Lava, 2=Honey, 3=Shimmer.</summary>
         public static void GenerateLiquid(int x, int y, int liquidType, bool updateFlow = true, int liquidHeight = 255, bool sync = true)
         {
             Tile Mtile = Main.tile[x, y];
@@ -253,16 +199,12 @@ namespace OvermorrowMod.Common.Utilities
             liquidHeight = (int)MathHelper.Clamp(liquidHeight, 0, 255);
             Main.tile[x, y].LiquidAmount = (byte)liquidHeight;
 
-            // Set the liquid type based on the liquidType argument
             if (liquidType == 0) { Mtile.LiquidType = LiquidID.Water; }
             else if (liquidType == 1) { Mtile.LiquidType = LiquidID.Lava; }
             else if (liquidType == 2) { Mtile.LiquidType = LiquidID.Honey; }
             else if (liquidType == 3) { Mtile.LiquidType = LiquidID.Shimmer; }
 
-            // Update the liquid flow if requested
             if (updateFlow) { Liquid.AddWater(x, y); }
-
-            // Sync the change with other clients if multiplayer and requested
             if (sync && Main.netMode != NetmodeID.SinglePlayer) { NetMessage.SendTileSquare(-1, x, y, 1); }
         }
     }
