@@ -262,6 +262,48 @@ namespace OvermorrowMod.Common.TextureMapping
             return gen;
         }
 
+        /// <summary>
+        /// Action-based painter. Each mapped color invokes a <see cref="TexPlaceFunction"/>
+        /// at the matching world position. The action decides what gets placed.
+        /// </summary>
+        public static void PaintAsepriteLayer(
+            SheetLayer sheet,
+            string modPath, int worldX, int worldY,
+            Dictionary<(byte R, byte G, byte B), TexPlaceFunction> colorMap,
+            int srcX = 0, int srcY = 0, int srcW = -1, int srcH = -1)
+        {
+            string layerName = sheet.ToString();
+            try
+            {
+                Rgba32[] canvas = LoadLayerPixels(modPath, layerName, out int cw, out int ch);
+                if (canvas == null) return;
+
+                int w = srcW > 0 ? srcW : cw;
+                int h = srcH > 0 ? srcH : ch;
+                var unknown = new HashSet<(byte, byte, byte)>();
+
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        Rgba32 c = canvas[(srcY + y) * cw + (srcX + x)];
+                        if (c.A == 0) continue;
+                        var key = (c.R, c.G, c.B);
+                        if (!colorMap.TryGetValue(key, out var action))
+                        {
+                            unknown.Add(key);
+                            continue;
+                        }
+                        action(worldX + x, worldY + y);
+                    }
+
+                LogUnmapped(modPath, layerName, unknown);
+            }
+            catch (Exception ex)
+            {
+                OvermorrowModFile.Instance.Logger.Error($"Aseprite paint failed for {modPath}: {ex.Message}");
+            }
+        }
+
         public static void PaintAsepriteLayer(
             SheetLayer sheet,
             string modPath, int worldX, int worldY,

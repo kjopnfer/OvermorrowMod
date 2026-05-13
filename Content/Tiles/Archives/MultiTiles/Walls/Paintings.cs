@@ -8,6 +8,22 @@ using Terraria.ObjectData;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
+    public static class PaintingPool
+    {
+        public static int[] Width4 => new[]
+        {
+            ModContent.TileType<Chameleon>(),
+            ModContent.TileType<Bismarck>(),
+            ModContent.TileType<TheGleeks>(),
+        };
+
+        public static int[] Width8 => new[]
+        {
+            ModContent.TileType<GodsIris>(),
+            ModContent.TileType<TheDayIMetHer>(),
+        };
+    }
+
     public abstract class Painting : ModTile
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
@@ -138,5 +154,4 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override int Height => 6;
         public override Color MapColor => new Color(85, 42, 18);
     }
-
 }

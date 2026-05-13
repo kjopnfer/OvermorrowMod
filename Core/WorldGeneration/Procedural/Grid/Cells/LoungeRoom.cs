@@ -1,7 +1,8 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common;
+using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Content.WorldGeneration.Archives;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -18,122 +19,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         private const int MaxInstancesPerDungeon = 2;
         private const int MinSpacingBetweenLounges = 5;
         private const int MinDistanceFromDoor = 2;
-
-        public override void Build(Point origin, int fillTileType, int liningTileType)
-        {
-            int width = FootprintWidth;   // 44
-            int height = FootprintHeight; // 26
-
-            ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
-            ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
-            ushort castleWall = (ushort)ModContent.WallType<CastleWall>();
-
-            for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
-                    WorldGenUtils.ClearTile(origin.X + x, origin.Y + y);
-
-            // Layout from pixel2.png. Three colored panels (6, 10, 6) sit
-            // contiguous in the middle, flanked by 2-wide wood-only panels,
-            // 3-wide wood columns, gaps, and 2-wide castle edges.
-            //
-            //   castle(2) gap wood(3) gap panel(2) gap panel(6) gap panel(10)
-            //   gap panel(6) gap panel(2) gap wood(3) gap castle(2)
-            int cursor = 0;
-            cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 2, castleWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 3, woodWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 2, woodWall, blueWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 6, woodWall, blueWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 10, woodWall, blueWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 6, woodWall, blueWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawColoredBody(origin.X + cursor, origin.Y, height, 2, woodWall, blueWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 3, woodWall);
-            cursor += DrawWallGap (origin.X + cursor, origin.Y, height, 1);
-            cursor += DrawSolidWall(origin.X + cursor, origin.Y, height, 2, castleWall);
-
-            // Furniture: PlaceLoungeArea spans roughly x..x+23, so anchor
-            // at origin.X + 10 to center the lounge inside the 44-wide room.
-            int floorRow = origin.Y + height - 1;
-            GrandArchiveRoom.PlaceLoungeArea(origin.X + 10, floorRow, GrandArchiveRoom.RoomID.Yellow);
-        }
-
-        private static int DrawSolidWall(int worldX, int worldY, int height, int width, ushort wall)
-        {
-            for (int dx = 0; dx < width; dx++)
-                for (int y = 0; y < height; y++)
-                    WorldGenUtils.SetWall(worldX + dx, worldY + y, wall);
-            return width;
-        }
-
-        private static int DrawWallGap(int worldX, int worldY, int height, int width)
-        {
-            for (int dx = 0; dx < width; dx++)
-                for (int y = 0; y < height; y++)
-                    WorldGenUtils.ClearWall(worldX + dx, worldY + y);
-            return width;
-        }
-
-        private static int DrawColoredBody(int worldX, int worldY, int height,
-                                            int bodyWidth, ushort woodWall, ushort blueWall)
-        {
-            for (int dx = 0; dx < bodyWidth; dx++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    int wx = worldX + dx;
-                    int wy = worldY + y;
-
-                    if (y == 0 || y == 5 || y == 23 || y == 25)
-                        continue;
-                    else if (y >= 1 && y <= 4)
-                        WorldGenUtils.SetWall(wx, wy, woodWall);
-                    else if (y == 24)
-                        WorldGenUtils.SetWall(wx, wy, woodWall);
-                    else
-                        WorldGenUtils.SetWall(wx, wy, blueWall);
-                }
-            }
-            return bodyWidth;
-        }
-
-        public override void BuildPadding(PaddingContext ctx)
-        {
-            ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
-            ushort blueWall = (ushort)ModContent.WallType<ArchiveWoodWallBlue>();
-
-            switch (ctx.Side)
-            {
-                case Direction.Left:
-                case Direction.Right:
-                    PaddingBuilder.PlaceWoodPanelPadding(
-                        ctx.X, ctx.Y, ctx.Width, ctx.Height, woodWall, blueWall);
-                    break;
-                case Direction.Top:
-                    // ReplaceTile keeps any cleared opening intact.
-                    PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
-                    PaintFullWidthWoodRow(ctx, rowOffset: ctx.Height - 1);
-                    break;
-                case Direction.Bottom:
-                    PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
-                    PaintFullWidthWoodRow(ctx, rowOffset: 0);
-                    break;
-            }
-        }
-
-        /// <summary>Paints one row of ArchiveWoodWall across the full padding strip.</summary>
-        private static void PaintFullWidthWoodRow(PaddingContext ctx, int rowOffset)
-        {
-            ushort woodWall = (ushort)ModContent.WallType<ArchiveWoodWall>();
-            int wy = ctx.Y + rowOffset;
-            for (int dx = 0; dx < ctx.Width; dx++)
-                WorldGenUtils.SetWall(ctx.X + dx, wy, woodWall);
-        }
 
         // Lounges must always sit between bookshelves, so they accept
         // bookshelves only on both horizontal sides.
@@ -168,8 +53,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         /// them away from doors. Counts unique room instances across the
         /// committed grid AND in-progress placements via pendingLookup.
         /// </summary>
-        public override bool IsValidPlacement(DungeonGrid grid, Point anchor,
-                                              Func<int, int, GridRoom> pendingLookup = null)
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, Func<int, int, GridRoom> pendingLookup = null)
         {
             // Bounded proximity scan covers door distance and lounge spacing.
             int radius = Math.Max(MinSpacingBetweenLounges, MinDistanceFromDoor);
@@ -203,6 +87,131 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 }
             }
             return loungeCount < MaxInstancesPerDungeon;
+        }
+
+        private const string AsepritePath = AssetDirectory.GrandArchives + "LoungeRoom.aseprite";
+
+        // Color maps
+
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
+        {
+            [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
+            [(32, 43, 46)]  = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
+            [(66, 64, 61)]  = TexPlaceAction.PlaceWall(ModContent.WallType<CastleWall>()),
+        };
+
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
+        {
+            [(74, 47, 33)] = TexPlaceAction.PlaceTile(ModContent.TileType<ArchiveWood>()),
+        };
+
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
+        {
+            [(179, 36, 136)]  = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenPillar2>()),
+            [(134, 42, 104)]  = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>()),
+            [(131, 42, 134)]  = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>(), direction: 1), // Faces right
+            [(69, 40, 60)]    = TexPlaceAction.PlaceObject(ModContent.TileType<BanquetTable>()),
+            [(159, 131, 65)]  = TexPlaceAction.PlaceObject(ModContent.TileType<WaxCandelabra>()),
+            [(75, 105, 47)]   = TexPlaceAction.PlaceObject(ModContent.TileType<BookPileTable>()),
+            [(159, 183, 204)] = TexPlaceAction.PlaceObject(ModContent.TileType<Bismarck>()),
+            [(99, 49, 110)]   = TexPlaceAction.PlaceObject(ModContent.TileType<FireplacePillar>()),
+            [(180, 58, 0)]    = TexPlaceAction.PlaceObject(ModContent.TileType<Fireplace>()),
+            [(208, 61, 125)]  = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>()),
+            [(237, 86, 227)]  = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>(), direction: 1), // Faces right
+            [(171, 73, 94)]   = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmall>()),
+            [(199, 158, 59)]  = TexPlaceAction.PlaceObject(ModContent.TileType<ArchiveBanner>()),
+            [(153, 229, 80)]  = TexPlaceAction.PlaceObject(ModContent.TileType<WaxChandelier>()),
+
+            // Random painting from the width-4 / width-8 pools.
+            [(19, 215, 73)]   = TexPlaceAction.CustomPlaceObject((x, y) =>
+            {
+                int[] pool = PaintingPool.Width4;
+                WorldGen.PlaceObject(x, y, pool[Main.rand.Next(pool.Length)]);
+            }),
+
+            [(101, 224, 135)] = TexPlaceAction.CustomPlaceObject((x, y) =>
+            {
+                int[] pool = PaintingPool.Width8;
+                WorldGen.PlaceObject(x, y, pool[Main.rand.Next(pool.Length)]);
+            }),
+        };
+
+        // Build / BuildPadding / PlaceFurniture
+
+        public override void Build(Point origin, int fillTileType, int liningTileType)
+        {
+            int hp = DungeonGrid.HorizontalPadding;
+            int vp = DungeonGrid.VerticalPadding;
+            int interiorW = CellWidth * DungeonGrid.CellTileWidth + (CellWidth - 1) * hp;
+            int interiorH = CellHeight * DungeonGrid.CellTileHeight + (CellHeight - 1) * vp;
+
+            TexGen.PaintClearLayer(AsepritePath, origin.X, origin.Y, hp, vp, interiorW, interiorH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, origin.X, origin.Y, BuildWallMap(), hp, vp, interiorW, interiorH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, origin.X, origin.Y, BuildTileMap(), hp, vp, interiorW, interiorH);
+        }
+
+        public override void BuildPadding(PaddingContext ctx)
+        {
+            int hp = DungeonGrid.HorizontalPadding;
+            int vp = DungeonGrid.VerticalPadding;
+            int interiorW = CellWidth * DungeonGrid.CellTileWidth + (CellWidth - 1) * hp;
+            int interiorH = CellHeight * DungeonGrid.CellTileHeight + (CellHeight - 1) * vp;
+
+            int worldX;
+            int worldY;
+            int srcX;
+            int srcY;
+            int srcW;
+            int srcH;
+            switch (ctx.Side)
+            {
+                case Direction.Left:
+                    worldX = ctx.X;
+                    worldY = ctx.Y;
+                    srcX = 0;
+                    srcY = vp;
+                    srcW = hp;
+                    srcH = interiorH;
+                    break;
+                case Direction.Right:
+                    worldX = ctx.X;
+                    worldY = ctx.Y;
+                    srcX = hp + interiorW;
+                    srcY = vp;
+                    srcW = hp;
+                    srcH = interiorH;
+                    break;
+                case Direction.Top:
+                    // Extend horizontally to claim the two corner squares.
+                    worldX = ctx.X - hp;
+                    worldY = ctx.Y;
+                    srcX = 0;
+                    srcY = 0;
+                    srcW = 2 * hp + interiorW;
+                    srcH = vp;
+                    break;
+                case Direction.Bottom:
+                    worldX = ctx.X - hp;
+                    worldY = ctx.Y;
+                    srcX = 0;
+                    srcY = vp + interiorH;
+                    srcW = 2 * hp + interiorW;
+                    srcH = vp;
+                    break;
+                default:
+                    return;
+            }
+
+            TexGen.PaintClearLayer(AsepritePath, worldX, worldY, srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, worldX, worldY, BuildWallMap(), srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, worldX, worldY, BuildTileMap(), srcX, srcY, srcW, srcH);
+        }
+
+        public override void PlaceFurniture(FurnitureContext ctx)
+        {
+            int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
+            int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap());
         }
     }
 }
