@@ -59,29 +59,29 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         // Color maps
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildWallMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
         {
-            [(101, 66, 14)] = (ModContent.WallType<ArchiveWoodWall>(), 0),
-            [(32, 43, 46)] = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
-            [(66, 64, 61)]  = (ModContent.WallType<CastleWall>(), 0),
-            [(0, 0, 0)]     = (-1, 0),
+            [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
+            [(32, 43, 46)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
+            [(66, 64, 61)] = TexPlaceAction.PlaceWall(ModContent.WallType<CastleWall>()),
+            [(0, 0, 0)] = TexPlaceAction.Clear,
         };
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildTileMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
         {
-            [(74, 47, 33)] = (ModContent.TileType<ArchiveWood>(), 0),
-            [(0, 0, 0)]    = (-1, 0),
+            [(74, 47, 33)] = TexPlaceAction.PlaceTile(ModContent.TileType<ArchiveWood>()),
+            [(0, 0, 0)] = TexPlaceAction.Clear,
         };
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildInteriorObjectMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildInteriorObjectMap() => new()
         {
-            [(171, 107, 152)] = (ModContent.TileType<HallwayPillar>(), 1),
-            [(171, 73, 94)]   = (ModContent.TileType<WoodenArchSmallHallway>(), 1),
+            [(171, 107, 152)] = TexPlaceAction.PlaceObject(ModContent.TileType<HallwayPillar>()),
+            [(171, 73, 94)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmallHallway>()),
         };
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildPaddingObjectMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildPaddingObjectMap() => new()
         {
-            [(237, 157, 102)] = (ModContent.TileType<WaxSconceEven>(), 0),
+            [(237, 157, 102)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxSconceEven>()),
         };
 
         // Build / BuildPadding / PlaceFurniture

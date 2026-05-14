@@ -134,29 +134,29 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         // Color maps
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildWallMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
         {
-            [(32, 43, 46)]  = (ModContent.WallType<ArchiveWoodWallBlack>(), 0),
-            [(101, 66, 14)] = (ModContent.WallType<ArchiveWoodWall>(), 0),
-            [(70, 67, 117)] = (ModContent.WallType<ArchiveWoodWallBlue>(), 0),
-            [(0, 0, 0)]     = (-1, 0),
+            [(32, 43, 46)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
+            [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
+            [(70, 67, 117)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlue>()),
+            [(0, 0, 0)] = TexPlaceAction.Clear,
         };
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildTileMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
         {
-            [(105, 106, 106)] = (ModContent.TileType<CastleBrick>(), 0),
-            [(89, 86, 82)]    = (ModContent.TileType<DarkCastleBrick>(), 0),
-            [(138, 111, 48)]  = (ModContent.TileType<CastlePlatform>(), 0),
-            [(74, 47, 33)]    = (ModContent.TileType<ArchiveWood>(), 0),
-            [(0, 0, 0)]       = (-1, 0),
+            [(105, 106, 106)] = TexPlaceAction.PlaceTile(ModContent.TileType<CastleBrick>()),
+            [(89, 86, 82)] = TexPlaceAction.PlaceTile(ModContent.TileType<DarkCastleBrick>()),
+            [(138, 111, 48)] = TexPlaceAction.PlaceTile(ModContent.TileType<CastlePlatform>()),
+            [(74, 47, 33)] = TexPlaceAction.PlaceTile(ModContent.TileType<ArchiveWood>()),
+            [(0, 0, 0)] = TexPlaceAction.Clear,
         };
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildObjectMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
         {
-            [(237, 152, 93)] = (ModContent.TileType<WaxSconce>(), 0),
-            [(251, 242, 54)] = (ModContent.TileType<ArchivePotSmall>(), 0),
-            [(215, 186, 87)] = (ModContent.TileType<FatVase>(), 0),
-            [(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 0),
+            [(237, 152, 93)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxSconce>()),
+            [(251, 242, 54)] = TexPlaceAction.PlaceObject(ModContent.TileType<ArchivePotSmall>()),
+            [(215, 186, 87)] = TexPlaceAction.PlaceObject(ModContent.TileType<FatVase>()),
+            [(179, 36, 136)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenPillar2>()),
         };
 
         // Build / BuildPadding / PlaceFurniture

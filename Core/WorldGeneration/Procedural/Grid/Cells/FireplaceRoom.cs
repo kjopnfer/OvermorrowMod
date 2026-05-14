@@ -45,31 +45,31 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         // Color maps
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildWallMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
         {
-            [(101, 66, 14)] = (ModContent.WallType<ArchiveWoodWall>(), 0),
-            [(66, 64, 61)] = (ModContent.WallType<CastleWall>(), 0),
+            [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
+            [(66, 64, 61)] = TexPlaceAction.PlaceWall(ModContent.WallType<CastleWall>()),
         };
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildTileMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
         {
-            [(74, 47, 33)] = (ModContent.TileType<ArchiveWood>(), 0),
+            [(74, 47, 33)] = TexPlaceAction.PlaceTile(ModContent.TileType<ArchiveWood>()),
         };
 
-        private static Dictionary<(byte, byte, byte), (int, int)> BuildObjectMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
         {
-            [(179, 36, 136)] = (ModContent.TileType<WoodenPillar2>(), 0),
-            [(134, 42, 104)] = (ModContent.TileType<SmallChair>(), 1),
-            [(69, 40, 60)] = (ModContent.TileType<BanquetTable>(), 1),
-            [(159, 131, 65)] = (ModContent.TileType<WaxCandelabra>(), 1),
-            [(75, 105, 47)] = (ModContent.TileType<BookPileTable>(), 1),
-            [(159, 183, 204)] = (ModContent.TileType<Bismarck>(), 1),
-            [(99, 49, 110)] = (ModContent.TileType<FireplacePillar>(), 1),
-            [(180, 58, 0)] = (ModContent.TileType<Fireplace>(), 1),
-            [(208, 61, 125)] = (ModContent.TileType<CozyChair>(), 1),
-            [(171, 73, 94)] = (ModContent.TileType<WoodenArchSmall>(), 1),
-            [(199, 158, 59)] = (ModContent.TileType<ArchiveBanner>(), 1),
-            [(114, 70, 123)] = (ModContent.TileType<Moose>(), 1)
+            [(179, 36, 136)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenPillar2>()),
+            [(134, 42, 104)] = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>(), direction: 1),
+            [(69, 40, 60)] = TexPlaceAction.PlaceObject(ModContent.TileType<BanquetTable>()),
+            [(159, 131, 65)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxCandelabra>()),
+            [(75, 105, 47)] = TexPlaceAction.PlaceObject(ModContent.TileType<BookPileTable>()),
+            [(159, 183, 204)] = TexPlaceAction.PlaceObject(ModContent.TileType<Bismarck>()),
+            [(99, 49, 110)] = TexPlaceAction.PlaceObject(ModContent.TileType<FireplacePillar>()),
+            [(180, 58, 0)] = TexPlaceAction.PlaceObject(ModContent.TileType<Fireplace>()),
+            [(208, 61, 125)] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>()),
+            [(171, 73, 94)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmall>()),
+            [(199, 158, 59)] = TexPlaceAction.PlaceObject(ModContent.TileType<ArchiveBanner>()),
+            [(114, 70, 123)] = TexPlaceAction.PlaceObject(ModContent.TileType<Moose>()),
         };
 
         // Build / BuildPadding / PlaceFurniture
