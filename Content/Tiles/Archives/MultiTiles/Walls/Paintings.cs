@@ -17,6 +17,18 @@ namespace OvermorrowMod.Content.Tiles.Archives
             ModContent.TileType<TheGleeks>(),
         };
 
+        public static int[] Width5 => new[]
+        {
+            ModContent.TileType<Napoleon>(),
+        };
+
+        public static int[] Width6 => new[]
+        {
+            ModContent.TileType<ABriefRespite>(),
+            ModContent.TileType<Selfie>(),
+            ModContent.TileType<QinTheGreat>(),
+        };
+
         public static int[] Width8 => new[]
         {
             ModContent.TileType<GodsIris>(),
