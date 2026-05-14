@@ -471,7 +471,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Phase 1.6: aux branches
             // Up to 4 short side-paths attached to spine or branch 1 only.
             // Each is either a closed loop (re-enters parent at two nodes)
-            // or a dead-end terminating at a TreasureRoom placeholder. Per
+            // or a dead-end terminating at a ChestRoom placeholder. Per
             // the before/after-combat rule, a closed loop crossing the
             // parent's combat divide gets its own combat; same-side loops
             // and dead-ends do not.
@@ -1043,10 +1043,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         /// <summary>
         /// Picks a node on <paramref name="parent"/>, picks a clean target
-        /// cell N steps away, pre-places a TreasureRoom at the target,
-        /// routes a single A* leg from node to target. The target gives
-        /// the dead-end a purpose: future content systems replace the
-        /// TreasureRoom slot with chest/NPC/shop content.
+        /// cell N steps away, pre-places a ChestRoom at the target,
+        /// routes a single A* leg from node to target.
         /// </summary>
         private static DungeonPath TryAddDeadEndAux(
             DungeonGrid grid, DungeonPath parent, int newId,
@@ -1074,19 +1072,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (tx < EdgeBorder + 1 || tx >= gridCols - EdgeBorder - 1) continue;
                     if (ty < EdgeBorder || ty >= gridRows - EdgeBorder) continue;
 
-                    var treasureProto = new TreasureRoom { IsFeature = true };
+                    var chestProto = new ChestRoom { IsFeature = true };
                     var targetPos = new Point(tx, ty);
                     // Footprint AND every cardinal neighbor must be empty,
-                    // so the treasure's only future connection is the
+                    // so the chest's only future connection is the
                     // anti-fusion-validated leg the aux is about to route.
-                    // Without this, the treasure would dock against any
-                    // foreign cell that happens to be adjacent and create
-                    // a bypass through that shared border.
-                    if (!FootprintAndNeighborsClear(grid, treasureProto, targetPos)) continue;
-                    if (!treasureProto.IsValidPlacement(grid, targetPos)) continue;
+                    if (!FootprintAndNeighborsClear(grid, chestProto, targetPos)) continue;
+                    if (!chestProto.IsValidPlacement(grid, targetPos)) continue;
 
-                    var treasure = new TreasureRoom { IsFeature = true };
-                    grid.Place(treasure, tx, ty, grid.NextGroupId());
+                    var chest = new ChestRoom { IsFeature = true };
+                    grid.Place(chest, tx, ty, grid.NextGroupId());
 
                     var legSteps = GridAStar.FindPath(
                         grid, nodeA.Anchor, targetPos, nodeA.Cell, costFn,
@@ -1095,7 +1090,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         maxVerticalRun: MaxVerticalRun);
                     if (legSteps == null)
                     {
-                        ClearFootprint(grid, treasure, targetPos);
+                        ClearFootprint(grid, chest, targetPos);
                         continue;
                     }
 
@@ -1315,7 +1310,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     for (int ly = 0; ly < h; ly++)
                     {
                         WorldGenUtils.PlaceTile(x + lx, y + ly, fill);
-                        WorldGenUtils.ClearWall(x + lx, y + ly);
                     }
                 }
             }

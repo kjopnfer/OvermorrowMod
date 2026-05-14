@@ -269,6 +269,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         SpawnedProjectileID = projID;
                         ItemSpawned = true;
                         WaitingForItemPickup = true;
+
+                        // Link the spawned projectile back to this chest so it
+                        // can flag ItemPickedUp when the player collects it.
+                        if (projID >= 0 && projID < Main.projectile.Length
+                            && Main.projectile[projID].ModProjectile is Content.Misc.DisplayItem displayItem)
+                        {
+                            displayItem.tileEntity = this;
+                        }
                     }
                 }
                 else
