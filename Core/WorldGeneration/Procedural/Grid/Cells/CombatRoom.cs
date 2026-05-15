@@ -4,6 +4,7 @@ using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Content.Tiles.Misc;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -126,6 +127,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             [(66, 64, 61)] = TexPlaceAction.PlaceWall(ModContent.WallType<CastleWall>()),
             [(54, 36, 11)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWallFrame>()),
             [(118, 66, 138)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWall>()),
+            [(86, 0, 251)] = TexPlaceAction.PlaceWall(ModContent.WallType<InvisibleWall>()),
         };
 
         private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
@@ -154,6 +156,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             [(199, 158, 59)] = TexPlaceAction.PlaceObject(ModContent.TileType<ArchiveBanner>()),
             [(153, 229, 80)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxChandelier>()),
             [(237, 157, 102)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxSconceEven>()),
+            [(0, 255, 255)] = TexPlaceAction.PlaceObject(ModContent.TileType<TallWindow>()),
 
             // Random painting from width-grouped pools.
             [(19, 215, 73)] = TexPlaceAction.CustomPlaceObject((x, y) =>

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
+using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
 using System;
 using System.Linq;
@@ -289,7 +290,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         if (SpawnedProjectileID >= 0 && SpawnedProjectileID < Main.projectile.Length)
                         {
                             Projectile spawnedProj = Main.projectile[SpawnedProjectileID];
-                            if (spawnedProj.active && spawnedProj.type == ModContent.ProjectileType<Misc.DisplayItem>())
+                            if (spawnedProj.active && spawnedProj.type == ModContent.ProjectileType<DisplayItem>())
                             {
                                 //spawnedProj.Center = Position.ToWorldCoordinates() + new Vector2(22, -58);
                                 projectileExists = true;
