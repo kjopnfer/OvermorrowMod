@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Items.Archives;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -40,12 +42,18 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            SoundEngine.PlaySound(SoundID.Item27);
+            SoundEngine.PlaySound(SoundID.Shatter);
             for (int k = 0; k < 8; k++)
             {
                 Dust.NewDust(new Vector2(i * 16, j * 16 - 10), 54, 16, DustID.Dirt, 0.0f, -1, 0, new Color(), 0.5f);
                 Dust.NewDust(new Vector2(i * 16, j * 16 - 10), 75, 16, DustID.Dirt, 0.0f, 0, 0, new Color(), 0.5f);
             }
+        }
+
+        public override IEnumerable<Item> GetItemDrops(int i, int j)
+        {
+            if (Main.rand.NextBool(6))
+                yield return new Item(ModContent.ItemType<MonkeyStoneBlue>());
         }
     }
 }

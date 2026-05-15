@@ -63,7 +63,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
                         Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                         Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
 
-                        // Inner sprite drawn at full brightness as a glowmask overlay.
                         spriteBatch.Draw(inner, drawPos, drawRectangle, Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
                     }
                 }
