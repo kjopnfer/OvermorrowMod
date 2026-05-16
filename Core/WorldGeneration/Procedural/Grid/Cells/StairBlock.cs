@@ -43,6 +43,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             typeof(BookshelfCell),
             typeof(CorridorCell),
             typeof(CombatRoom),
+            typeof(WritingRoom),
         };
 
         public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)

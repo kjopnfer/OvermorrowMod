@@ -73,16 +73,51 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 });
             }
 
+            // Place larger rooms first so they claim space before smaller rooms compete.
+            rooms.Sort((a, b) =>
+            {
+                int areaA = a.Prototype.CellWidth * a.Prototype.CellHeight;
+                int areaB = b.Prototype.CellWidth * b.Prototype.CellHeight;
+                return areaB.CompareTo(areaA);
+            });
+
+            {
+                var sb = new System.Text.StringBuilder("SpinePlanner candidates:");
+                foreach (var r in rooms)
+                {
+                    sb.Append(' ');
+                    sb.Append(r.Prototype.GetType().Name);
+                    sb.Append('=');
+                    sb.Append(r.Candidates.Count);
+                }
+                Terraria.ModLoader.Logging.PublicLogger.Info(sb.ToString());
+            }
+
             for (int outer = 0; outer < MaxOuterAttempts; outer++)
             {
                 if (!PlaceRequiredRooms(grid, rooms, minSubgoalSpacing))
                 {
-                    // No required rooms could be placed at all. Try the
-                    // door-to-door segment as a final fallback.
+                    // Fall through to door-to-door fallback.
                 }
 
                 var subgoals = BuildSubgoalList(grid, rooms, startDoorPos, endDoorPos,
                                                 startDoorRoom, endDoorRoom);
+
+                {
+                    var sb = new System.Text.StringBuilder();
+                    sb.Append("  outer=").Append(outer).Append(" placed:");
+                    foreach (var r in rooms)
+                    {
+                        sb.Append(' ');
+                        sb.Append(r.Prototype.GetType().Name);
+                        sb.Append('[');
+                        if (r.Skipped) sb.Append("skip");
+                        else if (r.IsPlaced) sb.Append("idx=").Append(r.Idx).Append("@").Append(r.PlacedAnchor.X).Append(',').Append(r.PlacedAnchor.Y);
+                        else sb.Append("none");
+                        sb.Append(']');
+                    }
+                    Terraria.ModLoader.Logging.PublicLogger.Info(sb.ToString());
+                }
 
                 var committedSteps = new List<PathStep>();
                 int failedSegmentIdx = -1;
@@ -96,7 +131,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         streakLimits: streakLimits,
                         minStreakLimits: minStreakLimits,
                         maxVerticalRun: maxVerticalRun);
-                    if (seg == null) { failedSegmentIdx = i; break; }
+                    if (seg == null)
+                    {
+                        failedSegmentIdx = i;
+                        Terraria.ModLoader.Logging.PublicLogger.Info(
+                            $"  outer={outer} seg {i} FAIL: " +
+                            $"{a.Room.GetType().Name}@({a.Pos.X},{a.Pos.Y}) -> " +
+                            $"{b.Room.GetType().Name}@({b.Pos.X},{b.Pos.Y})");
+                        break;
+                    }
                     foreach (var step in seg)
                         grid.Place(step.Cell, step.Anchor.X, step.Anchor.Y, grid.NextGroupId());
                     committedSteps.AddRange(seg);
@@ -170,15 +213,29 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return anyPlaced;
         }
 
-        private static bool TooCloseToOtherPlaced(List<RoomState> rooms, RoomState self, Point pos, int minSpacing)
+        /// <summary>
+        /// Rooms are too close only if both horizontal and vertical gaps fall
+        /// below the required minimum, computed from each room's dimension
+        /// plus <paramref name="minGap"/>.
+        /// </summary>
+        private static bool TooCloseToOtherPlaced(List<RoomState> rooms, RoomState self, Point pos, int minGap)
         {
+            int selfW = self.Prototype.CellWidth;
+            int selfH = self.Prototype.CellHeight;
             foreach (var other in rooms)
             {
                 if (other == self) continue;
                 if (!other.IsPlaced) continue;
+
+                int otherW = other.Prototype.CellWidth;
+                int otherH = other.Prototype.CellHeight;
+                int hNeeded = Math.Max(selfW, otherW) + minGap;
+                int vNeeded = Math.Max(selfH, otherH) + minGap;
+
                 int dx = Math.Abs(pos.X - other.PlacedAnchor.X);
                 int dy = Math.Abs(pos.Y - other.PlacedAnchor.Y);
-                if (Math.Max(dx, dy) < minSpacing) return true;
+
+                if (dx < hNeeded && dy < vNeeded) return true;
             }
             return false;
         }
@@ -196,15 +253,20 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             {
                 if (!r.IsPlaced) continue;
                 var slot = grid.GetSlot(r.PlacedAnchor.X, r.PlacedAnchor.Y);
-                list.Add(new Subgoal { Pos = r.PlacedAnchor, Room = slot.Room, IsDoor = false, Owner = r });
+                // Use the cursor position (anchor minus its offset) as the docking point.
+                var cursor = new Point(
+                    r.PlacedAnchor.X - r.Prototype.AnchorOffsetFromCursor.X,
+                    r.PlacedAnchor.Y - r.Prototype.AnchorOffsetFromCursor.Y);
+                list.Add(new Subgoal { Pos = cursor, Room = slot.Room, IsDoor = false, Owner = r });
             }
             list.Add(new Subgoal { Pos = endDoorPos, Room = endDoorRoom, IsDoor = true });
             list.Sort((a, b) => a.Pos.X.CompareTo(b.Pos.X));
             return list;
         }
 
-        // Returns positions on the elevation curve, sorted by curve fit.
-        // Excludes positions inside the border ring or too close to a door.
+        // Returns candidate positions in a vertical band around the elevation
+        // curve, sorted by closeness to the curve. Band radius scales with
+        // the room's height.
         private static List<Point> GenerateCandidates(
             GridRoom prototype, double[] elevation, int gridCols, int gridRows,
             Point startDoor, Point endDoor, HashSet<Point> blocked, int edgeBorder,
@@ -216,36 +278,45 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             int playableRight = gridCols - 1 - edgeBorder - w - 1;
             if (playableLeft > playableRight) return new List<Point>();
 
+            // Band radius: 1-tall rooms get +/-1, 2-tall +/-2, etc.
+            int bandRadius = Math.Max(1, h);
+
             var ranked = new List<(Point pos, double dev)>();
             for (int col = playableLeft; col <= playableRight; col++)
             {
-                int row = ClampRow((int)Math.Round(elevation[col]), gridRows, edgeBorder);
-                if (row + h - 1 >= gridRows - edgeBorder) continue;
-                if (row < edgeBorder) continue;
+                int centerRow = ClampRow((int)Math.Round(elevation[col]), gridRows, edgeBorder);
 
-                bool tooCloseToDoor = false;
-                for (int sc = 0; sc < w && !tooCloseToDoor; sc++)
+                for (int dy = -bandRadius; dy <= bandRadius; dy++)
                 {
-                    for (int sr = 0; sr < h && !tooCloseToDoor; sr++)
+                    int row = centerRow + dy;
+                    if (row < edgeBorder) continue;
+                    if (row + h - 1 >= gridRows - edgeBorder) continue;
+
+                    bool tooCloseToDoor = false;
+                    for (int sc = 0; sc < w && !tooCloseToDoor; sc++)
                     {
-                        int cc = col + sc;
-                        int cr = row + sr;
-                        int distStart = Math.Max(Math.Abs(cc - startDoor.X), Math.Abs(cr - startDoor.Y));
-                        int distEnd = Math.Max(Math.Abs(cc - endDoor.X), Math.Abs(cr - endDoor.Y));
-                        if (distStart < minDoorDistance || distEnd < minDoorDistance)
-                            tooCloseToDoor = true;
+                        for (int sr = 0; sr < h && !tooCloseToDoor; sr++)
+                        {
+                            int cc = col + sc;
+                            int cr = row + sr;
+                            int distStart = Math.Max(Math.Abs(cc - startDoor.X), Math.Abs(cr - startDoor.Y));
+                            int distEnd = Math.Max(Math.Abs(cc - endDoor.X), Math.Abs(cr - endDoor.Y));
+                            if (distStart < minDoorDistance || distEnd < minDoorDistance)
+                                tooCloseToDoor = true;
+                        }
                     }
+                    if (tooCloseToDoor) continue;
+
+                    bool blockedHit = false;
+                    for (int sc = 0; sc < w && !blockedHit; sc++)
+                        for (int sr = 0; sr < h && !blockedHit; sr++)
+                            if (blocked.Contains(new Point(col + sc, row + sr))) blockedHit = true;
+                    if (blockedHit) continue;
+
+                    // On-curve candidates rank first; band offset is a tiebreaker.
+                    double dev = Math.Abs(row - elevation[col]) + Math.Abs(dy) * 0.25;
+                    ranked.Add((new Point(col, row), dev));
                 }
-                if (tooCloseToDoor) continue;
-
-                bool blockedHit = false;
-                for (int sc = 0; sc < w && !blockedHit; sc++)
-                    for (int sr = 0; sr < h && !blockedHit; sr++)
-                        if (blocked.Contains(new Point(col + sc, row + sr))) blockedHit = true;
-                if (blockedHit) continue;
-
-                double dev = Math.Abs(row - elevation[col]);
-                ranked.Add((new Point(col, row), dev));
             }
 
             ranked.Sort((a, b) => a.dev.CompareTo(b.dev));

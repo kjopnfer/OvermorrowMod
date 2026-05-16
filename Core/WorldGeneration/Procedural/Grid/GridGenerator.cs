@@ -47,12 +47,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         };
 
         // Rooms guaranteed to appear on the spine. Each entry is pre-placed
-        // before spine planning and replaces the closest random spine waypoint
-        // so the spine A* must route through it.
+        // before spine planning and replaces the closest random spine waypoint.
         private static readonly List<Func<GridRoom>> RequiredRooms = new()
         {
             () => new FireplaceRoom(),
             () => new CombatRoom(),
+            () => new WritingRoom(),
         };
 
         public static void Build(
@@ -103,12 +103,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Required rooms must sit far enough from either door that the
             // spine A* has room to climb/descend to reach them.
             const int MinDoorDistance = 6;
-            // Required rooms must sit apart from each other so each
-            // segment has room to satisfy bookshelf min-streak (≥2)
-            // before docking. With CombatRoom now 3 wide, two adjacent
-            // required rooms need anchor distance ≥ 5 to leave 2 cells
-            // of bookshelf landing between them.
-            const int MinSubgoalSpacing = 5;
+            // Minimum gap between any two required rooms' footprints.
+            const int MinSubgoalSpacing = 2;
 
             var borderBlocked = BuildBorderBlockedSet(gridCols, gridRows);
 

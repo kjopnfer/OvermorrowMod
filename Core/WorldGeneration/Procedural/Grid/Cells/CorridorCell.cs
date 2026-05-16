@@ -25,6 +25,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         {
             new BookshelfCell(),
             new CorridorCell(),
+            new WritingRoom(),
         };
 
         protected override GridRoom[] AllowedNeighbors(Direction side) => side switch

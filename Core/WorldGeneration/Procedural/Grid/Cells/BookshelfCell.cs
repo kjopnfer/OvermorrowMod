@@ -24,6 +24,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             new AscendingStair(),
             new FireplaceRoom(),
             new LoungeRoom(),
+            new WritingRoom(),
         };
 
         private static readonly GridRoom[] VerticalNeighbors = { new ShaftCell() };
