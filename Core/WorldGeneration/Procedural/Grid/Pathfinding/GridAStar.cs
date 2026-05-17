@@ -16,7 +16,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
     /// </summary>
     public static class GridAStar
     {
-        private const int MaxExpansionsPerSegment = 50000;
+        private const int MaxExpansionsPerSegment = 15000;
 
         /// <summary>Plans a path from start to goal through optional waypoints. Returns null if none exists.</summary>
         public static List<PathStep> FindPath(

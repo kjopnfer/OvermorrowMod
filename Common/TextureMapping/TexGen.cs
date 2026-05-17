@@ -392,8 +392,24 @@ namespace OvermorrowMod.Common.TextureMapping
             }
         }
 
+        // Per-generation cache of parsed aseprite layers, keyed on (path, layerName).
+        // Callers invoke ClearCache when the worldgen pass ends to free the memory.
+        private readonly record struct LayerData(Rgba32[] Pixels, int Width, int Height);
+        private static readonly Dictionary<(string, string), LayerData> _layerCache = new();
+
+        /// <summary>Drops every cached aseprite layer. Call at the end of a worldgen pass.</summary>
+        public static void ClearCache() => _layerCache.Clear();
+
         private static Rgba32[] LoadLayerPixels(string modPath, string layerName, out int canvasWidth, out int canvasHeight, bool optional = false)
         {
+            var key = (modPath, layerName);
+            if (_layerCache.TryGetValue(key, out var cached))
+            {
+                canvasWidth = cached.Width;
+                canvasHeight = cached.Height;
+                return cached.Pixels;
+            }
+
             canvasWidth = 0;
             canvasHeight = 0;
 
@@ -434,6 +450,8 @@ namespace OvermorrowMod.Common.TextureMapping
                         canvas[canvasY * canvasWidth + canvasX] = celPixels[cy * celW + cx];
                     }
             }
+
+            _layerCache[key] = new LayerData(canvas, canvasWidth, canvasHeight);
             return canvas;
         }
 

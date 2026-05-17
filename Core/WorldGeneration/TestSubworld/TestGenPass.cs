@@ -43,19 +43,26 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             int startX = 100;
             int startY = centerY - (gridRows * DungeonGrid.VerticalSpacing) / 2;
 
-            GridGenerator.Build(
-                worldOrigin: new Point(startX, startY),
-                gridCols: gridCols,
-                gridRows: gridRows,
-                cellPool: cellPool,
-                fillTileType: fillTile,
-                liningTileType: liningTile,
-                rand: rand,
-                startDoorTile: out Point startDoorTile
-            );
+            try
+            {
+                GridGenerator.Build(
+                    worldOrigin: new Point(startX, startY),
+                    gridCols: gridCols,
+                    gridRows: gridRows,
+                    cellPool: cellPool,
+                    fillTileType: fillTile,
+                    liningTileType: liningTile,
+                    rand: rand,
+                    startDoorTile: out Point startDoorTile
+                );
 
-            Main.spawnTileX = startDoorTile.X;
-            Main.spawnTileY = startDoorTile.Y;
+                Main.spawnTileX = startDoorTile.X;
+                Main.spawnTileY = startDoorTile.Y;
+            }
+            finally
+            {
+                Common.TextureMapping.TexGen.ClearCache();
+            }
         }
     }
 }

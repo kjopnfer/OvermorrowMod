@@ -52,7 +52,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
         {
             [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
-            [(67, 84, 50)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
+            [(32, 43, 46)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
             [(54, 36, 11)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWallFrame>()),
             [(118, 66, 138)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWall>()),
             [(0, 0, 0)] = TexPlaceAction.Clear,
