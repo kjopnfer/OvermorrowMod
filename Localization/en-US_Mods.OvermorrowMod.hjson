@@ -715,6 +715,7 @@ NPCs: {
 	HauntedChandelier.DisplayName: Haunted Chandelier
 	CombatDoorCollision.DisplayName: Combat Door Collision
 	CombatOrchestrator.DisplayName: Combat Orchestrator
+	WoodenLadderCollision.DisplayName: Wooden Ladder Collision
 }
 
 Bestiary: {

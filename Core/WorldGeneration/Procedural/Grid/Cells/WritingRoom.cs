@@ -152,6 +152,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             [(198, 183, 242)] = TexPlaceAction.PlaceObject(ModContent.TileType<NormalWizardStatue>()),
             [(246, 178, 185)] = TexPlaceAction.PlaceObject(ModContent.TileType<ArchiveBridge>()),
 
+            [(180, 179, 163)] = TexPlaceAction.CustomPlaceObject((x, y) =>
+            {
+                for (int i = 0; i < 12; i++)
+                    WorldGen.PlaceObject(x, y - i * 3, ModContent.TileType<WoodenLadder>(), true);
+            }),
+
             // Random painting from width-grouped pools.
             [(19, 215, 73)] = TexPlaceAction.CustomPlaceObject((x, y) =>
             {
