@@ -347,18 +347,8 @@ namespace OvermorrowMod.Content.Misc
                 ParticleManager.CreateParticleDirect(spark, NPC.Center, vel, Color.Gold, 1f, scale, 0f, useAdditiveBlending: true);
             }
 
-            var left = LeftDoor;
-            var right = RightDoor;
-            if (left != null)
-            {
-                left.IsDisabled = true; left.IsLocked = false;
-            }
-
-            if (right != null)
-            {
-                right.IsDisabled = true;
-                right.IsLocked = false;
-            }
+            LeftDoor?.BeginVanish();
+            RightDoor?.BeginVanish();
 
             // Reveal the chest and allow for gravity
             isRevealed = true;

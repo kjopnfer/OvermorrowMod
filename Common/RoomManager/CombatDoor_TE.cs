@@ -9,17 +9,6 @@ using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Common.RoomManager
 {
-    /// <summary>
-    /// Tile entity placed at the bottom-left and bottom-right corners of a
-    /// CombatRoom (one column outside the room footprint, on the floor row).
-    /// Owns the CombatDoorCollision NPC: spawns it on demand when a player
-    /// is nearby, despawns it when the player leaves range, and persists
-    /// interaction state across saves.
-    /// <para/>
-    /// The two doors that bracket a CombatRoom are linked via SiblingTEID.
-    /// Opening one opens the other in lockstep (Open() syncs the sibling),
-    /// so the room's left and right doors always share state.
-    /// </summary>
     public class CombatDoor_TE : ModTileEntity
     {
         public enum DoorState { Closed, Opening, Open, Closing }
@@ -29,25 +18,24 @@ namespace OvermorrowMod.Common.RoomManager
         public DoorState State = DoorState.Closed;
         public int StateTimer = 0;
 
-        // Set by CombatOrchestrator. Locked = Open() is a no-op (auto-close
-        // still runs). Disabled = NPC despawned permanently, persisted.
         public bool IsLocked = false;
-        public bool IsDisabled = false;
 
-        public const int OpenAnimationTicks  = 90;          // 1.5s slide up
-        public const int OpenDurationTicks   = 60 * 2;      // 2s open
-        public const int CloseAnimationTicks = 60;          // 1s slide down
-        public const int OpenOffsetPixels    = 9 * 16;      // 9 tiles up
+        // If true, NPC doesnt spawn on rejoin
+        public bool IsDisabled = false;
+        public bool DisableAfterOpen = false;
+
+        public const int OpenAnimationTicks = 90;
+        public const int OpenDurationTicks = 60 * 2;
+        public const int CloseAnimationTicks = 60;
+        public const int OpenOffsetPixels = 9 * 16;
 
         private int doorNPCIndex = -1;
-        public NPC DoorNPC =>
-            doorNPCIndex >= 0 && doorNPCIndex < Main.npc.Length && Main.npc[doorNPCIndex].active
+        public NPC DoorNPC => doorNPCIndex >= 0 && doorNPCIndex < Main.npc.Length && Main.npc[doorNPCIndex].active
                 ? Main.npc[doorNPCIndex]
                 : null;
 
         private static readonly float SpawnDistance = ModUtils.TilesToPixels(100);
 
-        /// <summary>The other door bracketed by this combat room, or null.</summary>
         public CombatDoor_TE Sibling
         {
             get
@@ -64,11 +52,11 @@ namespace OvermorrowMod.Common.RoomManager
             {
                 return State switch
                 {
-                    DoorState.Closed   => 0f,
-                    DoorState.Opening  => -OpenOffsetPixels * EasingUtils.EaseInOutQuint(MathHelper.Clamp(StateTimer / (float)OpenAnimationTicks, 0f, 1f)),
-                    DoorState.Open     => -OpenOffsetPixels,
-                    DoorState.Closing  => -OpenOffsetPixels * (1f - EasingUtils.EaseInOutQuint(MathHelper.Clamp(StateTimer / (float)CloseAnimationTicks, 0f, 1f))),
-                    _                  => 0f,
+                    DoorState.Closed => 0f,
+                    DoorState.Opening => -OpenOffsetPixels * EasingUtils.EaseInOutQuint(MathHelper.Clamp(StateTimer / (float)OpenAnimationTicks, 0f, 1f)),
+                    DoorState.Open => -OpenOffsetPixels,
+                    DoorState.Closing => -OpenOffsetPixels * (1f - EasingUtils.EaseInOutQuint(MathHelper.Clamp(StateTimer / (float)CloseAnimationTicks, 0f, 1f))),
+                    _ => 0f,
                 };
             }
         }
@@ -106,14 +94,25 @@ namespace OvermorrowMod.Common.RoomManager
                 SpawnOrchestrator();
         }
 
+        public void BeginVanish()
+        {
+            IsLocked = false;
+            DisableAfterOpen = true;
+            if (State != DoorState.Opening && State != DoorState.Open)
+            {
+                State = DoorState.Opening;
+                StateTimer = 0;
+            }
+        }
+
         private void SpawnOrchestrator()
         {
             var sibling = Sibling;
             if (sibling == null) return;
 
-            int leftDoorX  = System.Math.Min(Position.X, sibling.Position.X);
+            int leftDoorX = System.Math.Min(Position.X, sibling.Position.X);
             int rightDoorX = System.Math.Max(Position.X, sibling.Position.X);
-            int leftDoorID  = Position.X < sibling.Position.X ? ID : SiblingTEID;
+            int leftDoorID = Position.X < sibling.Position.X ? ID : SiblingTEID;
             int rightDoorID = Position.X < sibling.Position.X ? SiblingTEID : ID;
 
             int midTileX = (leftDoorX + rightDoorX) / 2;
@@ -130,29 +129,21 @@ namespace OvermorrowMod.Common.RoomManager
             if (idx >= 0 && idx < Main.npc.Length
                 && Main.npc[idx].ModNPC is CombatOrchestrator orch)
             {
-                orch.LeftDoorTEID  = leftDoorID;
+                orch.LeftDoorTEID = leftDoorID;
                 orch.RightDoorTEID = rightDoorID;
             }
         }
 
         public override void SaveData(TagCompound tag)
         {
-            tag["Interacted"]  = HasBeenInteracted;
-            tag["Sibling"]     = SiblingTEID;
-            tag["State"]       = (int)State;
-            tag["StateTimer"]  = StateTimer;
-            tag["Locked"]      = IsLocked;
-            tag["Disabled"]    = IsDisabled;
+            tag["Sibling"] = SiblingTEID;
+            tag["Disabled"] = IsDisabled;
         }
 
         public override void LoadData(TagCompound tag)
         {
-            HasBeenInteracted = tag.Get<bool>("Interacted");
-            SiblingTEID       = tag.Get<int>("Sibling");
-            State             = (DoorState)tag.Get<int>("State");
-            StateTimer        = tag.Get<int>("StateTimer");
-            IsLocked          = tag.Get<bool>("Locked");
-            IsDisabled        = tag.Get<bool>("Disabled");
+            SiblingTEID = tag.Get<int>("Sibling");
+            IsDisabled = tag.Get<bool>("Disabled");
         }
 
         public override void Update()
@@ -161,7 +152,6 @@ namespace OvermorrowMod.Common.RoomManager
             AdvanceStateMachine();
         }
 
-        /// <summary>The TE accepts placement anywhere; no underlying tile required.</summary>
         public override bool IsTileValidForEntity(int x, int y) => true;
 
         private void AdvanceStateMachine()
@@ -174,6 +164,7 @@ namespace OvermorrowMod.Common.RoomManager
                     {
                         State = DoorState.Open;
                         StateTimer = 0;
+                        if (DisableAfterOpen) IsDisabled = true;
                     }
                     break;
                 case DoorState.Open:
@@ -218,29 +209,25 @@ namespace OvermorrowMod.Common.RoomManager
             bool playerNearby = Main.LocalPlayer.active
                 && Vector2.Distance(Main.LocalPlayer.Center, doorCenter) <= SpawnDistance;
 
-            if (DoorNPC == null)
-            {
-                if (playerNearby) SpawnDoorNPC();
-            }
-            else if (DoorNPC.ModNPC is CombatDoorCollision door)
-            {
-                door.tileEntity = this;
-            }
+            if (DoorNPC == null && playerNearby)
+                SpawnDoorNPC();
         }
 
         private void SpawnDoorNPC()
         {
-            // Bottom-center of the TE's tile so the 1x9 NPC sits on the floor.
             Vector2 spawnPos = Position.ToWorldCoordinates(8, 16);
             int npcType = ModContent.NPCType<CombatDoorCollision>();
-            int idx = NPC.NewNPC(new EntitySource_WorldEvent(),
-                                 (int)spawnPos.X, (int)spawnPos.Y, npcType);
+            int idx = NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnPos.X, (int)spawnPos.Y, npcType);
+            if (idx < 0 || idx >= Main.npc.Length) return;
 
-            if (idx >= 0 && idx < Main.npc.Length && Main.npc[idx].ModNPC is CombatDoorCollision door)
+            var npc = Main.npc[idx];
+            if (npc.ModNPC is CombatDoorCollision door)
             {
-                doorNPCIndex = idx;
-                door.tileEntity = this;
+                door.ParentDoorTEID = ID;
+                door.ClosedY = spawnPos.Y;
             }
+            npc.netUpdate = true;
+            doorNPCIndex = idx;
         }
     }
 }

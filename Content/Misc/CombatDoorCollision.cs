@@ -12,32 +12,21 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Misc
 {
-    /// <summary>
-    /// Visible collision NPC spawned by CombatDoor_TE. 1 tile wide, 9 tiles
-    /// tall. Reads its TE's DoorState each tick to position itself: stays
-    /// at the spawn Y when Closed, slides up by 9 tiles during Opening,
-    /// rests there during Open, slides back down during Closing. Collision
-    /// is active only while Closed so the player can pass while open.
-    /// Right-click within range tells the TE to Open(), which syncs the
-    /// sibling door so both halves of the room move together.
-    /// </summary>
+    /// <summary>Visible collision NPC spawned by CombatDoor_TE.</summary>
     public class CombatDoorCollision : TileCollisionNPC
     {
-        public ModTileEntity tileEntity;
-
-        private CombatDoor_TE DoorInstance =>
-            tileEntity != null ? (CombatDoor_TE)TileEntity.ByID[tileEntity.ID] : null;
-
         public override string Texture => AssetDirectory.Misc + "CombatDoor";
 
-        // Closed-state Y, captured first tick; all animation offsets are relative to this.
-        private float closedYPixels;
-        private bool capturedClosedY = false;
+        public int ParentDoorTEID { get => (int)NPC.ai[0]; set => NPC.ai[0] = value; }
+        public float ClosedY { get => NPC.ai[1]; set => NPC.ai[1] = value; }
+
+        private CombatDoor_TE DoorInstance =>
+            TileEntity.ByID.TryGetValue(ParentDoorTEID, out var te) ? te as CombatDoor_TE : null;
 
         public override void SafeSetDefaults()
         {
             NPC.width = 16;
-            NPC.height = 144;   // 9 tiles
+            NPC.height = 144;
             NPC.hide = true;
         }
 
@@ -50,15 +39,9 @@ namespace OvermorrowMod.Content.Misc
         {
             NPC.ShowNameOnHover = false;
 
-            if (!capturedClosedY)
-            {
-                closedYPixels = NPC.position.Y;
-                capturedClosedY = true;
-            }
-
             var inst = DoorInstance;
             if (inst != null)
-                NPC.position.Y = closedYPixels + inst.YOffsetPixels;
+                NPC.position.Y = ClosedY + inst.YOffsetPixels;
 
             // Colliders only while Closed; otherwise the player walks through.
             if (inst != null && inst.IsBlocking)
