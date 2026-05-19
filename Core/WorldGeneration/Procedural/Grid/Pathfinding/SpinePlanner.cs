@@ -284,7 +284,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             var ranked = new List<(Point pos, double dev)>();
             for (int col = playableLeft; col <= playableRight; col++)
             {
-                int centerRow = ClampRow((int)Math.Round(elevation[col]), gridRows, edgeBorder);
+                // Shift the centered anchor row by the room's anchor offset so
+                // the room's CURSOR (where the spine actually docks) lands on
+                // the curve, not the top-left anchor. For default rooms with
+                // offset (0, 0) this is unchanged.
+                int centerRow = ClampRow(
+                    (int)Math.Round(elevation[col]) + prototype.AnchorOffsetFromCursor.Y,
+                    gridRows, edgeBorder);
 
                 for (int dy = -bandRadius; dy <= bandRadius; dy++)
                 {

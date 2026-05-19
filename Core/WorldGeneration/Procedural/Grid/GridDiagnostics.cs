@@ -20,6 +20,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public List<Point> SpineWaypoints = new();
         public List<Point> RequiredRoomAnchors = new();
         public double[] Elevation;
+        public long ElapsedMilliseconds = -1;
     }
 
     /// <summary>
@@ -47,6 +48,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine("=== Dungeon Grid Diagnostic ===");
             sb.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             sb.AppendLine($"Grid size: {grid.Cols} cols x {grid.Rows} rows");
+            if (config != null && config.ElapsedMilliseconds >= 0)
+                sb.AppendLine($"Generation time: {config.ElapsedMilliseconds} ms ({config.ElapsedMilliseconds / 1000.0:F2} s)");
             sb.AppendLine();
 
             if (config != null) WriteGenerationConfig(sb, config);

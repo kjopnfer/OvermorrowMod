@@ -45,17 +45,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
             try
             {
-                GridGenerator.Build(
-                    worldOrigin: new Point(startX, startY),
-                    gridCols: gridCols,
-                    gridRows: gridRows,
-                    cellPool: cellPool,
-                    fillTileType: fillTile,
-                    liningTileType: liningTile,
-                    rand: rand,
-                    startDoorTile: out Point startDoorTile
-                );
-
+                GridGenerator.Build(new Point(startX, startY), gridCols, gridRows, cellPool, fillTile, liningTile, rand, out Point startDoorTile);
                 Main.spawnTileX = startDoorTile.X;
                 Main.spawnTileY = startDoorTile.Y;
             }

@@ -154,7 +154,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
             [(180, 179, 163)] = TexPlaceAction.CustomPlaceObject((x, y) =>
             {
-                for (int i = 0; i < 12; i++)
+                for (int i = 0; i < 11; i++)
                     WorldGen.PlaceObject(x, y - i * 3, ModContent.TileType<WoodenLadder>(), true);
             }),
 
