@@ -37,6 +37,7 @@ namespace OvermorrowMod.Common
         /// For TexGen mapping, not shader mapping
         /// </summary>
         public const string TexGen = Assets + "Maps/";
+        public const string GrandArchives = TexGen + "GrandArchives/";
         #endregion
 
         public const string ArchiveTiles = Tiles + "Archives/";

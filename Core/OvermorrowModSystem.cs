@@ -17,6 +17,9 @@ namespace OvermorrowMod.Core
         internal UserInterface TitleInterface;
         public TitleCard TitleCard;
 
+        internal UserInterface RewardInterface;
+        public RewardSelection RewardSelection;
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -26,6 +29,12 @@ namespace OvermorrowMod.Core
                 TitleInterface.SetState(TitleCard);
 
                 TitleCardManager.Initialize(TitleCard);
+
+                RewardInterface = new UserInterface();
+                RewardSelection = new RewardSelection();
+                RewardInterface.SetState(RewardSelection);
+
+                RewardSelectionManager.Initialize(RewardSelection);
             }
         }
 
@@ -58,6 +67,7 @@ namespace OvermorrowMod.Core
             if (mouseTextIndex != -1)
             {
                 AddInterfaceLayer(layers, TitleInterface, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
+                AddInterfaceLayer(layers, RewardInterface, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
             }
         }
 

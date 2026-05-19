@@ -1,0 +1,2932 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AsepriteDotNet</name>
+    </assembly>
+    <members>
+        <member name="T:AsepriteDotNet.AnimatedTilemap">
+            <summary>
+            A tile map that contains animation frames.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.AnimatedTilemap.Empty">
+            <summary>
+            An empty animated tilemap with no name, an empty collection of tilesets, and an empty collection of tilemap
+            frames.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimatedTilemap.Name">
+            <summary>
+            Gets the name of this animated tilemap.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimatedTilemap.Tilesets">
+            <summary>
+            Gets a read-only collection of the tilesets used by the layers of this animated tilemap.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimatedTilemap.Frames">
+            <summary>
+            Gets a read-only collection of the frames of animation for this animated tilemap.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.AnimatedTilemap.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.AnimatedTilemap.Equals(AsepriteDotNet.AnimatedTilemap)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.AnimatedTilemap.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.AnimationFrame">
+            <summary>
+            Represents a single frame in an animation.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimationFrame.FrameIndex">
+            <summary>
+            Gets the index of the source frame for this animation.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimationFrame.Duration">
+            <summary>
+            Gets the duration of this frame.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.AnimationFrame.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.AnimationFrame.Equals(AsepriteDotNet.AnimationFrame)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.AnimationFrame.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.AnimationTag">
+            <summary>
+            Defines the tag of an animation.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimationTag.Name">
+            <summary>
+            Gets the name of the animation defined by this animation tag.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimationTag.Frames">
+            <summary>
+            Gets a read-only collection of the frames of animation for the animation defined by this animation tag.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimationTag.LoopCount">
+            <summary>
+            Gets the total number of loops/cycles that should play for the animation defined by this animation tag.
+            0 = Infinite.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimationTag.IsReversed">
+            <summary>
+            Gets a value that indicates whether the animation defined by this animation tag should play in reverse.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.AnimationTag.IsPingPong">
+            <summary>
+            Gets a value that indicates whether the animation defined by this animation tag should ping-pong once reaching
+            the last frame of animation.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.AnimationTag.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.AnimationTag.Equals(AsepriteDotNet.AnimationTag)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.AnimationTag.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.AsepriteBlendMode">
+            <summary>
+            Defines the blend mode used by <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> elements when blending <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteCel"/>
+            elements.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Normal">
+            <summary>
+            Normal blend mode is the standard blend mode that takes the top layer alone without mixing any color from the
+            layer beneath it.
+            <code>f(a,b) = b</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Multiply">
+            <summary>
+            Multiply blend mode that takes the RGB component values of each pixel from the top layer and multiplies them
+            with the RGB component values of the corresponding pixel from the bottom layer.
+            <code>f(a,b) = ab</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Screen">
+            <summary>
+            Screen blend mode takes the RGB component values of each pixel from the top and bottom layer and inverts them,
+            then multiples the RGB component values of each pixel from the top layer with the RGB component values of the
+            corresponding pixel from the bottom layer, then the RGB component value of each resulting pixel is inverted
+            again.
+            <code>f(a,b) = 1-(1-a)(1-b)</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Overlay">
+            <summary>
+            Overlay blend combines the Multiply and Screen blend modes based on the tonal value of the bottom layer. If the
+            bottom layer is darker than 50% gray, then the tonal values are multiplied; otherwise, they get screened.
+            In both cases the resulting value is doubled after.
+            <code>f(a,b) = 2ab when a less than 0.5</code>
+            <code>f(a,b) = 1-2(1-a)(1-b) when a equal to or greater than 0.5</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Darken">
+            <summary>
+            Darken blend retains the smallest of each RGB component for each corresponding pixel from the top and bottom
+            layer.
+            <code>f((r1,g1,b1), (r2,b2,g2)) = [min(r1,r2), min(g1,g2), min(b1,b2)]</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Lighten">
+            <summary>
+            Lighten blend retains the largest of each RGB component for each corresponding pixel from the top and bottom
+            layer.
+            <code>f((r1,g1,b1), (r2,b2,g2)) = [max(r1,r2), max(g1,g2), max(b1,b2)]</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.ColorDodge">
+            <summary>
+            Color Dodge blend divides each pixel from the bottom layer with the corresponding inverted pixel from the top
+            layer.
+            <code>f(a,b) = a/(1-b)</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.ColorBurn">
+            <summary>
+            Color Burn blend divides each inverted pixel from the bottom layer with the corresponding pixel from the top
+            layer, then inverts the resulting value.
+            <code>f(a,b) = 1-(1-a)/b</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.HardLight">
+            <summary>
+            Hard Light blend combines the Multiply and Screen blend modes based on the tonal value of the top layer. If the
+            top layer is darker than 50% gray, then the tonal values are multiplied; otherwise, they get screened.  In both
+            cases the resulting value is doubled after.
+            <code>f(a,b) = 2ab when b less than 0.5</code>
+            <code>f(a,b) = 1-2(1-a)(1-b) when b equal to or greater than 0.5</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.SoftLight">
+            <summary>
+            Soft Light blend modulates the tonal values of the bottom layer by the tonal values of the top layer.
+            <code>f(a,b) = (2b-1)(a-a^2)+a when b is less than 0.5</code>
+            <code>f(a,b) = (2b-1)(sqrt(a)-a)+a when b is equal to or greater than 0.5</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Difference">
+            <summary>
+            Difference blend returns the absolute value in the difference between RGB component value of each pixel in the
+            top layer from the RGB component value in the corresponding pixel in the bottom layer.
+            <code>f(a,b) = |a-b|</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Exclusion">
+            <summary>
+            Exclusion blend mode takes the sum of the RGB component values of each pixel in the top layer with the RGB
+            component value of each corresponding pixel in the bottom layer, then subtracts the doubled product of top and
+            bottom layer.
+            <code>f(a,b) = a+b-2ab</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Hue">
+            <summary>
+            Hue blend mode preserves the luma and chroma of each pixel in the bottom layer and adopts the hue of the
+            corresponding pixel in the top layer.
+            <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sa, La)</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Saturation">
+            <summary>
+            Saturation blend mode preserves the luma and hue of each pixel in the bottom layer and adopts the chroma of
+            the corresponding pixel in the top layer.
+            <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sb, La)</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Color">
+            <summary>
+            The color blend mode preserves the luma of each pixel in the bottom layer and adopts the hue and chroma of the
+            corresponding pixel in the top layer.
+            <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sb, La)</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Luminosity">
+            <summary>
+            Luminosity blend mode preserves the hue and chroma of each pixel in the bottom layer and adopts the luma of the
+            corresponding pixel in then top layer.
+            <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sa, Lb)</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Addition">
+            <summary>
+            Addition blend mode adds the RGB component values of each pixel from the top layer with the RGB component values
+            of each corresponding pixel in the bottom layer.
+            <code>f(a,b) = a + b</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Subtract">
+            <summary>
+            Subtract blend mode subtracts the RGB component values of each pixel from the top layer from the RGB component
+            values of each corresponding pixel in the bottom layer.
+            <code>f(a,b) = a - b</code>
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteBlendMode.Divide">
+            <summary>
+            Divide blend mode divides the RGB component values of each pixel from the bottom layer by the RGB component
+            values of each corresponding pixel from the top layer.
+            <code>f(a,b) = a/b</code>
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.AsepriteColorDepth">
+            <summary>
+            Defines the color depth mode used by an Aseprite sprite.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteColorDepth.Indexed">
+            <summary>
+            Defines that the Aseprite sprite uses an Indexed mode of 8-bits per pixel.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteColorDepth.Grayscale">
+            <summary>
+            Defines that the Aseprite sprite uses a Grayscale mode of 16-bits per pixel.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteColorDepth.RGBA">
+            <summary>
+            Defines that the Aseprite sprite uses an RGBA mode of 32-bits per pixel.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.AsepriteFile">
+            <summary>
+            Represents the contents loaded from an Aseprite file.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.CanvasWidth">
+            <summary>
+            Gets the width of the canvas, in pixels.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.CanvasHeight">
+            <summary>
+            Gets the height of the canvas, in pixels.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.ColorDepth">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.AsepriteColorDepth"/> mode used in Aseprite.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Frames">
+            <summary>
+            Gets a <see cref="T:System.ReadOnlySpan`1"/> of all <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> elements in this
+            <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.  Order of elements is from first-to-last.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Layers">
+            <summary>
+            Gets a <see cref="T:System.ReadOnlySpan`1"/> of all <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> elements in this
+            <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.  Order of elements is from bottom-to-top.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Tags">
+            <summary>
+            Gets a <see cref="T:System.ReadOnlySpan`1"/> of all <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> elements in this
+            <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.  ORder of elements is as defined in the Aseprite UI from left-to-right.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Slices">
+            <summary>
+            Gets a <see cref="T:System.ReadOnlySpan`1"/> of all <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> elements in this
+            <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.  Order of elements is in the order they were created in Aseprite.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Tilesets">
+            <summary>
+            Gets a <see cref="T:System.ReadOnlySpan`1"/> of all <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> element in this <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Warnings">
+            <summary>
+            Gets a <see cref="T:System.ReadOnlySpan`1"/> of any warnings issued when the Aseprite file was parsed to create this
+            <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> instance.  You can use this to see if there were any non-fatal errors that
+            occurred while parsing the file.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Palette">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepritePalette"/> for this <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.UserData">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteUserData"/> that was set in the properties for the sprite in Aseprite.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.Name">
+            <summary>
+            Gets the name of the Aseprite file (without the extension).
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.AsepriteFile.FrameCount">
+            <summary>
+            Gets the total number of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> elements in this file.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetFrame(System.Int32)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> to get.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/>.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            if <paramref name="index"/> is less than zero or greater than or equal to the total number of frames.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetFrame(System.Int32,AsepriteDotNet.Aseprite.Types.AsepriteFrame@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> to get.</param>
+            <param name="frame">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/>; otherwise,
+            <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> was found; otherwise <see langword="false"/>.  This
+            method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
+            equal to the total number of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> elements in this file.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetLayer(System.Int32)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> to get.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/>.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            if <paramref name="index"/> is less than zero or greater than or equal to the total number of layers.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetLayer(System.String)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> with the specified name.
+            </summary>
+            <param name="name">The name of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/>.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> with the specified name.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            If <paramref name="name"/> is <see langword="null"/> or an empty string.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            An <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> with the name specified does not exist.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetLayer(System.Int32,AsepriteDotNet.Aseprite.Types.AsepriteLayer@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> to get.</param>
+            <param name="layer">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/>; otherwise,
+            <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> was found; otherwise <see langword="false"/>.  This
+            method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
+            equal to the total number of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> elements in this file.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetLayer(System.String,AsepriteDotNet.Aseprite.Types.AsepriteLayer@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> with the specified name.
+            </summary>
+            <param name="name">The name of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/></param>
+            <param name="layer">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> with the specified
+            name; otherwise, <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer"/> with the specified name was found in this file;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetTag(System.Int32)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> to get.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/>.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            if <paramref name="index"/> is less than zero or greater than or equal to the total number of tags.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetTag(System.String)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> with the specified name.
+            </summary>
+            <param name="name">The name of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/>.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> with the specified name.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            If <paramref name="name"/> is <see langword="null"/> or an empty string.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            An <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> with the name specified does not exist.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetTag(System.Int32,AsepriteDotNet.Aseprite.Types.AsepriteTag@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> to get.</param>
+            <param name="tag">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/>; otherwise,
+            <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> was found; otherwise <see langword="false"/>.  This
+            method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
+            equal to the total number of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> elements in this file.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetTag(System.String,AsepriteDotNet.Aseprite.Types.AsepriteTag@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> with the specified name.
+            </summary>
+            <param name="name">The name of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/></param>
+            <param name="tag">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> with the specified
+            name; otherwise, <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> with the specified name was found in this file;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetSlice(System.Int32)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> to get.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/>.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            if <paramref name="index"/> is less than zero or greater than or equal to the total number of slices.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetSlice(System.String)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> with the specified name.
+            </summary>
+            <param name="name">The name of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/>.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> with the specified name.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            If <paramref name="name"/> is <see langword="null"/> or an empty string.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            An <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> with the name specified does not exist.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetSlice(System.Int32,AsepriteDotNet.Aseprite.Types.AsepriteSlice@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> to get.</param>
+            <param name="slice">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/>; otherwise,
+            <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> was found; otherwise <see langword="false"/>.  This
+            method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
+            equal to the total number of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> elements in this file.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetSlice(System.String,AsepriteDotNet.Aseprite.Types.AsepriteSlice@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> with the specified name.
+            </summary>
+            <param name="name">The name of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/></param>
+            <param name="slice">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> with the specified
+            name; otherwise, <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice"/> with the specified name was found in this file;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetTileset(System.Int32)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> to get.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/>.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            if <paramref name="index"/> is less than zero or greater than or equal to the total number of tilesets.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.GetTileset(System.String)">
+            <summary>
+            Returns the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> with the specified name.
+            </summary>
+            <param name="name">The name of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/>.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> with the specified name.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            If <paramref name="name"/> is <see langword="null"/> or an empty string.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            An <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> with the name specified does not exist.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetTileset(System.Int32,AsepriteDotNet.Aseprite.Types.AsepriteTileset@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> to get.</param>
+            <param name="slice">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/>; otherwise,
+            <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> was found; otherwise <see langword="false"/>.  This
+            method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
+            equal to the total number of <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> elements in this file.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFile.TryGetTileset(System.String,AsepriteDotNet.Aseprite.Types.AsepriteTileset@)">
+            <summary>
+            Gets the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> with the specified name.
+            </summary>
+            <param name="name">The name of the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/></param>
+            <param name="tileset">
+            When this method returns <see langword="true"/>, contains the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> with the specified
+            name; otherwise, <see langword="null"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> with the specified name was found in this file;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.AsepriteFileExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> instances.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFileExtensions.ExtractCel(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,System.Int32,System.String)">
+             <summary>
+             Extracts pixel data from a specific cel in a specified frame of an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> and returns it as
+             a <see cref="T:AsepriteDotNet.Texture"/>.
+             </summary>
+             <remarks>
+             Cel index of a frame starts at zero with the bottom most and goes up.  If a layer in a frame does not have cel
+             data, then the frame does not have that cel.  For instance, if your Aseprite file has 10 layers, but frame 0
+             does not have pixels on layer 2, then frame 0 will only have 9 cels and not the full 10 cels.
+            
+             Due to this, it may be easier to use the <see cref="M:AsepriteDotNet.Aseprite.AsepriteFileExtensions.ExtractCel(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,System.String,System.String)"/> method
+             to specify the layer name to extract the cel from.
+             </remarks>
+             <param name="file">
+             The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> containing the frame and cel from which to extract the pixel data.
+             </param>
+             <param name="frameIndex">
+             The index of the frame containing the cel from which to extract the pixel data.
+             </param>
+             <param name="celIndex">
+             The index of the cel within the specified frame from which to extract the pixel data.
+             </param>
+             <param name="name">
+             Optional name for the extracted texture. If not provided, a default name is generated.
+             </param>
+             <returns>A <see cref="T:AsepriteDotNet.Texture"/> object containing the extracted pixel data.</returns>
+             <exception cref="T:System.ArgumentNullException">Thrown when the input <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> is null.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.AsepriteFileExtensions.ExtractCel(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,System.String,System.String)">
+            <summary>
+            Extracts pixel data from a specific layer in a specified frame of an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> and returns it
+            as a <see cref="T:AsepriteDotNet.Texture"/>.
+            </summary>
+            <param name="file">
+            The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> containing the frame and layer from which to extract the pixel data.
+            </param>
+            <param name="frameIndex">The index of the frame from which to extract the pixel data.</param>
+            <param name="layerName">The name of the layer from which to extract the pixel data.</param>
+            <param name="name">Optional name for the extracted texture. If not provided, a default name is generated.</param>
+            <returns>A <see cref="T:AsepriteDotNet.Texture"/>. object containing the extracted pixel data.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the input <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentException">Thrown when the specified layer cannot be located.</exception>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.AsepriteLoopDirection">
+            <summary>
+            Defines the animation direction values set for an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/>.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteLoopDirection.Forward">
+            <summary>
+            Defines that the animation for the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> is played in a forward direction from the first
+            frame of animation to the last.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteLoopDirection.Reverse">
+            <summary>
+            Defines that the animation for the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> is played in reverse from the last frame of
+            animation to the first.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteLoopDirection.PingPong">
+            <summary>
+            Defines that the animation for the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> ping-pongs by first going from the first frame of
+            animation to the last frame, then playing in reverse from the last frame of animation to the first.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Aseprite.AsepriteLoopDirection.PingPongReverse">
+            <summary>
+            Defines that the animation for the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTag"/> ping-pongs by first going in reverse from the last
+            frame of animation to the first frame, then playing forward from the first frame of animation to the last.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteCel">
+            <summary>
+            Defines the core properties of a cel in an Aseprite file.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteCel.Layer">
+            <summary>
+            Gets the layer that this cel exists on.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteCel.Location">
+            <summary>
+            Gets the top-left xy-coordinate position of this el relative to the bounds of the frame it is in.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteCel.Opacity">
+            <summary>
+            Gets the opacity level of this cel.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteCel.UserData">
+            <summary>
+            Gets the custom user data that was set in the properties for this cel in Aseprite.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteCelExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteCel"/> instances.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.Types.AsepriteCelExtensions.ExtractCel(AsepriteDotNet.Aseprite.Types.AsepriteCel,System.String)">
+            <summary>
+            Extracts pixel data from an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteCel"/> and returns it as a <see cref="T:AsepriteDotNet.Texture"/>.
+            </summary>
+            <param name="cel">The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteCel"/> containing the pixel data to extract.</param>
+            <param name="name">
+            Optional name for the extracted <see cref="T:AsepriteDotNet.Texture"/>. If not provided, an empty string is used.
+            </param>
+            <returns>A <see cref="T:AsepriteDotNet.Texture"/> object containing the extracted pixel data.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the input <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteCel"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteCel"/> does not contain pixel data.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.Types.AsepriteCelExtensions.ExtractCel(AsepriteDotNet.Aseprite.Types.AsepriteImageCel,System.String)">
+            <summary>
+            Extracts pixel data from an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteImageCel"/> and returns it as a <see cref="T:AsepriteDotNet.Texture"/>.
+            </summary>
+            <param name="cel">The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteImageCel"/> containing the pixel data to extract.</param>
+            <param name="name">
+            Optional name for the extracted <see cref="T:AsepriteDotNet.Texture"/>. If not provided, an empty string is used.
+            </param>
+            <returns>A <see cref="T:AsepriteDotNet.Texture"/> object containing the extracted pixel data.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the input <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteImageCel"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.Types.AsepriteCelExtensions.ExtractCel(AsepriteDotNet.Aseprite.Types.AsepriteTilemapCel,System.String)">
+            <summary>
+            Extracts pixel data from an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTilemapCel"/> and returns it as a <see cref="T:AsepriteDotNet.Texture"/>.
+            </summary>
+            <param name="cel">The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTilemapCel"/> containing the pixel data to extract.</param>
+            <param name="name">
+            Optional name for the extracted <see cref="T:AsepriteDotNet.Texture"/>. If not provided, an empty string is used.
+            </param>
+            <returns>A <see cref="T:AsepriteDotNet.Texture"/> object containing the extracted pixel data.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the input <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTilemapCel"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame">
+            <summary>
+            Defines the properties of a frame in an Aseprite file.  This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteFrame.Cels">
+            <summary>
+            Gets the underlying collection of cels elements that are contained within this frame.
+            Cel elements are ordered from bottom most layer to top most layer within the frame.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteFrame.Name">
+            <summary>
+            Gets the name of this frame.
+            </summary>
+            <remarks>
+            Frames do not natively have a name in Aseprite.  A name is auto generated for each <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/>
+            when the AsepriteFile is parsed based on the name of the Aseprite file, without extension, appended with the
+            zero-based index of the frame. (e.g. sprite0).
+            </remarks>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteFrame.Size">
+            <summary>
+            Gets the size of this frame, in pixels.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteFrame.Duration">
+            <summary>
+            Gets the amount of time that this frame should be displayed when used as part of an animation.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteFrameExtensions">
+            <summary>
+            Defines extension methods for the <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> type.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.Types.AsepriteFrameExtensions.FlattenFrame(AsepriteDotNet.Aseprite.Types.AsepriteFrame,System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Flattens the a <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> into an array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values.
+            </summary>
+            <param name="frame">The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> to flatten.</param>
+            <param name="layers">The layers to include (case sensitive)</param>
+            <returns>
+            A array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> value representing the flattened frame.  If <paramref name="layers"/> is
+            <see langword="null"/> or contains zero elements, then an empty array is returned.
+            </returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="frame"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Aseprite.Types.AsepriteFrameExtensions.FlattenFrame(AsepriteDotNet.Aseprite.Types.AsepriteFrame,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Flattens the a <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> into an array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values.
+            </summary>
+            <param name="frame">The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteFrame"/> to flatten.</param>
+            <param name="onlyVisibleLayers">Indicates whether only cels on visible layers should be included.</param>
+            <param name="includeBackgroundLayer">Indicates whether cels on the background layer should be included.</param>
+            <param name="includeTilemapCels">Indicates whether tilemap cels should be included.</param>
+            <returns>A array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> value representing the flattened frame.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="frame"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteGroupLayer">
+            <summary>
+            Defines the properties of a layer in an Aseprite file that contains child layers.  This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteGroupLayer.Children">
+            <summary>
+            Gets the child layers that were grouped inside this group layer.
+            The order of layer elements is from bottom most to top most layer in the group.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteImageCel">
+            <summary>
+            Defines the properties of a cel in an Aseprite file that contains image data.  This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteImageCel.Size">
+            <summary>
+            Gets the size of this image cel.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteImageCel.Pixels">
+            <summary>
+            Gets the collection of color data that represents the pixels that make up the image for this image cel.
+            The order of color elements starts with the top-left most pixel in the image and is read left-to-right from
+            top-to-bottom.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteImageLayer">
+            <summary>
+            Defines the properties of a layer in an Aseprite file that
+            Defines the properties of a layer in an Aseprite file that image cels are placed on.  This class cannot be
+            inherited.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteLayer">
+            <summary>
+            Defines core properties of an Aseprite layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.IsVisible">
+            <summary>
+            Gets a value that indicates whether this layer is visible.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.IsBackgroundLayer">
+            <summary>
+            Gets a value that indicates whether this layer is the background layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.IsReferenceLayer">
+            <summary>
+            Gets a value that indicates whether this layer is a reference layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.ChildLevel">
+            <summary>
+            Gets the child level of this layer in relation to its parent.
+            </summary>
+            <remarks>
+            See <see href="https://github.com/aseprite/aseprite/blob/main/docs/ase-file-specs.md#note1"/> for more
+            information.
+            </remarks>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.BlendMode">
+            <summary>
+            Gets the blend mode used by this layer when blending cels on this layer with the layer below it.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.Opacity">
+            <summary>
+            Gets the opacity level of this layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.Name">
+            <summary>
+            Gets the name of this layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLayer.UserData">
+            <summary>
+            Gets the custom user data that was set in the properties for this layer in Aseprite.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteLinkedCel">
+            <summary>
+            Defines the properties of an Aseprite cel that is linked to another cel.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteLinkedCel.Cel">
+            <summary>
+            Gets the cel that this linked cel is linked to
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepritePalette">
+            <summary>
+            Defines the properties of the palette in an Aseprite file.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepritePalette.Item(System.Int32)">
+            <summary>
+            Gets the color value at the specified index from this palette.
+            </summary>
+            <param name="index">The index of the color element to retrieve.</param>
+            <returns>The color element at the specified index.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if the <paramref name="index"/> is less than zero or greater than or equal to <see cref="P:AsepriteDotNet.Aseprite.Types.AsepritePalette.Count"/>.
+            </exception>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepritePalette.TransparentIndex">
+            <summary>
+            Gets the index of the color element in this palette that should be interpreted as a transparent color.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepritePalette.Count">
+            <summary>
+            Gets the total number of color elements in this palette.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepritePalette.Colors">
+            <summary>
+            Gets a <see cref="T:System.ReadOnlySpan`1"/> of the <see cref="T:AsepriteDotNet.Common.Rgba32"/> elements in this
+            <see cref="T:AsepriteDotNet.Aseprite.Types.AsepritePalette"/>.  Order of elements is the same as the order of colors in the palette in Aseprite.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteSlice">
+            <summary>
+            Defines a slice element in an Aseprite file.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSlice.Keys">
+            <summary>
+            Gets the slice key elements for this slice.
+            </summary>
+            <remarks>
+            Each key is similar to an animation key that defines the properties of this slice starting on a specified frame.
+            </remarks>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSlice.IsNinePatch">
+            <summary>
+            Gets a value that indicates whether this slice has nine patch data in its keys.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSlice.HasPivot">
+            <summary>
+            Gets a value that indicates whether this slice has pivot data in its keys.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSlice.Name">
+            <summary>
+            Gets the name of this slice.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSlice.UserData">
+            <summary>
+            Gets the custom user data that was set in the properties for this slice in Aseprite.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteSliceKey">
+            <summary>
+            Defines the properties of a slice starting on a specific frame.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSliceKey.FrameIndex">
+            <summary>
+            Gets the index of the frame that the properties of this key are applied starting on.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSliceKey.Bounds">
+            <summary>
+            Gets the rectangular bounds of the slice during this key.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSliceKey.CenterBounds">
+            <summary>
+            Gets the bounds of the center of the slice during this key.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteSliceKey.Pivot">
+            <summary>
+            Gets the xy-coordinate pivot point of the slice during this key.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteTag">
+            <summary>
+            Defines the properties of an Aseprite animation tag.  This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTag.From">
+            <summary>
+            Gets the index of the frame that the animation defined by this tag starts on.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTag.To">
+            <summary>
+            Gets the index of the frame that the animation defined by this tag ends on.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTag.LoopDirection">
+            <summary>
+            Gets the loop direction used by the animation defined by this tag.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTag.Name">
+            <summary>
+            Gets the name of this tag.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTag.Color">
+            <summary>
+            Gets the color defined for this tag.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTag.Repeat">
+            <summary>
+            Gets the number of times the animation defined by this tag repeats.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTag.UserData">
+            <summary>
+            Gets the custom user data that was set in the properties for this tag in Aseprite.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteTile">
+            <summary>
+            Defines the properties of a tile in an Aseprite file.  This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTile.ID">
+            <summary>
+            Gets the ID of the tile in the tileset that is represented by this tile.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTile.FlipHorizontally">
+            <summary>
+            Gets a value that indicates whether this tile is flipped horizontally.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTile.FlipVertically">
+            <summary>
+            Gets a value that indicates whether this tile is flipped vertically.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTile.FlipDiagonally">
+            <summary>
+            Gets a value that indicates whether this tile is flipped diagonally.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteTilemapCel">
+            <summary>
+            Defines the properties of a cel in an Aseprite file that contains tilemap data.  This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTilemapCel.Size">
+            <summary>
+            Gets the size of this tilemap cel, in tiles.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTilemapCel.Tiles">
+            <summary>
+            Gets the collection of tile data for this tilemap cel. Tile elements are in the order of left-to-right, read
+            top-to-bottom.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteTilemapLayer">
+            <summary>
+            Defines the properties of a layer in an Aseprite file that tilemap cels are placed on.  This class cannot be
+            inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTilemapLayer.Tileset">
+            <summary>
+            Gets the tileset that is used by all tilemap cels on this tilemap layer.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset">
+            <summary>
+            Defines the properties of a tileset in an Aseprite file.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTileset.ID">
+            <summary>
+            Gets the ID of this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTileset.TileCount">
+            <summary>
+            Gets the total number of tiles in this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTileset.Size">
+            <summary>
+            Gets the size of this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTileset.TileSize">
+            <summary>
+            Gets the size of each tile in this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTileset.Name">
+            <summary>
+            Gets the name of this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteTileset.Pixels">
+            <summary>
+            Gets the collection of color value that represents the pixel data of the image of this tileset.  Order of color
+            elements is from top-left pixel read left-to-right top-to-bottom.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Aseprite.Types.AsepriteUserData">
+            <summary>
+            Defines the properties of custom user data of an element in an Aseprite file.  This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteUserData.HasText">
+            <summary>
+            Gets a value that indicates whether this user data contains a value for the <see cref="P:AsepriteDotNet.Aseprite.Types.AsepriteUserData.Text"/> property.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteUserData.HasColor">
+            <summary>
+            Gets a value that indicates whether this user data contains a value for the <see cref="P:AsepriteDotNet.Aseprite.Types.AsepriteUserData.Color"/> property.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteUserData.Text">
+            <summary>
+            Gets the text that was set for this user data in Aseprite.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Aseprite.Types.AsepriteUserData.Color">
+            <summary>
+            Gets the color that was set for this user data in Aseprite.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.AsepriteColorUtilities.PixelsToColor(System.Byte[],AsepriteDotNet.Aseprite.AsepriteColorDepth,System.Boolean,AsepriteDotNet.Aseprite.Types.AsepritePalette)">
+            <summary>
+            Converts an array of <see cref="T:System.Byte"/> data to an array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values based on the
+            specified <see cref="T:AsepriteDotNet.Aseprite.AsepriteColorDepth"/>.
+            </summary>
+            <param name="pixels">The array of <see cref="T:System.Byte"/> data that represents the color data.</param>
+            <param name="depth">The color depth.</param>
+            <param name="preMultiplyAlpha">
+            Indicates whether color values should be translated to a premultiplied alpha value.
+            </param>
+            <param name="palette">
+            The palette used for <see cref="F:AsepriteDotNet.Aseprite.AsepriteColorDepth.Indexed">ColorDepth.Index</see>.  Optional, only required when
+            <paramref name="depth"/> is equal to <see cref="F:AsepriteDotNet.Aseprite.AsepriteColorDepth.Indexed">ColorDepth.Indexed</see>.
+            </param>
+            <returns>An array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values converted from the data.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="pixels"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">
+            <paramref name="depth"/> is an unknown <see cref="T:AsepriteDotNet.Aseprite.AsepriteColorDepth"/> value.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.AsepriteColorUtilities.CalculateSaturation(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculates the saturation value based on the given RGB color component values.
+            </summary>
+            <param name="r">The red color component value (0 to 1).</param>
+            <param name="g">The green color component value (0 to 1).</param>
+            <param name="b">The blue color component value (0 to 1).</param>
+            <returns>The saturation value calculated.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.AsepriteColorUtilities.CalculateLuminance(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculates the luminance value based on the given RGB color component values.
+            </summary>
+            <param name="r">The red color component value (0 to 1).</param>
+            <param name="g">The green color component value (0 to 1).</param>
+            <param name="b">The blue color component value (0 to 1).</param>
+            <returns></returns>
+        </member>
+        <member name="M:AsepriteDotNet.AsepriteColorUtilities.AdjustSaturation(System.Double@,System.Double@,System.Double@,System.Double)">
+            <summary>
+            Modifies the saturation of the specified RGB color component values.
+            </summary>
+            <param name="r">The red color component value (0 to 1).</param>
+            <param name="g">The green color component value (0 to 1).</param>
+            <param name="b">The blue color component value (0 to 1).</param>
+            <param name="s">The saturation factor to adjust the color components by.</param>
+        </member>
+        <member name="M:AsepriteDotNet.AsepriteColorUtilities.AdjustLumanice(System.Double@,System.Double@,System.Double@,System.Double)">
+            <summary>
+            Modifies the luminosity of the specified RGB color component values.
+            </summary>
+            <param name="r">The red color component value (0 to 1).</param>
+            <param name="g">The green color component value (0 to 1).</param>
+            <param name="b">The blue color component value (0 to 1).</param>
+            <param name="l">The desired luminosity value to apply.</param>
+        </member>
+        <member name="M:AsepriteDotNet.AsepriteColorUtilities.NormalizeColor(System.Double@,System.Double@,System.Double@)">
+            <summary>
+            Normalizes the specified RGB color component values to ensure they are within the valid range of 0 to 1.
+            Clips the values of the specified RGB color
+            </summary>
+            <param name="r">The red color component value.</param>
+            <param name="g">The green color component value.</param>
+            <param name="b">The blue color component value.</param>
+        </member>
+        <member name="M:AsepriteDotNet.AsepriteColorUtilities.Blend(AsepriteDotNet.Common.Rgba32,AsepriteDotNet.Common.Rgba32,System.Int32,AsepriteDotNet.Aseprite.AsepriteBlendMode)">
+            <summary>
+            Blends two <see cref="T:AsepriteDotNet.Common.Rgba32"/> values using the specified <see cref="T:AsepriteDotNet.Aseprite.AsepriteBlendMode"/> and opacity.
+            </summary>
+            <param name="backdrop">The backdrop color.</param>
+            <param name="source">The source color to be blended onto the <paramref name="backdrop"/>.</param>
+            <param name="opacity">The opacity of the blending operation.</param>
+            <param name="blendMode">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteBlendMode"/> to use for the blending operation.</param>
+            <returns>The resulting <see cref="T:AsepriteDotNet.Common.Rgba32"/> value created from the blending.</returns>
+            <exception cref="T:System.InvalidOperationException">
+            <paramref name="blendMode"/> is an unknown <see cref="T:AsepriteDotNet.Aseprite.AsepriteBlendMode"/> value.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Calc.HasFlag(System.UInt32,System.UInt32)">
+            <summary>
+            Returns a value that indicates if the specified flag is set for the given value.
+            </summary>
+            <param name="value">The value to check for the flag.</param>
+            <param name="flag">The flag to check against the value.</param>
+            <returns>
+            <see langword="true"/> if the flag is set in the value; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Calc.DoesNotHaveFlag(System.UInt32,System.UInt32)">
+            <summary>
+            Returns a value that indicates if the specified flag is not set for the given value.
+            </summary>
+            <param name="value">The value to check for the flag.</param>
+            <param name="flag">The flag to check against the value.</param>
+            <returns>
+            <see langword="true"/> if the flag is not set in the value otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Calc.RefMax(System.Double@,System.Double@)">
+            <summary>
+            Returns the reference to the value that is the maximum value between two double values specified.
+            </summary>
+            <param name="a">The first double value.</param>
+            <param name="b">The second double value.</param>
+            <returns>The reference to the maximum value between <paramref name="a"/> and <paramref name="b"/></returns>.
+        </member>
+        <member name="M:AsepriteDotNet.Calc.RefMin(System.Double@,System.Double@)">
+            <summary>
+            Returns the reference to the value that is the minimum value between two double values specified.
+            </summary>
+            <param name="a">The first double value.</param>
+            <param name="b">The second double value.</param>
+            <returns>The reference to the minimum value between <paramref name="a"/> and <paramref name="b"/></returns>.
+        </member>
+        <member name="M:AsepriteDotNet.Calc.RefMid(System.Double@,System.Double@,System.Double@)">
+            <summary>
+            Returns the reference to the value that is the middle value between the three double values specified.
+            </summary>
+            <param name="a">The first double value.</param>
+            <param name="b">The second double value.</param>
+            <param name="c">The third double value.</param>
+            <returns>
+            The reference to the middle value between <paramref name="a"/>, <paramref name="b"/>, and
+            <paramref name="c"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Calc.MultiplyUnsigned8Bit(System.Byte,System.Int32)">
+            <summary>
+            Returns the result of multiplying two unsigned 8-bit values.
+            </summary>
+            <param name="a">The multiplicand</param>
+            <param name="b">The multiplier</param>
+            <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Calc.MultiplyUnsigned8Bit(System.Int32,System.Int32)">
+            <summary>
+            Returns the result of multiplying two unsigned 8-bit values.
+            </summary>
+            <param name="a">The multiplicand</param>
+            <param name="b">The multiplier</param>
+            <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Calc.DivideUnsigned8Bit(System.Byte,System.Int32)">
+            <summary>
+            Returns the result of dividing two unsigned 8-bit values.
+            </summary>
+            <param name="a">The dividend</param>
+            <param name="b">The divisor</param>
+            <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Calc.DivideUnsigned8Bit(System.Int32,System.Int32)">
+            <summary>
+            Returns the result of dividing two unsigned 8-bit values.
+            </summary>
+            <param name="a">The dividend</param>
+            <param name="b">The divisor</param>
+            <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        </member>
+        <member name="T:AsepriteDotNet.Common.Point">
+            <summary>
+            Defines an order pair of 32-bit signed integer values that represent the x- and y-coordinates in a two dimensional
+            plane.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Point.Empty">
+            <summary>
+            A <see cref="T:AsepriteDotNet.Common.Point"/> who's <see cref="F:AsepriteDotNet.Common.Point.X"/> and <see cref="F:AsepriteDotNet.Common.Point.Y"/> component values are both zero.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Point.X">
+            <summary>
+            The x-coordinate component of this point.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Point.Y">
+            <summary>
+            The y-coordinate component of this point.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Common.Point.IsEmpty">
+            <summary>
+            Gets a value that indicates if this is an empty point.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Common.Point"/> value.
+            </summary>
+            <param name="x">The x-coordinate component of the point.</param>
+            <param name="y">The y-coordinate component of the point.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.ToVector2">
+            <summary>
+            Returns this <see cref="T:AsepriteDotNet.Common.Point"/> value as a <see cref="T:System.Numerics.Vector2"/> value.
+            </summary>
+            <returns>This <see cref="T:AsepriteDotNet.Common.Point"/> value as a <see cref="T:System.Numerics.Vector2"/> value.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.To``1(System.Func{AsepriteDotNet.Common.Point,``0})">
+            <summary>
+            Returns  this <see cref="T:AsepriteDotNet.Common.Point"/> value as a <typeparamref name="T"/> value.
+            </summary>
+            <typeparam name="T">The type to convert this <see cref="T:AsepriteDotNet.Common.Point"/> to.</typeparam>
+            <param name="converter">A function that defines how to perform the conversion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.op_Equality(AsepriteDotNet.Common.Point,AsepriteDotNet.Common.Point)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Point"/> values are equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Point"/> value on the left of the equality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Point"/> value on the right of the equality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.op_Inequality(AsepriteDotNet.Common.Point,AsepriteDotNet.Common.Point)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Point"/> values are not equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Point"/> value on the left of the inequality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Point"/> value on the right of the inequality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.Equals(AsepriteDotNet.Common.Point)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Point.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Common.Rectangle">
+            <summary>
+            Defines four 32-bit signed integer values that represent the location and size of a rectangular boundary in a two
+            dimensional plane.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rectangle.Empty">
+            <summary>
+            A <see cref="T:AsepriteDotNet.Common.Rectangle"/> who's <see cref="F:AsepriteDotNet.Common.Rectangle.X"/>, <see cref="F:AsepriteDotNet.Common.Rectangle.Y"/>,
+            <see cref="F:AsepriteDotNet.Common.Rectangle.Width"/> and <see cref="F:AsepriteDotNet.Common.Rectangle.Height"/> component values all zero.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rectangle.X">
+            <summary>
+            The top-left x-coordinate position of this rectangle.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rectangle.Y">
+            <summary>
+            The top-left y-coordinate position of this rectangle.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rectangle.Width">
+            <summary>
+            The width of this rectangle, in pixels.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rectangle.Height">
+            <summary>
+            The height of this rectangle, in pixels.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Common.Rectangle.IsEmpty">
+            <summary>
+            Gets a value that indicates if this is an empty point.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Common.Rectangle.Location">
+            <summary>
+            Gets or Sets the top-left xy-coordinate position of this rectangle.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Common.Rectangle.Size">
+            <summary>
+            Gets or SEts the size of this rectangle.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Common.Rectangle"/> value.
+            </summary>
+            <param name="x">The top-left x-coordinate position of the rectangle.</param>
+            <param name="y">The top-left y-coordinate position of the rectangle.</param>
+            <param name="width">The width of the rectangle, in pixels.</param>
+            <param name="height">The height of the rectangle, in pixels.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.#ctor(AsepriteDotNet.Common.Point,AsepriteDotNet.Common.Size)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Common.Rectangle"/> value.
+            </summary>
+            <param name="location">The top-left xy-coordinate location of the rectangle.</param>
+            <param name="size">The size of the rectangle, in pixels.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.ToVector4">
+            <summary>
+            Returns this <see cref="T:AsepriteDotNet.Common.Rectangle"/> value as a <see cref="T:System.Numerics.Vector4"/> value.
+            </summary>
+            <returns>This <see cref="T:AsepriteDotNet.Common.Rectangle"/> value as a <see cref="T:System.Numerics.Vector4"/> value.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.To``1(System.Func{AsepriteDotNet.Common.Rectangle,``0})">
+            <summary>
+            Returns  this <see cref="T:AsepriteDotNet.Common.Rectangle"/> value as a <typeparamref name="T"/> value.
+            </summary>
+            <typeparam name="T">The type to convert this <see cref="T:AsepriteDotNet.Common.Rectangle"/> to.</typeparam>
+            <param name="converter">A function that defines how to perform the conversion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.op_Equality(AsepriteDotNet.Common.Rectangle,AsepriteDotNet.Common.Rectangle)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Rectangle"/> values are equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Rectangle"/> value on the left of the equality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Rectangle"/> value on the right of the equality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.op_Inequality(AsepriteDotNet.Common.Rectangle,AsepriteDotNet.Common.Rectangle)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Rectangle"/> values are not equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Rectangle"/> value on the left of the inequality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Rectangle"/> value on the right of the inequality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.Equals(AsepriteDotNet.Common.Rectangle)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rectangle.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Common.Rgba32">
+            <summary>
+            Represents a color value defined by four 8-bit component values, each representing the red, green, blue, and alpha
+            component values of the color.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rgba32.R">
+            <summary>
+            The red color component.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rgba32.G">
+            <summary>
+            The green color component.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rgba32.B">
+            <summary>
+            The blue color component.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Rgba32.A">
+            <summary>
+            The alpha color component.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Common.Rgba32.PackedValue">
+            <summary>
+            Gets or Sets the packed value of this <see cref="T:AsepriteDotNet.Common.Rgba32"/> represented as a 32-bit unsigned integer in the
+            least to most significant bit order of red, green, blue, alpha.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initialize a new instance of the <see cref="T:AsepriteDotNet.Common.Rgba32"/> value.
+            </summary>
+            <param name="r">The red color component.</param>
+            <param name="g">The green color component.</param>
+            <param name="b">The blue color component.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Common.Rgba32"/> value.
+            </summary>
+            <param name="r">The red color component.</param>
+            <param name="g">The green color component.</param>
+            <param name="b">The blue color component.</param>
+            <param name="a">The alpha color component.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.#ctor(System.Numerics.Vector4)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Common.Rgba32"/> value from a <see cref="T:System.Numerics.Vector4"/>
+            </summary>
+            <param name="vector">The vector containing the red, green, blue, and alpha components.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.ToVector4">
+            <summary>
+            Returns this <see cref="T:AsepriteDotNet.Common.Rgba32"/> value as a <see cref="T:System.Numerics.Vector4"/> value.
+            </summary>
+            <returns>This <see cref="T:AsepriteDotNet.Common.Rgba32"/> value as a <see cref="T:System.Numerics.Vector4"/> value.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.To``1(System.Func{AsepriteDotNet.Common.Rgba32,``0})">
+            <summary>
+            Returns  this <see cref="T:AsepriteDotNet.Common.Rgba32"/> value as a <typeparamref name="T"/> value.
+            </summary>
+            <typeparam name="T">The type to convert this <see cref="T:AsepriteDotNet.Common.Rgba32"/> to.</typeparam>
+            <param name="converter">A function that defines how to perform the conversion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.op_Equality(AsepriteDotNet.Common.Rgba32,AsepriteDotNet.Common.Rgba32)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Rgba32"/> values are equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Rgba32"/> value on the left of the equality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Rgba32"/> value on the right of the equality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.op_Inequality(AsepriteDotNet.Common.Rgba32,AsepriteDotNet.Common.Rgba32)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Rgba32"/> values are not equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Rgba32"/> value on the left of the inequality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Rgba32"/> value on the right of the inequality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.Equals(AsepriteDotNet.Common.Rgba32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.Pack(System.Numerics.Vector4)">
+            <summary>
+            Packs a <see cref="T:System.Numerics.Vector4"/> value into a new <see cref="T:AsepriteDotNet.Common.Rgba32"/> value.
+            </summary>
+            <param name="vector">The vector to pack.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Common.Rgba32"/> value created by this method.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.FromNonPreMultiplied(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a premultiplied alpha <see cref="T:AsepriteDotNet.Common.Rgba32"/> color value.
+            </summary>
+            <param name="r">The red color component value.</param>
+            <param name="g">The green color component value.</param>
+            <param name="b">The blue color component value.</param>
+            <param name="a">The alpha color component value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32.Deconstruct(System.Byte@,System.Byte@,System.Byte@,System.Byte@)">
+            <summary>
+            Deconstructs this <see cref="T:AsepriteDotNet.Common.Rgba32"/> value into its individual R, G, B, A component values.
+            </summary>
+            <param name="r">When this method returns, contains the <see cref="F:AsepriteDotNet.Common.Rgba32.R"/> color component value.</param>
+            <param name="g">When this method returns, contains the <see cref="F:AsepriteDotNet.Common.Rgba32.G"/> color component value.</param>
+            <param name="b">When this method returns, contains the <see cref="F:AsepriteDotNet.Common.Rgba32.B"/> color component value.</param>
+            <param name="a">When this method returns, contains the <see cref="F:AsepriteDotNet.Common.Rgba32.A"/> color component value.</param>
+        </member>
+        <member name="T:AsepriteDotNet.Common.Rgba32Extensions">
+            <summary>
+            Defines extension methods for the <see cref="T:AsepriteDotNet.Common.Rgba32"/> struct.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32Extensions.As``1(AsepriteDotNet.Common.Rgba32,System.Func{AsepriteDotNet.Common.Rgba32,``0})">
+             <summary>
+             Converts an <see cref="T:AsepriteDotNet.Common.Rgba32"/> value to the specified <typeparamref name="T"/> type using the provided
+             conversion functions.
+             </summary>
+             <typeparam name="T">The target type to convert to.</typeparam>
+             <param name="rgba">The <see cref="T:AsepriteDotNet.Common.Rgba32"/> value to convert.</param>
+             <param name="converter">
+             A function that performs the conversion from an <see cref="T:AsepriteDotNet.Common.Rgba32"/> value to a <typeparamref name="T"/> type.
+             </param>
+             <returns>The converted value as type <typeparamref name="T"/>.</returns>
+             <exception cref="T:System.ArgumentNullException">
+             Throw if <paramref name="rgba"/> parameter is <see langword="null"/>.
+            
+             -or-
+             
+             Thrown if <paramref name="converter"/> parameter is <see langword="null"/>
+             </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32Extensions.As``1(AsepriteDotNet.Common.Rgba32[],System.Func{AsepriteDotNet.Common.Rgba32,``0})">
+             <summary>
+             Converts an array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values to an array of the specified <typeparamref name="T"/> type
+             using the provided conversion function.
+             </summary>
+             <typeparam name="T">The target type to convert to.</typeparam>
+             <param name="colors">The array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> elements to convert</param>
+             <param name="converter">
+             A function that performs the conversion from an <see cref="T:AsepriteDotNet.Common.Rgba32"/> value to a <typeparamref name="T"/> type.
+             </param>
+             <returns>
+             An array of <typeparamref name="T"/> values converted from the array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values.
+             </returns>
+             <exception cref="T:System.ArgumentNullException">
+             Throw if <paramref name="colors"/> parameter is <see langword="null"/>.
+            
+             -or-
+             
+             Thrown if <paramref name="converter"/> parameter is <see langword="null"/>
+             </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Rgba32Extensions.As``1(System.ReadOnlySpan{AsepriteDotNet.Common.Rgba32},System.Func{AsepriteDotNet.Common.Rgba32,``0})">
+            <summary>
+            Converts read-only span of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values to an array of the specified <typeparamref name="T"/>
+            type using the provided conversion function.
+            </summary>
+            <typeparam name="T">The target type to convert to.</typeparam>
+            <param name="colors">The read-only span of <see cref="T:AsepriteDotNet.Common.Rgba32"/> elements to convert</param>
+            <param name="converter">
+            A function that performs the conversion from an <see cref="T:AsepriteDotNet.Common.Rgba32"/> value to a <typeparamref name="T"/> type.
+            </param>
+            <returns>
+            An array of <typeparamref name="T"/> values converted from the array of <see cref="T:AsepriteDotNet.Common.Rgba32"/> values.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="converter"/> parameter is <see langword="null"/>
+            </exception>
+        </member>
+        <member name="T:AsepriteDotNet.Common.Size">
+            <summary>
+            Defines an ordered pair of 32-bit signed integer values that represents the width and height of a two dimensional
+            object.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Size.Empty">
+            <summary>
+            A <see cref="T:AsepriteDotNet.Common.Size"/> who's <see cref="F:AsepriteDotNet.Common.Size.Width"/> and <see cref="F:AsepriteDotNet.Common.Size.Height"/> component values are both zero.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Size.Width">
+            <summary>
+            The width, in pixels.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Common.Size.Height">
+            <summary>
+            The height, in pixels.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Common.Size.IsEmpty">
+            <summary>
+            Gets a value that indicates if this is an empty size.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Common.Size"/> value.
+            </summary>
+            <param name="width">The width, in pixels.</param>
+            <param name="height">The height, in pixels.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.ToVector2">
+            <summary>
+            Returns this <see cref="T:AsepriteDotNet.Common.Size"/> value as a <see cref="T:System.Numerics.Vector2"/> value.
+            </summary>
+            <returns>This <see cref="T:AsepriteDotNet.Common.Size"/> value as a <see cref="T:System.Numerics.Vector2"/> value.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.To``1(System.Func{AsepriteDotNet.Common.Size,``0})">
+            <summary>
+            Returns  this <see cref="T:AsepriteDotNet.Common.Size"/> value as a <typeparamref name="T"/> value.
+            </summary>
+            <typeparam name="T">The type to convert this <see cref="T:AsepriteDotNet.Common.Size"/> to.</typeparam>
+            <param name="converter">A function that defines how to perform the conversion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.op_Equality(AsepriteDotNet.Common.Size,AsepriteDotNet.Common.Size)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Size"/> values are equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Size"/> value on the left of the equality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Size"/> value on the right of the equality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.op_Inequality(AsepriteDotNet.Common.Size,AsepriteDotNet.Common.Size)">
+            <summary>
+            Returns a value that indicates if two <see cref="T:AsepriteDotNet.Common.Size"/> values are not equal.
+            </summary>
+            <param name="left">The <see cref="T:AsepriteDotNet.Common.Size"/> value on the left of the inequality operator.</param>
+            <param name="right">The <see cref="T:AsepriteDotNet.Common.Size"/> value on the right of the inequality operator.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.Equals(AsepriteDotNet.Common.Size)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Common.Size.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Compression.Adler32">
+            <summary>
+            Utility class for calculating an Adler-32 checksum
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Compression.Adler32.CurrentValue">
+            <summary>
+            Gets the current checksum value.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.Adler32.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:AsepriteDotNet.Compression.Adler32"/> class.
+            </summary>
+            <remarks>
+            This will initialize the underlying checksum value to 1
+            </remarks>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.Adler32.#ctor(System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Compression.Adler32"/> class.
+            </summary>
+            <param name="initial">
+            The initial checksum value to start with.
+            </param>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.Adler32.#ctor(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Compression.Adler32"/> class.
+            </summary>
+            <param name="initial">
+            A <see cref="T:System.ReadOnlySpan`1"/> of <see cref="T:System.Byte"/> elements that the initial checksum value will be
+            calculated from
+            </param>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.Adler32.Reset">
+            <summary>
+            Resets the underlying checksum value of this instance of the <see cref="T:AsepriteDotNet.Compression.Adler32"/> class to 1.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.Adler32.Update(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Updates and returns the underlying checksum value using the  specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">
+            A <see cref="T:System.ReadOnlySpan`1"/> of <see cref="T:System.Byte"/> elements that will be added to the underlying checksum value.
+            </param>
+            <returns>The updated checksum value.</returns>
+        </member>
+        <member name="T:AsepriteDotNet.Compression.CRC">
+            <summary>
+            Utility class for calculating a CRC checksum.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Compression.CRC.DEFAULT">
+            <summary>
+            The default initial CRC value.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Compression.CRC.CurrentValue">
+            <summary>
+            Gets the current checksum value.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.CRC.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Compression.CRC"/> class with the default value of 0.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.CRC.#ctor(System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Compression.CRC"/> class.
+            </summary>
+            <param name="initial">The initial checksum value to start with.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.CRC.#ctor(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:AsepriteDotNet.Compression.CRC"/> class.
+            </summary>
+            <param name="initial">
+            A <see cref="T:System.ReadOnlySpan`1"/> of <see cref="T:System.Byte"/> elements that the initial checksum value will be
+            calculated from.
+            </param>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.CRC.Reset">
+            <summary>
+            Resets the underlying checksum value of this instance of the <see cref="T:AsepriteDotNet.Compression.CRC"/> class to
+            <see cref="F:AsepriteDotNet.Compression.CRC.DEFAULT"/>.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Compression.CRC.Update(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Updates and returns the underlying checksum value using the  specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">
+            A <see cref="T:System.ReadOnlySpan`1"/> of <see cref="T:System.Byte"/> elements that will be added to the underlying checksum
+            value.
+            </param>
+            <returns>The updated checksum value.</returns>
+        </member>
+        <member name="T:AsepriteDotNet.Compression.Zlib">
+            <summary>
+            Utility class for working with zlib compressed data.
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.IO.AsepriteFileLoader">
+            <summary>
+            Defines a utility class used for loading an Aseprite file.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.IO.AsepriteFileLoader.FromFile(System.String,System.Boolean)">
+            <summary>
+            Loads the Aseprite file at the specified path.
+            </summary>
+            <param name="path">The absolute file path to the Aseprite file to load.</param>
+            <param name="preMultiplyAlpha">
+            Indicates whether color values should be translated to a premultiplied alpha value.
+            </param>
+            <returns>
+            A new instance of the <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> class containing the contents of the Aseprite file that was
+            loaded.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.IO.AsepriteFileLoader.FromStream(System.String,System.IO.Stream,System.Boolean,System.Boolean)">
+            <summary>
+            Loads an Aseprite file from a given stream.
+            </summary>
+            <param name="fileName">The name of the Aseprite file, minus the extension.</param>
+            <param name="stream">The stream to load the Aseprite file from.</param>
+            <param name="leaveOpen">
+            <see langword="true"/> to leave the given <paramref name="stream"/> open after loading the Aseprite file;
+            otherwise, <see langword="false"/>.
+            </param>
+            <param name="preMultiplyAlpha">
+            Indicates whether color values should be translated to a premultiplied alpha value.
+            </param>
+            <returns>
+            A new instance of the <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> class containing the contents for the Aseprite file that was
+            loaded.
+            </returns>
+        </member>
+        <member name="M:AsepriteDotNet.IO.AsepriteFileLoader.ReadTags(System.String)">
+            <summary>
+            Reads only the tag data from the Aseprite file.
+            </summary>
+            <param name="path">The absolute file path to the Aseprite file to load.</param>
+            <returns>An array of all tag data from the Aseprite file.</returns>
+        </member>
+        <member name="M:AsepriteDotNet.IO.AsepriteFileLoader.ReadTags(System.IO.Stream,System.Boolean)">
+            <summary>
+            Reads only the tag data from the Aseprite file.
+            </summary>
+            <param name="stream">The stream to load the Aseprite file from.</param>
+            <param name="leaveOpen">
+            <see langword="true"/> to leave the given <paramref name="stream"/> open after loading the Aseprite file;
+            otherwise, <see langword="false"/>.
+            </param>
+            <returns>An array of all tag data from the Aseprite file.</returns>
+        </member>
+        <member name="T:AsepriteDotNet.IO.PngException">
+            <summary>
+            Represents an exception that is thrown when saving data as a PNG file.
+            </summary>
+            <remarks>
+            This acts as a top-level exception wrapper around the different
+            exceptions that can be thrown when saving data as a PNG file.  Refer to
+            the inner exception for details on the cause of the error.
+            </remarks>
+        </member>
+        <member name="T:AsepriteDotNet.IO.PngWriter">
+            <summary>
+            Write <see cref="T:AsepriteDotNet.Common.Rgba32"/> color data to a png file.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.IO.PngWriter.SaveTo(System.String,System.Int32,System.Int32,AsepriteDotNet.Common.Rgba32[])">
+            <summary>
+            Saves the given color data to disk at the specified path as a PNG image file.
+            </summary>
+            <param name="path">The absolute path to where the file should be saved.</param>
+            <param name="width">The width of the image, in pixels.</param>
+            <param name="height">The height of the image, in pixels.</param>
+            <param name="data">The color data of the image.</param>
+        </member>
+        <member name="T:AsepriteDotNet.NinePatchSlice">
+            <summary>
+            Represents a slice with nine-patch data.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.NinePatchSlice.CenterBounds">
+            <summary>
+            Gets the bounds of the center of this slice.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.NinePatchSlice.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.NinePatchSlice.Equals(AsepriteDotNet.NinePatchSlice)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.NinePatchSlice.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Processors.AnimatedTilemapProcessor">
+            <summary>
+            Defines a processor for processing a <see cref="T:AsepriteDotNet.AnimatedTilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.AnimatedTilemapProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,AsepriteDotNet.Processors.ProcessorOptions)">
+            <summary>
+            Processes an <see cref="T:AsepriteDotNet.AnimatedTilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="options">
+            Optional options to use when processing.  If <see langword="null"/>, then
+            <see cref="F:AsepriteDotNet.Processors.ProcessorOptions.Default"/> will be used.
+            </param>
+            <returns>The <see cref="T:AsepriteDotNet.AnimatedTilemap"/> created by this method.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.AnimatedTilemapProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Boolean)">
+            <summary>
+            Processes an <see cref="T:AsepriteDotNet.AnimatedTilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="onlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+            <returns>The <see cref="T:AsepriteDotNet.AnimatedTilemap"/> created by this method.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.AnimatedTilemapProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Processes an <see cref="T:AsepriteDotNet.AnimatedTilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file"></param>
+            <param name="layers">
+            A collection containing the name of the layers to process.  Only cels on a layer who's name matches a name in
+            this collection will be processed.
+            </param>
+            <returns>
+            The <see cref="T:AsepriteDotNet.AnimatedTilemap"/> created by this method.  If <paramref name="layers"/> is empty or contains zero
+            elements, then <see cref="F:AsepriteDotNet.AnimatedTilemap.Empty"/> is returned.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+        </member>
+        <member name="T:AsepriteDotNet.Processors.ProcessorOptions">
+            <summary>
+            Defines the options to use when processing an Aseprite file.
+            </summary>
+            <param name="OnlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+            <param name="IncludeBackgroundLayer">Indicates whether the layer assigned as the background layer should be processed.</param>
+            <param name="IncludeTilemapLayers">Indicates whether tilemap layers should be processed.</param>
+            <param name="MergeDuplicateFrames">Indicates whether duplicates frames should be merged.</param>
+            <param name="BorderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
+            <param name="Spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
+            <param name="InnerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.ProcessorOptions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Defines the options to use when processing an Aseprite file.
+            </summary>
+            <param name="OnlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+            <param name="IncludeBackgroundLayer">Indicates whether the layer assigned as the background layer should be processed.</param>
+            <param name="IncludeTilemapLayers">Indicates whether tilemap layers should be processed.</param>
+            <param name="MergeDuplicateFrames">Indicates whether duplicates frames should be merged.</param>
+            <param name="BorderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
+            <param name="Spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
+            <param name="InnerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+        </member>
+        <member name="P:AsepriteDotNet.Processors.ProcessorOptions.OnlyVisibleLayers">
+            <summary>Indicates whether only visible layers should be processed.</summary>
+        </member>
+        <member name="P:AsepriteDotNet.Processors.ProcessorOptions.IncludeBackgroundLayer">
+            <summary>Indicates whether the layer assigned as the background layer should be processed.</summary>
+        </member>
+        <member name="P:AsepriteDotNet.Processors.ProcessorOptions.IncludeTilemapLayers">
+            <summary>Indicates whether tilemap layers should be processed.</summary>
+        </member>
+        <member name="P:AsepriteDotNet.Processors.ProcessorOptions.MergeDuplicateFrames">
+            <summary>Indicates whether duplicates frames should be merged.</summary>
+        </member>
+        <member name="P:AsepriteDotNet.Processors.ProcessorOptions.BorderPadding">
+            <summary>The amount of transparent pixels to add to the edge of the generated texture.</summary>
+        </member>
+        <member name="P:AsepriteDotNet.Processors.ProcessorOptions.Spacing">
+            <summary>The amount of transparent pixels to add between each texture region in the generated texture.</summary>
+        </member>
+        <member name="P:AsepriteDotNet.Processors.ProcessorOptions.InnerPadding">
+            <summary>The amount of transparent pixels to add around the edge of each texture region in the generated texture.</summary>
+        </member>
+        <member name="F:AsepriteDotNet.Processors.ProcessorOptions.Default">
+            <summary>
+            Provides a default set of options for the <see cref="T:AsepriteDotNet.Processors.ProcessorOptions"/>.
+            <list type="table">
+                <listheader>
+                    <term>Property</term>
+                    <description>Default Value</description>
+                </listheader>
+                <item>
+                    <term><see cref="P:AsepriteDotNet.Processors.ProcessorOptions.OnlyVisibleLayers"/></term>
+                    <description><see langword="true"/></description>
+                </item>
+                <item>
+                    <term><see cref="P:AsepriteDotNet.Processors.ProcessorOptions.IncludeBackgroundLayer"/></term>
+                    <description><see langword="false"/></description>
+                </item>
+                <item>
+                    <term><see cref="P:AsepriteDotNet.Processors.ProcessorOptions.IncludeTilemapLayers"/></term>
+                    <description><see langword="true"/></description>
+                </item>
+                <item>
+                    <term><see cref="P:AsepriteDotNet.Processors.ProcessorOptions.MergeDuplicateFrames"/></term>
+                    <description><see langword="true"/></description>
+                </item>
+                <item>
+                    <term><see cref="P:AsepriteDotNet.Processors.ProcessorOptions.BorderPadding"/></term>
+                    <description><c>0</c></description>
+                </item>
+                <item>
+                    <term><see cref="P:AsepriteDotNet.Processors.ProcessorOptions.Spacing"/></term>
+                    <description><c>0</c></description>
+                </item>
+                <item>
+                    <term><see cref="P:AsepriteDotNet.Processors.ProcessorOptions.InnerPadding"/></term>
+                    <description><c>0</c></description>
+                </item>
+            </list>
+            </summary>
+        </member>
+        <member name="T:AsepriteDotNet.Processors.SpriteProcessor">
+            <summary>
+            Defines a processor for processing a <see cref="T:AsepriteDotNet.Sprite"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.SpriteProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,AsepriteDotNet.Processors.ProcessorOptions)">
+            <summary>
+            Processes a frame from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> as a <see cref="T:AsepriteDotNet.Sprite"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process the frame from.</param>
+            <param name="frameIndex">The zero-based index of the frame to process.</param>
+            <param name="options">
+            Optional options to use when processing.  If <see langword="null"/>, then
+            <see cref="F:AsepriteDotNet.Processors.ProcessorOptions.Default"/> will be used.
+            </param>
+            <returns>The <see cref="T:AsepriteDotNet.Sprite"/> created by this method.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="frameIndex"/> is less than zero or is greater than or equal to the total number of
+            frames in the file.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.SpriteProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Processes a frame from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> as a <see cref="T:AsepriteDotNet.Sprite"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process the frame from.</param>
+            <param name="frameIndex">The zero-based index of the frame to process.</param>
+            <param name="onlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+            <param name="includeBackgroundLayer">Indicates whether the layer assigned as the background layer should be processed.</param>
+            <param name="includeTilemapLayers">Indicates whether tilemap layers should be processed.</param>>
+            <returns>The <see cref="T:AsepriteDotNet.Sprite"/> created by this method.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="frameIndex"/> is less than zero or is greater than or equal to the total number of
+            frames in the file.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.SpriteProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Processes a frame from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> as a <see cref="T:AsepriteDotNet.Sprite"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process the frame from.</param>
+            <param name="frameIndex">The zero-based index of the frame to process.</param>
+            <param name="layers">
+            A collection containing the name of the layers to process.  Only cels on a layer who's name matches a name in
+            this collection will be processed.
+            </param>
+            <returns>
+            The <see cref="T:AsepriteDotNet.Sprite"/> created by this method.  If <paramref name="layers"/> is empty or contains zero
+            elements, then <see cref="F:AsepriteDotNet.Sprite.Empty"/> is returned.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="frameIndex"/> is less than zero or is greater than or equal to the total number of
+            frames in the file.
+            </exception>
+        </member>
+        <member name="T:AsepriteDotNet.Processors.SpriteSheetProcessor">
+            <summary>
+            Defines a processor for processing a <see cref="T:AsepriteDotNet.SpriteSheet"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.SpriteSheetProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,AsepriteDotNet.Processors.ProcessorOptions)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.SpriteSheet"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="options">
+            Optional options to use when processing.  If <see langword="null"/>, then
+            <see cref="F:AsepriteDotNet.Processors.ProcessorOptions.Default"/> will be used.
+            </param>
+            <returns>The <see cref="T:AsepriteDotNet.SpriteSheet"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when duplicate tag names are found.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.SpriteSheetProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.SpriteSheet"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="onlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+            <param name="includeBackgroundLayer">Indicates whether the layer assigned as the background layer should be processed.</param>
+            <param name="includeTilemapLayers">Indicates whether tilemap layers should be processed.</param>
+            <param name="mergeDuplicateFrames">Indicates whether duplicates frames should be merged.</param>
+            <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
+            <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
+            <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+            <returns>The <see cref="T:AsepriteDotNet.SpriteSheet"/> created by this method.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.SpriteSheetProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Collections.Generic.ICollection{System.String},System.Boolean,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.SpriteSheet"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="layers">
+            A collection containing the name of the layers to process.  Only cels on a layer who's name matches a name in
+            this collection will be processed.
+            </param>
+            <param name="mergeDuplicateFrames">Indicates whether duplicates frames should be merged.</param>
+            <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
+            <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
+            <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+            <returns>
+            The <see cref="T:AsepriteDotNet.SpriteSheet"/> created by this method.  If <paramref name="layers"/> is empty or contains zero
+            elements, then <see cref="F:AsepriteDotNet.SpriteSheet.Empty"/> is returned.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="T:AsepriteDotNet.Processors.TextureAtlasProcessor">
+            <summary>
+            Defines a processor for processing a <see cref="T:AsepriteDotNet.TextureAtlas"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TextureAtlasProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,AsepriteDotNet.Processors.ProcessorOptions)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.TextureAtlas"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="options">
+            Optional options to use when processing.  If <see langword="null"/>, then
+            <see cref="F:AsepriteDotNet.Processors.ProcessorOptions.Default"/> will be used.
+            </param>
+            <returns>The <see cref="T:AsepriteDotNet.TextureAtlas"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TextureAtlasProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.TextureAtlas"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="onlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+            <param name="includeBackgroundLayer">Indicates whether the layer assigned as the background layer should be processed.</param>
+            <param name="includeTilemapLayers">Indicates whether tilemap layers should be processed.</param>
+            <param name="mergeDuplicateFrames">Indicates whether duplicates frames should be merged.</param>
+            <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
+            <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
+            <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+            <returns>The <see cref="T:AsepriteDotNet.TextureAtlas"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TextureAtlasProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Collections.Generic.ICollection{System.String},System.Boolean,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.TextureAtlas"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="layers">
+            A collection containing the name of the layers to process.  Only cels on a layer who's name matches a name in
+            this collection will be processed.
+            </param>
+            <param name="mergeDuplicateFrames">Indicates whether duplicates frames should be merged.</param>
+            <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
+            <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
+            <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+            <returns>
+            The <see cref="T:AsepriteDotNet.TextureAtlas"/> created by this method.  If <paramref name="layers"/> is empty or contains zero
+            elements, then <see cref="F:AsepriteDotNet.TextureAtlas.Empty"/> is returned.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="T:AsepriteDotNet.Processors.TilemapProcessor">
+            <summary>
+            Defines a processor for processing a <see cref="T:AsepriteDotNet.Tilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TilemapProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,AsepriteDotNet.Processors.ProcessorOptions)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.Tilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="frameIndex">The index of the frame containing the tilemap to process.</param>
+            <param name="options">
+            Optional options to use when processing.  If <see langword="null"/>, then
+            <see cref="F:AsepriteDotNet.Processors.ProcessorOptions.Default"/> will be used.
+            </param>
+            <returns>The <see cref="T:AsepriteDotNet.Tilemap"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TilemapProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,System.Boolean)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.Tilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="frameIndex">The index of the frame containing the tilemap to process.</param>
+            <param name="onlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Tilemap"/> created by this method.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TilemapProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32,System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.Tilemap"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="frameIndex">The index of the frame containing the tilemap to process.</param>
+            <param name="layers">
+            A collection containing the name of the layers to process.  Only cels on a layer who's name matches a name in
+            this collection will be processed.
+            </param>
+            <returns>The <see cref="T:AsepriteDotNet.Tilemap"/> created by this method.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+        </member>
+        <member name="T:AsepriteDotNet.Processors.TilesetProcessor">
+            <summary>
+            Defines a processor for processing a <see cref="T:AsepriteDotNet.Tileset"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/>.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TilesetProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.Int32)">
+            <summary>
+            Processes an <see cref="T:AsepriteDotNet.Tileset"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> by index.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="tilesetIndex">The index of the tileset to process.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Tileset"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="tilesetIndex"/> is less than zero or is greater than or equal to the total number
+            of tilesets in the file.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TilesetProcessor.Process(AsepriteDotNet.Aseprite.AsepriteFile,System.String)">
+            <summary>
+            Processes an <see cref="T:AsepriteDotNet.Tileset"/> from an <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> by name.
+            </summary>
+            <param name="file">The <see cref="T:AsepriteDotNet.Aseprite.AsepriteFile"/> to process.</param>
+            <param name="tilesetName">The name of the tileset to process.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Tileset"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if the file does not contain a tileset with the specified name.
+            </exception>
+        </member>
+        <member name="M:AsepriteDotNet.Processors.TilesetProcessor.Process(AsepriteDotNet.Aseprite.Types.AsepriteTileset)">
+            <summary>
+            Processes a <see cref="T:AsepriteDotNet.Tileset"/> from an <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/>.
+            </summary>
+            <param name="aseTileset">The <see cref="T:AsepriteDotNet.Aseprite.Types.AsepriteTileset"/> to process.</param>
+            <returns>The <see cref="T:AsepriteDotNet.Tileset"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <paramref name="aseTileset"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="T:AsepriteDotNet.Slice">
+            <summary>
+            Represents a slice defined by it's xy-coordinate position, width, height, and origin.rgskds
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Slice.Name">
+            <summary>
+            Gets the name of this slice.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Slice.Bounds">
+            <summary>
+            Gets the bounds of this slice.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Slice.Origin">
+            <summary>
+            Gets the xy-coordinate origin point of this slice.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Slice.Color">
+            <summary>
+            Gets the color of this slice.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Slice.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Slice.Equals(AsepriteDotNet.Slice)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Slice.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Sprite">
+            <summary>
+            Represents a sprite texture.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Sprite.Empty">
+            <summary>
+            An empty sprite with no name, an empty texture, and an empty array of slices
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Sprite.Name">
+            <summary>
+            Gets the name of this sprite.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Sprite.Texture">
+            <summary>
+            Gets the source texture of this sprite.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Sprite.Slices">
+            <summary>
+            Gets a read-only collection of the slices contained within this sprite.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Sprite.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Sprite.Equals(AsepriteDotNet.Sprite)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Sprite.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.SpriteSheet">
+            <summary>
+            Defines a sprite sheet that contains a texture atlas and animation tag definitions.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.SpriteSheet.Empty">
+            <summary>
+            An empty sprite sheet with no name, an empty texture atlas, and an empty collection of animation tags.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.SpriteSheet.Name">
+            <summary>
+            Gets the name of this sprite sheet.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.SpriteSheet.TextureAtlas">
+            <summary>
+            Gets the source texture atlas of this sprite sheet.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.SpriteSheet.Tags">
+            <summary>
+            Gets a read-only collection of the animation tags for this sprite sheet.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.SpriteSheet.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.SpriteSheet.Equals(AsepriteDotNet.SpriteSheet)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.SpriteSheet.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Texture">
+            <summary>
+            Defines a texture that is composed of color values that represent an image.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Texture.Empty">
+            <summary>
+            An empty texture, with the no name, 0 width, 0, height, and an empty array of pixels
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Texture.Name">
+            <summary>
+            Gets the name of this texture.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Texture.Size">
+            <summary>
+            Gets the size of the texture.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Texture.Pixels">
+            <summary>
+            Gets a read-only collection of the pixels that represent the image of this texture.  Pixels are read from
+            left-to-right top-to-bottom.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Texture.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Texture.Equals(AsepriteDotNet.Texture)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Texture.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.TextureAtlas">
+            <summary>
+            Defines a texture atlas that is composed of a texture with defined texture regions.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.TextureAtlas.Empty">
+            <summary>
+            An empty texture atlas with no name, an empty texture, and an empty collection of regions.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TextureAtlas.Name">
+            <summary>
+            Gets the name of this texture atlas.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TextureAtlas.Texture">
+            <summary>
+            Gets the source texture of this texture atlas.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TextureAtlas.Regions">
+            <summary>
+            Gets a read-only collection of the texture regions within this atlas.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.TextureAtlas.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TextureAtlas.Equals(AsepriteDotNet.TextureAtlas)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TextureAtlas.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.TextureRegion">
+            <summary>
+            Defines a rectangular region within a larger texture that represents a sub texture.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TextureRegion.Name">
+            <summary>
+            Gets the name of this texture region.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TextureRegion.Bounds">
+            <summary>
+            Gets the bounds of this texture region.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TextureRegion.Slices">
+            <summary>
+            Gets a read-only collection of the slices within this texture region.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.TextureRegion.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TextureRegion.Equals(AsepriteDotNet.TextureRegion)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TextureRegion.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Tilemap">
+            <summary>
+            Defines a tilemap composed of tile map layers.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="F:AsepriteDotNet.Tilemap.Empty">
+            <summary>
+            An empty tilemap with no name, an empty collection of tilesets, and an empty collection of tilemap layers.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Tilemap.Name">
+            <summary>
+            Gets the name of this tilemap.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Tilemap.Tilesets">
+            <summary>
+            Gets a read-only collection of the tilesets used by the layers of this tilemap.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Tilemap.Layers">
+            <summary>
+            Gets a read-only collection of the layers that compose this tilemap.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Tilemap.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Tilemap.Equals(AsepriteDotNet.Tilemap)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Tilemap.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.TilemapFrame">
+            <summary>
+            Defines a frame of a tile in an animated tile map.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapFrame.Duration">
+            <summary>
+            Gets the duration of this frame.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapFrame.Layers">
+            <summary>
+            Gets a read-only collection of the tilemap layers used by this tilemap during this frame.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapFrame.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapFrame.Equals(AsepriteDotNet.TilemapFrame)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapFrame.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.TilemapLayer">
+            <summary>
+            Defines the layer of a tilemap which is composed of tiles.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapLayer.Name">
+            <summary>
+            Gets the name of this tilemap layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapLayer.TilesetID">
+            <summary>
+            Gets the ID of the source tileset used by the tiles in this tilemap layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapLayer.Columns">
+            <summary>
+            Gets the total number of columns in this tilemap layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapLayer.Rows">
+            <summary>
+            Gets the total number of rows in this tilemap layer.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapLayer.Offset">
+            <summary>
+            Gets the offset of this tilemap layer relative to the bounds of the frame.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapLayer.Tiles">
+            <summary>
+            Gets a read-only collection of the tiles that compose this tilemap layer.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapLayer.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapLayer.Equals(AsepriteDotNet.TilemapLayer)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapLayer.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.TilemapTile">
+            <summary>
+            Defines a tile of a tilemap.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapTile.TilesetTileID">
+            <summary>
+            Gets the ID of the source tile in the tileset represented by this tile.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapTile.FlipHorizontally">
+            <summary>
+            Gets a value that indicates whether this tile should be horizontally flipped when rendered.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapTile.FlipVertically">
+            <summary>
+            Gets a value that indicates whether this tile should be vertically flipped when rendered.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.TilemapTile.FlipDiagonally">
+            <summary>
+            Gets a value that indicates whether this tile should be diagonally flipped when rendered.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapTile.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapTile.Equals(AsepriteDotNet.TilemapTile)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.TilemapTile.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteDotNet.Tileset">
+            <summary>
+            Defines a tileset composed of source texture.
+            This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Tileset.ID">
+            <summary>
+            Gets the unique ID assigned to this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Tileset.Name">
+            <summary>
+            Gets the name of this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Tileset.Texture">
+            <summary>
+            Gets the source texture of this tileset.
+            </summary>
+        </member>
+        <member name="P:AsepriteDotNet.Tileset.TileSize">
+            <summary>
+            Gets the size of each tile in the tileset.
+            </summary>
+        </member>
+        <member name="M:AsepriteDotNet.Tileset.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Tileset.Equals(AsepriteDotNet.Tileset)">
+            <inheritdoc/>
+        </member>
+        <member name="M:AsepriteDotNet.Tileset.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:AsepriteBinaryReader">
+            <summary>
+            A low-level binary reader designed to read data types from an Aseprite file.
+            </summary>
+        </member>
+        <member name="P:AsepriteBinaryReader.Position">
+            <summary>
+            Gets the current position of the underlying stream.
+            </summary>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadByte">
+            <summary>
+            Reads the next byte from the underlying stream and advances the stream by one byte.
+            </summary>
+            <returns>The next byte read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadBytes(System.Int32)">
+            <summary>
+            Reads the specified number of bytes from the underlying stream and advances the stream by that number of bytes.
+            </summary>
+            <param name="count">The number of bytes to read from the underlying stream</param>
+            <returns>A new byte array containing the bytes read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Throw if <paramref name="count"/> is less than zero.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadWord">
+            <summary>
+            Reads a 2-byte unsigned integer from the underlying stream and advances the stream by two bytes.
+            </summary>
+            <returns>The 2-byte unsigned integer read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadShort">
+            <summary>
+            Reads a 2-byte signed integer from the underlying stream and advances the stream by two bytes.
+            </summary>
+            <returns>The 2-byte signed integer read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadDword">
+            <summary>
+            Reads a 4-byte unsigned integer from the underlying stream and advances the stream by four bytes.
+            </summary>
+            <returns>The 4-byte unsigned integer read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadLong">
+            <summary>
+            Reads a 4-byte signed integer from the underlying stream and advances the stream by four bytes.
+            </summary>
+            <returns>The 4-byte signed integer read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadFixed">
+            <summary>
+            Reads a 4-byte fixed-point (16:16) value from the underlying stream and advances the stream by four bytes.
+            </summary>
+            <returns>The 4-byte floating point representation of the value read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadFloat">
+            <summary>
+            Reads a 4-byte floating point value from the underlying stream and advances the stream by four bytes.
+            </summary>
+            <returns>The 4-byte floating point value read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadString">
+            <summary>
+            Reads an n-length string from the underlying stream.  Strings are prepended by a 2-byte unsigned integer that
+            specifies the length of the string to read.  When this method returns, the underlying stream will be advanced by
+            2+n bytes.
+            </summary>
+            <returns>The string read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if an exception occurs during the internal call to <see cref="M:System.Text.Encoding.GetString(System.Byte[])"/>.  See inner
+            exception for details.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadString(System.Int32)">
+            <summary>
+            Reads a string of the given byte length from the underlying stream and advances the stream by that many bytes.
+            </summary>
+            <param name="len">The byte length of the string to read.</param>
+            <returns>The string read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if an exception occurs during the internal call to <see cref="M:System.Text.Encoding.GetString(System.Byte[])"/>.  See inner
+            exception for details.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadUnsafe``1(System.Int32)">
+            <summary>
+            Reads a <typeparamref name="T"/> value from the underlying stream and advances the underlying stream by a number
+            of bytes equal to <paramref name="structSize"/>.
+            </summary>
+            <typeparam name="T">The value type to read from the underlying stream.</typeparam>
+            <param name="structSize">The exact byte size of an instance of <typeparamref name="T"/></param>
+            <returns>the <typeparamref name="T"/> read from the underlying stream.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Throw if <paramref name="structSize"/> is less than zero.
+            </exception>
+            <exception cref="T:System.IO.EndOfStreamException">
+            Thrown if the end of stream was reached when attempting to read.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if an exception occurs while attempting to map the type ot the <typeparamref name="T"/> struct. See the
+            inner exception for details.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.ReadCompressed(System.Int32)">
+            <summary>
+            Reads the specified number of compressed bytes from the underlying stream and advances the stream by that
+            number of bytes.
+            </summary>
+            <param name="count">The number of compressed bytes to read from the underlying stream.</param>
+            <returns>The bytes read and decompressed from the underlying stream.</returns>
+        </member>
+        <member name="M:AsepriteBinaryReader.Ignore(System.Int32)">
+            <summary>
+            Ignores the specified number of bytes by advancing the underlying stream by that number of bytes.
+            </summary>
+            <param name="count">The number of bytes to ignore.</param>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if an exception occurs during the internal call to <see cref="M:System.IO.Stream.Seek(System.Int64,System.IO.SeekOrigin)"/>.  See
+            inner exception for details.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Sets the position of the underlying stream.
+            </summary>
+            <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter</param>
+            <param name="origin">
+            A value of type <see cref="T:System.IO.SeekOrigin"/> indicating the reference point used to obtain the new position
+            </param>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown if this instance of the <see cref="T:AsepriteBinaryReader"/> class, or the underlying stream, has been
+            disposed of prior to calling this method.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if an exception occurs during the internal call to <see cref="M:System.IO.Stream.Seek(System.Int64,System.IO.SeekOrigin)"/>.  See
+            inner exception for details.
+            </exception>
+        </member>
+        <member name="M:AsepriteBinaryReader.Dispose">
+            <summary>
+            Disposes of resources managed by this instance of the <see cref="T:AsepriteBinaryReader"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

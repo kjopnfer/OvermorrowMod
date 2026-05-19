@@ -47,7 +47,10 @@ namespace OvermorrowMod.Content.Misc
         }
 
         public ModTileEntity tileEntity;
-        BigChest_TE ChestInstance => (BigChest_TE)TileEntity.ByID[tileEntity.ID];
+        BigChest_TE ChestInstance =>
+            tileEntity != null && TileEntity.ByID.ContainsKey(tileEntity.ID)
+                ? TileEntity.ByID[tileEntity.ID] as BigChest_TE
+                : null;
 
         public override void AI()
         {
@@ -84,7 +87,8 @@ namespace OvermorrowMod.Content.Misc
                 if (player.active && !player.dead && player.Hitbox.Intersects(Projectile.Hitbox))
                 {
                     Item.NewItem(null, player.Center, ItemID);
-                    ChestInstance.ItemPickedUp = true;
+                    if (ChestInstance != null)
+                        ChestInstance.ItemPickedUp = true;
                     Projectile.Kill();
                     return;
                 }

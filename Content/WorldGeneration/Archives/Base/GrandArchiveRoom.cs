@@ -146,7 +146,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             if (stackSize < 1)
                 stackSize = 1;
 
-            // Place bottom tile — must succeed
+            // Place bottom tile ï¿½ must succeed
             bool success = WorldGen.PlaceObject(x, y, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
             if (!success)
                 return false;
@@ -260,7 +260,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             SpawnPoints.Add(spawnPoint);
         }
 
-        protected void PlaceLoungeArea(int x, int y, RoomID room)
+        public static void PlaceLoungeArea(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>
             {
@@ -289,12 +289,8 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
 
             WorldGen.PlaceObject(x + 23, y, cozyChairType);
 
-            if (Main.rand.NextBool())
-                WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
-            else
-                PlaceHauntedChandelier(x + 11, y - 25);
-
-            //WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
+            // Wax chandelier only; haunted variant requires instance state.
+            WorldGen.PlaceObject(x + 11, y - 25, ModContent.TileType<WaxChandelier>());
         }
 
         /// <summary>
@@ -331,7 +327,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        protected void PlaceVaseGroup(int x, int y)
+        public static void PlaceVaseGroup(int x, int y)
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<ArchivePotSmall>());
             WorldGen.PlaceObject(x + 1, y, ModContent.TileType<FatVase>());
@@ -345,7 +341,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="repeat"></param>
-        protected void PlaceMultiVase(int x, int y, int direction, int repeat)
+        public static void PlaceMultiVase(int x, int y, int direction, int repeat)
         {
             if (direction != 1 && direction != -1) direction = 1;
 
@@ -431,7 +427,7 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             WorldGen.PlaceObject(x + 8, y, ModContent.TileType<HallwayPillar>());
         }
 
-        protected void PlaceCozyArea(int x, int y, RoomID room)
+        public static void PlaceCozyArea(int x, int y, RoomID room)
         {
             var cozyChairTypes = new Dictionary<RoomID, int>
             {

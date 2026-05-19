@@ -679,6 +679,11 @@ Items: {
 		DisplayName: Carving Knife
 		Tooltip: ""
 	}
+
+	TestKey: {
+		DisplayName: Test Key
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -708,6 +713,9 @@ NPCs: {
 	ChainArm.DisplayName: Chain Arm
 	Waxhead.DisplayName: Waxhead
 	HauntedChandelier.DisplayName: Haunted Chandelier
+	CombatDoorCollision.DisplayName: Combat Door Collision
+	CombatOrchestrator.DisplayName: Combat Orchestrator
+	WoodenLadderCollision.DisplayName: Wooden Ladder Collision
 }
 
 Bestiary: {
