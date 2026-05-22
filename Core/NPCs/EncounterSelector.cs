@@ -9,50 +9,172 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Core.NPCs
 {
     /// <summary>
-    /// Resolves harvested SpawnSlots into NPCSpawnPoint TileEntities. Runs at
-    /// gen time after furniture. Elite pass first, then segment-partitioned
-    /// common pass with a per-cell soft cap.
+    /// Walks the dungeon path in context-aware batches, spending a threat budget per batch.
+    /// Each batch's intensity depends on the running context, and elites claim their cell exclusively.
     /// </summary>
     public static class EncounterSelector
     {
-        private const int SoftCapPerCell = 3;
+        private const int FirstBatchSize = 3;
+        private const float FirstBatchIntensityMin = 0.2f;
+        private const float FirstBatchIntensityMax = 0.5f;
+
+        private const float EarlyProgressThreshold = 0.25f;
+        private const float EarlyIntensityCap = 1.0f;
+
+        private const float LowIntensityMax = 0.8f;
+        private const float MidIntensityMax = 1.2f;
+
+        private const float AfterHighMin = 0.3f;
+        private const float AfterHighMax = 0.6f;
+        private const float AfterMidMin = 0.4f;
+        private const float AfterMidMax = 1.3f;
+        private const float AfterLowMin = 0.4f;
+        private const float AfterLowMax = 1.6f;
+        private const float TwoLowsInARowMin = 0.8f;
+
+        private const float PerCellThreatCap = 3.0f;
+        private const float AverageCommonThreat = 1.3f;
+
+        private const float EliteIntensityThreshold = 1.2f;
+        private const int EliteMinBatchDistance = 2;
+
+        private class Context
+        {
+            public float PrevIntensity = -1f;
+            public float PrevPrevIntensity = -1f;
+            public int BatchesSinceElite = EliteMinBatchDistance;
+            public int TotalCells;
+            public int CellsConsumed;
+            public float Progress => (float)CellsConsumed / Math.Max(1, TotalCells);
+        }
 
         public static void Run(List<SpawnSlot> allSlots, IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> dungeonBindings, Dictionary<Point, IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool>> cellLocalBindings, float baseDensity, float eliteChance, Random rand)
         {
             if (allSlots == null || allSlots.Count == 0) return;
 
             ResolvePools(allSlots, dungeonBindings, cellLocalBindings);
-
             var resolvedSlots = allSlots.Where(s => s.Pool != null).ToList();
             if (resolvedSlots.Count == 0) return;
 
             var slotsByCell = resolvedSlots.GroupBy(s => s.GridCoord).ToDictionary(g => g.Key, g => g.ToList());
-            var cellCoords = slotsByCell.Keys.ToList();
-            cellCoords.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
-            int cellCount = cellCoords.Count;
+            var cellOrder = slotsByCell.Keys.ToList();
+            cellOrder.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
 
-            int totalEnemies = (int)Math.Round(baseDensity * cellCount);
-            if (totalEnemies <= 0) return;
+            var ctx = new Context { TotalCells = cellOrder.Count };
+            int cursor = 0;
+            while (cursor < cellOrder.Count)
+            {
+                int batchSize = ChooseBatchSize(ctx, cellOrder.Count - cursor);
+                float intensity = ChooseIntensity(ctx, baseDensity, rand);
+                var batchCells = cellOrder.GetRange(cursor, batchSize);
 
-            int segmentCount = Math.Max(1, Math.Min(cellCount, (int)Math.Ceiling(cellCount / 2.5)));
-            int[] segmentLengths = RandomIntegerPartition(cellCount, segmentCount, rand, minPerSegment: 1);
-            int[] segmentCounts = RandomIntegerPartition(totalEnemies, segmentCount, rand, minPerSegment: 0);
+                DistributeBatch(batchCells, intensity, slotsByCell, eliteChance, ctx, rand);
 
-            var cellToSegment = new Dictionary<Point, int>();
-            int cellIdx = 0;
-            for (int s = 0; s < segmentCount; s++)
-                for (int i = 0; i < segmentLengths[s]; i++)
-                {
-                    if (cellIdx < cellCoords.Count) cellToSegment[cellCoords[cellIdx]] = s;
-                    cellIdx++;
-                }
-
-            RunElitePass(resolvedSlots, eliteChance, cellToSegment, segmentCounts, rand);
-
-            for (int s = 0; s < segmentCount; s++)
-                ResolveSegmentCommons(s, segmentCounts[s], cellToSegment, slotsByCell, rand);
+                ctx.PrevPrevIntensity = ctx.PrevIntensity;
+                ctx.PrevIntensity = intensity;
+                ctx.CellsConsumed += batchSize;
+                cursor += batchSize;
+            }
 
             PlaceTileEntities(resolvedSlots);
+        }
+
+        private static int ChooseBatchSize(Context ctx, int remaining)
+        {
+            int desired;
+            if (ctx.PrevIntensity < 0) desired = FirstBatchSize;
+            else if (ctx.PrevIntensity >= MidIntensityMax) desired = 5;
+            else if (ctx.PrevIntensity >= LowIntensityMax) desired = 4;
+            else desired = 3;
+            return Math.Min(desired, remaining);
+        }
+
+        private static float ChooseIntensity(Context ctx, float baseDensity, Random rand)
+        {
+            if (ctx.PrevIntensity < 0)
+                return Lerp(FirstBatchIntensityMin, FirstBatchIntensityMax, rand) * baseDensity;
+
+            float min;
+            float max;
+            if (ctx.PrevIntensity >= MidIntensityMax) { min = AfterHighMin; max = AfterHighMax; }
+            else if (ctx.PrevIntensity >= LowIntensityMax) { min = AfterMidMin; max = AfterMidMax; }
+            else { min = AfterLowMin; max = AfterLowMax; }
+
+            if (ctx.PrevIntensity < LowIntensityMax && ctx.PrevPrevIntensity >= 0 && ctx.PrevPrevIntensity < LowIntensityMax)
+                min = Math.Max(min, TwoLowsInARowMin);
+
+            if (ctx.Progress < EarlyProgressThreshold)
+                max = Math.Min(max, EarlyIntensityCap);
+
+            if (min > max) min = max;
+            return Lerp(min, max, rand) * baseDensity;
+        }
+
+        private static void DistributeBatch(List<Point> batchCells, float intensity, Dictionary<Point, List<SpawnSlot>> slotsByCell, float eliteChance, Context ctx, Random rand)
+        {
+            float budget = batchCells.Count * intensity;
+            Point? eliteCell = null;
+
+            bool eliteEligible = intensity >= EliteIntensityThreshold && ctx.BatchesSinceElite >= EliteMinBatchDistance;
+            if (eliteEligible && rand.NextDouble() < eliteChance)
+                eliteCell = TryPlaceElite(batchCells, ref budget, slotsByCell, rand);
+
+            if (eliteCell.HasValue) ctx.BatchesSinceElite = 0;
+            else ctx.BatchesSinceElite++;
+
+            var commonCells = batchCells.Where(c => slotsByCell.ContainsKey(c) && c != eliteCell).ToList();
+            if (commonCells.Count == 0 || budget <= 0) return;
+
+            int targetActive = Math.Max(1, Math.Min(commonCells.Count, (int)Math.Round(budget / AverageCommonThreat)));
+            ShuffleInPlace(commonCells, rand);
+            var activeCells = commonCells.Take(targetActive).ToList();
+
+            var cellThreat = activeCells.ToDictionary(c => c, _ => 0f);
+            bool placed = true;
+            while (budget > 0 && placed)
+            {
+                placed = false;
+                ShuffleInPlace(activeCells, rand);
+                foreach (var cell in activeCells)
+                {
+                    if (cellThreat[cell] >= PerCellThreatCap) continue;
+                    var unresolvedSlots = slotsByCell[cell].Where(s => s.ResolvedNpcType < 0).ToList();
+                    if (unresolvedSlots.Count == 0) continue;
+
+                    int alliesInCell = slotsByCell[cell].Count(s => s.ResolvedNpcType >= 0);
+                    var slot = unresolvedSlots[rand.Next(unresolvedSlots.Count)];
+                    var commons = slot.Pool.Entries.Where(e => e.Tier == SpawnTier.Common && e.Threat <= budget && cellThreat[cell] + e.Threat <= PerCellThreatCap && e.MinAlliesInCell <= alliesInCell).ToList();
+                    if (commons.Count == 0) continue;
+
+                    var pick = commons[rand.Next(commons.Count)];
+                    slot.ResolvedNpcType = pick.NpcType;
+                    cellThreat[cell] += pick.Threat;
+                    budget -= pick.Threat;
+                    placed = true;
+                    if (budget <= 0) break;
+                }
+            }
+        }
+
+        private static Point? TryPlaceElite(List<Point> batchCells, ref float budget, Dictionary<Point, List<SpawnSlot>> slotsByCell, Random rand)
+        {
+            float localBudget = budget;
+            var candidates = batchCells.Where(c => slotsByCell.ContainsKey(c)).ToList();
+            ShuffleInPlace(candidates, rand);
+            foreach (var cell in candidates)
+            {
+                foreach (var slot in slotsByCell[cell])
+                {
+                    var elites = slot.Pool.Entries.Where(e => e.Tier == SpawnTier.Elite && e.Threat <= localBudget).ToList();
+                    if (elites.Count == 0) continue;
+
+                    var pick = elites[rand.Next(elites.Count)];
+                    slot.ResolvedNpcType = pick.NpcType;
+                    budget -= pick.Threat;
+                    return cell;
+                }
+            }
+            return null;
         }
 
         private static void ResolvePools(List<SpawnSlot> slots, IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> dungeonBindings, Dictionary<Point, IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool>> cellLocalBindings)
@@ -60,97 +182,16 @@ namespace OvermorrowMod.Core.NPCs
             foreach (var slot in slots)
             {
                 SpawnPool pool = null;
-                if (cellLocalBindings != null
-                    && cellLocalBindings.TryGetValue(slot.GridCoord, out var localMap)
-                    && localMap != null
-                    && localMap.TryGetValue(slot.Color, out var localPool))
-                {
+                if (cellLocalBindings != null && cellLocalBindings.TryGetValue(slot.GridCoord, out var localMap) && localMap != null && localMap.TryGetValue(slot.Color, out var localPool))
                     pool = localPool;
-                }
                 else if (dungeonBindings != null && dungeonBindings.TryGetValue(slot.Color, out var dungeonPool))
-                {
                     pool = dungeonPool;
-                }
                 slot.Pool = pool;
-            }
-        }
-
-        private static void RunElitePass(List<SpawnSlot> resolvedSlots, float eliteChance, Dictionary<Point, int> cellToSegment, int[] segmentCounts, Random rand)
-        {
-            if (rand.NextDouble() >= eliteChance) return;
-
-            var eliteOptions = resolvedSlots
-                .Where(s => s.ResolvedNpcType < 0)
-                .SelectMany(s => s.Pool.Entries.Where(e => e.Tier == SpawnTier.Elite).Select(e => (slot: s, entry: e)))
-                .ToList();
-            if (eliteOptions.Count == 0) return;
-
-            var pick = eliteOptions[rand.Next(eliteOptions.Count)];
-            pick.slot.ResolvedNpcType = pick.entry.NpcType;
-            if (cellToSegment.TryGetValue(pick.slot.GridCoord, out int segIdx))
-                segmentCounts[segIdx] = Math.Max(0, segmentCounts[segIdx] - 1);
-        }
-
-        private static void ResolveSegmentCommons(int segmentIndex, int quota, Dictionary<Point, int> cellToSegment, Dictionary<Point, List<SpawnSlot>> slotsByCell, Random rand)
-        {
-            if (quota <= 0) return;
-
-            var segCells = cellToSegment
-                .Where(kv => kv.Value == segmentIndex && slotsByCell.ContainsKey(kv.Key))
-                .Select(kv => kv.Key)
-                .ToList();
-            if (segCells.Count == 0) return;
-
-            var cellQuotas = segCells.ToDictionary(c => c, _ => 0);
-
-            DistributeQuota(segCells, slotsByCell, cellQuotas, ref quota, capPerCell: SoftCapPerCell, rand);
-            if (quota > 0) DistributeQuota(segCells, slotsByCell, cellQuotas, ref quota, capPerCell: int.MaxValue, rand);
-
-            foreach (var c in segCells)
-            {
-                int q = cellQuotas[c];
-                if (q == 0) continue;
-                var available = slotsByCell[c].Where(s => s.ResolvedNpcType < 0).ToList();
-                ShuffleInPlace(available, rand);
-
-                int placed = 0;
-                foreach (var slot in available)
-                {
-                    if (placed >= q) break;
-                    var commons = slot.Pool.Entries.Where(e => e.Tier == SpawnTier.Common).ToList();
-                    if (commons.Count == 0) continue;
-                    var pick = commons[rand.Next(commons.Count)];
-                    slot.ResolvedNpcType = pick.NpcType;
-                    placed++;
-                }
-            }
-        }
-
-        private static void DistributeQuota(List<Point> segCells, Dictionary<Point, List<SpawnSlot>> slotsByCell, Dictionary<Point, int> cellQuotas, ref int quota, int capPerCell, Random rand)
-        {
-            while (quota > 0)
-            {
-                bool added = false;
-                ShuffleInPlace(segCells, rand);
-                foreach (var c in segCells)
-                {
-                    if (quota <= 0) break;
-                    int current = cellQuotas[c];
-                    int availableUnresolved = slotsByCell[c].Count(s => s.ResolvedNpcType < 0);
-                    if (current < capPerCell && current < availableUnresolved)
-                    {
-                        cellQuotas[c] = current + 1;
-                        quota--;
-                        added = true;
-                    }
-                }
-                if (!added) break;
             }
         }
 
         private static void PlaceTileEntities(List<SpawnSlot> resolvedSlots)
         {
-            int teType = ModContent.GetInstance<NPCSpawnPoint>().Type;
             foreach (var slot in resolvedSlots)
             {
                 if (slot.ResolvedNpcType < 0) continue;
@@ -161,35 +202,7 @@ namespace OvermorrowMod.Core.NPCs
             }
         }
 
-        private static int[] RandomIntegerPartition(int total, int parts, Random rand, int minPerSegment)
-        {
-            if (parts <= 0) return Array.Empty<int>();
-            if (parts == 1) return new[] { total };
-
-            int adjustedTotal = total - minPerSegment * parts;
-            if (adjustedTotal < 0)
-            {
-                var fallback = new int[parts];
-                int per = total / parts;
-                int remainder = total % parts;
-                for (int i = 0; i < parts; i++) fallback[i] = per + (i < remainder ? 1 : 0);
-                return fallback;
-            }
-
-            var dividers = new int[parts - 1];
-            for (int i = 0; i < parts - 1; i++) dividers[i] = rand.Next(0, adjustedTotal + 1);
-            Array.Sort(dividers);
-
-            var counts = new int[parts];
-            int prev = 0;
-            for (int i = 0; i < parts - 1; i++)
-            {
-                counts[i] = dividers[i] - prev + minPerSegment;
-                prev = dividers[i];
-            }
-            counts[parts - 1] = adjustedTotal - prev + minPerSegment;
-            return counts;
-        }
+        private static float Lerp(float min, float max, Random rand) => min + (float)rand.NextDouble() * (max - min);
 
         private static void ShuffleInPlace<T>(List<T> list, Random rand)
         {
