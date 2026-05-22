@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
@@ -43,9 +44,17 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             int startX = 100;
             int startY = centerY - (gridRows * DungeonGrid.VerticalSpacing) / 2;
 
+            var bindings = new Dictionary<(byte R, byte G, byte B), SpawnPool>
+            {
+                [(255, 0, 0)] = ArchiveSpawnPool.BaseGroundPool,
+                [(221, 255, 0)] = ArchiveSpawnPool.WallPool,
+            };
+
+            ArchiveSpawnPool.Initialize();
+
             try
             {
-                GridGenerator.Build(new Point(startX, startY), gridCols, gridRows, cellPool, fillTile, liningTile, rand, out Point startDoorTile);
+                GridGenerator.Build(new Point(startX, startY), gridCols, gridRows, cellPool, fillTile, liningTile, rand, baseDensity: 1.0f, eliteChance: 0.10f, bindings: bindings, out Point startDoorTile);
                 Main.spawnTileX = startDoorTile.X;
                 Main.spawnTileY = startDoorTile.Y;
             }

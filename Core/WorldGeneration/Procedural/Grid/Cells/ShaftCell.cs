@@ -3,6 +3,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.NPCs;
 using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
@@ -96,6 +97,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
             TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap());
         }
+
+        public override void PlaceSpawns(FurnitureContext ctx, List<SpawnSlot> slots) => HarvestSpawns(ctx, slots, AsepritePath);
 
         public override void Build(Point origin, int fillTileType, int liningTileType)
         {

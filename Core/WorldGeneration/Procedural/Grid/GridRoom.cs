@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.TextureMapping;
+using OvermorrowMod.Core.NPCs;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
@@ -132,6 +134,34 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// when a shaft sits above or below). Default: no-op.
         /// </summary>
         public virtual void PlaceFurniture(FurnitureContext ctx) { }
+
+        /// <summary>
+        /// Override which SpawnPool a painted color resolves to inside this cell only.
+        /// The selector checks this map first, then falls back to the dungeon bindings
+        /// passed to GridGenerator.Build. Return null to skip the override.
+        /// </summary>
+        public virtual IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> GetSpawnBindings() => null;
+
+        /// <summary>
+        /// Harvest painted spawn slots from this cell's Spawns aseprite layer.
+        /// Override and call HarvestSpawns with the cell's aseprite path. Default no-op.
+        /// </summary>
+        public virtual void PlaceSpawns(FurnitureContext ctx, List<SpawnSlot> slots) { }
+
+        /// <summary>
+        /// Helper for PlaceSpawns overrides. Reads every painted pixel in the
+        /// Spawns layer of asepritePath and appends a SpawnSlot for each.
+        /// </summary>
+        protected void HarvestSpawns(FurnitureContext ctx, List<SpawnSlot> slots, string asepritePath)
+        {
+            int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
+            int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
+            Point gridCoord = new Point(ctx.Col, ctx.Row);
+            TexGen.HarvestAsepriteLayer(SheetLayer.Spawns, asepritePath, paintX, paintY, (x, y, color) =>
+            {
+                slots.Add(new SpawnSlot { WorldPos = new Point(x, y), Color = color, GridCoord = gridCoord });
+            });
+        }
 
         // Walker interface
         // Cells expose a list of directional exits. Each exit says:

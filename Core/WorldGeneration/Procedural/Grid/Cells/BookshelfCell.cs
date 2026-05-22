@@ -6,6 +6,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.NPCs;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -214,6 +215,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             // the wood floor of the padding strip below the bookshelf.
             PlaceMultiBookPiles(pileStartX, pileBottomY, pileSpaceWidth, blockedColumns);
         }
+
+        public override void PlaceSpawns(FurnitureContext ctx, List<SpawnSlot> slots) => HarvestSpawns(ctx, slots, AsepritePath);
 
         /// <summary>
         /// 14-tile-wide wooden arch with a 7-tile gap in the middle for

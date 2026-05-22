@@ -18,7 +18,7 @@ using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.TextureMapping
 {
-    public enum SheetLayer { Walls, Tiles, Objects }
+    public enum SheetLayer { Walls, Tiles, Objects, Spawns }
 
     // Code by GroxTheGreat, made functional on servers by Feldy
     public class TexGen
@@ -357,6 +357,36 @@ namespace OvermorrowMod.Common.TextureMapping
             catch (Exception ex)
             {
                 OvermorrowModFile.Instance.Logger.Error($"Aseprite paint failed for {modPath}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Reads every non-transparent pixel from the named layer and invokes
+        /// the callback with the world position and the painted RGB. No color
+        /// map filtering, used for harvesting authored markers like spawn slots.
+        /// </summary>
+        public static void HarvestAsepriteLayer(SheetLayer sheet, string modPath, int worldX, int worldY, Action<int, int, (byte R, byte G, byte B)> onPixel, int srcX = 0, int srcY = 0, int srcW = -1, int srcH = -1)
+        {
+            string layerName = sheet.ToString();
+            try
+            {
+                Rgba32[] canvas = LoadLayerPixels(modPath, layerName, out int cw, out int ch, optional: true);
+                if (canvas == null) return;
+
+                int w = srcW > 0 ? srcW : cw;
+                int h = srcH > 0 ? srcH : ch;
+
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        Rgba32 c = canvas[(srcY + y) * cw + (srcX + x)];
+                        if (c.A == 0) continue;
+                        onPixel(worldX + x, worldY + y, (c.R, c.G, c.B));
+                    }
+            }
+            catch (Exception ex)
+            {
+                OvermorrowModFile.Instance.Logger.Error($"Aseprite harvest failed for {modPath}: {ex.Message}");
             }
         }
 

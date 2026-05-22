@@ -4,6 +4,7 @@ using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Content.Tiles.Misc;
+using OvermorrowMod.Core.NPCs;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -295,6 +296,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
             TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap());
         }
+
+        public override void PlaceSpawns(FurnitureContext ctx, List<SpawnSlot> slots) => HarvestSpawns(ctx, slots, AsepritePath);
 
         /// <summary>
         /// 14-tile-wide wooden arch with a 7-tile gap in the middle for shelf

@@ -59,11 +59,13 @@ namespace OvermorrowMod.Common.RoomManager
         public override void SaveData(TagCompound tag)
         {
             base.SaveData(tag);
+            tag["NPCType"] = NPCType;
         }
 
         public override void LoadData(TagCompound tag)
         {
             base.LoadData(tag);
+            if (tag.ContainsKey("NPCType")) NPCType = tag.GetInt("NPCType");
         }
 
         public void SpawnNPC()

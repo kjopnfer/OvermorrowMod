@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding;
 using System;
@@ -13,13 +14,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     /// <summary>A*-based dungeon generator. Critical-path / spine only.</summary>
     public static class GridGenerator
     {
-        // Caps the visual height of any shaft chain (including bookshelf landings between shafts).
-        private const int MaxVerticalRun = 2;
-
-        // Width of the un-buildable border ring. Doors live at its inner edge.
+        /// <summary>
+        /// Width of the un-buildable border ring.
+        /// </summary>
         private const int EdgeBorder = 1;
 
-        // Per-type A* weight. <1 = preferred, >1 = avoided. Default 1.0.
+        /// <summary>
+        /// Per-type A* weight. <1 = preferred, >1 = avoided. Default 1.0
+        /// </summary>
         private static readonly Dictionary<Type, double> TypeWeights = new()
         {
             [typeof(ShaftCell)] = 1.4,
@@ -30,7 +32,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             [typeof(CombatRoom)] = 0.7
         };
 
-        // Max consecutive runs. Shafts use MaxVerticalRun instead.
+        /// <summary>
+        /// Max consecutive runs. Cells that shifts vertically use MaxVerticalRun instead.
+        /// </summary>
         private static readonly Dictionary<Type, int> StreakLimits = new()
         {
             [typeof(BookshelfCell)] = 4,
@@ -38,15 +42,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             [typeof(FireplaceRoom)] = 1
         };
 
-        // Minimum consecutive runs. Once a streak of this type starts, A* must
-        // place at least this many before transitioning to another type.
+        private const int MaxVerticalRun = 2;
+
         private static readonly Dictionary<Type, int> MinStreakLimits = new()
         {
             [typeof(BookshelfCell)] = 2
         };
 
-        // Rooms guaranteed to appear on the spine. Each entry is pre-placed
-        // before spine planning and replaces the closest random spine waypoint.
+        /// <summary>
+        /// Rooms guaranteed to appear on the spine. 
+        /// Each entry is pre-placed before spine planning and replaces the closest random spine waypoint.
+        /// </summary>
         private static readonly List<Func<GridRoom>> RequiredRooms = new()
         {
             () => new FireplaceRoom(),
@@ -54,7 +60,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             () => new WritingRoom(),
         };
 
-        public static void Build(Point worldOrigin, int gridCols, int gridRows, List<GridRoom> cellPool, int fillTileType, int liningTileType, Random rand, out Point startDoorTile)
+        /// <summary>
+        /// Builds one dungeon at worldOrigin and harvests spawn slots into NPCSpawnPoint TEs.
+        /// </summary>
+        /// <param name="baseDensity">Enemies-to-cells ratio. totalEnemies = round(baseDensity * totalCells). 1.0 averages one enemy per cell across the dungeon.</param>
+        /// <param name="eliteChance">Probability 0 to 1 that the elite pass places one elite this run.</param>
+        /// <param name="bindings">Spawn-layer color to SpawnPool map.</param>
+        public static void Build(Point worldOrigin, int gridCols, int gridRows, List<GridRoom> cellPool, int fillTileType, int liningTileType, Random rand, float baseDensity, float eliteChance, IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> bindings, out Point startDoorTile)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -424,6 +436,26 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     slot.Room.PlaceFurniture(new FurnitureContext(cellOrigin, grid, col, row, fillTileType, liningTileType));
                 }
             }
+
+            // Phase 6: harvest spawn slots, run selector, place NPCSpawnPoint TEs
+            var allSlots = new List<SpawnSlot>();
+            var cellLocalBindings = new Dictionary<Point, IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool>>();
+            for (int col = 0; col < grid.Cols; col++)
+            {
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot.IsEmpty) continue;
+                    if (slot.SubCol != 0 || slot.SubRow != 0) continue;
+
+                    Point cellOrigin = grid.GridToWorld(col, row);
+                    var ctx = new FurnitureContext(cellOrigin, grid, col, row, fillTileType, liningTileType);
+                    slot.Room.PlaceSpawns(ctx, allSlots);
+                    var local = slot.Room.GetSpawnBindings();
+                    if (local != null) cellLocalBindings[new Point(col, row)] = local;
+                }
+            }
+            EncounterSelector.Run(allSlots, bindings, cellLocalBindings, baseDensity, eliteChance, rand);
 
             // Diagnostic grid dump.
             stopwatch.Stop();
