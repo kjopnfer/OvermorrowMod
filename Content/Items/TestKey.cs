@@ -1,6 +1,5 @@
 using OvermorrowMod.Common;
-using OvermorrowMod.Core.WorldGeneration.TestSubworld;
-using SubworldLibrary;
+using OvermorrowMod.Core.UI.LoadoutSelection;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,9 +24,8 @@ namespace OvermorrowMod.Content.Items
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                SubworldSystem.Enter<TestSubworld>();
+                LoadoutSelectionManager.Show();
             }
-
             return true;
         }
     }

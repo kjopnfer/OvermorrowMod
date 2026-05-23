@@ -2,6 +2,7 @@ using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
+using OvermorrowMod.Core.UI.LoadoutSelection;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -20,6 +21,9 @@ namespace OvermorrowMod.Core
         internal UserInterface RewardInterface;
         public RewardSelection RewardSelection;
 
+        internal UserInterface LoadoutInterface;
+        public LoadoutSelection LoadoutSelection;
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -35,6 +39,12 @@ namespace OvermorrowMod.Core
                 RewardInterface.SetState(RewardSelection);
 
                 RewardSelectionManager.Initialize(RewardSelection);
+
+                LoadoutInterface = new UserInterface();
+                LoadoutSelection = new LoadoutSelection();
+                LoadoutInterface.SetState(LoadoutSelection);
+
+                LoadoutSelectionManager.Initialize(LoadoutSelection);
             }
         }
 
@@ -68,6 +78,7 @@ namespace OvermorrowMod.Core
             {
                 AddInterfaceLayer(layers, TitleInterface, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
                 AddInterfaceLayer(layers, RewardInterface, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
+                AddInterfaceLayer(layers, LoadoutInterface, LoadoutSelection, mouseTextIndex, LoadoutSelection.visible, "Loadout Selection");
             }
         }
 
