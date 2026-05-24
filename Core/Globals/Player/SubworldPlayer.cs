@@ -19,6 +19,10 @@ namespace OvermorrowMod.Core.Globals
         public Item pendingLoadout;
         public Item pendingMisc;
 
+        // Persistent loadout shown in the LoadoutSelection UI slots.
+        public Item loadoutWeapon;
+        public Item loadoutMisc;
+
         public override void LoadData(TagCompound tag)
         {
             mainInventory = tag.Get<Item[]>("MainInventory");
@@ -26,6 +30,9 @@ namespace OvermorrowMod.Core.Globals
             subInventory = tag.Get<Item[]>("SubInventory");
             subArmor = tag.Get<Item[]>("SubArmor");
             inSubworldNow = tag.GetBool("InSubworldNow");
+
+            if (tag.ContainsKey("LoadoutWeapon")) loadoutWeapon = ItemIO.Load(tag.Get<TagCompound>("LoadoutWeapon"));
+            if (tag.ContainsKey("LoadoutMisc")) loadoutMisc = ItemIO.Load(tag.Get<TagCompound>("LoadoutMisc"));
         }
 
         public override void SaveData(TagCompound tag)
@@ -40,6 +47,9 @@ namespace OvermorrowMod.Core.Globals
             if (subInventory != null) tag["SubInventory"] = subInventory;
             if (subArmor != null) tag["SubArmor"] = subArmor;
             tag["InSubworldNow"] = inSubworldNow;
+
+            if (loadoutWeapon != null && !loadoutWeapon.IsAir) tag["LoadoutWeapon"] = ItemIO.Save(loadoutWeapon);
+            if (loadoutMisc != null && !loadoutMisc.IsAir) tag["LoadoutMisc"] = ItemIO.Save(loadoutMisc);
         }
 
         public override void OnEnterWorld()
