@@ -57,15 +57,29 @@ namespace OvermorrowMod.Core.UI.LoadoutSelection
         {
             visible = true;
             actionButton.kind = SubworldSystem.IsActive<TestSubworld>() ? LoadoutButtonKind.Regenerate : LoadoutButtonKind.Enter;
+
+            var sp = Main.LocalPlayer.GetModPlayer<SubworldPlayer>();
+            weaponSlot.storedItem = (sp.loadoutWeapon != null && !sp.loadoutWeapon.IsAir) ? sp.loadoutWeapon.Clone() : new Item();
+            miscSlot.storedItem = (sp.loadoutMisc != null && !sp.loadoutMisc.IsAir) ? sp.loadoutMisc.Clone() : new Item();
         }
 
         public void Hide()
         {
+            PersistSlots();
             visible = false;
+        }
+
+        private void PersistSlots()
+        {
+            var sp = Main.LocalPlayer.GetModPlayer<SubworldPlayer>();
+            sp.loadoutWeapon = weaponSlot.storedItem.IsAir ? null : weaponSlot.storedItem.Clone();
+            sp.loadoutMisc = miscSlot.storedItem.IsAir ? null : miscSlot.storedItem.Clone();
         }
 
         private void OnActionClicked()
         {
+            PersistSlots();
+
             var sp = Main.LocalPlayer.GetModPlayer<SubworldPlayer>();
             sp.pendingLoadout = weaponSlot.storedItem.Clone();
             sp.pendingMisc = miscSlot.storedItem.Clone();
@@ -74,6 +88,10 @@ namespace OvermorrowMod.Core.UI.LoadoutSelection
             if (regenerating)
             {
                 for (int i = 0; i < Main.LocalPlayer.inventory.Length; i++) Main.LocalPlayer.inventory[i] = new Item();
+                // Enter<T>() while already inside T no-ops in SubworldLibrary.
+                // Exiting first queues a transition back through the main
+                // world so the second Enter takes effect.
+                SubworldSystem.Exit();
             }
 
             Hide();
