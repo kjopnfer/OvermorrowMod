@@ -27,6 +27,7 @@ namespace OvermorrowMod.Core.UI
 
         public override void LeftClick(UIMouseEvent evt)
         {
+            if (animOpacity < 1f) return;
             if (Parent is RewardSelection state)
                 state.SelectSlot(slotIndex);
         }
