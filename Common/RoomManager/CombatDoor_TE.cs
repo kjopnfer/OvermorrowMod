@@ -215,7 +215,7 @@ namespace OvermorrowMod.Common.RoomManager
 
         private void SpawnDoorNPC()
         {
-            Vector2 spawnPos = Position.ToWorldCoordinates(8, 16);
+            Vector2 spawnPos = new Vector2(Position.X * 16 + 8, Position.Y * 16 - 128);
             int npcType = ModContent.NPCType<CombatDoorCollision>();
             int idx = NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnPos.X, (int)spawnPos.Y, npcType);
             if (idx < 0 || idx >= Main.npc.Length) return;
