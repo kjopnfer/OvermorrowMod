@@ -16,7 +16,7 @@ namespace OvermorrowMod.Core.NPCs
             Clear();
 
             BaseGroundPool.Entries.Add(new PoolEntry(ModContent.NPCType<ArchiveRat>(), 1.0f));
-            WallPool.Entries.Add(new PoolEntry(ModContent.NPCType<BlasterBook>(), 2.0f));
+            WallPool.Entries.Add(new PoolEntry(ModContent.NPCType<BlasterBook>(), 0.5f));
         }
 
         public static void Clear()

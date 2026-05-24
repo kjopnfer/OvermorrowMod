@@ -14,8 +14,8 @@ namespace OvermorrowMod.Core.NPCs
     /// </summary>
     public static class EncounterSelector
     {
-        private const int FirstBatchSize = 3;
-        private const float FirstBatchIntensityMin = 0.2f;
+        private const int FirstBatchSize = 2;
+        private const float FirstBatchIntensityMin = 0.3f;
         private const float FirstBatchIntensityMax = 0.5f;
 
         private const float EarlyProgressThreshold = 0.25f;
@@ -24,8 +24,8 @@ namespace OvermorrowMod.Core.NPCs
         private const float LowIntensityMax = 0.8f;
         private const float MidIntensityMax = 1.2f;
 
-        private const float AfterHighMin = 0.3f;
-        private const float AfterHighMax = 0.6f;
+        private const float AfterHighMin = 0.5f;
+        private const float AfterHighMax = 0.8f;
         private const float AfterMidMin = 0.4f;
         private const float AfterMidMax = 1.3f;
         private const float AfterLowMin = 0.4f;
