@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Loot;
 using System;
 using System.Linq;
 using Terraria;
@@ -213,6 +214,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public bool WaitingForItemPickup = false;
         public bool ItemSpawned = false;
 
+        // Loot-system roll parameters. Set by the placer (e.g. ChestRoom). Not persisted;
+        // they're placement config, not save state. If ChestItem == 0 at first Interact(),
+        // these are used to roll the contents; once rolled, ChestItem holds the result.
+        public RarityModifier ContentsModifier = new(rare: 10);
+        public ItemKind ContentsKinds = ItemKind.Consumable;
+
         public override void SaveData(TagCompound tag)
         {
             tag["ChestItem"] = ChestItem;
@@ -227,6 +234,18 @@ namespace OvermorrowMod.Content.Tiles.Archives
             ItemPickedUp = tag.Get<bool>("ItemPickedUp");
         }
 
+        private void RollLoot()
+        {
+            if (ChestItem != 0) return;
+
+            var pool = LootPoolRegistry.GetActive();
+            if (pool == null) return;
+
+            int[] rolled = LootRoller.RollOffers(pool, ContentsModifier, ContentsKinds, 1, Main.LocalPlayer);
+            if (rolled.Length > 0)
+                ChestItem = rolled[0];
+        }
+
         public void Interact()
         {
             if (ItemPickedUp)
@@ -234,6 +253,10 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             if (!HasOpened && !AnimationStarted)
             {
+                RollLoot();
+                if (ChestItem == 0)
+                    return;
+
                 AnimationStarted = true;
                 HasOpened = true;
                 AnimationCounter = 1;

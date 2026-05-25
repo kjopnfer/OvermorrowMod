@@ -12,11 +12,13 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
+using OvermorrowMod.Core.Loot;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
     [AutoloadEquip(EquipType.Waist)]
+    [Loot(ItemType.Melee, Rarity.Common)]
     public class SimpleScabbard : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()

@@ -4,10 +4,13 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Items.Accessories;
 using Terraria;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ID;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
+    [Loot<ArchivePool>(ItemType.Generic, Rarity.Common)]
     public class Cheese : OvermorrowAccessory
     {
         public override string Texture => AssetDirectory.ArchiveItems + Name;

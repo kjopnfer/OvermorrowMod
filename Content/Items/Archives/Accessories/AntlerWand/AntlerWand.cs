@@ -11,10 +11,13 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
+    [Loot<ArchivePool>(ItemType.Magic, Rarity.Common)]
     public class AntlerWand : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()

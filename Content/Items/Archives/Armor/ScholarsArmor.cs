@@ -1,12 +1,15 @@
 using OvermorrowMod.Common;
 using Terraria;
 using Terraria.ID;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Armor
 {
 
     [AutoloadEquip(EquipType.Head)]
+    [Loot<ArchivePool>(ItemType.Magic, Rarity.Common)]
     public class ScholarsHat : ModItem
     {
         public override string Texture => AssetDirectory.ArchiveItems + Name;
@@ -29,6 +32,7 @@ namespace OvermorrowMod.Content.Items.Archives.Armor
     }
 
     [AutoloadEquip(EquipType.Body)]
+    [Loot<ArchivePool>(ItemType.Magic, Rarity.Common)]
     public class ScholarsArmor : ModItem
     {
         public override string Texture => AssetDirectory.ArchiveItems + Name;
@@ -54,6 +58,7 @@ namespace OvermorrowMod.Content.Items.Archives.Armor
     }
 
     [AutoloadEquip(EquipType.Legs)]
+    [Loot<ArchivePool>(ItemType.Magic, Rarity.Common)]
     public class ScholarsRobes : ModItem
     {
         public override string Texture => AssetDirectory.ArchiveItems + Name;

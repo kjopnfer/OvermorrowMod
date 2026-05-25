@@ -8,6 +8,8 @@ using OvermorrowMod.Core.Items.Guns;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
@@ -106,6 +108,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         }
     }
 
+    [Loot<ArchivePool>(ItemType.Ranged, Rarity.Rare)]
     public class Farlander : ModGun<FarlanderHeld>
     {
         public override WeaponType WeaponType => WeaponType.Sniper;

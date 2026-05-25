@@ -7,10 +7,13 @@ using OvermorrowMod.Core.Particles;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
+    [Loot<ArchivePool>(ItemType.Melee, Rarity.Common)]
     public class CarvingKnife : ModDagger<CarvingKnifeSlash, CarvingKnifeThrown>
     {
         public override string Texture => AssetDirectory.ArchiveItems + "CarvingKnife";

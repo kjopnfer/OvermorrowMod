@@ -3,9 +3,9 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.Loot;
 using System;
 using System.Collections.Generic;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
@@ -72,7 +72,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
                 var chestEntity = TileUtils.PlaceTileWithEntity<BigChest, BigChest_TE>(x, y);
                 if (chestEntity != null)
                 {
-                    chestEntity.ChestItem = ItemID.GoldBar;
+                    chestEntity.ContentsModifier = new RarityModifier(rare: 10);
+                    chestEntity.ContentsKinds = ItemKind.Weapon | ItemKind.Accessory | ItemKind.Armor;
                 }
             }),
         };

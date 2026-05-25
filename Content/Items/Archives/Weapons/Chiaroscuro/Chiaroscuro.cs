@@ -11,10 +11,13 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
 {
+    [Loot<ArchivePool>(ItemType.Melee, Rarity.Rare)]
     public class Chiaroscuro : ModItem, ITooltipEntities, IWeaponClassification
     {
         public List<TooltipEntity> TooltipObjects()
