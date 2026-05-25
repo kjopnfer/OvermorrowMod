@@ -3,11 +3,13 @@ using OvermorrowMod.Common.Items;
 using OvermorrowMod.Core.Items.Accessories;
 using Terraria;
 using Terraria.ID;
+using OvermorrowMod.Core.Loot;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
     [AutoloadEquip(EquipType.HandsOn)]
+    [Loot(ItemType.Generic, Rarity.Common)]
     public class BandOfFocus : OvermorrowAccessory
     {
         public override string Texture => AssetDirectory.GuildItems + Name;

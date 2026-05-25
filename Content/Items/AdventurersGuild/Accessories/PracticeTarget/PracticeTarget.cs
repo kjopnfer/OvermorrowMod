@@ -9,10 +9,12 @@ using OvermorrowMod.Core.Items.Accessories;
 using OvermorrowMod.Core.Items.Bows;
 using Terraria;
 using Terraria.ID;
+using OvermorrowMod.Core.Loot;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
+    [Loot(ItemType.Ranged, Rarity.Common)]
     public class PracticeTarget : OvermorrowAccessory, IBowModifier
     {
         public override string Texture => AssetDirectory.GuildItems + Name;

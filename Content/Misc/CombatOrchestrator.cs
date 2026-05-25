@@ -5,6 +5,7 @@ using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using ReLogic.Content;
@@ -46,6 +47,11 @@ namespace OvermorrowMod.Content.Misc
         private const int CleanupDuration = 360;
 
         private const int MinTilesFromDoor = 4;
+
+        // Combat-room reward shape.
+        private static readonly RarityModifier RewardModifier = new(rare: 5);
+        private const ItemKind RewardKinds = ItemKind.Weapon | ItemKind.Accessory | ItemKind.Armor;
+        private const int RewardOfferCount = 3;
 
         public override string Texture => AssetDirectory.Misc + "RewardChest";
 
@@ -165,8 +171,9 @@ namespace OvermorrowMod.Content.Misc
             EmitRays();
             if (isOpen && !wasOpen)
             {
-                int[] testItems = new[] { (int)ItemID.LifeCrystal, ItemID.MagicMirror, ItemID.GoldCoin };
-                RewardSelectionManager.ShowFor(NPC, testItems);
+                int[] offered = RollCombatReward();
+                if (offered.Length > 0)
+                    RewardSelectionManager.ShowFor(NPC, offered);
             }
             else if (!isOpen && wasOpen)
             {
@@ -185,6 +192,13 @@ namespace OvermorrowMod.Content.Misc
 
                 Lighting.AddLight(NPC.Center, Color.Gold.ToVector3() * intensity);
             }
+        }
+
+        private int[] RollCombatReward()
+        {
+            var pool = LootPoolRegistry.GetActive();
+            if (pool == null) return System.Array.Empty<int>();
+            return LootRoller.RollOffers(pool, RewardModifier, RewardKinds, RewardOfferCount, Main.LocalPlayer);
         }
 
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)
