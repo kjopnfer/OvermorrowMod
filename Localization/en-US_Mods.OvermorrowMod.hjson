@@ -61,8 +61,8 @@ Buffs: {
 			'''
 			Gain 25% increased movement speed
 			Your next melee strike gains 100% crit chance
-			The first enemy you kill restore 40 health
-			'Like a story refusing to end too soon, you gain one last surge to keep fighting.'
+			The first enemy you kill restores 40 health
+			'This cannot be how the story ends.'
 			'''
 	}
 
@@ -611,8 +611,7 @@ Items: {
 			'''
 		Flavor:
 			'''
-			A novice knows how to swing a blade,
-			a master knows when to hold it still.
+			A novice knows how to swing a blade, a master knows when to.
 			'''
 	}
 
@@ -672,7 +671,7 @@ Items: {
 			- Retrieving the knife after a {Keyword:Strike} grants <Buff:Invisibility> for 4 seconds
 			While under <Buff:Invisibility>, gain 15% increased movement speed
 			'''
-		Flavor: Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
+		Flavor: Why do Rat Rogues carry knives? To cut cheese.
 	}
 
 	CarvingKnifeNew: {
