@@ -43,4 +43,9 @@ namespace OvermorrowMod.Core.NPCs
         protected BaseMovementState(OvermorrowNPC npc) : base(npc) { }
     }
 
+    public abstract class BaseDefenseState : BaseState
+    {
+        protected BaseDefenseState(OvermorrowNPC npc) : base(npc) { }
+    }
+
 }

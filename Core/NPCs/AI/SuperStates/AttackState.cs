@@ -59,38 +59,14 @@ namespace OvermorrowMod.Core.NPCs
         }
 
         /// <summary>
-        /// Picks a valid attack substate based on CanExecute and weight.
+        /// Picks a valid attack substate weighted by each substate's weight.
         /// </summary>
         private BaseAttackState PickSubstate(OvermorrowNPC npc)
         {
             if (substates == null || substates.Count == 0)
                 return null;
 
-            return substates
-             .Where(s => s.CanExecute())
-             .OrderByDescending(s => s.Weight) // Or random weighted if preferred
-             .FirstOrDefault();
-
-            // return PickWeightedRandom(validAttacks);
-        }
-
-        /// <summary>
-        /// Optional method for weighted random attack selection.
-        /// </summary>
-        private BaseAttackState PickWeightedRandom(List<(BaseAttackState state, int weight)> weightedList)
-        {
-            int totalWeight = weightedList.Sum(s => s.weight);
-            int randomValue = Main.rand.Next(totalWeight); // Terraria random
-            int accumulatedWeight = 0;
-
-            foreach (var (state, weight) in weightedList)
-            {
-                accumulatedWeight += weight;
-                if (randomValue < accumulatedWeight)
-                    return state;
-            }
-
-            return weightedList[0].state; // Fallback
+            return PickWeightedRandom(substates.Where(s => s.CanExecute()).ToList());
         }
     }
 }

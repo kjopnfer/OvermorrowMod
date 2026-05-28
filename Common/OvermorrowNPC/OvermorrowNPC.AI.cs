@@ -14,11 +14,21 @@ namespace OvermorrowMod.Common
 
         public AIStateMachine AIStateMachine = null;
 
+        /// <summary>
+        /// This NPC's per-instance behavioral bias, rolled once at spawn.
+        /// </summary>
+        public Personality Personality { get; private set; }
+
+        /// <summary>
+        /// Per-type roll ranges for this NPC's personality axes.
+        /// </summary>
+        protected virtual PersonalityProfile PersonalityRanges => new PersonalityProfile();
+
         // TODO: Make these abstract instead.
         public virtual List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
                 new Wander(this)
         };
-        
+
         public virtual List<BaseAttackState> InitializeAttackStates() => new List<BaseAttackState> {
                 new GroundDashAttack(this)
         };
@@ -26,5 +36,7 @@ namespace OvermorrowMod.Common
         public virtual List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
                 new MeleeWalk(this)
         };
+
+        public virtual List<BaseDefenseState> InitializeDefenseStates() => new List<BaseDefenseState>();
     }
 }
