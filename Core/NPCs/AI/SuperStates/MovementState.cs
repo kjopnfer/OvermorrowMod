@@ -53,10 +53,7 @@ namespace OvermorrowMod.Core.NPCs
             if (substates == null || substates.Count == 0)
                 return null;
 
-            return substates
-                .Where(s => s.CanExecute())
-                .OrderByDescending(s => s.Weight) // or random weighted choice
-                .FirstOrDefault();
+            return PickWeightedRandom(substates.Where(s => s.CanExecute()).ToList());
         }
     }
 }

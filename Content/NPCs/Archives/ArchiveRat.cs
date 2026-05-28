@@ -73,6 +73,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
+        private const bool DebugAI = true;
         private int afterimageLinger = 0;
         public override void OnSpawn(IEntitySource source)
         {
@@ -211,6 +212,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
             };
         }
 
+        protected override PersonalityProfile PersonalityRanges => new PersonalityProfile
+        {
+            Aggression = (0.2f, 0.9f),
+            Caution = (0.1f, 0.8f),
+            Reactivity = (0.2f, 0.7f)
+        };
+
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
             new Wander(this, minRange: 30, maxRange: 50)
         };
@@ -222,6 +230,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
             new MeleeWalk(this),
+            new MoveBack(this),
+        };
+
+        public override List<BaseDefenseState> InitializeDefenseStates() => new List<BaseDefenseState> {
+            new RecoilLeap(this),
+            new BreakOff(this)
         };
 
         public override void AI()
@@ -311,6 +325,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
             State currentState = AIStateMachine.GetCurrentState();
             switch (currentState)
             {
+                case MovementState moveState when moveState.currentSubstate is MoveBack:
+                    xFrame = 0;
+                    if (NPC.frameCounter++ % 6 == 0)
+                    {
+                        yFrame = (yFrame + 8) % 9;
+                    }
+                    break;
+
                 case MovementState:
                     xFrame = 0;
                     if (NPC.frameCounter++ % 6 == 0)
@@ -422,6 +444,14 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Vector2 drawOffset = new Vector2(0, 2);
             spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            if (DebugAI && Personality != null)
+            {
+                string sub = AIStateMachine.GetCurrentSubstate()?.GetType().Name ?? AIStateMachine.GetCurrentState()?.GetType().Name ?? "none";
+                string info = $"{sub}\nAgg {Personality.Aggression:0.00}  Cau {Personality.Caution:0.00}  Rea {Personality.Reactivity:0.00}\nDmg {RecentDamageFraction():0.00}";
+                Vector2 textPos = NPC.Top - Main.screenPosition - new Vector2(0, 48);
+                Utils.DrawBorderString(spriteBatch, info, textPos, Color.White, 0.7f, 0.5f, 0.5f);
+            }
 
             return false;
         }

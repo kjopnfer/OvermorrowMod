@@ -11,7 +11,8 @@ namespace OvermorrowMod.Core.NPCs
     {
         Idle,
         Moving,
-        Attacking
+        Attacking,
+        Defending
     }
 
     public class AIStateMachine
@@ -87,11 +88,12 @@ namespace OvermorrowMod.Core.NPCs
         /// <summary>
         /// Initializes the state machine and injects substates into each superstate.
         /// </summary>
-        public AIStateMachine(OvermorrowNPC npc, List<BaseIdleState> idleSubstates, List<BaseMovementState> movementSubstates, List<BaseAttackState> attackSubstates)
+        public AIStateMachine(OvermorrowNPC npc, List<BaseIdleState> idleSubstates, List<BaseMovementState> movementSubstates, List<BaseAttackState> attackSubstates, List<BaseDefenseState> defenseSubstates)
         {
             availableStates[AIStateType.Idle] = new IdleState(idleSubstates, npc);
             availableStates[AIStateType.Moving] = new MovementState(movementSubstates, npc);
             availableStates[AIStateType.Attacking] = new AttackState(attackSubstates, npc);
+            availableStates[AIStateType.Defending] = new DefendingState(defenseSubstates, npc);
 
             SetInitialState();
         }
@@ -217,12 +219,6 @@ namespace OvermorrowMod.Core.NPCs
         {
             if (availableStates.TryGetValue(newState, out var nextState) && currentState != nextState && (currentState?.CanExit ?? true))
             {
-                if (newState == AIStateType.Attacking && stateHistory.LastOrDefault() == nextState)
-                {
-                    Main.NewText("prevent duplicate attack");
-                    return;
-                }
-
                 currentState?.Exit();  // Exit the current state if any
 
                 if (stateHistory.Count >= historySize)
@@ -249,6 +245,13 @@ namespace OvermorrowMod.Core.NPCs
             // Prevent evaluating state change if locked in current state
             if (!(currentState?.CanExit ?? true))
             {
+                return;
+            }
+
+            // A threat reaction preempts Idle and Moving but never interrupts an attack.
+            if (currentState is not AttackState && availableStates[AIStateType.Defending] is DefendingState defending && defending.AnyValid())
+            {
+                ChangeState(AIStateType.Defending, npc);
                 return;
             }
 

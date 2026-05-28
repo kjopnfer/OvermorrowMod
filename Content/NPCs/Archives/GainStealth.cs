@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 {
     public class GainStealth : BaseAttackState
     {
-        public override int Weight => 4;
+        public override int Weight => 1 + (int)(OvermorrowNPC.Personality.Caution * 5);
 
         /// <summary>
         /// Prevent exiting until attack is done.

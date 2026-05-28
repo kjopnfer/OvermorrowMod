@@ -28,6 +28,12 @@ namespace OvermorrowMod.Content.NPCs
         /// <param name="npc"></param>
         /// <param name="minRange">The minimum range in tiles that the NPC must choose to wander from.</param>
         /// <param name="maxRange">The maxmimum range in tiles that the NPC can choose to wander to.</param>
+        private const int MaxWanderTicks = 240;
+        private const int MaxWallTicks = 20;
+
+        private int wanderTicks;
+        private int wallTicks;
+
         public Wander(OvermorrowNPC npc, int minRange = 4, int maxRange = 10) : base(npc)
         {
             MinWanderRange = minRange;
@@ -37,6 +43,8 @@ namespace OvermorrowMod.Content.NPCs
         public override void Enter()
         {
             IsFinished = false;
+            wanderTicks = 0;
+            wallTicks = 0;
             NPC.velocity.X = 0;
             if (OvermorrowNPC.SpawnPoint != null)
             {
@@ -167,6 +175,20 @@ namespace OvermorrowMod.Content.NPCs
                             IsFinished = true;
                             NPC.velocity.X = 0;
                         }
+
+                        return;
+                    }
+
+                    // Give up if wedged against a wall or wandering too long, so the rat
+                    // does not grind into terrain it cannot path through.
+                    bool wedged = NPC.collideX && (++wallTicks >= MaxWallTicks);
+                    if (!NPC.collideX) wallTicks = 0;
+
+                    if (wedged || ++wanderTicks >= MaxWanderTicks)
+                    {
+                        OvermorrowNPC.IdleCounter = Main.rand.Next(30, 60);
+                        IsFinished = true;
+                        NPC.velocity.X = 0;
                     }
                 }
             }
