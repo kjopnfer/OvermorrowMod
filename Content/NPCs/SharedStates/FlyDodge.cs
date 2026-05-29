@@ -6,9 +6,7 @@ using Terraria;
 namespace OvermorrowMod.Content.NPCs
 {
     /// <summary>
-    /// An airborne sidestep for floating NPCs. When a projectile is heading toward the
-    /// NPC it occasionally dashes perpendicular to the projectile's path. No lead
-    /// prediction, so a fast shot can still connect. Frequency and speed scale with Reactivity.
+    /// Airborne perpendicular sidestep when an incoming projectile is detected. Scales with Reactivity.
     /// </summary>
     public class FlyDodge : BaseDefenseState
     {

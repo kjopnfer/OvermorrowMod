@@ -12,7 +12,8 @@ namespace OvermorrowMod.Core.NPCs
         Idle,
         Moving,
         Attacking,
-        Defending
+        Defending,
+        Stunned
     }
 
     public class AIStateMachine
@@ -94,6 +95,7 @@ namespace OvermorrowMod.Core.NPCs
             availableStates[AIStateType.Moving] = new MovementState(movementSubstates, npc);
             availableStates[AIStateType.Attacking] = new AttackState(attackSubstates, npc);
             availableStates[AIStateType.Defending] = new DefendingState(defenseSubstates, npc);
+            availableStates[AIStateType.Stunned] = new StunnedState(npc);
 
             SetInitialState();
         }
@@ -210,6 +212,27 @@ namespace OvermorrowMod.Core.NPCs
                 substateHistory.Dequeue(); // Remove oldest
 
             substateHistory.Enqueue(substate); // Add new
+        }
+
+        /// <summary>
+        /// Change to a new state regardless of the current state's CanExit gate.
+        /// </summary>
+        public void ForceChangeState(AIStateType newState, OvermorrowNPC npc)
+        {
+            if (availableStates.TryGetValue(newState, out var nextState) && currentState != nextState)
+            {
+                currentState?.Exit();
+
+                if (stateHistory.Count >= historySize)
+                {
+                    stateHistory.Dequeue();
+                }
+
+                currentState = nextState;
+                currentState.Enter();
+
+                stateHistory.Enqueue(currentState);
+            }
         }
 
         /// <summary>

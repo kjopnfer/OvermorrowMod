@@ -8,8 +8,7 @@ using Terraria;
 namespace OvermorrowMod.Content.NPCs
 {
     /// <summary>
-    /// A grounded backoff taken right after a dash. Walks away from the target to
-    /// reset spacing before re-engaging. Distance and repeat count scale with Caution.
+    /// Grounded backoff taken right after a dash. Distance and hop count scale with Caution.
     /// </summary>
     public class MoveBack : BaseMovementState
     {
@@ -68,9 +67,8 @@ namespace OvermorrowMod.Content.NPCs
             Entity target = OvermorrowNPC.TargetingModule.Target;
             int away = target.Center.X < NPC.Center.X ? 1 : -1;
 
-            // Face the target while stepping away from it.
             NPC.direction = -away;
-            NPC.velocity.X = 2.5f * away;
+            NPC.velocity.X = 1.6f * away;
 
             if (NPC.collideX)
             {

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.NPCs;
 using System.Collections.Generic;
 using Terraria;
@@ -96,6 +97,13 @@ namespace OvermorrowMod.Common
             // Prevent offscreen projectiles from killing the NPC.
             NPC.dontTakeDamage = !IsOnScreen();
 
+            UpdateDropThrough();
+
+            if (!DropThroughActive && CurrentSupportY.HasValue)
+            {
+                NPC.collideY = true;
+            }
+
             TargetingModule.Update();
             UpdateCorneredState();
 
@@ -131,12 +139,20 @@ namespace OvermorrowMod.Common
             base.OnHitByProjectile(projectile, hit, damageDone);
         }
 
+        private const WeaponType StunningSwordFlags = WeaponType.Sword | WeaponType.Broadsword | WeaponType.Greatsword;
+        private const int SwordStunTicks = 25;
+
         public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
             RecordDamage(damageDone);
 
             if (!TargetingModule.HasTarget())
                 TargetingModule.SetTarget(player);
+
+            if ((item.GetWeaponType() & StunningSwordFlags) != 0)
+            {
+                Stun(SwordStunTicks);
+            }
 
             base.OnHitByItem(player, item, hit, damageDone);
         }
@@ -174,12 +190,12 @@ namespace OvermorrowMod.Common
         }
 
         /// <summary>
-        /// Whether recent sustained damage has crossed this NPC's cautious bolt threshold.
+        /// Whether recent sustained damage has crossed this NPC's damage threshold.
         /// </summary>
         public bool TookSustainedDamage() => RecentDamageFraction() >= MathHelper.Lerp(0.25f, 0.06f, Personality.Caution);
 
         /// <summary>
-        /// Clears the recent damage window so a reaction does not immediately re-trigger.
+        /// Clears the recent damage window.
         /// </summary>
         public void ClearDamageWindow() => recentDamage.Clear();
 
@@ -224,7 +240,7 @@ namespace OvermorrowMod.Common
         }
 
         /// <summary>
-        /// Resets the cornered window once the NPC has reacted to being stuck.
+        /// Clears the cornered window.
         /// </summary>
         public void ClearCornered() => corneredFor = 0;
         #endregion

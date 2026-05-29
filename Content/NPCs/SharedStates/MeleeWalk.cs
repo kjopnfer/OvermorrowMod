@@ -34,20 +34,28 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void Update()
         {
-            NPC.direction = NPC.GetDirectionFrom(OvermorrowNPC.TargetingModule.Target);
-            Vector2 distance = NPC.Move(OvermorrowNPC.TargetingModule.Target.Center, moveSpeed, maxSpeed, 8f);
+            Entity target = OvermorrowNPC.TargetingModule.Target;
+            NPC.direction = NPC.GetDirectionFrom(target);
+            Vector2 distance = NPC.Move(target.Center, moveSpeed, maxSpeed, 8f);
 
             if (OvermorrowNPC is ClockworkSpider)
             {
                 OvermorrowNPC.AICounter++;
                 if (OvermorrowNPC.AICounter > ModUtils.SecondsToTicks(1))
                 {
-                    distance = NPC.Move(OvermorrowNPC.TargetingModule.Target.Center, moveSpeed, maxSpeed, 8f);
+                    distance = NPC.Move(target.Center, moveSpeed, maxSpeed, 8f);
                 }
                 else
                 {
-                    distance = NPC.Move(OvermorrowNPC.TargetingModule.Target.Center, moveSpeed, maxSpeed / 2, 8f);
+                    distance = NPC.Move(target.Center, moveSpeed, maxSpeed / 2, 8f);
                 }
+            }
+
+            float dy = target.Center.Y - NPC.Center.Y;
+            float dx = System.Math.Abs(target.Center.X - NPC.Center.X);
+            if (dy > 32f && dx < 32f)
+            {
+                OvermorrowNPC.RequestDropThrough();
             }
         }
     }

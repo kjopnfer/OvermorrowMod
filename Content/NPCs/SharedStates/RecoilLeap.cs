@@ -6,9 +6,7 @@ using Terraria;
 namespace OvermorrowMod.Content.NPCs
 {
     /// <summary>
-    /// A grounded recoil for when the NPC is taking sustained damage from any source.
-    /// After a short reaction delay it leaps away from the target, then settles.
-    /// Trigger frequency and reaction speed scale with Reactivity.
+    /// Grounded recoil leap triggered by sustained damage. Scales with Reactivity.
     /// </summary>
     public class RecoilLeap : BaseDefenseState
     {

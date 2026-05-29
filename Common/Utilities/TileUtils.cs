@@ -1,6 +1,7 @@
 using Terraria.ObjectData;
 using Terraria;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.CustomCollision;
 using Terraria.ID;
 using Microsoft.CodeAnalysis.Text;
 using Terraria.DataStructures;
@@ -23,39 +24,62 @@ namespace OvermorrowMod.Common.Utilities
         public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
 
         /// <summary>
-        /// Finds the nearest solid or sloped ground tile beneath a given starting position.
-        /// The method starts from the given position and moves downwards to find the first tile that is either solid or sloped.
+        /// Finds the nearest walkable surface beneath a given position, considering both
+        /// real tiles and custom collider surfaces. Returns the higher (smaller Y) of the
+        /// two when both are present.
         /// </summary>
-        /// <param name="startPosition">The starting position to begin the search from. This position is in world coordinates.</param>
-        /// <returns>
-        /// A <see cref="Vector2"/> representing the position of the nearest solid or sloped ground tile. The X coordinate remains unchanged, while the Y coordinate is updated to the Y position of the found ground tile.
-        /// </returns>
+        /// <returns>The original X with Y updated to the nearest walkable surface.</returns>
         public static Vector2 FindNearestGround(Vector2 startPosition)
         {
-            Vector2 position = startPosition;
+            Vector2 tileGround = FindNearestTileGround(startPosition);
 
-            // Convert the start position to tile coordinates
+            if (CollisionIndex.TryGetGroundBeneath(startPosition.X, startPosition.Y, out float colliderY))
+            {
+                if (colliderY < tileGround.Y)
+                {
+                    return new Vector2(startPosition.X, colliderY);
+                }
+            }
+
+            return tileGround;
+        }
+
+        /// <summary>
+        /// Tile-only variant of FindNearestGround. Use only when custom collider surfaces
+        /// should be deliberately ignored; prefer FindNearestGround for AI queries.
+        /// </summary>
+        public static Vector2 FindNearestTileGround(Vector2 startPosition)
+        {
+            Vector2 position = startPosition;
             Point tilePosition = position.ToTileCoordinates();
 
-            // If inside a solid tile, move upwards until an empty tile is found
             while (WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
             {
-                tilePosition.Y--; // Move up one tile
+                tilePosition.Y--;
             }
 
-            // Search downwards for a solid or sloped ground tile
             while (!WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
             {
-                tilePosition.Y++; // Move down one tile
+                tilePosition.Y++;
             }
 
-            // If a solid or sloped tile is found, update the Y position of the input vector
             if (WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
             {
-                position.Y = tilePosition.ToWorldCoordinates(0f, 0f).Y; // Update the Y position to the found tile's world Y coordinate
+                position.Y = tilePosition.ToWorldCoordinates(0f, 0f).Y;
             }
 
-            return position; // Return the updated position with the Y of the nearest ground tile
+            return position;
+        }
+
+        /// <summary>
+        /// Single standability predicate: true when a real tile or a custom collider supports
+        /// an entity standing at this foot point. Use this for any "is there ground here" check.
+        /// </summary>
+        public static bool IsStandable(Vector2 footPoint)
+        {
+            Point tilePos = footPoint.ToTileCoordinates();
+            if (WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePos.X, tilePos.Y))) return true;
+            return CollisionIndex.HasGroundUnderfoot(footPoint.X, footPoint.Y, 4f);
         }
 
         /// <summary>
@@ -146,7 +170,7 @@ namespace OvermorrowMod.Common.Utilities
         ///     </item>
         /// </list>
         /// </remarks>
-        public static Point GetCornerOfMultiTile( int x, int y, CornerType corner)
+        public static Point GetCornerOfMultiTile(int x, int y, CornerType corner)
         {
             Tile tile = Framing.GetTileSafely(x, y);
             TileObjectData data = TileObjectData.GetTileData(tile);

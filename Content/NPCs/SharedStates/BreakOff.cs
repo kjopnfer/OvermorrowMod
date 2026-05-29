@@ -5,9 +5,7 @@ using Terraria;
 namespace OvermorrowMod.Content.NPCs
 {
     /// <summary>
-    /// A short reposition for when the NPC is wedged against terrain while approaching
-    /// its target. Moves away from the target for a moment, hopping if still blocked,
-    /// so it cannot grind into geometry indefinitely.
+    /// Short reposition when wedged against terrain. Doubles as stuck protection.
     /// </summary>
     public class BreakOff : BaseDefenseState
     {
