@@ -179,8 +179,6 @@ namespace OvermorrowMod.Content.NPCs
                         return;
                     }
 
-                    // Give up if wedged against a wall or wandering too long, so the rat
-                    // does not grind into terrain it cannot path through.
                     bool wedged = NPC.collideX && (++wallTicks >= MaxWallTicks);
                     if (!NPC.collideX) wallTicks = 0;
 

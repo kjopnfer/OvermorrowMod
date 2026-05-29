@@ -26,6 +26,11 @@ namespace OvermorrowMod.Core.NPCs
         /// By default, states cannot be exited until finished.
         /// </summary>
         public override bool CanExit => IsFinished;
+
+        /// <summary>
+        /// Marks this state as finished from outside its own class.
+        /// </summary>
+        internal void ForceFinish() => IsFinished = true;
     }
 
     public abstract class BaseIdleState : BaseState

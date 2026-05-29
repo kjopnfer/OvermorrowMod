@@ -609,10 +609,7 @@ Items: {
 			- If you did not have <Buff:Sharpened Intent> before, restore 20 health
 			- This buff does not expire while {Keyword:Respite} is active
 			'''
-		Flavor:
-			'''
-			A novice knows how to swing a blade, a master knows when to.
-			'''
+		Flavor: A novice knows how to swing a blade, a master knows when to.
 	}
 
 	OrnateChalice: {

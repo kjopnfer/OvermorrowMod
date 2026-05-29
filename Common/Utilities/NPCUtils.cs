@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.CustomCollision;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.Globals;
 using System;
@@ -38,7 +39,8 @@ namespace OvermorrowMod.Common.Utilities
                 Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, false, 0);
 
                 #region Jump Handling
-                if (npc.collideX || npc.CheckGap())
+                bool colliderRiseAhead = HasColliderRiseAhead(npc);
+                if (npc.collideX || npc.CheckGap() || colliderRiseAhead)
                 {
                     npc.velocity.Y -= jumpSpeed;
                 }
@@ -108,7 +110,6 @@ namespace OvermorrowMod.Common.Utilities
 
                 if (!topTile || !secondTile)
                 {
-                    // One or both tiles are solid—no gap here
                     return false;
                 }
             }
@@ -128,8 +129,26 @@ namespace OvermorrowMod.Common.Utilities
             int directionOffset = npc.direction;
 
             Tile tile = Framing.GetTileSafely((int)hitboxDetection.X + directionOffset, (int)hitboxDetection.Y + 1);
+            if (tile.HasTile) return false;
 
-            return !tile.HasTile;
+            float aheadX = (npc.direction > 0 ? npcHitbox.Right : npcHitbox.Left) + npc.direction * 8f;
+            float feetY = npcHitbox.Bottom;
+            if (CollisionIndex.TryGetGroundBeneath(aheadX, feetY - 16f, out float aheadY))
+            {
+                if (aheadY >= feetY - 16f && aheadY <= feetY + 16f) return false;
+            }
+            return true;
+        }
+
+        private static bool HasColliderRiseAhead(NPC npc)
+        {
+            Rectangle hb = npc.Hitbox;
+            float feetY = hb.Bottom;
+            float aheadX = npc.direction > 0 ? hb.Right + 16f : hb.Left - 16f;
+
+            if (!CollisionIndex.TryGetGroundBeneath(aheadX, feetY - 24f, out float aheadY)) return false;
+            float rise = feetY - aheadY;
+            return rise >= 8f && rise <= 24f;
         }
 
         #region Stealth

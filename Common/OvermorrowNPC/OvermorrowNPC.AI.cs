@@ -38,5 +38,85 @@ namespace OvermorrowMod.Common
         };
 
         public virtual List<BaseDefenseState> InitializeDefenseStates() => new List<BaseDefenseState>();
+
+        /// <summary>
+        /// Whether this NPC should be supported by custom collider surfaces.
+        /// </summary>
+        public virtual bool UsesCustomGrounding => !NPC.noGravity;
+
+        /// <summary>
+        /// True while the FSM is in StunnedState.
+        /// </summary>
+        public bool IsStunned => AIStateMachine?.GetCurrentState() is StunnedState;
+
+        /// <summary>
+        /// Applies a hit-stun for the given tick window. Calling again refreshes the duration.
+        /// </summary>
+        public void Stun(int ticks)
+        {
+            AICounter = ticks;
+            IdleCounter = 0;
+            NPC.velocity.X = 0;
+            AIStateMachine?.ForceChangeState(AIStateType.Stunned, this);
+        }
+
+        /// <summary>
+        /// Y of the collider surface supporting this NPC, or null when unsupported.
+        /// </summary>
+        public float? CurrentSupportY { get; private set; }
+
+        internal void SetCurrentSupportY(float? y) => CurrentSupportY = y;
+
+        private bool dropThroughActive;
+        private float dropFromY;
+        private int dropThroughTicks;
+        private bool dropThroughOriginalNoTileCollide;
+        private int nextDropAllowedTick;
+
+        internal bool DropThroughActive => dropThroughActive;
+
+        /// <summary>
+        /// Drops the NPC through the one-way surface it is standing on. Rate-limited.
+        /// </summary>
+        public void RequestDropThrough()
+        {
+            if (dropThroughActive) return;
+            if (Main.GameUpdateCount < (uint)nextDropAllowedTick) return;
+
+            float dropY;
+            if (CurrentSupportY.HasValue)
+            {
+                dropY = CurrentSupportY.Value;
+            }
+            else
+            {
+                Point feetTile = (NPC.Bottom + new Vector2(0, 1)).ToTileCoordinates();
+                Tile tile = Framing.GetTileSafely(feetTile.X, feetTile.Y);
+                if (!tile.HasTile || !Main.tileSolidTop[tile.TileType]) return;
+                dropY = NPC.Bottom.Y;
+            }
+
+            dropFromY = dropY;
+            dropThroughActive = true;
+            dropThroughTicks = 3;
+            dropThroughOriginalNoTileCollide = NPC.noTileCollide;
+        }
+
+        /// <summary>
+        /// Advances drop-through state by one tick.
+        /// </summary>
+        internal void UpdateDropThrough()
+        {
+            if (!dropThroughActive) return;
+
+            NPC.noTileCollide = true;
+            dropThroughTicks--;
+            if (dropThroughTicks <= 0 || NPC.Bottom.Y > dropFromY + 4f)
+            {
+                dropThroughActive = false;
+                NPC.noTileCollide = dropThroughOriginalNoTileCollide;
+                nextDropAllowedTick = (int)Main.GameUpdateCount + 30;
+            }
+        }
     }
 }

@@ -91,83 +91,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (NPC.GetGlobalNPC<BuffNPC>().StealthCounter > 0) modifiers.SourceDamage *= 2;
         }
 
-        #region Test
-        bool IsRectangleIntersectingSlope(Vector2 start, Vector2 end, float width, Rectangle npcBottomHitbox)
-        {
-            // Calculate the direction vector of the slope
-            Vector2 direction = Vector2.Normalize(end - start);
-
-            // Calculate the perpendicular vector for width
-            Vector2 perpendicular = new Vector2(-direction.Y, direction.X) * width * 0.5f;
-
-            // Define the four corners of the rotated rectangle
-            Vector2 p1 = start - perpendicular; // Bottom-left
-            Vector2 p2 = start + perpendicular; // Top-left
-            Vector2 p3 = end + perpendicular;   // Top-right
-            Vector2 p4 = end - perpendicular;   // Bottom-right
-
-            // Define the slope as a polygon
-            Vector2[] slopePolygon = new[] { p1, p2, p3, p4 };
-
-            // Check for intersection between the NPC's bottom hitbox and the polygon
-            return PolygonIntersectsRectangle(slopePolygon, npcBottomHitbox);
-        }
-
-        // Function to check if a polygon intersects with a rectangle
-        bool PolygonIntersectsRectangle(Vector2[] polygon, Rectangle rectangle)
-        {
-            // Convert the rectangle into a polygon (clockwise points)
-            Vector2[] rectPolygon = new Vector2[]
-            {
-                new Vector2(rectangle.Left, rectangle.Top),
-                new Vector2(rectangle.Right, rectangle.Top),
-                new Vector2(rectangle.Right, rectangle.Bottom),
-                new Vector2(rectangle.Left, rectangle.Bottom)
-            };
-
-            // Perform SAT-based intersection test between the two polygons
-            return PolygonsIntersect(polygon, rectPolygon);
-        }
-
-        // SAT-based polygon intersection test
-        bool PolygonsIntersect(Vector2[] poly1, Vector2[] poly2)
-        {
-            // Helper function to project a polygon onto an axis
-            void ProjectPolygon(Vector2 axis, Vector2[] polygon, out float min, out float max)
-            {
-                min = Vector2.Dot(axis, polygon[0]);
-                max = min;
-                for (int i = 1; i < polygon.Length; i++)
-                {
-                    float projection = Vector2.Dot(axis, polygon[i]);
-                    if (projection < min) min = projection;
-                    if (projection > max) max = projection;
-                }
-            }
-
-            // Helper function to check overlap between two projections
-            bool Overlaps(float minA, float maxA, float minB, float maxB) => maxA >= minB && maxB >= minA;
-
-            // Get the axes (normals of edges) for both polygons
-            List<Vector2> axes = new List<Vector2>();
-            for (int i = 0; i < poly1.Length; i++)
-                axes.Add(Vector2.Normalize(new Vector2(-(poly1[(i + 1) % poly1.Length] - poly1[i]).Y, (poly1[(i + 1) % poly1.Length] - poly1[i]).X)));
-
-            for (int i = 0; i < poly2.Length; i++)
-                axes.Add(Vector2.Normalize(new Vector2(-(poly2[(i + 1) % poly2.Length] - poly2[i]).Y, (poly2[(i + 1) % poly2.Length] - poly2[i]).X)));
-
-            // Check projections on all axes
-            foreach (var axis in axes)
-            {
-                ProjectPolygon(axis, poly1, out float min1, out float max1);
-                ProjectPolygon(axis, poly2, out float min2, out float max2);
-                if (!Overlaps(min1, max1, min2, max2)) return false; // No overlap means no intersection
-            }
-
-            return true; // All axes overlapped, polygons intersect
-        }
-        #endregion
-
         public override bool CheckActive() => false;
         public override NPCTargetingConfig TargetingConfig()
         {
@@ -251,49 +174,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             if (afterimageLinger > 0) afterimageLinger--;
 
-            // TODO: Generalize this into a collision module
-            #region Impact Collision
-            var activeTileCollisionNPCs = Main.npc
-            .Where(npc => npc.active && npc.ModNPC is TileCollisionNPC)
-            .Select(npc => (TileCollisionNPC)npc.ModNPC)
-            .ToList();
-
-            Vector2 bottomLeft = NPC.Hitbox.BottomLeft();
-            Vector2 bottomRight = NPC.Hitbox.BottomRight();
-
-            foreach (var tileCollisionNPC in activeTileCollisionNPCs)
-            {
-                if (tileCollisionNPC.colliders == null) continue;
-
-                foreach (var colliders in tileCollisionNPC.colliders)
-                {
-                    var start = colliders.endPoints[0];
-                    var end = colliders.endPoints[1];
-                    //float colliderWidth = (end - start).Length(); // Distance between start and end points
-                    float colliderWidth = 5; // Distance between start and end points
-
-                    // Check if the NPC's bottom hitbox intersects with the slope
-                    Rectangle npcBottomHitbox = new Rectangle((int)bottomLeft.X, (int)bottomLeft.Y, (int)(bottomRight.X - bottomLeft.X), 1); // 1-pixel tall rectangle
-                    if (IsRectangleIntersectingSlope(start, end, colliderWidth, npcBottomHitbox))
-                    {
-                        // Perform desired action for the collision
-                        //Main.NewText($"Collision detected with {tileCollisionNPC}");
-                        NPC.collideY = true;
-                        NPC.velocity.Y = 0;
-                        NPC.noGravity = true;
-
-                        // Adjust the NPC upwards until the collision no longer occurs
-                        while (IsRectangleIntersectingSlope(start, end, colliderWidth, npcBottomHitbox))
-                        {
-                            NPC.position.Y -= 0.05f; // Move the NPC upwards by a small increment
-                            bottomLeft = NPC.Hitbox.BottomLeft();
-                            bottomRight = NPC.Hitbox.BottomRight();
-                            npcBottomHitbox = new Rectangle((int)bottomLeft.X, (int)bottomLeft.Y, (int)(bottomRight.X - bottomLeft.X), 1); // Update hitbox
-                        }
-                    }
-                }
-            }
-            #endregion
             /*if (!TargetingModule.HasTarget())
             {
                 NPC.RemoveStealth();
