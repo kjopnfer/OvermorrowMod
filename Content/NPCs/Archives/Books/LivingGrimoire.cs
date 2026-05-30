@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Core.NPCs;
+using ReLogic.Utilities;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -21,6 +22,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override string Texture => AssetDirectory.ArchiveNPCs + Name;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override bool CheckActive() => false;
+        public override bool CanBeStunned => false;
+
+        private SlotId flapSoundSlot = SlotId.Invalid;
+        private float flapPitch;
+        private float flapVolume;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 9;
@@ -43,6 +50,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 PitchVariance = 0.2f
             };
 
+            flapPitch = Main.rand.NextFloat(-0.2f, 0.2f);
+            flapVolume = Main.rand.NextFloat(0.15f, 0.3f);
+
             NPC.width = 30;
             NPC.height = 44;
             NPC.lifeMax = 25;
@@ -60,8 +70,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool? CanFallThroughPlatforms() => true;
         public virtual int CastTime => 120;
-        //public ref float AIState => ref NPC.ai[0];
-        //public ref float AICounter => ref NPC.ai[1];
 
         public override void OnSpawn(IEntitySource source)
         {
@@ -77,30 +85,21 @@ namespace OvermorrowMod.Content.NPCs.Archives
         };
 
         public override List<BaseMovementState> InitializeMovementStates() => new List<BaseMovementState> {
-            new BasicFly(this),
+            new GrimoireFly(this),
         };
 
         public override NPCTargetingConfig TargetingConfig()
         {
-            /*return new NPCTargetingConfig(
-                maxAggroTime: ModUtils.SecondsToTicks(15),
-                aggroLossRate: 1f,
-                aggroCooldownTime: 180f,
-                maxTargetRange: ModUtils.TilesToPixels(30),
-                maxAttackRange: ModUtils.TilesToPixels(30),
-                alertRange: null,
-                prioritizeAggro: true
-            );*/
             return new NPCTargetingConfig(
                 maxAggroTime: ModUtils.SecondsToTicks(10f),
                 aggroLossRate: 0.5f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
                 aggroRadius: new AggroRadius(
-                    right: ModUtils.TilesToPixels(30),            // Far right detection
-                    left: ModUtils.TilesToPixels(30),             // Close left detection
-                    up: ModUtils.TilesToPixels(2),               // Medium up detection
-                    down: ModUtils.TilesToPixels(20),             // Far down detection
-                    flipWithDirection: true                       // Flip based on NPC direction
+                    right: ModUtils.TilesToPixels(30),
+                    left: ModUtils.TilesToPixels(30),
+                    up: ModUtils.TilesToPixels(2),
+                    down: ModUtils.TilesToPixels(20),
+                    flipWithDirection: true
                 ),
                 attackRadius: null,
                 alertRadius: null,
@@ -123,12 +122,12 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 maxAggroTime: ModUtils.SecondsToTicks(10f),
                 aggroLossRate: 0.5f,
                 aggroCooldownTime: ModUtils.SecondsToTicks(4f),
-                 aggroRadius: new AggroRadius(
-                    right: ModUtils.TilesToPixels(30),            // Far right detection
-                    left: ModUtils.TilesToPixels(30),             // Close left detection
-                    up: ModUtils.TilesToPixels(2),               // Medium up detection
-                    down: ModUtils.TilesToPixels(20),             // Far down detection
-                    flipWithDirection: true                       // Flip based on NPC direction
+                aggroRadius: new AggroRadius(
+                    right: ModUtils.TilesToPixels(30),
+                    left: ModUtils.TilesToPixels(30),
+                    up: ModUtils.TilesToPixels(2),
+                    down: ModUtils.TilesToPixels(20),
+                    flipWithDirection: true
                 ),
                 attackRadius: new AggroRadius(
                     right: ModUtils.TilesToPixels(50),
@@ -151,20 +150,13 @@ namespace OvermorrowMod.Content.NPCs.Archives
            );
 
             TargetingModule.SetTarget(currentTarget);
-            /*new NPCTargetingModule(NPC, new NPCTargetingConfig(
-            maxAggroTime: ModUtils.SecondsToTicks(15),
-            aggroLossRate: 1f,
-            aggroCooldownTime: 180f,
-            maxTargetRange: ModUtils.TilesToPixels(50),
-            maxAttackRange: ModUtils.TilesToPixels(50),
-            alertRange: ModUtils.TilesToPixels(60),
-            prioritizeAggro: true
-        ));*/
         }
 
         public override void AI()
         {
             State substate = AIStateMachine.GetCurrentSubstate();
+
+            UpdateFlapSound(substate);
 
             if (substate is not GrimoireSpellCast)
             {
@@ -189,6 +181,48 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.rotation = NPC.velocity.Y * 0.08f;
 
             base.AI();
+        }
+
+        private void UpdateFlapSound(State substate)
+        {
+            bool shouldPlay = substate is not GrimoireHidden && NPC.active && NPC.life > 0;
+
+            if (shouldPlay)
+            {
+                if (SoundEngine.TryGetActiveSound(flapSoundSlot, out ActiveSound active))
+                {
+                    active.Position = NPC.Center;
+                }
+                else
+                {
+                    SoundStyle style = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/Dragonfly")
+                    {
+                        IsLooped = true,
+                        Pitch = flapPitch,
+                        Volume = flapVolume,
+                        MaxInstances = 0
+                    };
+                    flapSoundSlot = SoundEngine.PlaySound(style, NPC.Center);
+                }
+            }
+            else
+            {
+                StopFlapSound();
+            }
+        }
+
+        private void StopFlapSound()
+        {
+            if (SoundEngine.TryGetActiveSound(flapSoundSlot, out ActiveSound active))
+            {
+                active.Stop();
+            }
+            flapSoundSlot = SlotId.Invalid;
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            if (NPC.life <= 0) StopFlapSound();
         }
 
         bool drawWings = true;
@@ -241,7 +275,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                             break;
                     }
                     break;
-                case MovementState movementState when movementState.currentSubstate is BasicFly:
+                case MovementState movementState when movementState.currentSubstate is GrimoireFly:
                     yFrame = 8;
 
                     if (NPC.frameCounter++ % 3 == 0)
@@ -303,8 +337,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            //TargetingModule?.DrawDebugVisualization(spriteBatch);
-
             Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
@@ -312,17 +344,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             int wingTextureHeight = (int)(wingTexture.Height / 3f);
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-
-            /*if (NPCID.Sets.NPCBestiaryDrawOffset.TryGetValue(Type, out NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers))
-           {
-               drawModifiers.Position = new Vector2(8, 8);
-               drawModifiers.PortraitPositionXOverride = 8;
-               drawModifiers.PortraitPositionYOverride = -6;
-
-               // Replace the existing NPCBestiaryDrawModifiers with our new one with an adjusted rotation
-               NPCID.Sets.NPCBestiaryDrawOffset.Remove(Type);
-               NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, drawModifiers);
-           }*/
 
             int xOffset = NPC.direction == -1 ? 4 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -28);
@@ -335,14 +356,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             Color wingColor = Color.Lerp(drawColor, Color.White, 0.7f);
 
-            State currentState = AIStateMachine.GetCurrentState();
             if (drawWings)
             {
                 spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), wingColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             }
 
-            //if ((AICase)AIState != AICase.Fall && (AICase)AIState != AICase.Hidden)
-            //    spriteBatch.Draw(wingTexture, NPC.Center + drawOffset - Main.screenPosition, new Rectangle(0, wingTextureHeight * yFrameWing, wingTexture.Width, wingTextureHeight), wingColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor * NPC.Opacity, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
