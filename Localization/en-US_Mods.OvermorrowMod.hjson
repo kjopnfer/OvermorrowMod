@@ -595,9 +595,19 @@ Items: {
 		Tooltip: "{Keyword:Vigor}: Gain 15% increased Magic critical strike chance"
 		Flavor:
 			'''
-			Congratulations, you're healthy. 
+			Congratulations, you're healthy.
 			Have some magical murder as a reward.
 			'''
+	}
+
+	BondingNecklace: {
+		DisplayName: Necklace of Bonding
+		Tooltip:
+			'''
+			Increases your max number of minions by 1
+			Gain 2 maximum health for each minion you control
+			'''
+		Flavor: Lifes more fun with friends around.
 	}
 
 	SimpleScabbard: {
@@ -651,7 +661,7 @@ Items: {
 		DisplayName: Antler Wand
 		Tooltip:
 			'''
-			+2 max minions
+			Increases your max number of minions by 2
 			Your max health is decreased by 60
 			Every 5 seconds, spawn a <Projectile:Fae Orb> for each minion you control
 			'''

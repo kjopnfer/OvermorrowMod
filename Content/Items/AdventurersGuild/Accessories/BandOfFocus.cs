@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
         protected override void SetAccessoryEffects(AccessoryDefinition definition)
         {
             definition.AddVigorEffect(
-                condition: (player) => true, // Vigor keyword already checks for 80%+ health
+                condition: (player) => true,
                 effect: (player) =>
                 {
                     player.GetCritChance(DamageClass.Magic) += 15;
