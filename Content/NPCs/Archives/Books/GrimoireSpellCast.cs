@@ -18,7 +18,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override int Weight => 1;
         public override bool CanExit => IsFinished;
 
-        private int attackDelay = 60;
         public GrimoireSpellCast(OvermorrowNPC npc) : base(npc) { }
 
         public override bool CanExecute()
@@ -26,51 +25,42 @@ namespace OvermorrowMod.Content.NPCs.Archives
             if (OvermorrowNPC is not LivingGrimoire)
                 return false;
 
-
-            if (OvermorrowNPC.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not BasicFly)
+            if (OvermorrowNPC.AIStateMachine.GetPreviousSubstates().FirstOrDefault() is not GrimoireFly)
             {
-                //Main.NewText("have not flown yet, preventin early attack", Color.Red);
                 return false;
             }
 
             if (!OvermorrowNPC.TargetingModule.HasTarget())
                 return false;
 
-            if (attackDelay-- > 0)
-                return false;
-
             return AttackCondition(OvermorrowNPC);
         }
+
+        private bool savedNoGravity;
 
         public override void Enter()
         {
             OvermorrowNPC.AICounter = 0;
             IsFinished = false;
-            //Main.NewText("entering cast spell");
+            savedNoGravity = NPC.noGravity;
+            NPC.noGravity = true;
+            NPC.velocity = Vector2.Zero;
         }
 
         public override void Exit()
         {
             OvermorrowNPC.AICounter = 0;
-            attackDelay = 60;
-            //Main.NewText("exiting spell", Color.Red);
+            NPC.noGravity = savedNoGravity;
         }
 
-        private float flySpeedX = 2;
-        float flySpeedY = 0;
-        private int distanceFromGround = 180;
         public override void Update()
         {
             OvermorrowNPC.AICounter++;
-            NPC.velocity.X /= 2f;
-
-            BasicFly.HandleVerticalMovementToTarget(OvermorrowNPC, ref flySpeedY);
-            BasicFly.HandleGroundProximity(OvermorrowNPC, ref flySpeedY, distanceFromGround);
+            NPC.velocity = Vector2.Zero;
 
             CastSpell(OvermorrowNPC);
 
             LivingGrimoire bookNPC = OvermorrowNPC as LivingGrimoire;
-            //Main.NewText("spell : " + npc.AICounter);
             if (OvermorrowNPC.AICounter >= bookNPC.CastTime)
             {
                 IsFinished = true;

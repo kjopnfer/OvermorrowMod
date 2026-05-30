@@ -45,6 +45,11 @@ namespace OvermorrowMod.Common
         public virtual bool UsesCustomGrounding => !NPC.noGravity;
 
         /// <summary>
+        /// Whether this NPC can be put into hit-stun.
+        /// </summary>
+        public virtual bool CanBeStunned => true;
+
+        /// <summary>
         /// True while the FSM is in StunnedState.
         /// </summary>
         public bool IsStunned => AIStateMachine?.GetCurrentState() is StunnedState;
@@ -54,6 +59,8 @@ namespace OvermorrowMod.Common
         /// </summary>
         public void Stun(int ticks)
         {
+            if (!CanBeStunned) return;
+
             AICounter = ticks;
             IdleCounter = 0;
             NPC.velocity.X = 0;
