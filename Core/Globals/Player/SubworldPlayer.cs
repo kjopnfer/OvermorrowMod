@@ -66,13 +66,24 @@ namespace OvermorrowMod.Core.Globals
             if (loadoutMisc != null && !loadoutMisc.IsAir) tag["LoadoutMisc"] = ItemIO.Save(loadoutMisc);
         }
 
+        public override void ModifyMaxStats(out StatModifier health, out StatModifier mana)
+        {
+            health = StatModifier.Default;
+            mana = StatModifier.Default;
+
+            if (SubworldSystem.AnyActive() && Player.statLifeMax > 100)
+            {
+                health = new StatModifier(1f, 1f, 0f, -(Player.statLifeMax - 100));
+            }
+        }
+
         public override void OnEnterWorld()
         {
-            bool wantSubworld = SubworldSystem.IsActive<TestSubworld>();
+            bool inSubworld = SubworldSystem.IsActive<TestSubworld>();
 
-            if (wantSubworld != inSubworldNow)
+            if (inSubworld != inSubworldNow)
             {
-                if (wantSubworld)
+                if (inSubworld)
                 {
                     mainInventory = ClonedSlots(Player.inventory);
                     mainArmor = ClonedSlots(Player.armor);
@@ -94,11 +105,17 @@ namespace OvermorrowMod.Core.Globals
                     ApplySlots(mainMisc, Player.miscEquips);
                     ApplySlots(mainMiscDyes, Player.miscDyes);
                 }
-                inSubworldNow = wantSubworld;
+                inSubworldNow = inSubworld;
             }
 
-            if (wantSubworld)
+            if (inSubworld)
             {
+                for (int i = 0; i < Terraria.Player.MaxBuffs; i++)
+                {
+                    Player.buffType[i] = 0;
+                    Player.buffTime[i] = 0;
+                }
+
                 if (pendingLoadout != null && !pendingLoadout.IsAir)
                 {
                     Player.inventory[0] = pendingLoadout.Clone();
