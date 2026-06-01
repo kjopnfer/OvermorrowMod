@@ -77,6 +77,12 @@ namespace OvermorrowMod.Core.Globals
             }
         }
 
+        public override void NaturalLifeRegen(ref float regen)
+        {
+            if (SubworldSystem.AnyActive())
+                regen = 0f;
+        }
+
         public override void OnEnterWorld()
         {
             bool inSubworld = SubworldSystem.IsActive<TestSubworld>();

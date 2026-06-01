@@ -34,6 +34,17 @@ namespace OvermorrowMod.Common
         public int? SpawnerID { get; set; } = null;
 
         /// <summary>
+        /// World-space fallback anchor for idle behaviors when this NPC has no <see cref="NPCSpawnPoint"/>.
+        /// Assigned by systems that create NPCs directly without a spawner.
+        /// </summary>
+        public Vector2? AnchorPosition { get; set; } = null;
+
+        /// <summary>
+        /// whoAmI of the CombatOrchestrator NPC that spawned this enemy as part of a combat wave.
+        /// </summary>
+        public int? CombatOrchestratorWhoAmI { get; set; } = null;
+
+        /// <summary>
         /// Sound that plays when the NPC finds a target.
         /// </summary>
         public SoundStyle? AggroSound { get; set; } = null;
@@ -45,6 +56,12 @@ namespace OvermorrowMod.Common
         public NPCSpawnPoint SpawnPoint => SpawnerID.HasValue && TileEntity.ByID.TryGetValue(SpawnerID.Value, out TileEntity entity)
             ? entity as NPCSpawnPoint
             : null;
+
+        /// <summary>
+        /// The world-space point that idle behaviors anchor to.
+        /// Resolves to the spawn point when one exists, otherwise <see cref="AnchorPosition"/>.
+        /// </summary>
+        public Vector2? IdleAnchor => SpawnPoint != null ? SpawnPoint.Position.ToWorldCoordinates() : AnchorPosition;
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {

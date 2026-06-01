@@ -1,7 +1,10 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Core.Globals;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Loot
@@ -46,6 +49,38 @@ namespace OvermorrowMod.Core.Loot
             ApplyHybridSeeding(offered, candidates, activeClasses, chosenKind);
 
             return offered.ToArray();
+        }
+
+        public static void GiveCompanionAmmo(IEntitySource source, Vector2 position, int itemId)
+        {
+            if (itemId <= 0) return;
+
+            Item reward = new Item();
+            reward.SetDefaults(itemId);
+
+            int ammoType;
+            int stack;
+            if (reward.useAmmo == AmmoID.Arrow)
+            {
+                ammoType = ItemID.WoodenArrow;
+                stack = 100;
+            }
+            else if (reward.useAmmo == AmmoID.Bullet)
+            {
+                ammoType = ItemID.MusketBall;
+                stack = 100;
+            }
+            else if (reward.useAmmo == AmmoID.Rocket)
+            {
+                ammoType = ItemID.RocketI;
+                stack = 50;
+            }
+            else
+            {
+                return;
+            }
+
+            Item.NewItem(source, position, ammoType, stack);
         }
 
         private static ItemKind PickOneKind(ItemKind allowedKinds)

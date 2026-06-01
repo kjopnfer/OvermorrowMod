@@ -27,11 +27,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             OvermorrowNPC.AICounter = 0;
             IsFinished = false;
 
-            if (OvermorrowNPC.SpawnPoint != null)
+            if (OvermorrowNPC.IdleAnchor.HasValue)
             {
                 int attempts = 0;
                 float distanceRange = ModUtils.TilesToPixels(1);
-                Vector2 spawnPosition = OvermorrowNPC.SpawnPoint.Position.ToWorldCoordinates(); // Convert tile position to world position
+                Vector2 spawnPosition = OvermorrowNPC.IdleAnchor.Value;
 
                 Vector2 newPosition;
                 do
@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             //npc.NPC.velocity.X /= 2f;
             distanceFromGround = ModUtils.TilesToPixels(8);
 
-            if (OvermorrowNPC.SpawnPoint != null)
+            if (OvermorrowNPC.IdleAnchor.HasValue)
             {
                 if (OvermorrowNPC.TargetingModule.HasTarget())
                 {
