@@ -27,6 +27,11 @@ namespace OvermorrowMod.Content.Misc
         private Phase phase = Phase.Setup;
         private readonly List<int> spawnedNPCs = new();
 
+        private const int TotalWaves = 2;
+        private int currentWave = 0;
+        private int waveDelayTimer = 0;
+        private const int WaveDelayTicks = 90;
+
         private bool endTriggered = false;
         private bool dedupeChecked = false;
 
@@ -90,7 +95,10 @@ namespace OvermorrowMod.Content.Misc
         {
             if (isCleaningUp) return;
             if (itemId > 0)
+            {
                 Main.LocalPlayer.QuickSpawnItem(NPC.GetSource_Loot(), itemId);
+                LootRoller.GiveCompanionAmmo(NPC.GetSource_Loot(), Main.LocalPlayer.Center, itemId);
+            }
             isCleaningUp = true;
             cleanupTimer = 0;
         }
@@ -212,28 +220,48 @@ namespace OvermorrowMod.Content.Misc
             left.IsLocked = true;
             right.IsLocked = true;
 
-            SpawnFirstWave(left, right);
+            SpawnWave();
             phase = Phase.Combat;
         }
 
         private void UpdateCombat()
         {
-            bool anyAlive = false;
+            int aliveCount = 0;
+            Player target = null;
             for (int i = 0; i < spawnedNPCs.Count; i++)
             {
                 int idx = spawnedNPCs[i];
-                if (idx >= 0 && idx < Main.npc.Length && Main.npc[idx].active)
+                if (idx < 0 || idx >= Main.npc.Length) continue;
+
+                NPC enemy = Main.npc[idx];
+                if (!enemy.active) continue;
+                if (enemy.ModNPC is not OvermorrowNPC modNPC || modNPC.CombatOrchestratorWhoAmI != NPC.whoAmI) continue;
+
+                aliveCount++;
+
+                if (!modNPC.TargetingModule.HasTarget())
                 {
-                    anyAlive = true;
-                    break;
+                    target ??= FindCombatTarget();
+                    if (target != null) modNPC.TargetingModule.SetTarget(target);
                 }
             }
 
-            if (!anyAlive)
+            if (aliveCount > 0)
             {
-                EnterEnd();
-                phase = Phase.End;
+                waveDelayTimer = 0;
+                return;
             }
+
+            if (currentWave < TotalWaves)
+            {
+                if (++waveDelayTimer < WaveDelayTicks) return;
+
+                SpawnWave();
+                return;
+            }
+
+            EnterEnd();
+            phase = Phase.End;
         }
 
         private void UpdateEnd()
@@ -268,8 +296,16 @@ namespace OvermorrowMod.Content.Misc
                 openingBuildupTimer = OpeningBuildupDuration;
         }
 
-        private void SpawnFirstWave(CombatDoor_TE left, CombatDoor_TE right)
+        private void SpawnWave()
         {
+            var left = LeftDoor;
+            var right = RightDoor;
+            if (left == null || right == null) return;
+
+            currentWave++;
+            waveDelayTimer = 0;
+            spawnedNPCs.Clear();
+
             int leftDoorX = System.Math.Min(left.Position.X, right.Position.X);
             int rightDoorX = System.Math.Max(left.Position.X, right.Position.X);
             int floorRow = left.Position.Y;
@@ -283,22 +319,59 @@ namespace OvermorrowMod.Content.Misc
             int ratAX = Main.rand.Next(leftMinX, leftMaxX + 1);
             int ratBX = Main.rand.Next(rightMinX, rightMaxX + 1);
 
-            int worldYBottom = (floorRow + 1) * 16;
+            Player target = FindCombatTarget();
             int ratType = ModContent.NPCType<ArchiveRat>();
 
-            int a = NPC.NewNPC(NPC.GetSource_FromAI(), ratAX * 16 + 8, worldYBottom, ratType);
-            int b = NPC.NewNPC(NPC.GetSource_FromAI(), ratBX * 16 + 8, worldYBottom, ratType);
+            SpawnEnemy(ratType, ratAX, floorRow, target);
+            SpawnEnemy(ratType, ratBX, floorRow, target);
+        }
 
-            if (a >= 0 && a < Main.npc.Length)
+        // Tiles above the floor that gravity-less enemies are lifted to when spawned.
+        private const int FlyingSpawnHeightTiles = 6;
+
+        private void SpawnEnemy(int npcType, int tileX, int floorRow, Player target)
+        {
+            int worldX = tileX * 16 + 8;
+            int worldYBottom = (floorRow + 1) * 16;
+
+            int index = NPC.NewNPC(NPC.GetSource_FromAI(), worldX, worldYBottom, npcType);
+            if (index < 0 || index >= Main.npc.Length) return;
+
+            NPC enemy = Main.npc[index];
+            Vector2 anchor = new Vector2(worldX, worldYBottom);
+
+            if (enemy.noGravity)
+                enemy.position.Y -= FlyingSpawnHeightTiles * 16;
+
+            if (enemy.ModNPC is OvermorrowNPC modNPC)
             {
-                spawnedNPCs.Add(a);
-                SpawnRedBurst(Main.npc[a].Center);
+                modNPC.AnchorPosition = anchor;
+                modNPC.CombatOrchestratorWhoAmI = NPC.whoAmI;
+                if (target != null) modNPC.TargetingModule.SetTarget(target);
             }
-            if (b >= 0 && b < Main.npc.Length)
+
+            spawnedNPCs.Add(index);
+            SpawnRedBurst(enemy.Center);
+        }
+
+        private Player FindCombatTarget()
+        {
+            Player nearest = null;
+            float nearestDistance = float.MaxValue;
+            for (int i = 0; i < Main.maxPlayers; i++)
             {
-                spawnedNPCs.Add(b);
-                SpawnRedBurst(Main.npc[b].Center);
+                Player player = Main.player[i];
+                if (!player.active || player.dead) continue;
+
+                float distance = Vector2.DistanceSquared(player.Center, NPC.Center);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearest = player;
+                }
             }
+
+            return nearest;
         }
 
         private static void SpawnRedBurst(Vector2 position)

@@ -59,8 +59,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
             NPC.width = 30;
             NPC.height = 44;
             NPC.lifeMax = 40;
-            NPC.defense = 12;
-            NPC.damage = 23;
+            NPC.defense = 8;
+            NPC.damage = 13;
             NPC.knockBackResist = 0.5f;
             NPC.HitSound = SoundID.NPCDeath4 with
             {
@@ -363,9 +363,9 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 20));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CarvingKnife>(), chanceDenominator: 20));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 10));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 50));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CarvingKnife>(), chanceDenominator: 50));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 20));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneBlue>(), chanceDenominator: 5));
         }
     }

@@ -185,7 +185,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         private void UpdateFlapSound(State substate)
         {
-            bool shouldPlay = substate is not GrimoireHidden && NPC.active && NPC.life > 0;
+            bool shouldPlay = substate is not GrimoireHidden && NPC.active && NPC.life > 0 && IsOnScreen();
 
             if (shouldPlay)
             {
@@ -337,6 +337,8 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override bool DrawOvermorrowNPC(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (Main.gamePaused) StopFlapSound();
+
             Lighting.AddLight(NPC.Center, Color.White.ToVector3() * 0.4f);
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;

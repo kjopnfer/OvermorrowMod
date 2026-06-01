@@ -52,8 +52,20 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
-            if (Main.rand.NextBool(10))
+            return RollPotDrops(2, 4, 10);
+        }
+
+        internal static IEnumerable<Item> RollPotDrops(int minStack, int maxStack, int monkeyStoneChance)
+        {
+            if (Main.rand.NextBool(monkeyStoneChance))
+            {
                 yield return new Item(ModContent.ItemType<MonkeyStoneBlue>());
+                yield break;
+            }
+
+            int[] choices = { ItemID.WoodenArrow, ItemID.MusketBall, ItemID.CopperCoin };
+            int type = choices[Main.rand.Next(choices.Length)];
+            yield return new Item(type) { stack = Main.rand.Next(minStack, maxStack + 1) };
         }
     }
 
@@ -86,7 +98,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            SoundEngine.PlaySound(SoundID.Item27);
+            SoundEngine.PlaySound(SoundID.Shatter);
             for (int k = 0; k < 8; k++)
             {
                 Dust.NewDust(new Vector2(i * 16, j * 16 - 10), 54, 16, DustID.Dirt, 0.0f, -1, 0, new Color(), 0.5f);
@@ -96,8 +108,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
-            if (Main.rand.NextBool(15))
-                yield return new Item(ModContent.ItemType<MonkeyStoneBlue>());
+            return ArchivePot.RollPotDrops(1, 2, 15);
         }
     }
 
@@ -131,7 +142,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            SoundEngine.PlaySound(SoundID.Item27);
+            SoundEngine.PlaySound(SoundID.Shatter);
             for (int k = 0; k < 8; k++)
             {
                 Dust.NewDust(new Vector2(i * 16, j * 16 - 10), 54, 16, DustID.Dirt, 0.0f, -1, 0, new Color(), 0.5f);
@@ -141,8 +152,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
-            if (Main.rand.NextBool(8))
-                yield return new Item(ModContent.ItemType<MonkeyStoneBlue>());
+            return RollPotDrops(3, 6, 8);
         }
     }
 }

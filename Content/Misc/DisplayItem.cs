@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Particles;
 using System;
 using System.Collections.Generic;
@@ -87,6 +88,7 @@ namespace OvermorrowMod.Content.Misc
                 if (player.active && !player.dead && player.Hitbox.Intersects(Projectile.Hitbox))
                 {
                     Item.NewItem(null, player.Center, ItemID);
+                    LootRoller.GiveCompanionAmmo(null, player.Center, ItemID);
                     if (ChestInstance != null)
                         ChestInstance.ItemPickedUp = true;
                     Projectile.Kill();

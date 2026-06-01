@@ -29,9 +29,8 @@ namespace OvermorrowMod.Common.RoomManager
         public NPC ChildNPC { get; private set; } = null;
 
         /// <summary>
-        /// This is set to true if the associated NPC has been killed.
-        /// Being cleared is a one time flag, and should only be set the first time their NPC has died.
-        /// It is separate from checking for if the NPC has been killed to respawn it.
+        /// Set to true the first time the spawned NPC is killed.
+        /// Once set, this spawner never spawns again, and the flag is persisted with the tile entity.
         /// </summary>
         public bool HasBeenCleared { get; private set; } = false;
 
@@ -60,12 +59,14 @@ namespace OvermorrowMod.Common.RoomManager
         {
             base.SaveData(tag);
             tag["NPCType"] = NPCType;
+            tag["HasBeenCleared"] = HasBeenCleared;
         }
 
         public override void LoadData(TagCompound tag)
         {
             base.LoadData(tag);
             if (tag.ContainsKey("NPCType")) NPCType = tag.GetInt("NPCType");
+            if (tag.ContainsKey("HasBeenCleared")) HasBeenCleared = tag.GetBool("HasBeenCleared");
         }
 
         public void SpawnNPC()
@@ -141,7 +142,7 @@ namespace OvermorrowMod.Common.RoomManager
             // If player is nearby and NPC is not currently active, spawn a new one
             if (playerNearby)
             {
-                if (ChildNPC == null && SpawnerCooldown <= 0)
+                if (ChildNPC == null && !HasBeenCleared && SpawnerCooldown <= 0)
                 {
                     SpawnNPC();
                 }
