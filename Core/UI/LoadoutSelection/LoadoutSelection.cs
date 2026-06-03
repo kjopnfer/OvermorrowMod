@@ -88,6 +88,7 @@ namespace OvermorrowMod.Core.UI.LoadoutSelection
             if (regenerating)
             {
                 for (int i = 0; i < Main.LocalPlayer.inventory.Length; i++) Main.LocalPlayer.inventory[i] = new Item();
+                for (int i = 0; i < Main.LocalPlayer.armor.Length; i++) Main.LocalPlayer.armor[i] = new Item();
                 // Enter<T>() while already inside T no-ops in SubworldLibrary.
                 // Exiting first queues a transition back through the main
                 // world so the second Enter takes effect.

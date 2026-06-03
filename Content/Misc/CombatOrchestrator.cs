@@ -32,6 +32,17 @@ namespace OvermorrowMod.Content.Misc
         private int waveDelayTimer = 0;
         private const int WaveDelayTicks = 90;
 
+        private const int TelegraphDuration = 70;
+        private int telegraphTimer = 0;
+        private readonly List<PendingSpawn> pendingSpawns = new();
+
+        private struct PendingSpawn
+        {
+            public int Type;
+            public int TileX;
+            public int FloorRow;
+        }
+
         private bool endTriggered = false;
         private bool dedupeChecked = false;
 
@@ -131,7 +142,6 @@ namespace OvermorrowMod.Content.Misc
                 NPC.velocity = Vector2.Zero;
             }
 
-            // Singleton-per-room dedupe, runs once.
             if (!dedupeChecked)
             {
                 dedupeChecked = true;
@@ -226,6 +236,13 @@ namespace OvermorrowMod.Content.Misc
 
         private void UpdateCombat()
         {
+            if (pendingSpawns.Count > 0)
+            {
+                if (--telegraphTimer > 0) return;
+                ResolvePendingSpawns();
+                return;
+            }
+
             int aliveCount = 0;
             Player target = null;
             for (int i = 0; i < spawnedNPCs.Count; i++)
@@ -305,6 +322,7 @@ namespace OvermorrowMod.Content.Misc
             currentWave++;
             waveDelayTimer = 0;
             spawnedNPCs.Clear();
+            pendingSpawns.Clear();
 
             int leftDoorX = System.Math.Min(left.Position.X, right.Position.X);
             int rightDoorX = System.Math.Max(left.Position.X, right.Position.X);
@@ -319,11 +337,33 @@ namespace OvermorrowMod.Content.Misc
             int ratAX = Main.rand.Next(leftMinX, leftMaxX + 1);
             int ratBX = Main.rand.Next(rightMinX, rightMaxX + 1);
 
-            Player target = FindCombatTarget();
             int ratType = ModContent.NPCType<ArchiveRat>();
 
-            SpawnEnemy(ratType, ratAX, floorRow, target);
-            SpawnEnemy(ratType, ratBX, floorRow, target);
+            QueueSpawn(ratType, ratAX, floorRow, 1);
+            QueueSpawn(ratType, ratBX, floorRow, -1);
+
+            telegraphTimer = TelegraphDuration;
+        }
+
+        private const int TelegraphCenterOffsetY = 20;
+        private void QueueSpawn(int npcType, int tileX, int floorRow, int spinDirection)
+        {
+            pendingSpawns.Add(new PendingSpawn { Type = npcType, TileX = tileX, FloorRow = floorRow });
+
+            int worldX = tileX * 16 + 8;
+            int worldYBottom = (floorRow + 1) * 16;
+            Vector2 telegraphCenter = new Vector2(worldX, worldYBottom - TelegraphCenterOffsetY);
+
+            Projectile.NewProjectile(NPC.GetSource_FromAI(), telegraphCenter, Vector2.Zero, ModContent.ProjectileType<SpawnTelegraph>(), 0, 0f, Main.myPlayer, spinDirection, TelegraphDuration);
+        }
+
+        private void ResolvePendingSpawns()
+        {
+            Player target = FindCombatTarget();
+            foreach (PendingSpawn spawn in pendingSpawns)
+                SpawnEnemy(spawn.Type, spawn.TileX, spawn.FloorRow, target);
+
+            pendingSpawns.Clear();
         }
 
         // Tiles above the floor that gravity-less enemies are lifted to when spawned.

@@ -799,4 +799,5 @@ Projectiles: {
 	CarvingKnifeSlashNew.DisplayName: Carving Knife Slash New
 	CarvingKnifeSlash.DisplayName: Carving Knife Slash
 	DisplayItem.DisplayName: Display Item
+	SpawnTelegraph.DisplayName: Spawn Telegraph
 }
