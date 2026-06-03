@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -24,24 +22,13 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             Main.worldSurface = new TestSubworld().Height - 200;
             Main.rockLayer = new TestSubworld().Height;
 
-            int fillTile = ModContent.TileType<CastleBrick>();
-            int liningTile = ModContent.TileType<ArchiveWood>();
-
-            int centerX = new TestSubworld().Width / 2;
             int centerY = new TestSubworld().Height / 2;
 
             var rand = new Random(Environment.TickCount);
 
-            int gridCols = 35;
-            int gridRows = 30;
-
-            var bindings = new Dictionary<(byte R, byte G, byte B), SpawnPool>
-            {
-                [(255, 0, 0)] = ArchiveSpawnPool.BaseGroundPool,
-                [(221, 255, 0)] = ArchiveSpawnPool.WallPool,
-            };
-
-            ArchiveSpawnPool.Initialize();
+            DungeonContent content = new ArchiveContent();
+            int gridCols = content.Cols;
+            int gridRows = content.Rows;
 
             int dungeonWidth = gridCols * DungeonGrid.HorizontalSpacing + DungeonGrid.CellTileWidth + DungeonGrid.HorizontalPadding * 2;
             int dungeonHeight = gridRows * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight + DungeonGrid.HorizontalPadding * 2;
@@ -64,16 +51,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
                 for (int i = 0; i < origins.Length; i++)
                 {
-                    var cellPool = new List<GridRoom>
-                    {
-                        new BookshelfCell(),
-                        new BookshelfCell(),
-                        new BookshelfCell(),
-                        new CorridorCell()
-                    };
-
                     var sw = System.Diagnostics.Stopwatch.StartNew();
-                    GridGenerator.Build(origins[i], gridCols, gridRows, cellPool, fillTile, liningTile, rand, baseDensity: 1.0f, eliteChance: 0.10f, bindings: bindings, out Point doorTile);
+                    GridGenerator.Build(origins[i], gridCols, gridRows, content, rand, out Point doorTile);
                     sw.Stop();
 
                     Terraria.ModLoader.Logging.PublicLogger.Info($"OvermorrowDungeon chain build {i + 1}/{origins.Length} at ({origins[i].X},{origins[i].Y}): {sw.ElapsedMilliseconds} ms, cumulative {totalSw.ElapsedMilliseconds} ms");

@@ -26,6 +26,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 2;
         public override int CellHeight => 2;
 
+        public override RoomType Type => RoomType.DiagonalConnector;
+
         public bool IsBottomLandingSubCell(int subCol, int subRow)
         {
             if (subRow != 1) return false;
