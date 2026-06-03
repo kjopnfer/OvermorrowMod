@@ -18,6 +18,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 3;
         public override int CellHeight => 1;
 
+        public override RoomType Type => RoomType.Combat;
+
         // Prevents combat-corridor-combat clusters.
         private const int MinSpacingBetweenCombatRooms = 3;
         private const int MaxInstancesPerDungeon = 3;

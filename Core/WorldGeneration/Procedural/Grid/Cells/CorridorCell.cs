@@ -14,6 +14,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
+        public override RoomType Type => RoomType.HorizontalConnector;
+
         /// <summary>
         /// Corridor padding paints before any neighbor's (bookshelf, stair,
         /// combat) so the neighbor's strip content overwrites the corridor's

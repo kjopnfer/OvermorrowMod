@@ -15,6 +15,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
+        public override RoomType Type => RoomType.VerticalConnector;
+
         private static readonly GridRoom[] VerticalNeighbors =
         {
             new ShaftCell(),

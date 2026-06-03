@@ -20,54 +20,35 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private const int EdgeBorder = 3;
 
         /// <summary>
-        /// Per-type A* weight. <1 = preferred, >1 = avoided. Default 1.0
+        /// The content being built, used by the room-creating helpers. Assigned at the start of each <see cref="Build"/> call.
         /// </summary>
-        private static readonly Dictionary<Type, double> TypeWeights = new()
-        {
-            [typeof(ShaftCell)] = 1.4,
-            [typeof(DescendingStair)] = 0.7,
-            [typeof(AscendingStair)] = 0.7,
-            [typeof(FireplaceRoom)] = 1.5,
-            [typeof(LoungeRoom)] = 0.3,
-            [typeof(CombatRoom)] = 0.7
-        };
+        private static DungeonContent ActiveContent;
+
+        // Tuning and required-room set for the current build, assigned from ActiveContent at the start of Build.
+        private static IReadOnlyDictionary<Type, double> TypeWeights;
+        private static IReadOnlyDictionary<Type, int> StreakLimits;
+        private static IReadOnlyDictionary<Type, int> MinStreakLimits;
+        private static int MaxVerticalRun;
+        private static List<Func<GridRoom>> RequiredRooms;
 
         /// <summary>
-        /// Max consecutive runs. Cells that shifts vertically use MaxVerticalRun instead.
+        /// Builds one dungeon at worldOrigin from the given content and harvests spawn slots into NPCSpawnPoint TEs.
         /// </summary>
-        private static readonly Dictionary<Type, int> StreakLimits = new()
+        public static void Build(Point worldOrigin, int gridCols, int gridRows, DungeonContent content, Random rand, out Point startDoorTile)
         {
-            [typeof(BookshelfCell)] = 4,
-            [typeof(CorridorCell)] = 5,
-            [typeof(FireplaceRoom)] = 1
-        };
+            ActiveContent = content;
+            TypeWeights = content.TypeWeights;
+            StreakLimits = content.StreakLimits;
+            MinStreakLimits = content.MinStreakLimits;
+            MaxVerticalRun = content.MaxVerticalRun;
+            RequiredRooms = content.RequiredRooms;
 
-        private const int MaxVerticalRun = 2;
+            int fillTileType = content.FillTile;
+            int liningTileType = content.LiningTile;
+            float baseDensity = content.BaseDensity;
+            float eliteChance = content.EliteChance;
+            IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> bindings = content.SpawnBindings;
 
-        private static readonly Dictionary<Type, int> MinStreakLimits = new()
-        {
-            [typeof(BookshelfCell)] = 2
-        };
-
-        /// <summary>
-        /// Rooms guaranteed to appear on the spine. 
-        /// Each entry is pre-placed before spine planning and replaces the closest random spine waypoint.
-        /// </summary>
-        private static readonly List<Func<GridRoom>> RequiredRooms = new()
-        {
-            () => new FireplaceRoom(),
-            () => new CombatRoom(),
-            () => new WritingRoom(),
-        };
-
-        /// <summary>
-        /// Builds one dungeon at worldOrigin and harvests spawn slots into NPCSpawnPoint TEs.
-        /// </summary>
-        /// <param name="baseDensity">Enemies-to-cells ratio. totalEnemies = round(baseDensity * totalCells). 1.0 averages one enemy per cell across the dungeon.</param>
-        /// <param name="eliteChance">Probability 0 to 1 that the elite pass places one elite this run.</param>
-        /// <param name="bindings">Spawn-layer color to SpawnPool map.</param>
-        public static void Build(Point worldOrigin, int gridCols, int gridRows, List<GridRoom> cellPool, int fillTileType, int liningTileType, Random rand, float baseDensity, float eliteChance, IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> bindings, out Point startDoorTile)
-        {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
             var gridOrigin = new Point(worldOrigin.X + margin, worldOrigin.Y + margin);
@@ -101,7 +82,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             int baseRow = 0;
             int startRow = 0, endRow = 0;
             Point start = default, endTarget = default;
-            DoorRoom startDoor = null;
+            GridRoom startDoor = null;
             double[] elevation = null;
             List<Point> requiredAnchors = null;
             List<PathStep> spineSteps = null;
@@ -146,9 +127,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 start = new Point(EdgeBorder, startRow);
                 endTarget = new Point(gridCols - 1 - EdgeBorder, endRow);
 
-                startDoor = new DoorRoom { IsFeature = true };
+                startDoor = content.CreateDoor(true);
                 grid.Place(startDoor, start.X, start.Y, grid.NextGroupId());
-                var endDoor = new DoorRoom { IsFeature = true };
+                var endDoor = content.CreateDoor(true);
                 grid.Place(endDoor, endTarget.X, endTarget.Y, grid.NextGroupId());
 
                 for (int spineAttempt = 0; spineAttempt < MaxSpinePlanAttempts; spineAttempt++)
@@ -162,7 +143,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                             {
                                 var s = grid.GetSlot(c, r);
                                 if (s == null || s.IsEmpty) continue;
-                                if (s.Room is DoorRoom) continue;  // doors stay
+                                if (s.Room.Type == RoomType.Door) continue;  // doors stay
                                 s.Room = null;
                                 s.SubCol = 0;
                                 s.SubRow = 0;
@@ -202,7 +183,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     EdgeCost shaftAdjacencyAwareCost = (anchor, candidate) =>
                     {
-                        if (candidate is ShaftCell
+                        if (candidate.Type == RoomType.VerticalConnector
                             && (ColumnContainsShaft(grid, anchor.X - 1)
                              || ColumnContainsShaft(grid, anchor.X)
                              || ColumnContainsShaft(grid, anchor.X + 1)))
@@ -343,7 +324,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, TypeWeights);
                 EdgeCost shaftAdjacencyAwareCost = (anchor, candidate) =>
                 {
-                    if (candidate is ShaftCell
+                    if (candidate.Type == RoomType.VerticalConnector
                         && (ColumnContainsShaft(grid, anchor.X - 1)
                          || ColumnContainsShaft(grid, anchor.X)
                          || ColumnContainsShaft(grid, anchor.X + 1)))
@@ -377,7 +358,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 foreach (var anchor in requiredAnchors)
                 {
                     var slot = grid.GetSlot(anchor.X, anchor.Y);
-                    if (slot != null && !slot.IsEmpty && slot.Room is CombatRoom)
+                    if (slot != null && !slot.IsEmpty && slot.Room.Type == RoomType.Combat)
                     {
                         spineCombatAnchor = anchor;
                         break;
@@ -521,7 +502,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (visited.Contains(next)) continue;
                     var nextSlot = grid.GetSlot(next.X, next.Y);
                     if (nextSlot == null || nextSlot.IsEmpty) continue;
-                    if (nextSlot.Room is CombatRoom) continue;
+                    if (nextSlot.Room.Type == RoomType.Combat) continue;
                     visited.Add(next);
                     queue.Enqueue(next);
                 }
@@ -591,7 +572,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var anchor in requiredAnchors)
             {
                 var slot = grid.GetSlot(anchor.X, anchor.Y);
-                if (slot != null && !slot.IsEmpty && slot.Room is CombatRoom)
+                if (slot != null && !slot.IsEmpty && slot.Room.Type == RoomType.Combat)
                 {
                     spineCombatAnchor = anchor;
                     found = true;
@@ -608,14 +589,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var step in spineSteps)
             {
                 if (step.Cell.IsFeature) continue;
-                if (step.Cell is not (BookshelfCell or CorridorCell)) continue;
+                if (step.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
                 int x = step.Anchor.X;
                 if (x < spineCombatAnchor.X - 1) beforeNodes.Add(step);
                 else if (x > spineCombatRight + 1) afterNodes.Add(step);
             }
             if (beforeNodes.Count == 0 || afterNodes.Count == 0) return null;
 
-            var branchCombatProto = new CombatRoom { IsFeature = true };
+            var branchCombatProto = ActiveContent.CreateCombat(true);
             int bw = branchCombatProto.CellWidth;
             int bh = branchCombatProto.CellHeight;
             const int BranchDepthMin = 4;
@@ -643,7 +624,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (!FootprintAndNeighborsClear(grid, branchCombatProto, posCandidate)) continue;
                 if (!branchCombatProto.IsValidPlacement(grid, posCandidate)) continue;
 
-                var branchCombat = new CombatRoom { IsFeature = true };
+                var branchCombat = ActiveContent.CreateCombat(true);
                 grid.Place(branchCombat, posCandidate.X, posCandidate.Y, grid.NextGroupId());
 
                 ShuffleInPlace(beforeNodes, rand);
@@ -750,8 +731,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 var a = parent.Steps[rand.Next(parent.Steps.Count)];
                 var b = parent.Steps[rand.Next(parent.Steps.Count)];
                 if (a.Anchor == b.Anchor) continue;
-                if (a.Cell is not (BookshelfCell or CorridorCell)) continue;
-                if (b.Cell is not (BookshelfCell or CorridorCell)) continue;
+                if (a.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
+                if (b.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
 
                 int manhattan = System.Math.Abs(a.Anchor.X - b.Anchor.X) + System.Math.Abs(a.Anchor.Y - b.Anchor.Y);
                 if (manhattan < MinAuxNodeManhattan || manhattan > MaxAuxNodeManhattan) continue;
@@ -781,7 +762,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>Across-combat closed loop: place a third combat, route two A* legs through it.</summary>
         private static DungeonPath TryAuxAcrossCombat(DungeonGrid grid, DungeonPath parent, PathStep a, PathStep b, int newId, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand)
         {
-            var combatProto = new CombatRoom { IsFeature = true };
+            var combatProto = ActiveContent.CreateCombat(true);
             int cw = combatProto.CellWidth;
             int ch = combatProto.CellHeight;
             int midX = (a.Anchor.X + b.Anchor.X) / 2;
@@ -799,7 +780,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (!FootprintAndNeighborsClear(grid, combatProto, pos)) continue;
                 if (!combatProto.IsValidPlacement(grid, pos)) continue;
 
-                var auxCombat = new CombatRoom { IsFeature = true };
+                var auxCombat = ActiveContent.CreateCombat(true);
                 grid.Place(auxCombat, pos.X, pos.Y, grid.NextGroupId());
 
                 var leg1 = GridAStar.FindPath(grid, a.Anchor, pos, a.Cell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
@@ -843,7 +824,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int npa = 0; npa < AuxNodePickAttempts; npa++)
             {
                 var nodeA = parent.Steps[rand.Next(parent.Steps.Count)];
-                if (nodeA.Cell is not (BookshelfCell or CorridorCell)) continue;
+                if (nodeA.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
 
                 int dirStart = rand.Next(4);
                 for (int di = 0; di < 4; di++)
@@ -856,12 +837,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (tx < EdgeBorder + 1 || tx >= gridCols - EdgeBorder - 1) continue;
                     if (ty < EdgeBorder || ty >= gridRows - EdgeBorder) continue;
 
-                    var chestProto = new ChestRoom { IsFeature = true };
+                    var chestProto = ActiveContent.CreateTreasure(true);
                     var targetPos = new Point(tx, ty);
                     if (!FootprintAndNeighborsClear(grid, chestProto, targetPos)) continue;
                     if (!chestProto.IsValidPlacement(grid, targetPos)) continue;
 
-                    var chest = new ChestRoom { IsFeature = true };
+                    var chest = ActiveContent.CreateTreasure(true);
                     grid.Place(chest, tx, ty, grid.NextGroupId());
 
                     var legSteps = GridAStar.FindPath(grid, nodeA.Anchor, targetPos, nodeA.Cell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
@@ -959,7 +940,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     var s = grid.GetSlot(c, r);
                     if (s == null || s.IsEmpty) continue;
-                    if (s.Room is CombatRoom && s.SubCol == 0 && s.SubRow == 0) count++;
+                    if (s.Room.Type == RoomType.Combat && s.SubCol == 0 && s.SubRow == 0) count++;
                 }
             }
             return count;
@@ -1074,7 +1055,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int row = 0; row < grid.Rows; row++)
             {
                 var slot = grid.GetSlot(col, row);
-                if (slot != null && !slot.IsEmpty && slot.Room is ShaftCell)
+                if (slot != null && !slot.IsEmpty && slot.Room.Type == RoomType.VerticalConnector)
                     return true;
             }
             return false;
@@ -1093,7 +1074,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int row = 0; row < grid.Rows; row++)
                 {
                     var slot = grid.GetSlot(col, row);
-                    if (slot.IsEmpty || slot.Room is not ShaftCell) continue;
+                    if (slot.IsEmpty || slot.Room.Type != RoomType.VerticalConnector) continue;
                     if (resolved.Contains(new Point(col, row))) continue;
 
                     // Walk up through shafts and through a bookshelf landing with another shaft beyond.
@@ -1103,16 +1084,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         var above = grid.GetSlot(col, topRow - 1);
                         if (above == null || above.IsEmpty) break;
 
-                        if (above.Room is ShaftCell)
+                        if (above.Room.Type == RoomType.VerticalConnector)
                         {
                             topRow--;
                             continue;
                         }
 
-                        if (above.Room is BookshelfCell && topRow >= 2)
+                        if (above.Room.Type == RoomType.Filler && topRow >= 2)
                         {
                             var aboveAbove = grid.GetSlot(col, topRow - 2);
-                            if (aboveAbove != null && !aboveAbove.IsEmpty && aboveAbove.Room is ShaftCell)
+                            if (aboveAbove != null && !aboveAbove.IsEmpty && aboveAbove.Room.Type == RoomType.VerticalConnector)
                             {
                                 topRow -= 2;
                                 continue;
@@ -1129,16 +1110,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         var below = grid.GetSlot(col, bottomRow + 1);
                         if (below == null || below.IsEmpty) break;
 
-                        if (below.Room is ShaftCell)
+                        if (below.Room.Type == RoomType.VerticalConnector)
                         {
                             bottomRow++;
                             continue;
                         }
 
-                        if (below.Room is BookshelfCell && bottomRow + 2 < grid.Rows)
+                        if (below.Room.Type == RoomType.Filler && bottomRow + 2 < grid.Rows)
                         {
                             var belowBelow = grid.GetSlot(col, bottomRow + 2);
-                            if (belowBelow != null && !belowBelow.IsEmpty && belowBelow.Room is ShaftCell)
+                            if (belowBelow != null && !belowBelow.IsEmpty && belowBelow.Room.Type == RoomType.VerticalConnector)
                             {
                                 bottomRow += 2;
                                 continue;
@@ -1151,7 +1132,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     for (int r = topRow; r <= bottomRow; r++)
                     {
                         var s = grid.GetSlot(col, r);
-                        if (s != null && !s.IsEmpty && s.Room is ShaftCell)
+                        if (s != null && !s.IsEmpty && s.Room.Type == RoomType.VerticalConnector)
                             resolved.Add(new Point(col, r));
                     }
 

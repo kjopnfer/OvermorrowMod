@@ -17,6 +17,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
+        public override RoomType Type => RoomType.Filler;
+
         private static readonly GridRoom[] HorizontalNeighbors =
         {
             new BookshelfCell(),
@@ -218,10 +220,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override void PlaceSpawns(FurnitureContext ctx, List<SpawnSlot> slots) => HarvestSpawns(ctx, slots, AsepritePath);
 
-        /// <summary>
-        /// 14-tile-wide wooden arch with a 7-tile gap in the middle for
-        /// objects underneath. Mirrored from GrandArchiveRoom.PlaceBookshelfArch.
-        /// </summary>
         private static void PlaceBookshelfArch(int x, int y)
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<WoodenArchL1>());
