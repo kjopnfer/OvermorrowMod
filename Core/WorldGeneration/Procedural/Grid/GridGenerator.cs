@@ -17,7 +17,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Width of the un-buildable border ring.
         /// </summary>
-        private const int EdgeBorder = 1;
+        private const int EdgeBorder = 3;
 
         /// <summary>
         /// Per-type A* weight. <1 = preferred, >1 = avoided. Default 1.0
