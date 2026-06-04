@@ -15,6 +15,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public override int FillTile => ModContent.TileType<CastleBrick>();
         public override int LiningTile => ModContent.TileType<ArchiveWood>();
 
+        public override DungeonPalette Palette { get; } = new ArchivePalette();
+
         public override IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> SpawnBindings
         {
             get

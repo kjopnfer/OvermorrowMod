@@ -269,7 +269,7 @@ namespace OvermorrowMod.Common.TextureMapping
         public static void PaintAsepriteLayer(
             SheetLayer sheet,
             string modPath, int worldX, int worldY,
-            Dictionary<(byte R, byte G, byte B), TexPlaceFunction> colorMap,
+            IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> colorMap,
             int srcX = 0, int srcY = 0, int srcW = -1, int srcH = -1)
         {
             string layerName = sheet.ToString();

@@ -50,43 +50,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "BookshelfCell.aseprite";
 
-        // Color maps
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
-        {
-            [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
-            [(32, 43, 46)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
-            [(54, 36, 11)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWallFrame>()),
-            [(118, 66, 138)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWall>()),
-            [(0, 0, 0)] = TexPlaceAction.Clear,
-        };
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
-        {
-            [(105, 106, 106)] = TexPlaceAction.PlaceTile(ModContent.TileType<CastleBrick>()),
-            [(89, 86, 82)] = TexPlaceAction.PlaceTile(ModContent.TileType<DarkCastleBrick>()),
-            [(138, 111, 48)] = TexPlaceAction.PlaceTile(ModContent.TileType<CastlePlatform>()),
-            [(74, 47, 33)] = TexPlaceAction.PlaceTile(ModContent.TileType<ArchiveWood>()),
-            [(0, 0, 0)] = TexPlaceAction.Clear,
-        };
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
-        {
-            [(74, 15, 56)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenPillar>()),
-        };
-
         // Build / BuildPadding / PlaceFurniture
 
-        public override void Build(Point origin, int fillTileType, int liningTileType)
+        public override void Build(BuildContext ctx)
         {
             int hp = DungeonGrid.HorizontalPadding;
             int vp = DungeonGrid.VerticalPadding;
             int cw = DungeonGrid.CellTileWidth;
             int ch = DungeonGrid.CellTileHeight;
 
-            TexGen.PaintClearLayer(AsepritePath, origin.X, origin.Y, hp, vp, cw, ch);
-            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, origin.X, origin.Y, BuildWallMap(), hp, vp, cw, ch);
-            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, origin.X, origin.Y, BuildTileMap(), hp, vp, cw, ch);
+            TexGen.PaintClearLayer(AsepritePath, ctx.Origin.X, ctx.Origin.Y, hp, vp, cw, ch);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, ctx.Origin.X, ctx.Origin.Y, ctx.Palette.Walls, hp, vp, cw, ch);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, ctx.Origin.X, ctx.Origin.Y, ctx.Palette.Tiles, hp, vp, cw, ch);
         }
 
         public override void BuildPadding(PaddingContext ctx)
@@ -152,8 +127,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             }
 
             TexGen.PaintClearLayer(AsepritePath, worldX, worldY, srcX, srcY, srcW, srcH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, worldX, worldY, BuildWallMap(), srcX, srcY, srcW, srcH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, worldX, worldY, BuildTileMap(), srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, worldX, worldY, ctx.Palette.Walls, srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, worldX, worldY, ctx.Palette.Tiles, srcX, srcY, srcW, srcH);
 
             if (ctx.Side == Direction.Top || ctx.Side == Direction.Bottom)
                 PaddingBuilder.FillWoodFloor(ctx.X, ctx.Y, ctx.Width, ctx.Height);
@@ -163,7 +138,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
         {
             int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
-            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap());
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, ctx.Palette.Objects);
 
             var above = ctx.Grid.GetSlot(ctx.Col, ctx.Row - 1);
             var below = ctx.Grid.GetSlot(ctx.Col, ctx.Row + 1);

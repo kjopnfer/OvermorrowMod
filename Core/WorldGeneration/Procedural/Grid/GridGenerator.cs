@@ -48,6 +48,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             float baseDensity = content.BaseDensity;
             float eliteChance = content.EliteChance;
             IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> bindings = content.SpawnBindings;
+            DungeonPalette palette = content.Palette;
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -395,11 +396,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
                     Point cellOrigin = grid.GridToWorld(col, row);
-                    slot.Room.Build(cellOrigin, fillTileType, liningTileType);
+                    slot.Room.Build(new BuildContext(cellOrigin, palette, fillTileType, liningTileType));
                 }
             }
 
-            PaddingBuilder.BuildAll(grid, fillTileType);
+            PaddingBuilder.BuildAll(grid, fillTileType, palette);
             DecorateShafts(grid);
 
             ApplySideCaps(grid, sidesToCap, fillTileType);
@@ -414,7 +415,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
                     Point cellOrigin = grid.GridToWorld(col, row);
-                    slot.Room.PlaceFurniture(new FurnitureContext(cellOrigin, grid, col, row, fillTileType, liningTileType));
+                    slot.Room.PlaceFurniture(new FurnitureContext(cellOrigin, grid, col, row, fillTileType, liningTileType, palette));
                 }
             }
 
@@ -430,7 +431,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
                     Point cellOrigin = grid.GridToWorld(col, row);
-                    var ctx = new FurnitureContext(cellOrigin, grid, col, row, fillTileType, liningTileType);
+                    var ctx = new FurnitureContext(cellOrigin, grid, col, row, fillTileType, liningTileType, palette);
                     slot.Room.PlaceSpawns(ctx, allSlots);
                     var local = slot.Room.GetSpawnBindings();
                     if (local != null) cellLocalBindings[new Point(col, row)] = local;

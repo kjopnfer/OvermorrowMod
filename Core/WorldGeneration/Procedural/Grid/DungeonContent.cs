@@ -32,6 +32,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract int LiningTile { get; }
 
         /// <summary>
+        /// Resolves the colors cells paint with into this dungeon's walls, tiles, and shared decor.
+        /// </summary>
+        public abstract DungeonPalette Palette { get; }
+
+        /// <summary>
         /// Enemies-to-cells ratio passed to the encounter selector.
         /// </summary>
         public virtual float BaseDensity => 1.0f;
