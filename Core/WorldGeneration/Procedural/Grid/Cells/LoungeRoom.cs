@@ -91,63 +91,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "LoungeRoom.aseprite";
 
-        // Color maps
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
-        {
-            [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
-            [(32, 43, 46)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
-            [(66, 64, 61)] = TexPlaceAction.PlaceWall(ModContent.WallType<CastleWall>()),
-        };
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
-        {
-            [(74, 47, 33)] = TexPlaceAction.PlaceTile(ModContent.TileType<ArchiveWood>()),
-        };
-
         private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
         {
-            [(179, 36, 136)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenPillar2>()),
             [(134, 42, 104)] = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>()),
             [(131, 42, 134)] = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>(), direction: 1), // Faces right
-            [(69, 40, 60)] = TexPlaceAction.PlaceObject(ModContent.TileType<BanquetTable>()),
-            [(159, 131, 65)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxCandelabra>()),
-            [(75, 105, 47)] = TexPlaceAction.PlaceObject(ModContent.TileType<BookPileTable>()),
-            [(159, 183, 204)] = TexPlaceAction.PlaceObject(ModContent.TileType<Bismarck>()),
-            [(99, 49, 110)] = TexPlaceAction.PlaceObject(ModContent.TileType<FireplacePillar>()),
-            [(180, 58, 0)] = TexPlaceAction.PlaceObject(ModContent.TileType<Fireplace>()),
-            [(208, 61, 125)] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>()),
-            [(237, 86, 227)] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>(), direction: 1), // Faces right
             [(171, 73, 94)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmall>()),
-            [(199, 158, 59)] = TexPlaceAction.PlaceObject(ModContent.TileType<ArchiveBanner>()),
-            [(153, 229, 80)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxChandelier>()),
-
-            // Random painting from the width-4 / width-8 pools.
-            [(19, 215, 73)] = TexPlaceAction.CustomPlaceObject((x, y) =>
-            {
-                int[] pool = PaintingPool.Width4;
-                WorldGen.PlaceObject(x, y, pool[Main.rand.Next(pool.Length)]);
-            }),
-
-            [(101, 224, 135)] = TexPlaceAction.CustomPlaceObject((x, y) =>
-            {
-                int[] pool = PaintingPool.Width8;
-                WorldGen.PlaceObject(x, y, pool[Main.rand.Next(pool.Length)]);
-            }),
         };
 
         // Build / BuildPadding / PlaceFurniture
 
-        public override void Build(Point origin, int fillTileType, int liningTileType)
+        public override void Build(BuildContext ctx)
         {
             int hp = DungeonGrid.HorizontalPadding;
             int vp = DungeonGrid.VerticalPadding;
             int interiorW = CellWidth * DungeonGrid.CellTileWidth + (CellWidth - 1) * hp;
             int interiorH = CellHeight * DungeonGrid.CellTileHeight + (CellHeight - 1) * vp;
 
-            TexGen.PaintClearLayer(AsepritePath, origin.X, origin.Y, hp, vp, interiorW, interiorH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, origin.X, origin.Y, BuildWallMap(), hp, vp, interiorW, interiorH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, origin.X, origin.Y, BuildTileMap(), hp, vp, interiorW, interiorH);
+            TexGen.PaintClearLayer(AsepritePath, ctx.Origin.X, ctx.Origin.Y, hp, vp, interiorW, interiorH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, ctx.Origin.X, ctx.Origin.Y, ctx.Palette.Walls, hp, vp, interiorW, interiorH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, ctx.Origin.X, ctx.Origin.Y, ctx.Palette.Tiles, hp, vp, interiorW, interiorH);
         }
 
         public override void BuildPadding(PaddingContext ctx)
@@ -203,14 +165,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             }
 
             TexGen.PaintClearLayer(AsepritePath, worldX, worldY, srcX, srcY, srcW, srcH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, worldX, worldY, BuildWallMap(), srcX, srcY, srcW, srcH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, worldX, worldY, BuildTileMap(), srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, worldX, worldY, ctx.Palette.Walls, srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, worldX, worldY, ctx.Palette.Tiles, srcX, srcY, srcW, srcH);
         }
 
         public override void PlaceFurniture(FurnitureContext ctx)
         {
             int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, ctx.Palette.Objects);
             TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap());
         }
     }

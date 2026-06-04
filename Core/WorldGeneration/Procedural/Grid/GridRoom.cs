@@ -98,9 +98,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>
-        /// Builds this piece at the given world-space top-left corner.
+        /// Builds this piece at the world-space top-left corner carried by the context.
         /// </summary>
-        public abstract void Build(Point origin, int fillTileType, int liningTileType);
+        public abstract void Build(BuildContext ctx);
 
         /// <summary>
         /// Decoration pass run after Build and padding. Drops neighbor-dependent props.
@@ -203,6 +203,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     }
 
     /// <summary>
+    /// Context passed to <see cref="GridRoom.Build"/>: world origin, the active dungeon palette, and fill/lining tiles.
+    /// </summary>
+    public readonly struct BuildContext
+    {
+        public readonly Point Origin;
+        public readonly DungeonPalette Palette;
+        public readonly int FillTileType;
+        public readonly int LiningTileType;
+
+        public BuildContext(Point origin, DungeonPalette palette, int fillTileType, int liningTileType)
+        {
+            Origin = origin;
+            Palette = palette;
+            FillTileType = fillTileType;
+            LiningTileType = liningTileType;
+        }
+    }
+
+    /// <summary>
     /// One outward side of a placed room, passed to <see cref="GridRoom.BuildPadding"/> so it can paint that strip.
     /// </summary>
     public readonly struct PaddingContext
@@ -216,9 +235,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public readonly DungeonGrid Grid;
         public readonly int Col;
         public readonly int Row;
+        public readonly DungeonPalette Palette;
 
-        public PaddingContext(Direction side, int x, int y, int width, int height,
-                              int fillTileType, DungeonGrid grid, int col, int row)
+        public PaddingContext(Direction side, int x, int y, int width, int height, int fillTileType, DungeonGrid grid, int col, int row, DungeonPalette palette)
         {
             Side = side;
             X = x;
@@ -229,6 +248,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Grid = grid;
             Col = col;
             Row = row;
+            Palette = palette;
         }
     }
 
@@ -243,9 +263,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public readonly int Row;
         public readonly int FillTileType;
         public readonly int LiningTileType;
+        public readonly DungeonPalette Palette;
 
-        public FurnitureContext(Point origin, DungeonGrid grid, int col, int row,
-                                int fillTileType, int liningTileType)
+        public FurnitureContext(Point origin, DungeonGrid grid, int col, int row, int fillTileType, int liningTileType, DungeonPalette palette)
         {
             Origin = origin;
             Grid = grid;
@@ -253,6 +273,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Row = row;
             FillTileType = fillTileType;
             LiningTileType = liningTileType;
+            Palette = palette;
         }
     }
 

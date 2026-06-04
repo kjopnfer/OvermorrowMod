@@ -60,45 +60,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "CorridorCell.aseprite";
 
-        // Color maps
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildWallMap() => new()
-        {
-            [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
-            [(32, 43, 46)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
-            [(66, 64, 61)] = TexPlaceAction.PlaceWall(ModContent.WallType<CastleWall>()),
-            [(0, 0, 0)] = TexPlaceAction.Clear,
-        };
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildTileMap() => new()
-        {
-            [(74, 47, 33)] = TexPlaceAction.PlaceTile(ModContent.TileType<ArchiveWood>()),
-            [(0, 0, 0)] = TexPlaceAction.Clear,
-        };
-
         private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildInteriorObjectMap() => new()
         {
-            [(171, 107, 152)] = TexPlaceAction.PlaceObject(ModContent.TileType<HallwayPillar>()),
             [(171, 73, 94)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmallHallway>()),
-        };
-
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildPaddingObjectMap() => new()
-        {
-            [(237, 157, 102)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxSconceEven>()),
         };
 
         // Build / BuildPadding / PlaceFurniture
 
-        public override void Build(Point origin, int fillTileType, int liningTileType)
+        public override void Build(BuildContext ctx)
         {
             int sx = DungeonGrid.HorizontalPadding;
             int sy = DungeonGrid.VerticalPadding;
             int sw = DungeonGrid.CellTileWidth;
             int sh = DungeonGrid.CellTileHeight;
 
-            TexGen.PaintClearLayer(AsepritePath, origin.X, origin.Y, sx, sy, sw, sh);
-            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, origin.X, origin.Y, BuildWallMap(), sx, sy, sw, sh);
-            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, origin.X, origin.Y, BuildTileMap(), sx, sy, sw, sh);
+            TexGen.PaintClearLayer(AsepritePath, ctx.Origin.X, ctx.Origin.Y, sx, sy, sw, sh);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, ctx.Origin.X, ctx.Origin.Y, ctx.Palette.Walls, sx, sy, sw, sh);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, ctx.Origin.X, ctx.Origin.Y, ctx.Palette.Tiles, sx, sy, sw, sh);
         }
 
         public override void BuildPadding(PaddingContext ctx)
@@ -163,9 +141,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             }
 
             TexGen.PaintClearLayer(AsepritePath, worldX, worldY, srcX, srcY, srcW, srcH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, worldX, worldY, BuildWallMap(), srcX, srcY, srcW, srcH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, worldX, worldY, BuildTileMap(), srcX, srcY, srcW, srcH);
-            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, worldX, worldY, BuildPaddingObjectMap(), srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Walls, AsepritePath, worldX, worldY, ctx.Palette.Walls, srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Tiles, AsepritePath, worldX, worldY, ctx.Palette.Tiles, srcX, srcY, srcW, srcH);
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, worldX, worldY, ctx.Palette.Objects, srcX, srcY, srcW, srcH);
         }
 
         public override void PlaceFurniture(FurnitureContext ctx)
@@ -175,7 +153,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
             int cw = DungeonGrid.CellTileWidth;
             int ch = DungeonGrid.CellTileHeight;
 
-            // Sconce placement
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, ctx.Origin.X, ctx.Origin.Y, ctx.Palette.Objects, hp, vp, cw, ch);
             TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, ctx.Origin.X, ctx.Origin.Y, BuildInteriorObjectMap(), hp, vp, cw, ch);
         }
     }
