@@ -28,7 +28,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         public int Cols { get; }
         public int Rows { get; }
-        public Point Origin { get; }
+
+        /// <summary>
+        /// World-tile position the grid maps from. Set during planning to a local
+        /// placeholder and rebased to the dungeon's final position at render time.
+        /// </summary>
+        public Point Origin { get; set; }
 
         private readonly GridSlot[,] _slots;
         private int _nextGroupId = 1;

@@ -40,6 +40,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public override GridRoom CreateCombat(bool isFeature) => new CombatRoom { IsFeature = isFeature };
         public override GridRoom CreateTreasure(bool isFeature) => new ChestRoom { IsFeature = isFeature };
         public override GridRoom CreateDoor(bool isFeature) => new DoorRoom { IsFeature = isFeature };
+        public override GridRoom CreateFiller(bool isFeature) => new BookshelfCell { IsFeature = isFeature };
+        public override GridRoom CreateVerticalConnector(bool isFeature) => new ShaftCell { IsFeature = isFeature };
 
         public override IReadOnlyDictionary<Type, double> TypeWeights => new Dictionary<Type, double>
         {

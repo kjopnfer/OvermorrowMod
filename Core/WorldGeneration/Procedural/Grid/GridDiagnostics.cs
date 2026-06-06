@@ -33,7 +33,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     ///   - Connected-component analysis (isolated regions by reciprocal exits)
     ///   - Per-column shaft listing
     ///
-    /// Call after <see cref="GridGenerator.Build"/> finishes. Output goes to
+    /// Call after <see cref="GridGenerator.Plan"/> finishes. Output goes to
     /// the tModLoader root folder so you don't have to hunt for it.
     /// </summary>
     public static class GridDiagnostics

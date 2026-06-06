@@ -203,8 +203,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     return;
                 }
 
-                Vector2 teleportOffset = new Vector2(64, -32);
-                Main.LocalPlayer.Teleport(matchingDoor.Position.ToWorldCoordinates(16, 16) + teleportOffset, -1);
+                Main.LocalPlayer.Teleport(matchingDoor.Position.ToWorldCoordinates(16, 16) + new Vector2(72, -32), -1);
                 matchingDoor.DoorFrame = 6;
 
             }
