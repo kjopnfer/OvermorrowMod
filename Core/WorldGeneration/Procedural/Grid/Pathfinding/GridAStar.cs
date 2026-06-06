@@ -30,7 +30,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             IReadOnlyDictionary<Type, int> streakLimits = null,
             IReadOnlyDictionary<Type, int> minStreakLimits = null,
             HashSet<Type> waypointAcceptableTypes = null,
-            int maxVerticalRun = int.MaxValue)
+            int maxVerticalRun = int.MaxValue,
+            int shaftRowWindow = int.MaxValue)
         {
             if (edgeCost == null) throw new ArgumentNullException(nameof(edgeCost));
             if (startCell == null) throw new ArgumentNullException(nameof(startCell));
@@ -59,7 +60,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 var segmentSteps = FindSegment(
                     grid, segmentStart, segmentGoal, prevForSegment, startStreak,
                     edgeCost, blocked, streakLimits, minStreakLimits, isFinalSegment,
-                    waypointAcceptableTypes, maxVerticalRun, fullPath);
+                    waypointAcceptableTypes, maxVerticalRun, shaftRowWindow, fullPath);
 
                 if (segmentSteps == null) return null;
 
@@ -116,6 +117,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             bool isFinalSegment,
             HashSet<Type> waypointAcceptableTypes,
             int maxVerticalRun,
+            int shaftRowWindow,
             List<PathStep> priorSegmentSteps)
         {
             var startNode = new Node(start, startCell.GetType(), startStreak, 0);
@@ -183,7 +185,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 // OpenSidesMatch, PathHasShaftInColumn) was O(N) in the
                 // current path length. Building a flat dict here makes them
                 // all O(1) for the rest of this expansion.
-                var pathOccupied = BuildPathOccupied(current, cameFrom, priorSegmentSteps, out var pathShaftCols);
+                var pathOccupied = BuildPathOccupied(current, cameFrom, priorSegmentSteps, out var pathShafts);
                 Func<int, int, GridRoom> pathCellLookup = (x, y) =>
                     pathOccupied.TryGetValue(new Point(x, y), out var p) ? p.cell : null;
                 Func<int, int, (GridRoom cell, Point anchor)?> pathCellWithAnchorLookup = (x, y) =>
@@ -242,18 +244,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                             continue;
 
                         // Path-aware shaft adjacency: the cost function rejects
-                        // shafts whose adjacent columns already contain shafts
-                        // in the committed grid, but a single A* call's
-                        // placements aren't committed until FindPath returns.
-                        // pathShaftCols mirrors the same info for cells placed
-                        // earlier in this FindPath run.
-                        if (candidate is ShaftCell)
-                        {
-                            if (pathShaftCols.Contains(anchor.X - 1)
-                                || pathShaftCols.Contains(anchor.X)
-                                || pathShaftCols.Contains(anchor.X + 1))
-                                continue;
-                        }
+                        // shafts adjacent to shafts in the committed grid, but a
+                        // single A* call's placements aren't committed until
+                        // FindPath returns. pathShafts mirrors the same info for
+                        // shafts placed earlier in this run. shaftRowWindow limits
+                        // the veto to nearby rows (int.MaxValue = whole column).
+                        if (candidate is ShaftCell && PathShaftWithin(pathShafts, anchor, shaftRowWindow))
+                            continue;
 
                         // Streak: same type increments, different resets, exceed-limit skips.
                         var candType = candidate.GetType();
@@ -357,15 +354,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         /// Builds a per-sub-cell dictionary of the points occupied by the current
         /// segment's in-progress path plus any prior-segment steps. Replaces
         /// O(N) cameFrom chain walks inside the inner loop with O(1) lookups.
-        /// Also emits the set of columns containing ShaftCells in the same data
+        /// Also emits the anchors of ShaftCells placed in this path
         /// (used by the path-aware shaft adjacency check).
         /// </summary>
         private static Dictionary<Point, (GridRoom cell, Point anchor)> BuildPathOccupied(
             Node current, Dictionary<Node, EdgeRecord> cameFrom,
-            List<PathStep> priorSegmentSteps, out HashSet<int> pathShaftCols)
+            List<PathStep> priorSegmentSteps, out List<Point> pathShafts)
         {
             var dict = new Dictionary<Point, (GridRoom, Point)>();
-            pathShaftCols = new HashSet<int>();
+            pathShafts = new List<Point>();
 
             var n = current;
             while (cameFrom.TryGetValue(n, out var rec))
@@ -373,7 +370,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 for (int sc = 0; sc < rec.Cell.CellWidth; sc++)
                     for (int sr = 0; sr < rec.Cell.CellHeight; sr++)
                         dict[new Point(rec.Anchor.X + sc, rec.Anchor.Y + sr)] = (rec.Cell, rec.Anchor);
-                if (rec.Cell is ShaftCell) pathShaftCols.Add(rec.Anchor.X);
+                if (rec.Cell is ShaftCell) pathShafts.Add(rec.Anchor);
                 n = rec.Parent;
             }
             if (priorSegmentSteps != null)
@@ -384,10 +381,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     for (int sc = 0; sc < step.Cell.CellWidth; sc++)
                         for (int sr = 0; sr < step.Cell.CellHeight; sr++)
                             dict[new Point(step.Anchor.X + sc, step.Anchor.Y + sr)] = (step.Cell, step.Anchor);
-                    if (step.Cell is ShaftCell) pathShaftCols.Add(step.Anchor.X);
+                    if (step.Cell is ShaftCell) pathShafts.Add(step.Anchor);
                 }
             }
             return dict;
+        }
+
+        /// <summary>
+        /// True if a shaft already placed in this path sits in an adjacent column
+        /// (col +/- 1) within <paramref name="rowWindow"/> rows of <paramref name="anchor"/>.
+        /// With rowWindow = int.MaxValue this is column-global (any row).
+        /// </summary>
+        private static bool PathShaftWithin(List<Point> pathShafts, Point anchor, int rowWindow)
+        {
+            foreach (var s in pathShafts)
+                if (Math.Abs(s.X - anchor.X) <= 1 && Math.Abs(s.Y - anchor.Y) <= rowWindow)
+                    return true;
+            return false;
         }
 
         /// <summary>

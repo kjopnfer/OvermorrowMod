@@ -61,6 +61,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract GridRoom CreateDoor(bool isFeature);
 
         /// <summary>
+        /// The dungeon's basic walkable room. Used to cap a spine endpoint that
+        /// has no door and as a safe room for the player to spawn in.
+        /// </summary>
+        public abstract GridRoom CreateFiller(bool isFeature);
+
+        /// <summary>
+        /// The dungeon's vertical connector (a 1x1 cell open top/bottom), used to
+        /// hand-build a vertical exit branch from the spine to a fork door.
+        /// </summary>
+        public abstract GridRoom CreateVerticalConnector(bool isFeature);
+
+        /// <summary>
         /// Per-room-type A* weight. Below 1 is preferred, above 1 is avoided.
         /// </summary>
         public abstract IReadOnlyDictionary<Type, double> TypeWeights { get; }
