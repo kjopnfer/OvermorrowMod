@@ -85,7 +85,7 @@ namespace OvermorrowMod.Core.Globals
 
         public override void OnEnterWorld()
         {
-            bool inSubworld = SubworldSystem.IsActive<TestSubworld>();
+            bool inSubworld = SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>();
 
             if (inSubworld != inSubworldNow)
             {

@@ -31,7 +31,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             IReadOnlyDictionary<Type, int> minStreakLimits = null,
             HashSet<Type> waypointAcceptableTypes = null,
             int maxVerticalRun = int.MaxValue,
-            int shaftRowWindow = int.MaxValue)
+            int shaftRowWindow = int.MaxValue,
+            int maxExpansions = MaxExpansionsPerSegment)
         {
             if (edgeCost == null) throw new ArgumentNullException(nameof(edgeCost));
             if (startCell == null) throw new ArgumentNullException(nameof(startCell));
@@ -60,7 +61,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 var segmentSteps = FindSegment(
                     grid, segmentStart, segmentGoal, prevForSegment, startStreak,
                     edgeCost, blocked, streakLimits, minStreakLimits, isFinalSegment,
-                    waypointAcceptableTypes, maxVerticalRun, shaftRowWindow, fullPath);
+                    waypointAcceptableTypes, maxVerticalRun, shaftRowWindow, maxExpansions, fullPath);
 
                 if (segmentSteps == null) return null;
 
@@ -118,6 +119,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             HashSet<Type> waypointAcceptableTypes,
             int maxVerticalRun,
             int shaftRowWindow,
+            int maxExpansions,
             List<PathStep> priorSegmentSteps)
         {
             var startNode = new Node(start, startCell.GetType(), startStreak, 0);
@@ -127,7 +129,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             toExplore.Enqueue(startNode, Heuristic(start, goal));
 
             int expansions = 0;
-            while (toExplore.Count > 0 && expansions++ < MaxExpansionsPerSegment)
+            while (toExplore.Count > 0 && expansions++ < maxExpansions)
             {
                 var current = toExplore.Dequeue();
 

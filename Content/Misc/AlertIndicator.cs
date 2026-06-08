@@ -152,10 +152,10 @@ namespace OvermorrowMod.Content.Misc
             NPC npc = Main.npc[(int)ParentID];
             OvermorrowNPC overmorrowNPC = npc.ModNPC as OvermorrowNPC;
 
-            if (!npc.active) Projectile.Kill();
-            if (overmorrowNPC == null)
+            if (!npc.active || overmorrowNPC == null)
             {
                 Projectile.Kill();
+                return;
             }
 
             if (overmorrowNPC.TargetingModule.IsInAlertState())

@@ -41,14 +41,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
 
         public override bool OwnsPadding => true;
 
-        private const string AsepritePath = AssetDirectory.GrandArchives + "DoorRoom.aseprite";
+        protected const string AsepritePath = AssetDirectory.GrandArchives + "DoorRoom.aseprite";
+        protected virtual void PlaceDoorTile(int x, int y) => TileUtils.PlaceTileWithEntity<ArchiveDoor, ArchiveDoor_TE>(x, y);
 
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
+        private Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
         {
-            [(32, 30, 27)] = TexPlaceAction.CustomPlaceObject((x, y) =>
-            {
-                TileUtils.PlaceTileWithEntity<ArchiveDoor, ArchiveDoor_TE>(x, y);
-            }),
+            [(32, 30, 27)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceDoorTile(x, y)),
         };
 
         // Build / BuildPadding / PlaceFurniture

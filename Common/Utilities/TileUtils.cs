@@ -53,16 +53,20 @@ namespace OvermorrowMod.Common.Utilities
             Vector2 position = startPosition;
             Point tilePosition = position.ToTileCoordinates();
 
-            while (WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
+            while (tilePosition.Y > 0 && WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
             {
                 tilePosition.Y--;
             }
 
-            while (!WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
+            // Stop at the world bottom so a column with no ground below it (e.g. a position
+            // over the open subworld outside a dungeon) cannot scan downward forever.
+            while (tilePosition.Y < Main.maxTilesY - 1 && !WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
             {
                 tilePosition.Y++;
             }
 
+            // Only adopt the scanned row when it actually landed on ground; otherwise the
+            // original Y is returned unchanged so callers treat the spot as having no ground.
             if (WorldGen.SolidOrSlopedTile(Framing.GetTileSafely(tilePosition.X, tilePosition.Y)))
             {
                 position.Y = tilePosition.ToWorldCoordinates(0f, 0f).Y;
