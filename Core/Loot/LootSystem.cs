@@ -12,7 +12,7 @@ namespace OvermorrowMod.Core.Loot
     {
         public override void PostSetupContent()
         {
-            LootPoolRegistry.Register<ArchivePool>(() => SubworldSystem.IsActive<ArchiveSubworld>() || SubworldSystem.IsActive<TestSubworld>());
+            LootPoolRegistry.Register<ArchivePool>(() => SubworldSystem.IsActive<ArchiveSubworld>() || SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>());
             ScanLootAttributes();
         }
 

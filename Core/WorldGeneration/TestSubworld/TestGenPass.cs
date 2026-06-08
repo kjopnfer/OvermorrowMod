@@ -9,7 +9,12 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 {
     public class TestGenPass : GenPass
     {
-        public TestGenPass(string name, double loadWeight) : base(name, loadWeight) { }
+        private readonly string _portalTarget;
+
+        public TestGenPass(string name, double loadWeight, string portalTarget) : base(name, loadWeight)
+        {
+            _portalTarget = portalTarget;
+        }
 
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
         {
@@ -35,6 +40,9 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 // descends below the spine. A's west endpoint stays the bookshelf spawn.
                 layout.Connect(a, LayoutDirection.East, b);
                 layout.Connect(a, LayoutDirection.SouthEast, c);
+                // B and C each get an east-facing portal door into the linked subworld.
+                layout.AddSubworldPortal(b, LayoutDirection.East, _portalTarget);
+                layout.AddSubworldPortal(c, LayoutDirection.East, _portalTarget);
                 layout.SetRoot(a);
                 layout.Build(new Point(centerX, centerY), rand);
 

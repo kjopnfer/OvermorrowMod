@@ -20,6 +20,7 @@ Tiles: {
 	}
 
 	BigChest.MapEntry: Big Chest
+	SubworldDoor.MapEntry: Subworld Door
 }
 
 Biomes: {

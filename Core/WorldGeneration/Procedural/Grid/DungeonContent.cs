@@ -61,6 +61,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract GridRoom CreateDoor(bool isFeature);
 
         /// <summary>
+        /// A door that enters another subworld.
+        /// </summary>
+        public abstract GridRoom CreatePortalDoor(bool isFeature);
+
+        /// <summary>
         /// The dungeon's basic walkable room. Used to cap a spine endpoint that
         /// has no door and as a safe room for the player to spawn in.
         /// </summary>

@@ -87,8 +87,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
         }
 
+        private readonly struct Portal
+        {
+            public readonly int Node;
+            public readonly LayoutDirection Dir;
+            public readonly string Target;
+
+            public Portal(int node, LayoutDirection dir, string target)
+            {
+                Node = node;
+                Dir = dir;
+                Target = target;
+            }
+        }
+
         private readonly List<Node> _nodes = new();
         private readonly List<Edge> _edges = new();
+        private readonly List<Portal> _portals = new();
         private int _rootId = -1;
 
         /// <summary>Adds a dungeon and returns its handle.</summary>
@@ -103,6 +118,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Connects two dungeons given  <paramref name="from"/> and <paramref name="to"/>.
         /// </summary>
         public void Connect(int from, LayoutDirection dir, int to) => _edges.Add(new Edge(from, dir, to));
+        public void AddSubworldPortal(int node, LayoutDirection dir, string targetSubworldName) => _portals.Add(new Portal(node, dir, targetSubworldName));
 
         /// <summary>Sets the dungeon the player spawns in.</summary>
         public void SetRoot(int node) => _rootId = node;
@@ -113,10 +129,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             if (_nodes.Count == 0) return;
             if (_rootId < 0) _rootId = 0;
 
-            // 1. Plan each dungeon (no tiles painted); each plan carries its measured footprint.
+            // 1. Plan each tile placement without placing tiles.
             var plans = new DungeonPlan[_nodes.Count];
             for (int i = 0; i < _nodes.Count; i++)
-                plans[i] = GridGenerator.Plan(_nodes[i].Content, rand, DoorDirectionsFor(i));
+                plans[i] = GridGenerator.Plan(_nodes[i].Content, rand, DoorDirectionsFor(i), PortalDirectionsFor(i));
 
             // 2. Position from the graph using the measured footprints.
             AssignCoarseCoords();
@@ -130,9 +146,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 foreach (var kv in placements)
                 {
-                    var te = FindNearestDoor(kv.Value.DoorTile);
-                    if (te == null) continue;
-                    _nodes[i].Doors[kv.Key] = te;
+                    if (TryGetPortalTarget(i, kv.Key, out string target))
+                    {
+                        var portal = FindNearestSubworldDoor(kv.Value.DoorTile);
+                        if (portal != null) portal.TargetSubworld = target;
+                    }
+                    else
+                    {
+                        var te = FindNearestDoor(kv.Value.DoorTile);
+                        if (te != null) _nodes[i].Doors[kv.Key] = te;
+                    }
                 }
             }
 
@@ -251,7 +274,30 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (edge.From == nodeId) dirs.Add(edge.Dir);
                 else if (edge.To == nodeId) dirs.Add(edge.Dir.Opposite());
             }
+            foreach (var portal in _portals)
+                if (portal.Node == nodeId) dirs.Add(portal.Dir);
             return dirs;
+        }
+
+        /// <summary>The portal-door directions on a dungeon.</summary>
+        private List<LayoutDirection> PortalDirectionsFor(int nodeId)
+        {
+            var dirs = new List<LayoutDirection>();
+            foreach (var portal in _portals)
+                if (portal.Node == nodeId) dirs.Add(portal.Dir);
+            return dirs;
+        }
+
+        private bool TryGetPortalTarget(int nodeId, LayoutDirection dir, out string target)
+        {
+            foreach (var portal in _portals)
+                if (portal.Node == nodeId && portal.Dir == dir)
+                {
+                    target = portal.Target;
+                    return true;
+                }
+            target = null;
+            return false;
         }
 
         private static ArchiveDoor_TE FindNearestDoor(Point tile)
@@ -261,6 +307,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var te in TileEntity.ByID.Values)
             {
                 if (te is not ArchiveDoor_TE door) continue;
+                int dx = door.Position.X - tile.X;
+                int dy = door.Position.Y - tile.Y;
+                int distSq = dx * dx + dy * dy;
+                if (distSq < bestDistSq)
+                {
+                    bestDistSq = distSq;
+                    best = door;
+                }
+            }
+            return best;
+        }
+
+        private static SubworldDoor_TE FindNearestSubworldDoor(Point tile)
+        {
+            SubworldDoor_TE best = null;
+            int bestDistSq = int.MaxValue;
+            foreach (var te in TileEntity.ByID.Values)
+            {
+                if (te is not SubworldDoor_TE door) continue;
                 int dx = door.Position.X - tile.X;
                 int dy = door.Position.Y - tile.Y;
                 int distSq = dx * dx + dy * dy;
