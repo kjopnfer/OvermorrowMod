@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.NPCs;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding;
 using System;
 using System.Collections.Generic;
@@ -74,10 +72,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static IReadOnlyDictionary<Type, int> MinStreakLimits;
         private static int MaxVerticalRun;
         private static List<Func<GridRoom>> RequiredRooms;
-        private static HashSet<LayoutDirection> PortalDirections = new();
-
-        private static GridRoom MakeDoorCell(LayoutDirection dir, bool isFeature) =>
-            PortalDirections.Contains(dir) ? ActiveContent.CreatePortalDoor(isFeature) : ActiveContent.CreateDoor(isFeature);
+        private static List<Func<GridRoom>> SpineRequiredRooms;
 
         /// <summary>
         /// Plans one dungeon in local grid coordinates without painting any tiles. The spine
@@ -88,23 +83,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// The layout directions this dungeon needs a door for. East/West become the spine's
         /// end/start endpoints; every other direction becomes a fork branch toward it.
         /// </param>
-        /// <param name="portalDirections">
-        /// The subset of <paramref name="doorDirections"/> whose door is a subworld portal.
+        /// <param name="extraRequiredRooms">
+        /// Per-dungeon feature rooms the generator must also place (e.g. a subworld portal door),
+        /// on top of the content's own required rooms.
         /// </param>
-        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IReadOnlyCollection<LayoutDirection> portalDirections)
+        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms)
         {
             var dirSet = new HashSet<LayoutDirection>(doorDirections);
             bool doorAtStart = dirSet.Contains(LayoutDirection.West);
             bool doorAtEnd = dirSet.Contains(LayoutDirection.East);
-
-            PortalDirections = new HashSet<LayoutDirection>(portalDirections);
 
             ActiveContent = content;
             TypeWeights = content.TypeWeights;
             StreakLimits = content.StreakLimits;
             MinStreakLimits = content.MinStreakLimits;
             MaxVerticalRun = content.MaxVerticalRun;
+            // RequiredRooms is the dungeon's own feature set (also what forks decorate with).
+            // SpineRequiredRooms adds the per-dungeon extras (e.g. a portal door) the spine must place
+            // exactly once, kept out of the fork's feature picker so they are never duplicated.
             RequiredRooms = content.RequiredRooms;
+            SpineRequiredRooms = new List<Func<GridRoom>>(content.RequiredRooms);
+            if (extraRequiredRooms != null) SpineRequiredRooms.AddRange(extraRequiredRooms);
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -185,9 +184,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 endTarget = new Point(gridCols - 1 - EdgeBorder - ForkHeadroom, endRow);
 
                 // Each endpoint is a door or a plain filler room.
-                startDoor = doorAtStart ? MakeDoorCell(LayoutDirection.West, true) : content.CreateFiller(true);
+                startDoor = doorAtStart ? content.CreateDoor(true) : content.CreateFiller(true);
                 grid.Place(startDoor, start.X, start.Y, grid.NextGroupId());
-                var endDoor = doorAtEnd ? MakeDoorCell(LayoutDirection.East, true) : content.CreateFiller(true);
+                var endDoor = doorAtEnd ? content.CreateDoor(true) : content.CreateFiller(true);
                 grid.Place(endDoor, endTarget.X, endTarget.Y, grid.NextGroupId());
 
                 for (int spineAttempt = 0; spineAttempt < MaxSpinePlanAttempts; spineAttempt++)
@@ -264,7 +263,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
 
-                    var plan = SpinePlanner.TryPlanSpine(grid, start, endTarget, startDoor, endDoor, RequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, StreakLimits, MinStreakLimits, MaxVerticalRun, EdgeBorder, MinDoorDistance, MinSubgoalSpacing);
+                    var plan = SpinePlanner.TryPlanSpine(grid, start, endTarget, startDoor, endDoor, SpineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, StreakLimits, MinStreakLimits, MaxVerticalRun, EdgeBorder, MinDoorDistance, MinSubgoalSpacing);
 
                     spineSteps = plan.Steps;
                     requiredAnchors = plan.RequiredAnchors ?? new List<Point>();
@@ -281,7 +280,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (endRow > maxR) maxR = endRow;
                     bool spanOk = (maxR - minR) >= MinSpineSpan;
 
-                    int missingRequiredCount = RequiredRooms.Count - requiredAnchors.Count;
+                    int missingRequiredCount = SpineRequiredRooms.Count - requiredAnchors.Count;
                     if (missingRequiredCount < 0) missingRequiredCount = 0;
 
                     int totalAnchors = 0;
@@ -313,7 +312,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (!combatMandatory) score -= 9000;
                     if (!branchPlaced) score -= 7000;
 
-                    Terraria.ModLoader.Logging.PublicLogger.Info($"OvermorrowDungeon spine attempt build={buildAttempt} spine={spineAttempt}: span={spineSpanRows} required={requiredAnchors.Count}/{RequiredRooms.Count} spineCombat={spineCombatCount} mandatory={combatMandatory} branch={branchPlaced} score={score}");
+                    Terraria.ModLoader.Logging.PublicLogger.Info($"OvermorrowDungeon spine attempt build={buildAttempt} spine={spineAttempt}: span={spineSpanRows} required={requiredAnchors.Count}/{SpineRequiredRooms.Count} spineCombat={spineCombatCount} mandatory={combatMandatory} branch={branchPlaced} score={score}");
 
                     if (score > bestScore)
                     {
@@ -548,7 +547,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
 
             PaddingBuilder.BuildAll(grid, fillTileType, palette);
-            DecorateShafts(grid);
+            content.Decorate(grid);
             ApplySideCaps(grid, CollectDeadEndSides(grid), fillTileType);
 
             // Place furniture.
@@ -1050,7 +1049,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // lean horizontal; only a true North/South fork leans into the vertical headroom.
             bool favorHorizontal = delta.X != 0;
 
-            GridRoom DoorCell() => MakeDoorCell(dir, true);
+            GridRoom DoorCell() => ActiveContent.CreateDoor(true);
 
             const int ForkStartMargin = 6;   // keep misc doors away from the entrance
 
@@ -1530,119 +1529,5 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return false;
         }
 
-        private static void DecorateShafts(DungeonGrid grid)
-        {
-            int diagonalStairsType = ModContent.TileType<DiagonalStairs>();
-            int stairCapType = ModContent.TileType<StairCap>();
-
-            // A passage spans consecutive shafts and any bookshelf landings between them.
-            var resolved = new HashSet<Point>();
-
-            for (int col = 0; col < grid.Cols; col++)
-            {
-                for (int row = 0; row < grid.Rows; row++)
-                {
-                    var slot = grid.GetSlot(col, row);
-                    if (slot.IsEmpty || slot.Room.Type != RoomType.VerticalConnector) continue;
-                    if (resolved.Contains(new Point(col, row))) continue;
-
-                    // Walk up through shafts and through a bookshelf landing with another shaft beyond.
-                    int topRow = row;
-                    while (topRow > 0)
-                    {
-                        var above = grid.GetSlot(col, topRow - 1);
-                        if (above == null || above.IsEmpty) break;
-
-                        if (above.Room.Type == RoomType.VerticalConnector)
-                        {
-                            topRow--;
-                            continue;
-                        }
-
-                        if (above.Room.Type == RoomType.Filler && topRow >= 2)
-                        {
-                            var aboveAbove = grid.GetSlot(col, topRow - 2);
-                            if (aboveAbove != null && !aboveAbove.IsEmpty && aboveAbove.Room.Type == RoomType.VerticalConnector)
-                            {
-                                topRow -= 2;
-                                continue;
-                            }
-                        }
-
-                        break;
-                    }
-
-                    // Walk down with the mirrored rule.
-                    int bottomRow = row;
-                    while (bottomRow < grid.Rows - 1)
-                    {
-                        var below = grid.GetSlot(col, bottomRow + 1);
-                        if (below == null || below.IsEmpty) break;
-
-                        if (below.Room.Type == RoomType.VerticalConnector)
-                        {
-                            bottomRow++;
-                            continue;
-                        }
-
-                        if (below.Room.Type == RoomType.Filler && bottomRow + 2 < grid.Rows)
-                        {
-                            var belowBelow = grid.GetSlot(col, bottomRow + 2);
-                            if (belowBelow != null && !belowBelow.IsEmpty && belowBelow.Room.Type == RoomType.VerticalConnector)
-                            {
-                                bottomRow += 2;
-                                continue;
-                            }
-                        }
-
-                        break;
-                    }
-
-                    for (int r = topRow; r <= bottomRow; r++)
-                    {
-                        var s = grid.GetSlot(col, r);
-                        if (s != null && !s.IsEmpty && s.Room.Type == RoomType.VerticalConnector)
-                            resolved.Add(new Point(col, r));
-                    }
-
-                    var topRoom = grid.GetSlot(col, topRow - 1);
-                    var bottomRoom = grid.GetSlot(col, bottomRow + 1);
-
-                    // Skip decoration if either end is empty; nothing for stairs to lead to.
-                    if (topRoom == null || topRoom.IsEmpty || bottomRoom == null || bottomRoom.IsEmpty)
-                        continue;
-
-                    Point topRoomOrigin = grid.GridToWorld(col, topRow - 1);
-                    Point bottomRoomOrigin = grid.GridToWorld(col, bottomRow + 1);
-
-                    int topY = topRoomOrigin.Y + DungeonGrid.CellTileHeight - 1;
-                    int bottomY = bottomRoomOrigin.Y + DungeonGrid.CellTileHeight - 1;
-
-                    int segmentCount = (bottomY - topY) / 10;
-                    int shaftCenterX = grid.GridToWorld(col, topRow).X + DungeonGrid.CellTileWidth / 2;
-                    int stairX = shaftCenterX - 7;
-                    int capX = stairX;
-
-                    for (int s = segmentCount - 1; s >= 0; s--)
-                    {
-                        int sy = topY + s * 10 + 10;
-                        ClearObjectFootprint(stairX, sy, 14, 10);
-                        WorldGen.PlaceObject(stairX, sy, diagonalStairsType);
-                    }
-
-                    ClearObjectFootprint(capX, topY, 5, 4);
-                    WorldGen.PlaceObject(capX, topY, stairCapType);
-                }
-            }
-        }
-
-        /// <summary>Clears the tile footprint for an object placed with origin at bottom-left.</summary>
-        private static void ClearObjectFootprint(int x, int yBottom, int width, int height)
-        {
-            int yTop = yBottom - (height - 1);
-            for (int lx = 0; lx < width; lx++)
-                for (int ly = 0; ly < height; ly++)
-                    WorldGenUtils.ClearTile(x + lx, yTop + ly);
-        }
     }
 }

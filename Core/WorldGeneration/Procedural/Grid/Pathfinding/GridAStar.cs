@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
 
@@ -251,7 +250,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         // FindPath returns. pathShafts mirrors the same info for
                         // shafts placed earlier in this run. shaftRowWindow limits
                         // the veto to nearby rows (int.MaxValue = whole column).
-                        if (candidate is ShaftCell && PathShaftWithin(pathShafts, anchor, shaftRowWindow))
+                        if (candidate.Type == RoomType.VerticalConnector && PathShaftWithin(pathShafts, anchor, shaftRowWindow))
                             continue;
 
                         // Streak: same type increments, different resets, exceed-limit skips.
@@ -372,7 +371,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 for (int sc = 0; sc < rec.Cell.CellWidth; sc++)
                     for (int sr = 0; sr < rec.Cell.CellHeight; sr++)
                         dict[new Point(rec.Anchor.X + sc, rec.Anchor.Y + sr)] = (rec.Cell, rec.Anchor);
-                if (rec.Cell is ShaftCell) pathShafts.Add(rec.Anchor);
+                if (rec.Cell.Type == RoomType.VerticalConnector) pathShafts.Add(rec.Anchor);
                 n = rec.Parent;
             }
             if (priorSegmentSteps != null)
@@ -383,7 +382,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     for (int sc = 0; sc < step.Cell.CellWidth; sc++)
                         for (int sr = 0; sr < step.Cell.CellHeight; sr++)
                             dict[new Point(step.Anchor.X + sc, step.Anchor.Y + sr)] = (step.Cell, step.Anchor);
-                    if (step.Cell is ShaftCell) pathShafts.Add(step.Anchor);
+                    if (step.Cell.Type == RoomType.VerticalConnector) pathShafts.Add(step.Anchor);
                 }
             }
             return dict;

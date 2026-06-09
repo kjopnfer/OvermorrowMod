@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
+
+namespace OvermorrowMod.Content.Dungeons.Archive
 {
     public class ArchivePalette : DungeonPalette
     {

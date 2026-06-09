@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
 using System.Linq;
 using Terraria;
 using Terraria.Audio;
@@ -54,7 +55,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            // Remove the NPC spawning logic from here - it's now handled in the TileEntity
         }
 
         public override bool RightClick(int i, int j)
@@ -109,10 +109,10 @@ namespace OvermorrowMod.Content.Tiles.Archives
         }
     }
 
-    public class ArchiveDoor_TE : ModTileEntity
+    public class ArchiveDoor_TE : ModTileEntity, IDungeonDoor
     {
-        public int DoorID;
-        public int PairedDoor;
+        public int DoorID { get; set; }
+        public int PairedDoor { get; set; }
 
         public bool IsLocked = false;
 

@@ -90,7 +90,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
     public class SubworldDoor_TE : ModTileEntity
     {
         /// <summary>
-        /// The subworld this door enters, as "ModName/SubworldName".
+        /// The subworld this door enters ("ModName/SubworldName"), set by the door room that places it.
         /// </summary>
         public string TargetSubworld = "";
 

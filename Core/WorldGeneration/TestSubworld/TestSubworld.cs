@@ -1,6 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Dungeons.Archive;
+using OvermorrowMod.Content.Dungeons.Archive.Cells;
+using OvermorrowMod.Content.Dungeons.Inkwell.Cells;
 using OvermorrowMod.Core.LoadingScreen;
 using OvermorrowMod.Core.UI;
 using ReLogic.Content;
@@ -27,7 +30,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override List<GenPass> Tasks =>
         [
-            new TestGenPass("Loading", 1, "OvermorrowMod/TestSubworld2")
+            new TestGenPass("Loading", 1, () => new SubworldDoorRoom("OvermorrowMod/TestSubworld2"), () => new InkwellDoorRoom("OvermorrowMod/InkwellSubworld"), () => new ArchiveContent())
         ];
 
         public override void OnLoad()
@@ -89,7 +92,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override List<GenPass> Tasks =>
         [
-            new TestGenPass("Loading", 1, "OvermorrowMod/TestSubworld")
+            new TestGenPass("Loading", 1, null, null, () => new ArchiveContent())
         ];
     }
 }
