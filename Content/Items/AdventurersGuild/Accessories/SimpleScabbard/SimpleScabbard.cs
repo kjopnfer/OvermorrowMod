@@ -18,7 +18,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
     [AutoloadEquip(EquipType.Waist)]
-    [Loot(ItemType.Melee, Rarity.Common)]
+    [Loot(ItemType.Melee, Rarity.Rare)]
     public class SimpleScabbard : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()

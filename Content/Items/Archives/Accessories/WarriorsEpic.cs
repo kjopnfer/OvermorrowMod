@@ -21,7 +21,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    [Loot<ArchivePool>(ItemType.Melee, Rarity.Common)]
+    [Loot<ArchivePool>(ItemType.Melee, Rarity.Rare)]
     public class WarriorsEpic : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()

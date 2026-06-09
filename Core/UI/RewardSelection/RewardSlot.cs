@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Core.Loot;
 using ReLogic.Content;
 using System;
 using Terraria;
@@ -54,15 +55,19 @@ namespace OvermorrowMod.Core.UI
 
             bool isHovering = IsMouseHovering && opacity >= 1f && !selected && !displayItem.IsAir;
 
+            Color rarityColor = new Color(210, 210, 210);
+            if (!displayItem.IsAir && LootMetadata.TryGetAny(displayItem.type, out var meta))
+                rarityColor = RarityColors.For(meta.Rarity);
+
             float pulse = 0.7f + 0.3f * (float)Math.Sin(Main.GameUpdateCount * 0.06f + slotIndex * 0.7f);
             float haloAlpha = (selected ? 0.95f : isHovering ? 0.7f : 0.5f) * opacity * pulse;
             float haloScale = rect.Width * (selected ? 2.1f : isHovering ? 1.85f : 1.6f) / glowTex.Width;
-            spriteBatch.Draw(glowTex, dims.Center(), null, Color.Gold * haloAlpha, 0f, glowTex.Size() / 2f, haloScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(glowTex, dims.Center(), null, rarityColor * haloAlpha, 0f, glowTex.Size() / 2f, haloScale, SpriteEffects.None, 0f);
 
             Color backdropColor = selected ? new Color(70, 55, 25) : isHovering ? new Color(55, 50, 30) : new Color(40, 40, 40);
             spriteBatch.Draw(pixel, rect, backdropColor * opacity * 0.9f);
 
-            Color borderColor = selected ? Color.Gold : isHovering ? new Color(220, 200, 130) : new Color(160, 140, 90);
+            Color borderColor = selected ? rarityColor : isHovering ? Color.Lerp(rarityColor, Color.White, 0.4f) : Color.Lerp(rarityColor, Color.Black, 0.35f);
             int thickness = selected ? 2 : 1;
             DrawBorder(spriteBatch, rect, borderColor * opacity, thickness);
 

@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
     [AutoloadEquip(EquipType.Neck)]
-    [Loot(ItemType.Summon, Rarity.Common)]
+    [Loot(ItemType.Summon, Rarity.Rare)]
     public class BondingNecklace : OvermorrowAccessory
     {
         public override string Texture => AssetDirectory.GuildItems + Name;

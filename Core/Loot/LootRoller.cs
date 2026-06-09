@@ -11,11 +11,11 @@ namespace OvermorrowMod.Core.Loot
 {
     public static class LootRoller
     {
-        public static int[] RollOffers(LootPool pool, RarityModifier modifier, ItemKind allowedKinds, int count, Player player)
+        public static int[] RollOffers(LootPool pool, RarityModifier modifier, ItemKind allowedKinds, int count, Player player, ItemKind favoredKinds = ItemKind.None)
         {
             if (pool == null || count <= 0) return Array.Empty<int>();
 
-            ItemKind chosenKind = PickOneKind(allowedKinds);
+            ItemKind chosenKind = PickOneKind(allowedKinds, favoredKinds);
             if (chosenKind == ItemKind.None) return Array.Empty<int>();
 
             var candidates = new List<(int Type, LootMetadataEntry Meta)>();
@@ -83,16 +83,31 @@ namespace OvermorrowMod.Core.Loot
             Item.NewItem(source, position, ammoType, stack);
         }
 
-        private static ItemKind PickOneKind(ItemKind allowedKinds)
+        private static ItemKind PickOneKind(ItemKind allowedKinds, ItemKind favoredKinds)
         {
             var bits = new List<ItemKind>();
+            double total = 0;
             foreach (ItemKind k in Enum.GetValues(typeof(ItemKind)))
             {
                 if (k == ItemKind.None) continue;
-                if ((allowedKinds & k) != 0) bits.Add(k);
+                if ((allowedKinds & k) == 0) continue;
+                bits.Add(k);
+                total += KindWeight(k, favoredKinds);
             }
             if (bits.Count == 0) return ItemKind.None;
-            return bits[Main.rand.Next(bits.Count)];
+
+            double cursor = Main.rand.NextDouble() * total;
+            foreach (var k in bits)
+            {
+                cursor -= KindWeight(k, favoredKinds);
+                if (cursor <= 0) return k;
+            }
+            return bits[^1];
+        }
+
+        private static double KindWeight(ItemKind kind, ItemKind favoredKinds)
+        {
+            return (favoredKinds & kind) != 0 ? 1.4 : 1.0;
         }
 
         private static List<(int Type, LootMetadataEntry Meta)> SelectBucket(List<(int Type, LootMetadataEntry Meta)> candidates, Rarity rolledRarity)

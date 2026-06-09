@@ -39,6 +39,20 @@ namespace OvermorrowMod.Core.Loot
             dict[item.Type] = new LootMetadataEntry(affinities, rarity, kind, armorSlot);
         }
 
+        public static void Set(Type poolType, int itemType, ItemType affinities, Rarity rarity)
+        {
+            if (!byPool.TryGetValue(poolType, out var dict))
+            {
+                dict = new Dictionary<int, LootMetadataEntry>();
+                byPool[poolType] = dict;
+            }
+            var probe = new Item();
+            probe.SetDefaults(itemType);
+            var kind = InferKind(probe);
+            var armorSlot = InferArmorSlot(probe);
+            dict[itemType] = new LootMetadataEntry(affinities, rarity, kind, armorSlot);
+        }
+
         public static bool TryGet(Type poolType, int itemType, out LootMetadataEntry entry)
         {
             if (byPool.TryGetValue(poolType, out var dict)) return dict.TryGetValue(itemType, out entry);

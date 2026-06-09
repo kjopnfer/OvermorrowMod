@@ -19,7 +19,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    [Loot<ArchivePool>(ItemType.Generic, Rarity.Common)]
+    [Loot<ArchivePool>(ItemType.Generic, Rarity.Rare)]
     public class CandlelitSanctuary : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()

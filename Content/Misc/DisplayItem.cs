@@ -37,12 +37,16 @@ namespace OvermorrowMod.Content.Misc
         }
 
         Vector2 startPosition;
+        Color rarityColor = new Color(210, 210, 210);
         public override void OnSpawn(IEntitySource source)
         {
             if (ItemID <= 0)
             {
                 Projectile.Kill();
             }
+
+            if (LootMetadata.TryGetAny(ItemID, out var meta))
+                rarityColor = RarityColors.For(meta.Rarity);
 
             startPosition = Projectile.Center;
         }
@@ -102,13 +106,12 @@ namespace OvermorrowMod.Content.Misc
                 if (Projectile.localAI[0] % 20 == 0)
                 {
                     Texture2D lightTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ray").Value;
-                    Color color = Color.Green;
                     for (int i = 0; i < Main.rand.Next(2, 5); i++)
                     {
                         var lightRay = new Light(lightTexture, ModUtils.SecondsToTicks(4), Projectile, Vector2.Zero);
                         float randomRotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
                         float randomSize = Main.rand.NextFloat(0.05f, 0.085f);
-                        ParticleManager.CreateParticleDirect(lightRay, Projectile.Center, Vector2.Zero, color, 1f, randomSize, randomRotation, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true);
+                        ParticleManager.CreateParticleDirect(lightRay, Projectile.Center, Vector2.Zero, rarityColor, 1f, randomSize, randomRotation, ParticleDrawLayer.BehindNPCs, useAdditiveBlending: true);
                     }
                 }
             }
@@ -125,6 +128,11 @@ namespace OvermorrowMod.Content.Misc
             Texture2D texture = TextureAssets.Item[ItemID].Value;
             float adjustedCounter = AICounter - 8f;
             float fadeAlpha = MathHelper.Clamp(adjustedCounter / 15f, 0f, 1f);
+
+            Texture2D glow = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
+            float pulse = 0.75f + 0.25f * MathF.Sin(adjustedCounter * 0.08f);
+            float glowScale = 80f / glow.Width * pulse;
+            Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, rarityColor * (0.6f * fadeAlpha), 0f, glow.Size() / 2f, glowScale, SpriteEffects.None, 0);
 
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * fadeAlpha, 0f, texture.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 

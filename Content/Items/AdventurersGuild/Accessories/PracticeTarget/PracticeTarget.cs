@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
-    [Loot(ItemType.Ranged, Rarity.Common)]
+    [Loot(ItemType.Ranged, Rarity.Rare)]
     public class PracticeTarget : OvermorrowAccessory, IBowModifier
     {
         public override string Texture => AssetDirectory.GuildItems + Name;

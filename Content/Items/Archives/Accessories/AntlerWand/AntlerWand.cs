@@ -17,7 +17,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    [Loot<ArchivePool>(ItemType.Magic, Rarity.Common)]
+    [Loot<ArchivePool>(ItemType.Magic, Rarity.Rare)]
     public class AntlerWand : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()
