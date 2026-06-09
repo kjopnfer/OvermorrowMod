@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Content.Tiles.Archives;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -70,7 +69,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             public bool Placed;
             public Point WorldOrigin;
             public Point SpawnTile;
-            public readonly Dictionary<LayoutDirection, ArchiveDoor_TE> Doors = new();
+            public readonly Dictionary<LayoutDirection, IDungeonDoor> Doors = new();
         }
 
         private readonly struct Edge
@@ -87,23 +86,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
         }
 
-        private readonly struct Portal
-        {
-            public readonly int Node;
-            public readonly LayoutDirection Dir;
-            public readonly string Target;
-
-            public Portal(int node, LayoutDirection dir, string target)
-            {
-                Node = node;
-                Dir = dir;
-                Target = target;
-            }
-        }
-
         private readonly List<Node> _nodes = new();
         private readonly List<Edge> _edges = new();
-        private readonly List<Portal> _portals = new();
+        private readonly List<(int Node, Func<GridRoom> Factory)> _extraRooms = new();
         private int _rootId = -1;
 
         /// <summary>Adds a dungeon and returns its handle.</summary>
@@ -118,7 +103,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Connects two dungeons given  <paramref name="from"/> and <paramref name="to"/>.
         /// </summary>
         public void Connect(int from, LayoutDirection dir, int to) => _edges.Add(new Edge(from, dir, to));
-        public void AddSubworldPortal(int node, LayoutDirection dir, string targetSubworldName) => _portals.Add(new Portal(node, dir, targetSubworldName));
+
+        /// <summary>
+        /// Adds a feature room the generator must place in <paramref name="node"/>'s dungeon, such as
+        /// a subworld portal door.
+        /// </summary>
+        public void AddRoom(int node, Func<GridRoom> factory) => _extraRooms.Add((node, factory));
 
         /// <summary>Sets the dungeon the player spawns in.</summary>
         public void SetRoot(int node) => _rootId = node;
@@ -132,7 +122,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // 1. Plan each tile placement without placing tiles.
             var plans = new DungeonPlan[_nodes.Count];
             for (int i = 0; i < _nodes.Count; i++)
-                plans[i] = GridGenerator.Plan(_nodes[i].Content, rand, DoorDirectionsFor(i), PortalDirectionsFor(i));
+                plans[i] = GridGenerator.Plan(_nodes[i].Content, rand, DoorDirectionsFor(i), ExtraRoomsFor(i));
 
             // 2. Position from the graph using the measured footprints.
             AssignCoarseCoords();
@@ -146,16 +136,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 foreach (var kv in placements)
                 {
-                    if (TryGetPortalTarget(i, kv.Key, out string target))
-                    {
-                        var portal = FindNearestSubworldDoor(kv.Value.DoorTile);
-                        if (portal != null) portal.TargetSubworld = target;
-                    }
-                    else
-                    {
-                        var te = FindNearestDoor(kv.Value.DoorTile);
-                        if (te != null) _nodes[i].Doors[kv.Key] = te;
-                    }
+                    var te = FindNearestDoor(kv.Value.DoorTile);
+                    if (te != null) _nodes[i].Doors[kv.Key] = te;
                 }
             }
 
@@ -274,60 +256,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (edge.From == nodeId) dirs.Add(edge.Dir);
                 else if (edge.To == nodeId) dirs.Add(edge.Dir.Opposite());
             }
-            foreach (var portal in _portals)
-                if (portal.Node == nodeId) dirs.Add(portal.Dir);
             return dirs;
         }
 
-        /// <summary>The portal-door directions on a dungeon.</summary>
-        private List<LayoutDirection> PortalDirectionsFor(int nodeId)
+        /// <summary>The extra feature rooms assigned to a dungeon.</summary>
+        private List<Func<GridRoom>> ExtraRoomsFor(int nodeId)
         {
-            var dirs = new List<LayoutDirection>();
-            foreach (var portal in _portals)
-                if (portal.Node == nodeId) dirs.Add(portal.Dir);
-            return dirs;
+            var rooms = new List<Func<GridRoom>>();
+            foreach (var (node, factory) in _extraRooms)
+                if (node == nodeId) rooms.Add(factory);
+            return rooms;
         }
 
-        private bool TryGetPortalTarget(int nodeId, LayoutDirection dir, out string target)
+        private static IDungeonDoor FindNearestDoor(Point tile)
         {
-            foreach (var portal in _portals)
-                if (portal.Node == nodeId && portal.Dir == dir)
-                {
-                    target = portal.Target;
-                    return true;
-                }
-            target = null;
-            return false;
-        }
-
-        private static ArchiveDoor_TE FindNearestDoor(Point tile)
-        {
-            ArchiveDoor_TE best = null;
+            IDungeonDoor best = null;
             int bestDistSq = int.MaxValue;
             foreach (var te in TileEntity.ByID.Values)
             {
-                if (te is not ArchiveDoor_TE door) continue;
-                int dx = door.Position.X - tile.X;
-                int dy = door.Position.Y - tile.Y;
-                int distSq = dx * dx + dy * dy;
-                if (distSq < bestDistSq)
-                {
-                    bestDistSq = distSq;
-                    best = door;
-                }
-            }
-            return best;
-        }
-
-        private static SubworldDoor_TE FindNearestSubworldDoor(Point tile)
-        {
-            SubworldDoor_TE best = null;
-            int bestDistSq = int.MaxValue;
-            foreach (var te in TileEntity.ByID.Values)
-            {
-                if (te is not SubworldDoor_TE door) continue;
-                int dx = door.Position.X - tile.X;
-                int dy = door.Position.Y - tile.Y;
+                if (te is not IDungeonDoor door) continue;
+                int dx = te.Position.X - tile.X;
+                int dy = te.Position.Y - tile.Y;
                 int distSq = dx * dx + dy * dy;
                 if (distSq < bestDistSq)
                 {

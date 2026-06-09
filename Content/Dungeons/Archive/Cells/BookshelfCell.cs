@@ -10,7 +10,9 @@ using OvermorrowMod.Core.NPCs;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
+
+namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 {
     public class BookshelfCell : GridRoom
     {

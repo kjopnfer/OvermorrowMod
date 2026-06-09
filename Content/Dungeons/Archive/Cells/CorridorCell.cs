@@ -7,7 +7,9 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
+
+namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 {
     public class CorridorCell : GridRoom
     {

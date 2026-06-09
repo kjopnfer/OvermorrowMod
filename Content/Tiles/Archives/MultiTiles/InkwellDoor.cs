@@ -14,7 +14,7 @@ using Terraria.ObjectData;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
-    public class SubworldDoor : ModTile
+    public class InkwellDoor : ModTile
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
 
@@ -47,16 +47,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
             player.cursorItemIconID = ModContent.ItemType<ArchiveKey>();
-
             base.MouseOver(i, j);
         }
 
         public override bool RightClick(int i, int j)
         {
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            TileUtils.TryFindModTileEntity<SubworldDoor_TE>(bottomLeft.X, bottomLeft.Y, out SubworldDoor_TE door);
+            TileUtils.TryFindModTileEntity<InkwellDoor_TE>(bottomLeft.X, bottomLeft.Y, out InkwellDoor_TE door);
             door?.Interact();
-
             return base.RightClick(i, j);
         }
 
@@ -64,7 +62,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             Tile tile = Framing.GetTileSafely(i, j);
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            TileUtils.TryFindModTileEntity<SubworldDoor_TE>(bottomLeft.X, bottomLeft.Y, out SubworldDoor_TE door);
+            TileUtils.TryFindModTileEntity<InkwellDoor_TE>(bottomLeft.X, bottomLeft.Y, out InkwellDoor_TE door);
 
             var tileSize = 18;
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.ArchiveTiles + Name + "Animated").Value;
@@ -82,16 +80,12 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     }
                 }
             }
-
             return false;
         }
     }
 
-    public class SubworldDoor_TE : ModTileEntity
+    public class InkwellDoor_TE : ModTileEntity
     {
-        /// <summary>
-        /// The subworld this door enters ("ModName/SubworldName"), set by the door room that places it.
-        /// </summary>
         public string TargetSubworld = "";
 
         private int FrameCounter = 0;
@@ -121,26 +115,17 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             if (distance <= ModUtils.TilesToPixels(6))
             {
-                if (DoorFrame < 7 && ++FrameCounter >= 3)
-                {
-                    DoorFrame++;
-                    FrameCounter = 0;
-                }
+                if (DoorFrame < 7 && ++FrameCounter >= 3) { DoorFrame++; FrameCounter = 0; }
             }
-            else if (DoorFrame > 1 && ++FrameCounter >= 3)
-            {
-                DoorFrame--;
-                FrameCounter = 0;
-            }
+            else if (DoorFrame > 1 && ++FrameCounter >= 3) { DoorFrame--; FrameCounter = 0; }
         }
 
         public override bool IsTileValidForEntity(int x, int y)
         {
             Tile tile = Main.tile[x, y];
-            if (!tile.HasTile || tile.TileType != ModContent.TileType<SubworldDoor>())
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<InkwellDoor>())
                 Kill(Position.X, Position.Y);
-
-            return tile.HasTile && tile.TileType == ModContent.TileType<SubworldDoor>();
+            return tile.HasTile && tile.TileType == ModContent.TileType<InkwellDoor>();
         }
     }
 }

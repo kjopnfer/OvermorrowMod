@@ -1,4 +1,5 @@
 using OvermorrowMod.Core.Loot.Pools;
+using OvermorrowMod.Content.Dungeons.Inkwell;
 using OvermorrowMod.Core.WorldGeneration.ArchiveSubworld;
 using OvermorrowMod.Core.WorldGeneration.TestSubworld;
 using SubworldLibrary;
@@ -12,7 +13,7 @@ namespace OvermorrowMod.Core.Loot
     {
         public override void PostSetupContent()
         {
-            LootPoolRegistry.Register<ArchivePool>(() => SubworldSystem.IsActive<ArchiveSubworld>() || SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>());
+            LootPoolRegistry.Register<ArchivePool>(() => SubworldSystem.IsActive<ArchiveSubworld>() || SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>() || SubworldSystem.IsActive<InkwellSubworld>());
             ScanLootAttributes();
         }
 

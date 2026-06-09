@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
@@ -109,9 +108,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         private static void WriteCellCounts(StringBuilder sb, DungeonGrid grid)
         {
-            int bookshelf = 0, corridor = 0, shaft = 0;
-            int descStair = 0, ascStair = 0, door = 0;
-            int lounge = 0, fireplace = 0, combat = 0;
+            var counts = new SortedDictionary<string, int>(StringComparer.Ordinal);
             int totalAnchors = 0, totalSlots = 0, emptySlots = 0;
 
             for (int row = 0; row < grid.Rows; row++)
@@ -125,31 +122,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
                     totalAnchors++;
-                    switch (slot.Room)
-                    {
-                        case BookshelfCell:    bookshelf++; break;
-                        case CorridorCell:     corridor++;  break;
-                        case ShaftCell:        shaft++;     break;
-                        case DescendingStair:  descStair++; break;
-                        case AscendingStair:   ascStair++;  break;
-                        case DoorRoom:         door++;      break;
-                        case LoungeRoom:       lounge++;    break;
-                        case FireplaceRoom:    fireplace++; break;
-                        case CombatRoom:       combat++;    break;
-                    }
+                    string name = slot.Room.GetType().Name;
+                    counts.TryGetValue(name, out int n);
+                    counts[name] = n + 1;
                 }
             }
 
             sb.AppendLine("--- Cell counts (anchors only) ---");
-            sb.AppendLine($"  Bookshelf:        {bookshelf}");
-            sb.AppendLine($"  Corridor:         {corridor}");
-            sb.AppendLine($"  Shaft:            {shaft}");
-            sb.AppendLine($"  Descending Stair: {descStair}");
-            sb.AppendLine($"  Ascending Stair:  {ascStair}");
-            sb.AppendLine($"  Lounge:           {lounge}");
-            sb.AppendLine($"  Fireplace:        {fireplace}");
-            sb.AppendLine($"  Combat:           {combat}");
-            sb.AppendLine($"  Door:             {door}");
+            foreach (var kv in counts)
+                sb.AppendLine($"  {kv.Key}: {kv.Value}");
             sb.AppendLine($"  Total anchors:    {totalAnchors}");
             sb.AppendLine($"  Empty slots:      {emptySlots} / {totalSlots}");
             sb.AppendLine();
@@ -231,7 +212,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     var slot = grid.GetSlot(col, row);
                     if (slot == null || slot.IsEmpty) continue;
-                    if (slot.Room is not CorridorCell) continue;
+                    if (slot.Room.Type != RoomType.HorizontalConnector) continue;
 
                     string leftDesc  = DescribeCellTerse(grid, col - 1, row);
                     string rightDesc = DescribeCellTerse(grid, col + 1, row);
@@ -397,7 +378,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int row = 0; row < grid.Rows; row++)
                 {
                     var slot = grid.GetSlot(col, row);
-                    if (slot != null && !slot.IsEmpty && slot.Room is ShaftCell)
+                    if (slot != null && !slot.IsEmpty && slot.Room.Type == RoomType.VerticalConnector)
                         rows.Add(row);
                 }
                 if (rows.Count > 0)

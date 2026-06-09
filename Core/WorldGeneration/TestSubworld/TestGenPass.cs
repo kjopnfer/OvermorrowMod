@@ -9,11 +9,15 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 {
     public class TestGenPass : GenPass
     {
-        private readonly string _portalTarget;
+        private readonly Func<GridRoom> _portalB;
+        private readonly Func<GridRoom> _portalC;
+        private readonly Func<DungeonContent> _contentFactory;
 
-        public TestGenPass(string name, double loadWeight, string portalTarget) : base(name, loadWeight)
+        public TestGenPass(string name, double loadWeight, Func<GridRoom> portalB, Func<GridRoom> portalC, Func<DungeonContent> contentFactory) : base(name, loadWeight)
         {
-            _portalTarget = portalTarget;
+            _portalB = portalB;
+            _portalC = portalC;
+            _contentFactory = contentFactory;
         }
 
         protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
@@ -33,16 +37,15 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
                 var layout = new DungeonLayout();
-                int a = layout.Add(new ArchiveContent());
-                int b = layout.Add(new ArchiveContent());
-                int c = layout.Add(new ArchiveContent());
+                int a = layout.Add(_contentFactory());
+                int b = layout.Add(_contentFactory());
+                int c = layout.Add(_contentFactory());
                 // A's east endpoint is the door to B; C is reached by a fork that
                 // descends below the spine. A's west endpoint stays the bookshelf spawn.
                 layout.Connect(a, LayoutDirection.East, b);
                 layout.Connect(a, LayoutDirection.SouthEast, c);
-                // B and C each get an east-facing portal door into the linked subworld.
-                layout.AddSubworldPortal(b, LayoutDirection.East, _portalTarget);
-                layout.AddSubworldPortal(c, LayoutDirection.East, _portalTarget);
+                if (_portalB != null) layout.AddRoom(b, _portalB);
+                if (_portalC != null) layout.AddRoom(c, _portalC);
                 layout.SetRoot(a);
                 layout.Build(new Point(centerX, centerY), rand);
 

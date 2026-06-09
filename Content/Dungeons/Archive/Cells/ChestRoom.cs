@@ -8,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells
+using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
+
+namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 {
     /// <summary>
     /// Terminal cell for dead-end aux branches. Drops a BigChest, optional

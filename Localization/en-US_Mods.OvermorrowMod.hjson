@@ -21,6 +21,7 @@ Tiles: {
 
 	BigChest.MapEntry: Big Chest
 	SubworldDoor.MapEntry: Subworld Door
+	InkwellDoor.MapEntry: Inkwell Door
 }
 
 Biomes: {
