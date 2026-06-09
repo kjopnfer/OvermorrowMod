@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
     [AutoloadEquip(EquipType.HandsOn)]
-    [Loot(ItemType.Generic, Rarity.Common)]
+    [Loot(ItemType.Generic, Rarity.Rare)]
     public class BandOfFocus : OvermorrowAccessory
     {
         public override string Texture => AssetDirectory.GuildItems + Name;

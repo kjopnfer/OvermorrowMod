@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    [Loot<ArchivePool>(ItemType.Ranged, Rarity.Common)]
+    [Loot<ArchivePool>(ItemType.Ranged, Rarity.Rare)]
     public class ArtOfBallistics : OvermorrowAccessory
     {
         public override string Texture => AssetDirectory.ArchiveItems + Name;

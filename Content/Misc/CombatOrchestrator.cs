@@ -216,7 +216,7 @@ namespace OvermorrowMod.Content.Misc
         {
             var pool = LootPoolRegistry.GetActive();
             if (pool == null) return System.Array.Empty<int>();
-            return LootRoller.RollOffers(pool, RewardModifier, RewardKinds, RewardOfferCount, Main.LocalPlayer);
+            return LootRoller.RollOffers(pool, RewardModifier, RewardKinds, RewardOfferCount, Main.LocalPlayer, ItemKind.Accessory);
         }
 
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)

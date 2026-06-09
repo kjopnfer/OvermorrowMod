@@ -18,7 +18,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Accessories
 {
-    [Loot<ArchivePool>(ItemType.Magic, Rarity.Rare)]
+    [Loot<ArchivePool>(ItemType.Magic, Rarity.Epic)]
     public class BlackPage : OvermorrowAccessory, ITooltipEntities
     {
         public List<TooltipEntity> TooltipObjects()

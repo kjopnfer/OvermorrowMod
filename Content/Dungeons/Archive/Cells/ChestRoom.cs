@@ -58,6 +58,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
                 {
                     chestEntity.ContentsModifier = new RarityModifier(rare: 10);
                     chestEntity.ContentsKinds = ItemKind.Weapon | ItemKind.Accessory | ItemKind.Armor;
+                    chestEntity.ContentsFavored = ItemKind.Weapon | ItemKind.Armor;
                 }
             }),
         };

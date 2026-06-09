@@ -5,6 +5,7 @@ using OvermorrowMod.Core.WorldGeneration.TestSubworld;
 using SubworldLibrary;
 using System;
 using System.Collections.Generic;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Loot
@@ -15,6 +16,51 @@ namespace OvermorrowMod.Core.Loot
         {
             LootPoolRegistry.Register<ArchivePool>(() => SubworldSystem.IsActive<ArchiveSubworld>() || SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>() || SubworldSystem.IsActive<InkwellSubworld>());
             ScanLootAttributes();
+            RegisterVanillaWildcards();
+        }
+
+        private static readonly (int ItemId, ItemType Affinity, Rarity Rarity)[] VanillaWildcards =
+        {
+            (ItemID.HermesBoots, ItemType.Generic, Rarity.Common),
+            (ItemID.RocketBoots, ItemType.Generic, Rarity.Common),
+            (ItemID.CloudinaBottle, ItemType.Generic, Rarity.Common),
+            (ItemID.BlizzardinaBottle, ItemType.Generic, Rarity.Common),
+            (ItemID.SandstorminaBottle, ItemType.Generic, Rarity.Common),
+            (ItemID.TsunamiInABottle, ItemType.Generic, Rarity.Common),
+            (ItemID.ShinyRedBalloon, ItemType.Generic, Rarity.Common),
+            (ItemID.LuckyHorseshoe, ItemType.Generic, Rarity.Common),
+            (ItemID.AnkletoftheWind, ItemType.Generic, Rarity.Common),
+            (ItemID.Aglet, ItemType.Generic, Rarity.Common),
+            (ItemID.FrogLeg, ItemType.Generic, Rarity.Common),
+            (ItemID.BandofRegeneration, ItemType.Generic, Rarity.Rare),
+            (ItemID.FeralClaws, ItemType.Melee, Rarity.Common),
+            (ItemID.CobaltShield, ItemType.Melee, Rarity.Common),
+            (ItemID.MagmaStone, ItemType.Melee, Rarity.Common),
+            (ItemID.MagicQuiver, ItemType.Ranged, Rarity.Common),
+            (ItemID.BandofStarpower, ItemType.Magic, Rarity.Common),
+            (ItemID.CelestialMagnet, ItemType.Magic, Rarity.Common),
+            (ItemID.PygmyNecklace, ItemType.Summon, Rarity.Common),
+            (ItemID.SpectreBoots, ItemType.Generic, Rarity.Epic),
+            (ItemID.CloudinaBalloon, ItemType.Generic, Rarity.Rare),
+            (ItemID.BlizzardinaBalloon, ItemType.Generic, Rarity.Rare),
+            (ItemID.SandstorminaBalloon, ItemType.Generic, Rarity.Rare),
+            (ItemID.ManaRegenerationBand, ItemType.Magic, Rarity.Rare),
+            (ItemID.MagicCuffs, ItemType.Magic, Rarity.Rare),
+            (ItemID.ManaFlower, ItemType.Magic, Rarity.Rare),
+            (ItemID.CelestialCuffs, ItemType.Magic, Rarity.Rare),
+            (ItemID.CreativeWings, ItemType.Generic, Rarity.Epic),
+            (ItemID.BundleofBalloons, ItemType.Generic, Rarity.Epic),
+        };
+
+        private void RegisterVanillaWildcards()
+        {
+            foreach (var poolType in LootPoolRegistry.AllPoolTypes())
+            {
+                foreach (var (itemId, affinity, rarity) in VanillaWildcards)
+                {
+                    LootMetadata.Set(poolType, itemId, affinity, rarity);
+                }
+            }
         }
 
         public override void Unload()

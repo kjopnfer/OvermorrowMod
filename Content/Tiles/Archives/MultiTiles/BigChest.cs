@@ -219,6 +219,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         // these are used to roll the contents; once rolled, ChestItem holds the result.
         public RarityModifier ContentsModifier = new(rare: 10);
         public ItemKind ContentsKinds = ItemKind.Consumable;
+        public ItemKind ContentsFavored = ItemKind.None;
 
         public override void SaveData(TagCompound tag)
         {
@@ -241,7 +242,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             var pool = LootPoolRegistry.GetActive();
             if (pool == null) return;
 
-            int[] rolled = LootRoller.RollOffers(pool, ContentsModifier, ContentsKinds, 1, Main.LocalPlayer);
+            int[] rolled = LootRoller.RollOffers(pool, ContentsModifier, ContentsKinds, 1, Main.LocalPlayer, ContentsFavored);
             if (rolled.Length > 0)
                 ChestItem = rolled[0];
         }
@@ -370,7 +371,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     glowProgress = MathHelper.Lerp(1f, 0f, fadeProgress);
                 }
 
-                Lighting.AddLight(Position.ToWorldCoordinates() + new Vector2(2 * 16 - 12, 0), new Vector3(0f, 1f, 0.5f) * glowProgress);
+                Vector3 lightColor = new Vector3(0f, 1f, 0.5f);
+                if (ChestItem > 0 && LootMetadata.TryGetAny(ChestItem, out var meta))
+                    lightColor = RarityColors.For(meta.Rarity).ToVector3();
+
+                Lighting.AddLight(Position.ToWorldCoordinates() + new Vector2(2 * 16 - 12, 0), lightColor * glowProgress);
             }
         }
 
