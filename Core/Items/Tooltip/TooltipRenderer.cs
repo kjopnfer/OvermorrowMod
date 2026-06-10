@@ -81,20 +81,25 @@ namespace OvermorrowMod.Core.Items
         {
             if (keywords.Count == 0) return;
 
-            float offset = 0;
             float containerWidth = tooltipCount == 0 ? 0 : TooltipConfiguration.CONTAINER_WIDTH;
+            float lineWidth = ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X;
+            float boxWidth = TooltipConfiguration.KEYWORD_WIDTH + 40;
 
+            // Sit to the right of the item tooltip (past any entity container), and
+            // only flip to the left of it when the right placement runs off-screen.
+            float rightX = x + lineWidth + containerWidth + TooltipConfiguration.CONTAINER_OFFSET;
+            bool placeLeft = rightX + boxWidth > Main.screenWidth;
+            float boxX = placeLeft ? x - TooltipConfiguration.CONTAINER_OFFSET - boxWidth : rightX;
+
+            float offset = 0;
             foreach (string keyword in keywords)
             {
-                Vector2 position = new Vector2(
-                    x + containerWidth + TooltipConfiguration.CONTAINER_OFFSET +
-                    ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X,
-                    y + offset);
-
                 float height = CalculateKeywordHeight(keyword);
-                position = AdjustForScreenBounds(position, height, x, widestLine);
+                float boxY = y + offset;
+                if (boxY + height > Main.screenHeight)
+                    boxY = Main.screenHeight - height;
 
-                DrawKeywordTooltip(spriteBatch, keyword, position, height);
+                DrawKeywordTooltip(spriteBatch, keyword, new Vector2(boxX, boxY), height);
                 offset += height + 5 + TooltipConfiguration.BOTTOM_PADDING;
             }
         }
@@ -539,25 +544,6 @@ namespace OvermorrowMod.Core.Items
             {
                 float yOverflow = y + yOffset + height - Main.screenHeight;
                 position -= new Vector2(0, yOverflow);
-            }
-
-            return position;
-        }
-
-        public static Vector2 AdjustForScreenBounds(Vector2 position, float height, int x, string widestLine)
-        {
-            if (position.Y + height > Main.screenHeight)
-            {
-                float yOverflow = position.Y + height - Main.screenHeight;
-                position -= new Vector2(0, yOverflow);
-            }
-
-            if (Main.MouseScreen.X > Main.screenWidth / 2)
-            {
-                position = new Vector2(
-                    x + TooltipConfiguration.RIGHT_OFFSET - TooltipConfiguration.CONTAINER_WIDTH -
-                    ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X,
-                    position.Y);
             }
 
             return position;

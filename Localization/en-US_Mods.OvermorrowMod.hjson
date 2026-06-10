@@ -269,6 +269,11 @@ LoadingTips: {
 }
 
 Keywords: {
+	Collectible: {
+		DisplayName: Collectible
+		Description: A consumable that grants an effect for the current run.
+	}
+
 	Aerial: {
 		DisplayName: Aerial
 		Description: Activates while airborne
@@ -692,6 +697,181 @@ Items: {
 		DisplayName: Test Key
 		Tooltip: ""
 	}
+
+	BadgeOfCourage: {
+		DisplayName: Badge Of Courage
+		Tooltip: ""
+	}
+
+	BadgeOfPrecision: {
+		DisplayName: Badge Of Precision
+		Tooltip: ""
+	}
+
+	BadgeOfSolidarity: {
+		DisplayName: Badge Of Solidarity
+		Tooltip: ""
+	}
+
+	BadgeOfStrength: {
+		DisplayName: Badge Of Strength
+		Tooltip: ""
+	}
+
+	BeefWellington: {
+		DisplayName: Beef Wellington
+		Tooltip: ""
+	}
+
+	Bread: {
+		DisplayName: Bread
+		Tooltip: ""
+	}
+
+	Cabernet: {
+		DisplayName: Cabernet
+		Tooltip: ""
+	}
+
+	CarribeanPiece: {
+		DisplayName: Carribean Piece
+		Tooltip: ""
+	}
+
+	Chardonnay: {
+		DisplayName: Chardonnay
+		Tooltip: ""
+	}
+
+	Chocolate: {
+		DisplayName: Chocolate
+		Tooltip: ""
+	}
+
+	Coffee: {
+		DisplayName: Coffee
+		Tooltip: ""
+	}
+
+	DeepwaterPearls: {
+		DisplayName: Deepwater Pearls
+		Tooltip: ""
+	}
+
+	Doohickey: {
+		DisplayName: Doohickey
+		Tooltip: ""
+	}
+
+	FourLeafClover: {
+		DisplayName: Four Leaf Clover
+		Tooltip: ""
+	}
+
+	FreshApple: {
+		DisplayName: Fresh Apple
+		Tooltip: ""
+	}
+
+	Gruel: {
+		DisplayName: Gruel
+		Tooltip: ""
+	}
+
+	Milk: {
+		DisplayName: Milk
+		Tooltip: ""
+	}
+
+	MoldyBread: {
+		DisplayName: Moldy Bread
+		Tooltip: ""
+	}
+
+	Onion: {
+		DisplayName: Onion
+		Tooltip: ""
+	}
+
+	Paintbrush: {
+		DisplayName: Paintbrush
+		Tooltip: ""
+	}
+
+	PinotNoir: {
+		DisplayName: Pinot Noir
+		Tooltip: ""
+	}
+
+	Port: {
+		DisplayName: Port
+		Tooltip: ""
+	}
+
+	PredatorsTalisman: {
+		DisplayName: Predators Talisman
+		Tooltip: ""
+	}
+
+	QuakeBadge: {
+		DisplayName: Quake Badge
+		Tooltip: ""
+	}
+
+	Riesling: {
+		DisplayName: Riesling
+		Tooltip: ""
+	}
+
+	Rose: {
+		DisplayName: Rose
+		Tooltip: ""
+	}
+
+	RubyBeadNecklace: {
+		DisplayName: Ruby Bead Necklace
+		Tooltip: ""
+	}
+
+	SauvignonBlanc: {
+		DisplayName: Sauvignon Blanc
+		Tooltip: ""
+	}
+
+	SharpeningStone: {
+		DisplayName: Sharpening Stone
+		Tooltip: ""
+	}
+
+	SomethingHeavy: {
+		DisplayName: Something Heavy
+		Tooltip: ""
+	}
+
+	SugarCubes: {
+		DisplayName: Sugar Cubes
+		Tooltip: ""
+	}
+
+	SundropBerry: {
+		DisplayName: Sundrop Berry
+		Tooltip: ""
+	}
+
+	WavebreakBadge: {
+		DisplayName: Wavebreak Badge
+		Tooltip: ""
+	}
+
+	Wurst: {
+		DisplayName: Wurst
+		Tooltip: ""
+	}
+
+	Zinfandel: {
+		DisplayName: Zinfandel
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -802,4 +982,32 @@ Projectiles: {
 	CarvingKnifeSlash.DisplayName: Carving Knife Slash
 	DisplayItem.DisplayName: Display Item
 	SpawnTelegraph.DisplayName: Spawn Telegraph
+}
+
+CollectibleBonus: {
+	Increase: - Increases {0} by {1}
+	Decrease: - Decreases {0} by {1}
+
+	Stat: {
+		MaxLife: maximum life
+		MaxMana: maximum mana
+		DefenseFlat: defense
+		DefensePercent: defense
+		DamagePercent: damage
+		DamageFlat: damage
+		CritChance: critical strike chance
+		MoveSpeedPercent: movement speed
+		Knockback: knockback
+		ArmorPenetration: armor penetration
+		Luck: luck
+	}
+}
+
+CollectibleEffect: {
+	ExtraCoinsOnHit: - Hitting an enemy has a chance to produce additional coins
+	ArtEnemyDropBoost: - Art-type enemies drop more monkey stones
+	ShopHealDiscount: - Healing potions in shops are {Increase:20%} cheaper to purchase
+	ShopMarkup: - Shop items become {Decrease:20%} more expensive
+	RestAreaHeal: - Heal an additional {Increase:10} HP at rest areas
+	DecreaseSourceScaling: - For all collectibles, equipment, or pacts that decrease player stats, gain {Increase:2%} damage and {Increase:1%} critical chance
 }

@@ -1,4 +1,5 @@
 using OvermorrowMod.Core.Loot.Pools;
+using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Content.Dungeons.Inkwell;
 using OvermorrowMod.Core.WorldGeneration.ArchiveSubworld;
 using OvermorrowMod.Core.WorldGeneration.TestSubworld;
@@ -15,8 +16,19 @@ namespace OvermorrowMod.Core.Loot
         public override void PostSetupContent()
         {
             LootPoolRegistry.Register<ArchivePool>(() => SubworldSystem.IsActive<ArchiveSubworld>() || SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>() || SubworldSystem.IsActive<InkwellSubworld>());
+            LootPoolRegistry.Register<CollectiblesPool>(() => false);
             ScanLootAttributes();
             RegisterVanillaWildcards();
+            RegisterCollectibles();
+        }
+
+        private void RegisterCollectibles()
+        {
+            foreach (var modItem in Mod.GetContent<ModItem>())
+            {
+                if (modItem is CollectibleItem collectible)
+                    LootMetadata.Set(typeof(CollectiblesPool), modItem, ItemType.Generic, collectible.Rarity);
+            }
         }
 
         private static readonly (int ItemId, ItemType Affinity, Rarity Rarity)[] VanillaWildcards =
@@ -56,6 +68,7 @@ namespace OvermorrowMod.Core.Loot
         {
             foreach (var poolType in LootPoolRegistry.AllPoolTypes())
             {
+                if (!LootPoolRegistry.Get(poolType).AcceptsWildcards) continue;
                 foreach (var (itemId, affinity, rarity) in VanillaWildcards)
                 {
                     LootMetadata.Set(poolType, itemId, affinity, rarity);
@@ -99,6 +112,7 @@ namespace OvermorrowMod.Core.Loot
                         foreach (var poolType in allPoolTypes)
                         {
                             if (specificPools.Contains(poolType)) continue;
+                            if (!LootPoolRegistry.Get(poolType).AcceptsWildcards) continue;
                             LootMetadata.Set(poolType, modItem, wildcard.Affinities, wildcard.Rarity);
                         }
                     }
