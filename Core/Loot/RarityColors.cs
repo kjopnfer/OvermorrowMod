@@ -11,7 +11,7 @@ namespace OvermorrowMod.Core.Loot
                 Rarity.Rare => new Color(80, 150, 255),
                 Rarity.Epic => new Color(180, 100, 255),
                 Rarity.Legendary => new Color(255, 175, 45),
-                _ => new Color(210, 210, 210),
+                _ => new Color(88, 214, 141),
             };
         }
     }

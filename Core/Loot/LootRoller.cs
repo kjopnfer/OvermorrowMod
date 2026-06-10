@@ -51,6 +51,38 @@ namespace OvermorrowMod.Core.Loot
             return offered.ToArray();
         }
 
+        /// <summary>
+        /// Rolls a single item of the given kind from the pool, excluding any ids in
+        /// <paramref name="exclude"/>. Returns 0 when no eligible item exists.
+        /// </summary>
+        public static int RollOne(LootPool pool, ItemKind kind, RarityModifier modifier, Player player, ICollection<int> exclude)
+        {
+            if (pool == null) return 0;
+
+            var candidates = new List<(int Type, LootMetadataEntry Meta)>();
+            foreach (var pair in LootMetadata.EntriesInPool(pool.GetType()))
+            {
+                if (pair.Value.Kind != kind) continue;
+                if (exclude != null && exclude.Contains(pair.Key)) continue;
+                candidates.Add((pair.Key, pair.Value));
+            }
+            if (candidates.Count == 0) return 0;
+
+            ItemType activeClasses = ComputeActiveClasses(player);
+            RarityWeights effectiveWeights = pool.BaseWeights + modifier;
+            var bagPlayer = player.GetModPlayer<LootPlayer>();
+
+            Rarity rolledRarity = effectiveWeights.Sample(Main.rand);
+            var bucket = SelectBucket(candidates, rolledRarity);
+            if (bucket.Count == 0) return 0;
+
+            int? pick = WeightedPickFromBucket(bucket, activeClasses, kind, player, pool.GetType(), bagPlayer, new List<int>());
+            if (pick == null) return 0;
+
+            bagPlayer.RecordOffered(pool.GetType(), pick.Value);
+            return pick.Value;
+        }
+
         public static void GiveCompanionAmmo(IEntitySource source, Vector2 position, int itemId)
         {
             if (itemId <= 0) return;
@@ -121,7 +153,7 @@ namespace OvermorrowMod.Core.Loot
                 }
                 if (bucket.Count > 0) return bucket;
             }
-            for (int r = (int)rolledRarity + 1; r <= (int)Rarity.Epic; r++)
+            for (int r = (int)rolledRarity + 1; r <= (int)Rarity.Legendary; r++)
             {
                 var bucket = new List<(int, LootMetadataEntry)>();
                 foreach (var c in candidates)

@@ -6,6 +6,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using ReLogic.Content;
@@ -64,10 +65,16 @@ namespace OvermorrowMod.Content.Misc
 
         private const int MinTilesFromDoor = 4;
 
-        // Combat-room reward shape.
         private static readonly RarityModifier RewardModifier = new(rare: 5);
-        private const ItemKind RewardKinds = ItemKind.Weapon | ItemKind.Accessory | ItemKind.Armor;
         private const int RewardOfferCount = 3;
+
+        private static readonly (ItemKind Kind, int Weight)[] RewardCategories =
+        {
+            (ItemKind.Consumable, 45),
+            (ItemKind.Accessory, 30),
+            (ItemKind.Weapon, 15),
+            (ItemKind.Armor, 10),
+        };
 
         public override string Texture => AssetDirectory.Misc + "RewardChest";
 
@@ -214,9 +221,59 @@ namespace OvermorrowMod.Content.Misc
 
         private int[] RollCombatReward()
         {
-            var pool = LootPoolRegistry.GetActive();
-            if (pool == null) return System.Array.Empty<int>();
-            return LootRoller.RollOffers(pool, RewardModifier, RewardKinds, RewardOfferCount, Main.LocalPlayer, ItemKind.Accessory);
+            var gear = LootPoolRegistry.GetActive();
+            if (gear == null) return System.Array.Empty<int>();
+            var collectibles = LootPoolRegistry.Get<CollectiblesPool>();
+
+            var offers = new List<int>(RewardOfferCount);
+            var used = new HashSet<int>();
+
+            for (int slot = 0; slot < RewardOfferCount; slot++)
+            {
+                int id = RollRewardSlot(gear, collectibles, used);
+                if (id == 0) continue;
+                offers.Add(id);
+                used.Add(id);
+            }
+
+            return offers.ToArray();
+        }
+
+        private int RollRewardSlot(LootPool gear, LootPool collectibles, HashSet<int> used)
+        {
+            ItemKind primary = PickRewardCategory();
+            int id = RollCategory(primary, gear, collectibles, used);
+            if (id != 0) return id;
+
+            foreach (var category in RewardCategories)
+            {
+                if (category.Kind == primary) continue;
+                id = RollCategory(category.Kind, gear, collectibles, used);
+                if (id != 0) return id;
+            }
+            return 0;
+        }
+
+        private int RollCategory(ItemKind kind, LootPool gear, LootPool collectibles, HashSet<int> used)
+        {
+            if (kind == ItemKind.Consumable)
+                return LootRoller.RollOne(collectibles, ItemKind.Consumable, default, Main.LocalPlayer, used);
+
+            return LootRoller.RollOne(gear, kind, RewardModifier, Main.LocalPlayer, used);
+        }
+
+        private static ItemKind PickRewardCategory()
+        {
+            int total = 0;
+            foreach (var category in RewardCategories) total += category.Weight;
+
+            int roll = Main.rand.Next(total);
+            foreach (var category in RewardCategories)
+            {
+                roll -= category.Weight;
+                if (roll < 0) return category.Kind;
+            }
+            return RewardCategories[0].Kind;
         }
 
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)
