@@ -1,5 +1,6 @@
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Rarities;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -33,7 +34,13 @@ namespace OvermorrowMod.Core.Items.Collectibles
             Item.useTime = 17;
             Item.useTurn = true;
             Item.UseSound = SoundID.Item2;
-            Item.rare = RarityUtils.ToVanilla(Rarity);
+            Item.rare = Rarity switch
+            {
+                Rarity.Rare => ModContent.RarityType<RareRarity>(),
+                Rarity.Epic => ModContent.RarityType<EpicRarity>(),
+                Rarity.Legendary => ModContent.RarityType<LegendaryRarity>(),
+                _ => ModContent.RarityType<CommonRarity>(),
+            };
             Item.value = Item.sellPrice(silver: 50);
             SafeSetDefaults();
         }

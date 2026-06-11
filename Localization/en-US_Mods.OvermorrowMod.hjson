@@ -600,11 +600,7 @@ Items: {
 	BandOfFocus: {
 		DisplayName: Band Of Focus
 		Tooltip: "{Keyword:Vigor}: Gain 15% increased Magic critical strike chance"
-		Flavor:
-			'''
-			Congratulations, you're healthy.
-			Have some magical murder as a reward.
-			'''
+		Flavor: Turns out it's really hard to focus if you're dying.
 	}
 
 	BondingNecklace: {
@@ -614,7 +610,7 @@ Items: {
 			Increases your max number of minions by 1
 			Gain 2 maximum health for each minion you control
 			'''
-		Flavor: Lifes more fun with friends around.
+		Flavor: F is for friends who do stuff together.
 	}
 
 	SimpleScabbard: {
@@ -672,7 +668,7 @@ Items: {
 			Your max health is decreased by 60
 			Every 5 seconds, spawn a <Projectile:Fae Orb> for each minion you control
 			'''
-		Flavor: Comes with a lifetime supply of magical assistance and a modest reduction in lifetime.
+		Flavor: For centuries, the Fae tricked the unwary for their names. Then they discovered coffee shops.
 	}
 
 	CarvingKnife: {
@@ -726,6 +722,7 @@ Items: {
 	Bread: {
 		DisplayName: Bread
 		Tooltip: ""
+		Flavor: You will starve again, unless you learn the meaning of the law
 	}
 
 	Cabernet: {
@@ -751,6 +748,7 @@ Items: {
 	Coffee: {
 		DisplayName: Coffee
 		Tooltip: ""
+		Flavor: Cheetos. Chicken.
 	}
 
 	DeepwaterPearls: {
@@ -771,6 +769,7 @@ Items: {
 	FreshApple: {
 		DisplayName: Fresh Apple
 		Tooltip: ""
+		Flavor: May reduce the spawn chance of doctors
 	}
 
 	Gruel: {
@@ -791,6 +790,7 @@ Items: {
 	Onion: {
 		DisplayName: Onion
 		Tooltip: ""
+		Flavor: A lifetime of battles bound in parchment and hide
 	}
 
 	Paintbrush: {
@@ -846,6 +846,7 @@ Items: {
 	SomethingHeavy: {
 		DisplayName: Something Heavy
 		Tooltip: ""
+		Flavor: What's heavier? A kilogram of steel or a kilogram of feathers?
 	}
 
 	SugarCubes: {
