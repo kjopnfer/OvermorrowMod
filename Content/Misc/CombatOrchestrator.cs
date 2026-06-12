@@ -32,6 +32,7 @@ namespace OvermorrowMod.Content.Misc
         private int currentWave = 0;
         private int waveDelayTimer = 0;
         private const int WaveDelayTicks = 90;
+        private const float WaveBlasterBookChance = 0.35f;
 
         private const int TelegraphDuration = 70;
         private int telegraphTimer = 0;
@@ -394,12 +395,17 @@ namespace OvermorrowMod.Content.Misc
             int ratAX = Main.rand.Next(leftMinX, leftMaxX + 1);
             int ratBX = Main.rand.Next(rightMinX, rightMaxX + 1);
 
-            int ratType = ModContent.NPCType<ArchiveRat>();
-
-            QueueSpawn(ratType, ratAX, floorRow, 1);
-            QueueSpawn(ratType, ratBX, floorRow, -1);
+            QueueSpawn(PickWaveEnemy(), ratAX, floorRow, 1);
+            QueueSpawn(PickWaveEnemy(), ratBX, floorRow, -1);
 
             telegraphTimer = TelegraphDuration;
+        }
+
+        private static int PickWaveEnemy()
+        {
+            if (Main.rand.NextFloat() < WaveBlasterBookChance)
+                return ModContent.NPCType<BlasterBook>();
+            return ModContent.NPCType<ArchiveRat>();
         }
 
         private const int TelegraphCenterOffsetY = 20;
@@ -409,10 +415,15 @@ namespace OvermorrowMod.Content.Misc
 
             int worldX = tileX * 16 + 8;
             int worldYBottom = (floorRow + 1) * 16;
-            Vector2 telegraphCenter = new Vector2(worldX, worldYBottom - TelegraphCenterOffsetY);
+            float telegraphY = worldYBottom - TelegraphCenterOffsetY;
+            if (SpawnsFlying(npcType))
+                telegraphY -= FlyingSpawnHeightTiles * 16;
+            Vector2 telegraphCenter = new Vector2(worldX, telegraphY);
 
             Projectile.NewProjectile(NPC.GetSource_FromAI(), telegraphCenter, Vector2.Zero, ModContent.ProjectileType<SpawnTelegraph>(), 0, 0f, Main.myPlayer, spinDirection, TelegraphDuration);
         }
+
+        private static bool SpawnsFlying(int npcType) => ContentSamples.NpcsByNetId[npcType].noGravity;
 
         private void ResolvePendingSpawns()
         {
@@ -445,6 +456,9 @@ namespace OvermorrowMod.Content.Misc
                 modNPC.AnchorPosition = anchor;
                 modNPC.CombatOrchestratorWhoAmI = NPC.whoAmI;
                 if (target != null) modNPC.TargetingModule.SetTarget(target);
+
+                if (modNPC is LivingGrimoire grimoire)
+                    grimoire.RevealAndFly();
             }
 
             spawnedNPCs.Add(index);

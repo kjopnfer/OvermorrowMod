@@ -76,6 +76,11 @@ namespace OvermorrowMod.Content.NPCs.Archives
             AIStateMachine.SetSubstate<GrimoireHidden>(AIStateType.Idle, NPC.ModNPC as OvermorrowNPC);
         }
 
+        public void RevealAndFly()
+        {
+            AIStateMachine.ForceChangeState(AIStateType.Moving, this);
+        }
+
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {
             new GrimoireHidden(this)
         };

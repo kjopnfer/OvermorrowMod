@@ -1012,3 +1012,5 @@ CollectibleEffect: {
 	RestAreaHeal: - Heal an additional {Increase:10} HP at rest areas
 	DecreaseSourceScaling: - For all collectibles, equipment, or pacts that decrease player stats, gain {Increase:2%} damage and {Increase:1%} critical chance
 }
+
+UI.RewardSelection.Title: Choose One
