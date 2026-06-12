@@ -1,8 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.Misc;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.Localization;
 using Terraria.UI;
+using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Core.UI
 {
@@ -38,6 +42,10 @@ namespace OvermorrowMod.Core.UI
         public const int ButtonGap = 32;
         public const int ButtonRowGap = 24;
         public const int ButtonFadeInTicks = 20;
+        public const int TitleGap = 18;
+
+        private Vector2 rowCenter;
+        private float titleOpacity;
 
         // Order slots launch in: left first, right second, middle third.
         private static readonly int[] PopOrder = { 0, 2, 1 };
@@ -192,6 +200,9 @@ namespace OvermorrowMod.Core.UI
             int totalWidth = SlotSize * 3 + SlotSpacing * 2;
             float fadeOutMul = isClosing ? (drawCounter / (float)FadeTicks) : 1f;
 
+            rowCenter = rowCenterUI;
+            titleOpacity = MathHelper.Clamp(popoutTimer / (float)PopoutFlightTicks, 0f, 1f) * fadeOutMul;
+
             for (int i = 0; i < slots.Length; i++)
             {
                 // Landing position in UI space for this slot.
@@ -267,6 +278,19 @@ namespace OvermorrowMod.Core.UI
         {
             if (!visible) return;
             base.Draw(spriteBatch);
+            DrawTitle(spriteBatch);
+        }
+
+        private void DrawTitle(SpriteBatch spriteBatch)
+        {
+            if (titleOpacity <= 0f) return;
+
+            string text = Language.GetTextValue(LocalizationPath.UI + "RewardSelection.Title");
+            var font = FontAssets.MouseText.Value;
+            Vector2 size = ChatManager.GetStringSize(font, text, Vector2.One);
+            Vector2 pos = new Vector2(rowCenter.X - size.X / 2f, rowCenter.Y - SlotSize / 2f - TitleGap - size.Y);
+
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, text, pos, Color.White * titleOpacity, 0f, Vector2.Zero, Vector2.One);
         }
     }
 }

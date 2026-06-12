@@ -200,7 +200,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                             {
                                 var s = grid.GetSlot(c, r);
                                 if (s == null || s.IsEmpty) continue;
-                                if (s.Room.Type == RoomType.Door) continue;  // doors stay
                                 if ((c == start.X && r == start.Y) || (c == endTarget.X && r == endTarget.Y)) continue;  // endpoints stay
                                 s.Room = null;
                                 s.SubCol = 0;
