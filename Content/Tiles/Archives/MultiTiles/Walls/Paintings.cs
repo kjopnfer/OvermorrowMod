@@ -29,6 +29,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             ModContent.TileType<Selfie>(),
             ModContent.TileType<QinTheGreat>(),
             ModContent.TileType<Waltuh>(),
+            ModContent.TileType<BeatriceTheGolden>(),
         };
 
         public static int[] Width8 => new[]
@@ -188,6 +189,13 @@ namespace OvermorrowMod.Content.Tiles.Archives
     {
         public override int Width => 8;
         public override int Height => 5;
+        public override Color MapColor => new Color(85, 42, 18);
+    }
+
+    public class BeatriceTheGolden : Painting
+    {
+        public override int Width => 6;
+        public override int Height => 8;
         public override Color MapColor => new Color(85, 42, 18);
     }
 }
