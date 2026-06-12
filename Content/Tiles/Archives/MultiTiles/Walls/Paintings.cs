@@ -15,6 +15,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             ModContent.TileType<Chameleon>(),
             ModContent.TileType<Bismarck>(),
             ModContent.TileType<TheGleeks>(),
+            ModContent.TileType<ThirdImpact>(),
         };
 
         public static int[] Width5 => new[]
@@ -27,12 +28,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
             ModContent.TileType<ABriefRespite>(),
             ModContent.TileType<Selfie>(),
             ModContent.TileType<QinTheGreat>(),
+            ModContent.TileType<Waltuh>(),
         };
 
         public static int[] Width8 => new[]
         {
             ModContent.TileType<GodsIris>(),
             ModContent.TileType<TheDayIMetHer>(),
+            ModContent.TileType<WizGang>(),
         };
     }
 
@@ -164,6 +167,27 @@ namespace OvermorrowMod.Content.Tiles.Archives
     {
         public override int Width => 6;
         public override int Height => 6;
+        public override Color MapColor => new Color(85, 42, 18);
+    }
+
+    public class Waltuh : Painting
+    {
+        public override int Width => 6;
+        public override int Height => 6;
+        public override Color MapColor => new Color(85, 42, 18);
+    }
+
+    public class ThirdImpact : Painting
+    {
+        public override int Width => 4;
+        public override int Height => 5;
+        public override Color MapColor => new Color(85, 42, 18);
+    }
+
+    public class WizGang : Painting
+    {
+        public override int Width => 8;
+        public override int Height => 5;
         public override Color MapColor => new Color(85, 42, 18);
     }
 }
