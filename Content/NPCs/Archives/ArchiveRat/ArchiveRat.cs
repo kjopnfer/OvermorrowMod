@@ -58,7 +58,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
             NPC.width = 30;
             NPC.height = 44;
-            NPC.lifeMax = 40;
+            NPC.lifeMax = 20;
             NPC.defense = 8;
             NPC.damage = 13;
             NPC.knockBackResist = 0.5f;

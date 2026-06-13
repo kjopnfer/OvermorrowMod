@@ -70,6 +70,13 @@ namespace OvermorrowMod.Content.Dungeons.Archive
                 int[] pool = PaintingPool.Width8;
                 WorldGen.PlaceObject(x, y, pool[Main.rand.Next(pool.Length)]);
             }),
+            [(229, 224, 138)] = TexPlaceAction.CustomPlaceObject((x, y) =>
+            {
+                if (!Main.rand.NextBool()) return;
+
+                int tile = Main.rand.NextBool() ? ModContent.TileType<ArchivePot>() : ModContent.TileType<ArchivePotBig>();
+                WorldGen.PlaceObject(x, y, tile);
+            }),
 
             [(91, 110, 225)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceBookshelfArch(x, y)),
         };
