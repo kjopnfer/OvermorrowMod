@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
+using OvermorrowMod.Content.Tiles.Archives;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,6 +20,8 @@ namespace OvermorrowMod.Common.RoomManager
         public int StateTimer = 0;
 
         public bool IsLocked = false;
+
+        private bool lightsInitialized = false;
 
         // If true, NPC doesnt spawn on rejoin
         public bool IsDisabled = false;
@@ -148,8 +151,28 @@ namespace OvermorrowMod.Common.RoomManager
 
         public override void Update()
         {
+            InitializeRoomLighting();
             ManageDoorNPC();
             AdvanceStateMachine();
+        }
+
+        private void InitializeRoomLighting()
+        {
+            if (lightsInitialized) return;
+            if (IsDisabled) { lightsInitialized = true; return; }
+
+            var sibling = Sibling;
+            if (sibling == null) return;
+
+            lightsInitialized = true;
+            if (Position.X >= sibling.Position.X) return;
+
+            int leftX = Position.X;
+            int rightX = sibling.Position.X;
+            int top = Position.Y - ArchiveLights.CombatRoomHeight;
+
+            var roomRect = new Rectangle(leftX, top, rightX - leftX, ArchiveLights.CombatRoomHeight);
+            ArchiveLights.SetRegion(roomRect, 0f, 0, instant: true);
         }
 
         public override bool IsTileValidForEntity(int x, int y) => true;

@@ -31,12 +31,15 @@ namespace OvermorrowMod.Content.Tiles.Archives
             // name.SetDefault("Lamp");
 
             TileObjectData.addTile(Type);
+
+            ArchiveLights.LightTileTypes.Add(Type);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.6f;
-            g = 0.45f;
+            float brightness = ArchiveLights.GetBrightness(i, j);
+            r = 0.6f * brightness;
+            g = 0.45f * brightness;
             b = 0f;
         }
     }

@@ -38,12 +38,15 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             AddMapEntry(new Color(159, 131, 65));
             TileObjectData.addTile(Type);
+
+            ArchiveLights.LightTileTypes.Add(Type);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.9f;
-            g = 0.675f;
+            float brightness = ArchiveLights.GetBrightness(i, j);
+            r = 0.9f * brightness;
+            g = 0.675f * brightness;
             b = 0f;
         }
 
@@ -63,9 +66,10 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
             Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !Main.gamePaused)
+            float brightness = ArchiveLights.GetBrightness(i, j);
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !Main.gamePaused && brightness > 0.05f)
             {
-                float scale = 0.15f;
+                float scale = 0.15f * brightness;
                 Vector2 velocity = -Vector2.UnitY * 0.55f;
 
                 // Create particles at different positions

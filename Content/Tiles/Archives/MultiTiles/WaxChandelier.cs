@@ -33,21 +33,25 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(215, 186, 87));
+
+            ArchiveLights.LightTileTypes.Add(Type);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.9f;
-            g = 0.675f;
+            float brightness = ArchiveLights.GetBrightness(i, j);
+            r = 0.9f * brightness;
+            g = 0.675f * brightness;
             b = 0f;
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
             Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !Main.gamePaused)
+            float brightness = ArchiveLights.GetBrightness(i, j);
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !Main.gamePaused && brightness > 0.05f)
             {
-                float scale = 0.1f;
+                float scale = 0.1f * brightness;
                 Vector2 velocity = -Vector2.UnitY * 0.5f;
 
                 WaxCandleholder.CreateEmberParticle(new Vector2(i + 1.15f, j + 2.45f) * 16, velocity, scale);

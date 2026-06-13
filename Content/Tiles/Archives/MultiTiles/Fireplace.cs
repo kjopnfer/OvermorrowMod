@@ -49,6 +49,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(254, 121, 2));
+
+            ArchiveLights.LightTileTypes.Add(Type);
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -116,8 +118,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 float pulse = Main.rand.Next(28, 42) * 0.005f;
                 pulse += (270 - Main.mouseTextColor) / 700f;
 
-                r = 1.2f + pulse; // Increase red for a more vibrant orange
-                g = 0.55f + pulse; // Slightly lower green for a deeper orange
+                float brightness = ArchiveLights.GetBrightness(i, j);
+                r = (1.2f + pulse) * brightness; // Increase red for a more vibrant orange
+                g = (0.55f + pulse) * brightness; // Slightly lower green for a deeper orange
                 b = 0; // Keep blue at 0 for a pure orange hue
             }
 
@@ -154,7 +157,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Rectangle drawRectangle = new Rectangle(tile.TileFrameX, tile.TileFrameY + addFrY, 16, 16);
 
             // The flame is manually drawn separate from the tile texture so that it can be drawn at full brightness.
-            spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            Color flameColor = Color.White * ArchiveLights.GetBrightness(i, j);
+            spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, flameColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
         }
     }

@@ -10,6 +10,7 @@ using ReLogic.Content;
 using ReLogic.Graphics;
 using SubworldLibrary;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -41,10 +42,10 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
             SubworldTimer.Tick();
 
-            // Subworlds don't call TileEntity.Update() automatically
-            foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
+            // Snapshot because a TileEntity's Update may place new tile entities (e.g. combat lights).
+            foreach (TileEntity entity in TileEntity.ByID.Values.ToArray())
             {
-                pair.Value.Update();
+                entity.Update();
             }
         }
 
