@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
+using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
 using System.Linq;
 using Terraria;
@@ -203,27 +204,26 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     return;
                 }
 
-                Main.LocalPlayer.Teleport(matchingDoor.Position.ToWorldCoordinates(16, 16) + new Vector2(72, -32), -1);
+                Player player = Main.LocalPlayer;
+
+                int centerTileX = matchingDoor.Position.X + 6;
+                int floorTileY = matchingDoor.Position.Y;
+                int scanLimit = floorTileY + 20;
+                while (floorTileY < scanLimit && !WorldGen.SolidTile(centerTileX, floorTileY))
+                {
+                    floorTileY++;
+                }
+
+                float floorSurfaceY = floorTileY * 16f;
+                Vector2 destination = new Vector2(centerTileX * 16f + 8f - player.width / 2f, floorSurfaceY - player.height);
+
+                player.Teleport(destination, -1);
+                player.velocity = Vector2.Zero;
+                player.fallStart = (int)(destination.Y / 16f);
+                player.gfxOffY = 0f;
+                player.oldPosition = destination;
+                GlobalPlayer.RequestTeleport(destination);
                 matchingDoor.DoorFrame = 6;
-
-            }
-        }
-
-        private void SpawnDebugMarkers()
-        {
-            Vector2 origin = Position.ToWorldCoordinates(16, 16);
-            Vector2 destination = origin + new Vector2(72, -32);
-
-            SpawnDebugMarker(origin, DustID.GreenTorch);
-            SpawnDebugMarker(destination, DustID.RedTorch);
-        }
-
-        private static void SpawnDebugMarker(Vector2 position, int dustType)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                Dust dust = Dust.NewDustPerfect(position, dustType, Vector2.Zero, 0, default, 2f);
-                dust.noGravity = true;
             }
         }
 
@@ -317,8 +317,6 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void Update()
         {
             ManageLockNPC();
-
-            SpawnDebugMarkers();
 
             if (IsLocked) return;
 
