@@ -39,6 +39,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override void Update()
         {
+            SubworldTimer.Tick();
+
             // Subworlds don't call TileEntity.Update() automatically
             foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
             {
@@ -75,13 +77,15 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         public override void OnEnter()
         {
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
-            TitleCardManager.ShowTitle(TitleCardText);
+            TitleCardManager.ShowTitleWithTimer(TitleCardText);
             base.OnEnter();
         }
 
         public override void OnExit()
         {
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
+            SubworldTimer.Reset();
+            TitleCardManager.Hide();
             base.OnExit();
         }
     }

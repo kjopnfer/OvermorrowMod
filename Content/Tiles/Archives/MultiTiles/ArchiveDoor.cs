@@ -209,6 +209,24 @@ namespace OvermorrowMod.Content.Tiles.Archives
             }
         }
 
+        private void SpawnDebugMarkers()
+        {
+            Vector2 origin = Position.ToWorldCoordinates(16, 16);
+            Vector2 destination = origin + new Vector2(72, -32);
+
+            SpawnDebugMarker(origin, DustID.GreenTorch);
+            SpawnDebugMarker(destination, DustID.RedTorch);
+        }
+
+        private static void SpawnDebugMarker(Vector2 position, int dustType)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(position, dustType, Vector2.Zero, 0, default, 2f);
+                dust.noGravity = true;
+            }
+        }
+
         /// <summary>
         /// Spawns the lock NPC if the door is locked and no NPC exists
         /// </summary>
@@ -299,6 +317,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void Update()
         {
             ManageLockNPC();
+
+            SpawnDebugMarkers();
 
             if (IsLocked) return;
 

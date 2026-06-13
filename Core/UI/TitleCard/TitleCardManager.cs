@@ -14,6 +14,11 @@ namespace OvermorrowMod.Core.UI
             titleCard?.ShowTitle(text);
         }
 
+        public static void ShowTitleWithTimer(string text)
+        {
+            titleCard?.ShowTitle(text, withTimer: true);
+        }
+
         public static bool IsVisible()
         {
             return TitleCard.visible;
