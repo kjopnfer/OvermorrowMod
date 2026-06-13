@@ -7,6 +7,7 @@ using ReLogic.Content;
 using ReLogic.Graphics;
 using SubworldLibrary;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -72,10 +73,9 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
             Main.windSpeedCurrent = 0.05f;
 
             // For whatever reason, subworlds do not call these by themselves.
-            // The NPCSpawnPoint.Update() method now handles lazy loading automatically
-            foreach (KeyValuePair<int, TileEntity> pair in TileEntity.ByID)
+            // Snapshot because a TileEntity's Update may place new tile entities (e.g. combat lights).
+            foreach (TileEntity tileEntity in TileEntity.ByID.Values.ToArray())
             {
-                var tileEntity = pair.Value;
                 tileEntity.Update();
             }
         }

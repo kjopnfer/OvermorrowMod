@@ -5,6 +5,7 @@ using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
@@ -289,7 +290,18 @@ namespace OvermorrowMod.Content.Misc
             right.IsLocked = true;
 
             SpawnWave();
+            IgniteRoomLights(left, right);
             phase = Phase.Combat;
+        }
+
+        private static void IgniteRoomLights(CombatDoor_TE left, CombatDoor_TE right)
+        {
+            int leftX = System.Math.Min(left.Position.X, right.Position.X);
+            int rightX = System.Math.Max(left.Position.X, right.Position.X);
+            int top = left.Position.Y - ArchiveLights.CombatRoomHeight;
+
+            var roomRect = new Rectangle(leftX, top, rightX - leftX, ArchiveLights.CombatRoomHeight);
+            ArchiveLights.SetRegion(roomRect, 1f, ModUtils.SecondsToTicks(1.5f));
         }
 
         private void UpdateCombat()

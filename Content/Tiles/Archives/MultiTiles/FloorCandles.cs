@@ -36,12 +36,15 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.newTile.CoordinatePadding = 2;
 
             TileObjectData.addTile(Type);
+
+            ArchiveLights.LightTileTypes.Add(Type);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.9f;
-            g = 0.675f;
+            float brightness = ArchiveLights.GetBrightness(i, j);
+            r = 0.9f * brightness;
+            g = 0.675f * brightness;
             b = 0f;
         }
 
@@ -52,7 +55,10 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameY != 0) return;
 
-            float scale = 0.075f;
+            float brightness = ArchiveLights.GetBrightness(i, j);
+            if (brightness <= 0.05f) return;
+
+            float scale = 0.075f * brightness;
             Vector2 velocity = -Vector2.UnitY * 0.4f;
 
             switch (tile.TileFrameX)
