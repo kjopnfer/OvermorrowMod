@@ -27,8 +27,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     /// </summary>
     public sealed class DungeonPlan
     {
-        /// <summary>Stone border (tiles) painted around the occupied cells on every side.</summary>
-        public const int StoneMargin = 24;
+        public const int StoneMarginX = 4 * DungeonGrid.HorizontalSpacing;
+        public const int StoneMarginY = 4 * DungeonGrid.VerticalSpacing;
 
         public DungeonGrid Grid;
         public DungeonContent Content;
@@ -43,8 +43,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>Local door cell per connection direction.</summary>
         public Dictionary<LayoutDirection, Point> DoorAnchors;
 
-        public int FootprintWidth => (BoundsMax.X - BoundsMin.X) * DungeonGrid.HorizontalSpacing + DungeonGrid.CellTileWidth + StoneMargin * 2;
-        public int FootprintHeight => (BoundsMax.Y - BoundsMin.Y) * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight + StoneMargin * 2;
+        public int FootprintWidth => (BoundsMax.X - BoundsMin.X) * DungeonGrid.HorizontalSpacing + DungeonGrid.CellTileWidth + StoneMarginX * 2;
+        public int FootprintHeight => (BoundsMax.Y - BoundsMin.Y) * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight + StoneMarginY * 2;
     }
 
     /// <summary>A*-based dungeon generator. Critical-path / spine only.</summary>
@@ -520,12 +520,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             float eliteChance = content.EliteChance;
             IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> bindings = content.SpawnBindings;
             DungeonPalette palette = content.Palette;
-            int margin = DungeonPlan.StoneMargin;
+            int marginX = DungeonPlan.StoneMarginX;
+            int marginY = DungeonPlan.StoneMarginY;
 
             // Rebase the grid so the occupied region's top-left cell sits one margin inside worldOrigin.
             grid.Origin = new Point(
-                worldOrigin.X + margin - plan.BoundsMin.X * DungeonGrid.HorizontalSpacing,
-                worldOrigin.Y + margin - plan.BoundsMin.Y * DungeonGrid.VerticalSpacing);
+                worldOrigin.X + marginX - plan.BoundsMin.X * DungeonGrid.HorizontalSpacing,
+                worldOrigin.Y + marginY - plan.BoundsMin.Y * DungeonGrid.VerticalSpacing);
 
             // Fill stone over the footprint only.
             ushort fill = (ushort)fillTileType;
