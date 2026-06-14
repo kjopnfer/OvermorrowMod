@@ -422,7 +422,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     }
             }
 
-            // Path graph: wraps spine + branches so aux placement can address them by identity.
+            var spawnRoomAnchor = FindSpawnRoomAnchor(grid);
+            if (spawnRoomAnchor.HasValue) spawnAnchor = spawnRoomAnchor.Value;
+
             var paths = new List<DungeonPath>();
             Point? spineCombatAnchor = null;
             if (requiredAnchors != null)
@@ -576,6 +578,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     var local = slot.Room.GetSpawnBindings();
                     if (local != null) cellLocalBindings[new Point(col, row)] = local;
                 }
+
+            // Keep the starting cell and its immediate neighbors clear
+            Point spawnGrid = plan.SpawnAnchor;
+            allSlots.RemoveAll(s =>
+                System.Math.Abs(s.GridCoord.X - spawnGrid.X) <= StartRoomSpawnBuffer &&
+                System.Math.Abs(s.GridCoord.Y - spawnGrid.Y) <= StartRoomSpawnBuffer);
+
             EncounterSelector.Run(allSlots, bindings, cellLocalBindings, baseDensity, eliteChance, rand);
 
             Point spawnCellOrigin = grid.GridToWorld(plan.SpawnAnchor.X, plan.SpawnAnchor.Y);
@@ -584,6 +593,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             doors = new Dictionary<LayoutDirection, DoorPlacement>();
             foreach (var kv in plan.DoorAnchors)
                 doors[kv.Key] = MakeDoorPlacement(grid, kv.Value);
+        }
+
+        /// <summary>Tile radius (in cells) around the spawn cleared of enemy spawns.</summary>
+        private const int StartRoomSpawnBuffer = 1;
+
+        private static Point? FindSpawnRoomAnchor(DungeonGrid grid)
+        {
+            for (int c = 0; c < grid.Cols; c++)
+                for (int r = 0; r < grid.Rows; r++)
+                {
+                    var slot = grid.GetSlot(c, r);
+                    if (slot != null && !slot.IsEmpty && slot.SubCol == 0 && slot.SubRow == 0 && slot.Room.IsSpawnRoom)
+                        return new Point(c, r);
+                }
+            return null;
         }
 
         /// <summary>Writes the diagnostic grid dump; failures are logged, not thrown.</summary>

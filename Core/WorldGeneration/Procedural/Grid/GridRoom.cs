@@ -23,7 +23,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         Door,
         VerticalConnector,
         HorizontalConnector,
-        DiagonalConnector
+        DiagonalConnector,
+        Start
     }
 
     /// <summary>
@@ -63,6 +64,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Higher values paint their padding later, winning shared strips against lower-priority neighbors.
         /// </summary>
         public virtual int PaddingPriority => 0;
+
+        public virtual bool IsSpawnRoom => false;
 
         /// <summary>
         /// Paints the padding strip on one outward side; called once per side per room.
@@ -145,10 +148,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             get
             {
                 var list = new List<CellExit>(4);
-                AddCardinalExit(list, Direction.Right,  new Point(CellWidth, 0));
-                AddCardinalExit(list, Direction.Left,   new Point(-1, 0));
+                AddCardinalExit(list, Direction.Right, new Point(CellWidth, 0));
+                AddCardinalExit(list, Direction.Left, new Point(-1, 0));
                 AddCardinalExit(list, Direction.Bottom, new Point(0, CellHeight));
-                AddCardinalExit(list, Direction.Top,    new Point(0, -1));
+                AddCardinalExit(list, Direction.Top, new Point(0, -1));
                 return list.ToArray();
             }
         }
