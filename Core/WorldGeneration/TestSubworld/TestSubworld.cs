@@ -22,7 +22,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
     public class TestSubworld : Subworld
     {
         public override int Width => 4800;
-        public override int Height => 2400;
+        public override int Height => 4200;
 
         // Regen on every entry. Without this, SubworldLibrary saves the
         // generated world and re-enter just reloads it, so the Regenerate

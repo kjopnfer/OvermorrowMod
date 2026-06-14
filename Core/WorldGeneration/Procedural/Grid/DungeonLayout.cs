@@ -231,9 +231,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (h > maxHeight) maxHeight = h;
             }
 
-            const int Gap = 240;
-            int pitchX = maxWidth + Gap;
-            int pitchY = maxHeight + Gap;
+            // Dungeon margin
+            int gapX = 2 * (DungeonGrid.CellTileWidth + DungeonGrid.HorizontalPadding);
+            int gapY = 2 * (DungeonGrid.CellTileHeight + DungeonGrid.VerticalPadding);
+            int pitchX = maxWidth + gapX;
+            int pitchY = maxHeight + gapY;
             float bboxCenterX = (minX + maxX) / 2f;
             float bboxCenterY = (minY + maxY) / 2f;
 

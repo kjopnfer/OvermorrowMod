@@ -12,6 +12,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>Sets tile type + HasTile directly. Skips framing/sync, for bulk worldgen.</summary>
         public static void PlaceTile(int x, int y, ushort tileType)
         {
+            if (!WorldGen.InWorld(x, y)) return;
             Tile t = Main.tile[x, y];
             t.TileType = tileType;
             t.HasTile = true;
@@ -20,6 +21,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>Clears HasTile directly. Skips drops/dust/sync, for bulk worldgen.</summary>
         public static void ClearTile(int x, int y)
         {
+            if (!WorldGen.InWorld(x, y)) return;
             Tile t = Main.tile[x, y];
             t.HasTile = false;
         }
@@ -27,6 +29,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>Repaints an existing tile's type. No-op if the position is empty.</summary>
         public static void ReplaceTile(int x, int y, ushort tileType)
         {
+            if (!WorldGen.InWorld(x, y)) return;
             Tile t = Main.tile[x, y];
             if (!t.HasTile) return;
             t.TileType = tileType;
@@ -35,6 +38,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>Sets WallType directly. Skips framing/sync, for bulk worldgen.</summary>
         public static void SetWall(int x, int y, ushort wallType)
         {
+            if (!WorldGen.InWorld(x, y)) return;
             Tile t = Main.tile[x, y];
             t.WallType = wallType;
         }
@@ -42,6 +46,7 @@ namespace OvermorrowMod.Common.Utilities
         /// <summary>Clears the wall at the position.</summary>
         public static void ClearWall(int x, int y)
         {
+            if (!WorldGen.InWorld(x, y)) return;
             Tile t = Main.tile[x, y];
             t.WallType = WallID.None;
         }

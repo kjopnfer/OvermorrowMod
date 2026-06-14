@@ -41,10 +41,14 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 int a = layout.Add(_contentFactory());
                 int b = layout.Add(_contentFactory());
                 int c = layout.Add(_contentFactory());
-                // A's east endpoint is the door to B; C is reached by a fork that
-                // descends below the spine. A's west endpoint stays the bookshelf spawn.
-                layout.Connect(a, LayoutDirection.East, b);
-                layout.Connect(a, LayoutDirection.SouthEast, c);
+                // Branch B and C off A in two random distinct directions. East/West become spine
+                // endpoint doors; the other six become vertical forks.
+                var dirs = (LayoutDirection[])Enum.GetValues(typeof(LayoutDirection));
+                int d1 = rand.Next(dirs.Length);
+                int d2 = rand.Next(dirs.Length - 1);
+                if (d2 >= d1) d2++;
+                layout.Connect(a, dirs[d1], b);
+                layout.Connect(a, dirs[d2], c);
                 if (_portalB != null) layout.AddRoom(b, _portalB);
                 if (_portalC != null) layout.AddRoom(c, _portalC);
                 // Only the root dungeon (the one the player spawns in) gets a StartingRoom.
