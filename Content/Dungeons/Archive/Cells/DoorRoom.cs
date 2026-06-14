@@ -43,7 +43,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 
         public override bool OwnsPadding => true;
 
-        protected const string AsepritePath = AssetDirectory.GrandArchives + "DoorRoom.aseprite";
+        protected virtual string AsepritePath => AssetDirectory.GrandArchives + "DoorRoom.aseprite";
         protected virtual void PlaceDoorTile(int x, int y) => TileUtils.PlaceTileWithEntity<ArchiveDoor, ArchiveDoor_TE>(x, y);
 
         private Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()

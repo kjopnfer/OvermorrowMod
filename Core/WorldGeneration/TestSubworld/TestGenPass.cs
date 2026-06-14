@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Dungeons.Archive.Cells;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
 using System;
 using Terraria;
@@ -46,6 +47,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 layout.Connect(a, LayoutDirection.SouthEast, c);
                 if (_portalB != null) layout.AddRoom(b, _portalB);
                 if (_portalC != null) layout.AddRoom(c, _portalC);
+                // Only the root dungeon (the one the player spawns in) gets a StartingRoom.
+                layout.AddRoom(a, () => new StartingRoom());
                 layout.SetRoot(a);
                 layout.Build(new Point(centerX, centerY), rand);
 
