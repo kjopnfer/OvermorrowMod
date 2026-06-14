@@ -983,6 +983,7 @@ Projectiles: {
 	CarvingKnifeSlash.DisplayName: Carving Knife Slash
 	DisplayItem.DisplayName: Display Item
 	SpawnTelegraph.DisplayName: Spawn Telegraph
+	RestLight.DisplayName: Rest Light
 }
 
 CollectibleBonus: {

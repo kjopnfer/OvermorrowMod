@@ -61,6 +61,7 @@ namespace OvermorrowMod.Core.Items.Collectibles
 
                 if (heal > 0)
                 {
+                    player.statLifeMax2 += heal;
                     player.statLife += heal;
                     player.HealEffect(heal);
                 }
