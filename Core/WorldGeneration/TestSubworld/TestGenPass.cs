@@ -53,6 +53,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 if (_portalC != null) layout.AddRoom(c, _portalC);
                 // Only the root dungeon (the one the player spawns in) gets a StartingRoom.
                 layout.AddRoom(a, () => new StartingRoom());
+                layout.AddRoom(a, () => new ShopRoom());
                 layout.SetRoot(a);
                 layout.Build(new Point(centerX, centerY), rand);
 

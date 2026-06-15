@@ -905,6 +905,18 @@ NPCs: {
 	CombatDoorCollision.DisplayName: Combat Door Collision
 	CombatOrchestrator.DisplayName: Combat Orchestrator
 	WoodenLadderCollision.DisplayName: Wooden Ladder Collision
+	CartShopkeeper.DisplayName: Cart Shopkeeper
+}
+
+Dialogue: {
+	CartShopkeeper: {
+		Line0: Funny thing about the deep places: they take the people but leave the things. I just tidy up after.
+		Line1: Why charge coin? Let's just say blood and brawls aren't the only things that change hands down here. You'll find it. Or it'll find you.
+		Line2: I sell you gear for coin today. Tomorrow, if this place keeps you, I'll come collect it back. Nothing down here ever goes to waste.
+		Line3: Picked clean off the ones who didn't walk out. No sense leaving good steel to rust on a corpse, eh? Have a look.
+		Line4: Buying, or selling? Sell, I'd advise. Sooner or later it all finds its way to my cart, free of charge. Might as well get paid first, friend.
+		Line5: Who am I? Ha. I'm the fellow who's still here when everyone else isn't. Let's leave it at that.
+	}
 }
 
 Bestiary: {
