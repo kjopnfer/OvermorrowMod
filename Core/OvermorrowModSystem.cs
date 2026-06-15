@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.UI.LoadoutSelection;
+using OvermorrowMod.Core.UI.Shop;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -24,6 +25,9 @@ namespace OvermorrowMod.Core
 
         internal UserInterface LoadoutInterface;
         public LoadoutSelection LoadoutSelection;
+
+        internal UserInterface ShopInterface;
+        public ShopDialogue ShopDialogue;
 
         public override void Load()
         {
@@ -46,6 +50,10 @@ namespace OvermorrowMod.Core
                 LoadoutInterface.SetState(LoadoutSelection);
 
                 LoadoutSelectionManager.Initialize(LoadoutSelection);
+
+                ShopInterface = new UserInterface();
+                ShopDialogue = new ShopDialogue();
+                ShopInterface.SetState(ShopDialogue);
             }
         }
 
@@ -77,6 +85,8 @@ namespace OvermorrowMod.Core
             if (TitleCard != null && TitleCard.visible) TitleInterface?.Update(gameTime);
             if (RewardSelection != null && RewardSelection.visible) RewardInterface?.Update(gameTime);
             if (LoadoutSelection != null && LoadoutSelection.visible) LoadoutInterface?.Update(gameTime);
+            if (ShopDialogue.IsActive) ShopInterface?.Update(gameTime);
+            else ShopDialogue?.NotifyClosed();
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -87,6 +97,7 @@ namespace OvermorrowMod.Core
                 AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
                 AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
                 AddInterfaceLayer(layers, LoadoutSelection, mouseTextIndex, LoadoutSelection.visible, "Loadout Selection");
+                AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
             }
         }
 

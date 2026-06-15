@@ -278,7 +278,7 @@ namespace OvermorrowMod.Core.NPCs
             {
                 if (entity == null || !entity.active) continue;
 
-                if (entity is NPC possibleNPC && (possibleNPC == npc || !possibleNPC.friendly)) continue;
+                if (entity is NPC possibleNPC && (possibleNPC == npc || !possibleNPC.friendly || possibleNPC.townNPC || possibleNPC.dontTakeDamage)) continue;
 
                 // Use the new radius-based range checking
                 if (!IsEntityInAggroRange(entity)) continue;
