@@ -42,8 +42,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 
         public override bool IsOpenSide(int subCol, int subRow, Direction side) => true;
 
-        // Open sides with no neighbor are sealed with stone by the generator's side-cap pass.
-        public override bool OwnsPadding => false;
+        public override bool OwnsPadding => true;
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "ShopRoom.aseprite";
 
@@ -67,6 +66,18 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
                 var neighbor = ctx.Grid.GetSlot(ctx.Col, neighborRow);
                 if (neighbor != null && !neighbor.IsEmpty && neighbor.Room is ShaftCell)
                     return;
+            }
+
+            // Seal a horizontal side with stone when nothing connects there, instead of painting the open doorway.
+            if (ctx.Side == Direction.Left || ctx.Side == Direction.Right)
+            {
+                int neighborCol = ctx.Side == Direction.Left ? ctx.Col - 1 : ctx.Col + 1;
+                var sideNeighbor = ctx.Grid.GetSlot(neighborCol, ctx.Row);
+                if (sideNeighbor == null || sideNeighbor.IsEmpty)
+                {
+                    PaddingBuilder.FillSolid(ctx.X, ctx.Y, ctx.Width, ctx.Height, ctx.FillTileType);
+                    return;
+                }
             }
 
             int hp = DungeonGrid.HorizontalPadding;

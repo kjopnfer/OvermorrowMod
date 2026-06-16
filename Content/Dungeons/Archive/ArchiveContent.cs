@@ -70,6 +70,80 @@ namespace OvermorrowMod.Content.Dungeons.Archive
             [typeof(BookshelfCell)] = 2
         };
 
+        private const double FireplaceFromLoungeChance = 0.85;
+        private const double FireplaceChanceFalloff = 0.06;
+        private const int MinFireplaceSpacing = 5;
+
+        public override void RefineLayout(DungeonGrid grid, Random rand)
+        {
+            var loungeAnchors = new List<Point>();
+            var fireplaceAnchors = new List<Point>();
+            var seenGroups = new HashSet<int>();
+
+            for (int col = 0; col < grid.Cols; col++)
+            {
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot == null || slot.IsEmpty) continue;
+                    if (!seenGroups.Add(slot.GroupId)) continue;
+
+                    Point anchor = new Point(col - slot.SubCol, row - slot.SubRow);
+                    if (slot.Room is FireplaceRoom) fireplaceAnchors.Add(anchor);
+                    else if (slot.Room is LoungeRoom) loungeAnchors.Add(anchor);
+                }
+            }
+
+            for (int i = loungeAnchors.Count - 1; i > 0; i--)
+            {
+                int j = rand.Next(i + 1);
+                (loungeAnchors[i], loungeAnchors[j]) = (loungeAnchors[j], loungeAnchors[i]);
+            }
+
+            int prePlacedFireplaces = fireplaceAnchors.Count;
+
+            foreach (var anchor in loungeAnchors)
+            {
+                int addedSoFar = fireplaceAnchors.Count - prePlacedFireplaces;
+                double chance = Math.Min(1.0, FireplaceFromLoungeChance * Math.Pow(FireplaceChanceFalloff, addedSoFar));
+                if (rand.NextDouble() > chance) continue;
+                if (NearAnyFireplace(fireplaceAnchors, anchor)) continue;
+
+                ReplaceGroupRoom(grid, anchor, new FireplaceRoom());
+                fireplaceAnchors.Add(anchor);
+            }
+        }
+
+        private static bool NearAnyFireplace(List<Point> fireplaceAnchors, Point anchor)
+        {
+            foreach (var fp in fireplaceAnchors)
+            {
+                int dist = Math.Max(Math.Abs(fp.X - anchor.X), Math.Abs(fp.Y - anchor.Y));
+                if (dist < MinFireplaceSpacing) return true;
+            }
+            return false;
+        }
+
+        private static void ReplaceGroupRoom(DungeonGrid grid, Point anchor, GridRoom newRoom)
+        {
+            var anchorSlot = grid.GetSlot(anchor.X, anchor.Y);
+            if (anchorSlot == null || anchorSlot.IsEmpty) return;
+            int groupId = anchorSlot.GroupId;
+
+            for (int sc = 0; sc < newRoom.CellWidth; sc++)
+            {
+                for (int sr = 0; sr < newRoom.CellHeight; sr++)
+                {
+                    var slot = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
+                    if (slot == null) continue;
+                    slot.Room = newRoom;
+                    slot.SubCol = sc;
+                    slot.SubRow = sr;
+                    slot.GroupId = groupId;
+                }
+            }
+        }
+
         public override void Decorate(DungeonGrid grid)
         {
             int diagonalStairsType = ModContent.TileType<DiagonalStairs>();

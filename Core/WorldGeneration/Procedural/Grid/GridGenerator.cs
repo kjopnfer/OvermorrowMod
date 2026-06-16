@@ -534,6 +534,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int y = 0; y < plan.FootprintHeight; y++)
                     WorldGenUtils.PlaceTile(worldOrigin.X + x, worldOrigin.Y + y, fill);
 
+            content.RefineLayout(grid, rand);
+
             // Render rooms.
             for (int col = 0; col < grid.Cols; col++)
             {

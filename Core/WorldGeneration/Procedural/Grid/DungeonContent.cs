@@ -93,6 +93,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public virtual int MaxVerticalRun => 2;
 
         /// <summary>
+        /// Dungeon-specific layout adjustment run after planning but before any cell is rendered.
+        /// The dungeon may swap room instances in the grid (footprint and connectivity must match).
+        /// </summary>
+        public virtual void RefineLayout(DungeonGrid grid, Random rand) { }
+
+        /// <summary>
         /// Dungeon-specific decoration run after the structure is built and painted: the engine
         /// hands over the finished grid and the dungeon places its own themed objects.
         /// </summary>
