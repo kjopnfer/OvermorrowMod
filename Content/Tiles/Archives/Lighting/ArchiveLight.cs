@@ -20,6 +20,32 @@ namespace OvermorrowMod.Content.Tiles.Archives
         private int rampTimer;
         private int rampDuration;
 
+        /// <summary>
+        /// Multiplier applied on top of <see cref="Current"/> while the ghost is haunting this light.
+        /// 1 is undisturbed; 0 is fully snuffed out.
+        /// </summary>
+        public float Haunt { get; private set; } = 1f;
+
+        private float hauntPressure;
+        private float pressureTarget;
+        private int extinguishTimer;
+        private int relightTimer;
+        private bool extinguished;
+
+        private const int ExtinguishDelay = 30;
+        private const int RelightDelay = 60 * 20;
+        private const float ExtinguishPressure = 0.85f;
+        private const float FlickerPressure = 0.15f;
+
+        /// <summary>
+        /// Raises this light's haunt pressure for the frame; proximity is 0 at the edge of the
+        /// ghost's reach and 1 right on top of it. Called every frame the ghost is in range.
+        /// </summary>
+        public void Disturb(float proximity)
+        {
+            if (proximity > pressureTarget) pressureTarget = proximity;
+        }
+
         public void SetTarget(float value, int rampTicks, bool instant = false)
         {
             value = MathHelper.Clamp(value, 0f, 1f);
@@ -57,6 +83,49 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 float progress = MathHelper.Clamp(rampTimer / (float)rampDuration, 0f, 1f);
                 Current = MathHelper.Lerp(rampFrom, Target, EasingUtils.EaseInOutQuad(progress));
                 if (rampTimer >= rampDuration) Current = Target;
+            }
+
+            UpdateHaunt();
+        }
+
+        /// <summary>
+        /// Dims toward the ghost as it nears, snuffs out after sustained close contact, and stays dark
+        /// for <see cref="RelightDelay"/> ticks before easing back on.
+        /// </summary>
+        private void UpdateHaunt()
+        {
+            if (extinguished)
+            {
+                Haunt = 0f;
+                pressureTarget = 0f;
+                hauntPressure = 0f;
+                extinguishTimer = 0;
+                if (--relightTimer <= 0) extinguished = false;
+                return;
+            }
+
+            hauntPressure = MathHelper.Lerp(hauntPressure, pressureTarget, 0.25f);
+            pressureTarget = 0f;
+
+            float desired = 1f - hauntPressure;
+            float rate = desired < Haunt ? 0.25f : 0.03f;
+            Haunt = MathHelper.Lerp(Haunt, desired, rate);
+
+            if (hauntPressure > FlickerPressure && hauntPressure < ExtinguishPressure && Main.rand.NextBool(2))
+                Haunt *= 1f - Main.rand.NextFloat() * 0.5f * hauntPressure;
+
+            if (hauntPressure >= ExtinguishPressure)
+            {
+                if (++extinguishTimer >= ExtinguishDelay)
+                {
+                    extinguished = true;
+                    relightTimer = RelightDelay;
+                    Haunt = 0f;
+                }
+            }
+            else if (extinguishTimer > 0)
+            {
+                extinguishTimer--;
             }
         }
 
@@ -96,9 +165,46 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             Point topLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.TopLeft);
             if (TileUtils.TryFindModTileEntity<ArchiveLight_TE>(topLeft.X, topLeft.Y, out var light))
-                return light.Current;
+                return light.Current * light.Haunt;
 
             return 1f;
+        }
+
+        public const float HauntOuterRadius = 90f;
+        public const float HauntInnerRadius = 8f;
+
+        /// <summary>
+        /// Pressures every light within the ghost's reach, scaled by closeness, so it dims and
+        /// eventually snuffs the lights nearest to it.
+        /// </summary>
+        public static void Disturb(Vector2 worldCenter)
+        {
+            int centerX = (int)(worldCenter.X / 16f);
+            int centerY = (int)(worldCenter.Y / 16f);
+            int radius = (int)System.Math.Ceiling(HauntOuterRadius);
+
+            for (int x = centerX - radius; x <= centerX + radius; x++)
+            {
+                for (int y = centerY - radius; y <= centerY + radius; y++)
+                {
+                    Tile tile = Framing.GetTileSafely(x, y);
+                    if (!IsLightTile(tile)) continue;
+
+                    Point topLeft = TileUtils.GetCornerOfMultiTile(x, y, TileUtils.CornerType.TopLeft);
+                    if (topLeft.X != x || topLeft.Y != y) continue;
+
+                    float dx = x - centerX;
+                    float dy = y - centerY;
+                    float dist = (float)System.Math.Sqrt(dx * dx + dy * dy);
+                    if (dist > HauntOuterRadius) continue;
+
+                    float closeness = MathHelper.Clamp((HauntOuterRadius - dist) / (HauntOuterRadius - HauntInnerRadius), 0f, 1f);
+                    if (closeness < 0.02f) continue;
+
+                    float proximity = closeness * closeness;
+                    GetOrCreate(x, y)?.Disturb(proximity);
+                }
+            }
         }
 
         private static ArchiveLight_TE GetOrCreate(int x, int y)

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Dungeons.Archive;
 using OvermorrowMod.Content.Dungeons.Archive.Cells;
 using OvermorrowMod.Content.Dungeons.Inkwell.Cells;
@@ -14,6 +15,7 @@ using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
@@ -38,9 +40,21 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
         }
 
+        private bool ghostSpawned;
+
         public override void Update()
         {
             SubworldTimer.Tick();
+
+            if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !ghostSpawned && Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                Player player = Main.player[Main.myPlayer];
+                int cellPx = 18 * 16;
+                int dir = player.Center.X < Width * 8f ? 1 : -1;
+                float spawnX = MathHelper.Clamp(player.Center.X + dir * 10 * cellPx, 80 * 16, (Width - 80) * 16);
+                NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnX, (int)player.Center.Y, ModContent.NPCType<GhostCrawler>());
+                ghostSpawned = true;
+            }
 
             // Snapshot because a TileEntity's Update may place new tile entities (e.g. combat lights).
             foreach (TileEntity entity in TileEntity.ByID.Values.ToArray())
@@ -77,6 +91,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override void OnEnter()
         {
+            ghostSpawned = false;
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
             TitleCardManager.ShowTitleWithTimer(TitleCardText);
             base.OnEnter();
