@@ -907,6 +907,7 @@ NPCs: {
 	WoodenLadderCollision.DisplayName: Wooden Ladder Collision
 	CartShopkeeper.DisplayName: Cart Shopkeeper
 	GhostCrawler.DisplayName: ???
+	GhostHead.DisplayName: Ghost Head
 }
 
 Dialogue: {
