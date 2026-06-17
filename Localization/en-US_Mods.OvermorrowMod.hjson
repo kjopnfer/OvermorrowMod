@@ -906,6 +906,7 @@ NPCs: {
 	CombatOrchestrator.DisplayName: Combat Orchestrator
 	WoodenLadderCollision.DisplayName: Wooden Ladder Collision
 	CartShopkeeper.DisplayName: Cart Shopkeeper
+	GhostCrawler.DisplayName: ???
 }
 
 Dialogue: {
