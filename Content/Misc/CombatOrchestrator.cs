@@ -10,6 +10,7 @@ using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
+using OvermorrowMod.Core.WorldGeneration;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
@@ -526,6 +527,7 @@ namespace OvermorrowMod.Content.Misc
             endTriggered = true;
 
             Main.NewText("Room cleared!", Color.Gold);
+            SubworldTimer.AddTime(30);
 
             Texture2D circleTex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
             Texture2D pulseTex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "pulse", AssetRequestMode.ImmediateLoad).Value;
