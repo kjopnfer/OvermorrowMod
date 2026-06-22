@@ -62,6 +62,14 @@ namespace OvermorrowMod.Core.Loot
             (ItemID.CelestialCuffs, ItemType.Magic, Rarity.Rare),
             (ItemID.CreativeWings, ItemType.Generic, Rarity.Epic),
             (ItemID.BundleofBalloons, ItemType.Generic, Rarity.Epic),
+            (ItemID.Revolver, ItemType.Ranged, Rarity.Common),
+            (ItemID.Handgun, ItemType.Ranged, Rarity.Common),
+            (ItemID.TheUndertaker, ItemType.Ranged, Rarity.Common),
+            (ItemID.Boomstick, ItemType.Ranged, Rarity.Common),
+            (ItemID.Musket, ItemType.Ranged, Rarity.Common),
+            (ItemID.QuadBarrelShotgun, ItemType.Ranged, Rarity.Rare),
+            (ItemID.Minishark, ItemType.Ranged, Rarity.Rare),
+            (ItemID.PhoenixBlaster, ItemType.Ranged, Rarity.Epic),
         };
 
         private void RegisterVanillaWildcards()

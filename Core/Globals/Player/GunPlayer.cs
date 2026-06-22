@@ -1,9 +1,11 @@
+using OvermorrowMod.Common.Input;
 using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Core.Items;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.Globals
@@ -15,6 +17,11 @@ namespace OvermorrowMod.Core.Globals
         /// </summary>
         public Dictionary<int, HeldGunInfo> playerGunInfo = new Dictionary<int, HeldGunInfo>();
         public List<IGunModifier> ActiveModifiers { get; private set; } = new List<IGunModifier>();
+
+        /// <summary>
+        /// Set when the player presses the reload keybind; consumed by the held gun's AI to enter a reload on demand.
+        /// </summary>
+        public bool ReloadRequested;
 
         public int BulletArmorPenetration;
 
@@ -40,6 +47,12 @@ namespace OvermorrowMod.Core.Globals
             GraniteLauncher = false;
 
             ActiveModifiers.Clear();
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (OvermorrowKeybinds.ReloadKeybind?.JustPressed == true)
+                ReloadRequested = true;
         }
 
         public void AddGunModifier(IGunModifier modifier)

@@ -1,3 +1,10 @@
+Keybinds.Reload.DisplayName: Reload
+
+UI: {
+	ReloadBindHint: Reload key unbound: bind one in Controls
+	RewardSelection.Title: Choose One
+}
+
 Tiles: {
 	ArchiveDoor.MapEntry: Archive Door
 	Lamp.MapEntry: Lamp
@@ -1027,5 +1034,3 @@ CollectibleEffect: {
 	RestAreaHeal: - Heal an additional {Increase:10} HP at rest areas
 	DecreaseSourceScaling: - For all collectibles, equipment, or pacts that decrease player stats, gain {Increase:2%} damage and {Increase:1%} critical chance
 }
-
-UI.RewardSelection.Title: Choose One
