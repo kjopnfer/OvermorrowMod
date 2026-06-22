@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Projectiles.Archives;
+using OvermorrowMod.Core.WorldGeneration;
 using System;
 using System.Linq;
 using Terraria;
@@ -36,6 +37,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             {
                 Player player = Main.LocalPlayer;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<RestLight>(), 0, 0f, player.whoAmI);
+                SubworldTimer.AddTime(15);
                 return true;
             }
 

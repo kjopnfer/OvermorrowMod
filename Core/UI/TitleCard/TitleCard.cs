@@ -22,6 +22,11 @@ namespace OvermorrowMod.Core.UI
         private bool timerMode;
         private bool timerStarted;
         private bool introSoundPlayed;
+
+        private int seenBonusCount;
+        private int bonusPopupTimer;
+        private int bonusPopupSeconds;
+        private readonly int BonusPopupDuration = ModUtils.SecondsToTicks(1.5f);
         private readonly int TitleHoldDuration = ModUtils.SecondsToTicks(2.5f);
         private const float TimerTextScale = 0.85f;
         private const float TimerShrinkScale = 0.8f;
@@ -164,6 +169,24 @@ namespace OvermorrowMod.Core.UI
                 }
 
                 spriteBatch.DrawString(FontAssets.DeathText.Value, timerText, timerPosition, timerColor * timerAlpha, 0f, Vector2.Zero, timerScale, SpriteEffects.None, 0f);
+
+                if (SubworldTimer.BonusCount != seenBonusCount)
+                {
+                    seenBonusCount = SubworldTimer.BonusCount;
+                    bonusPopupSeconds = SubworldTimer.LastBonusSeconds;
+                    bonusPopupTimer = BonusPopupDuration;
+                }
+
+                if (bonusPopupTimer > 0)
+                {
+                    float life = bonusPopupTimer / (float)BonusPopupDuration;
+                    float rise = (1f - life) * 40f;
+                    float popupAlpha = EasingUtils.EaseOutQuart(MathHelper.Clamp(life, 0f, 1f));
+                    string popupText = $"+{bonusPopupSeconds} seconds";
+                    float popupScale = timerScale * 0.5f;
+                    Vector2 popupPos = new Vector2(timerPosition.X + timerSize.X * timerScale + 12f, timerPosition.Y - rise);
+                    spriteBatch.DrawString(FontAssets.DeathText.Value, popupText, popupPos, new Color(80, 220, 90) * popupAlpha * timerAlpha, 0f, Vector2.Zero, popupScale, SpriteEffects.None, 0f);
+                }
             }
 
             Texture2D bannerLeftSegment = ModContent.Request<Texture2D>(AssetDirectory.UI + "TitleCardLeftSegment").Value;
@@ -198,6 +221,7 @@ namespace OvermorrowMod.Core.UI
             if (!Main.gamePaused)
             {
                 timer++;
+                if (bonusPopupTimer > 0) bonusPopupTimer--;
 
                 if (timerMode)
                 {

@@ -391,8 +391,9 @@ namespace OvermorrowMod.Common.Items.Guns
                         return;
                     }
 
-                    // Holding the trigger on an empty gun dry-fires at the gun's firing cadence.
-                    if (emptyClickTimer == 0)
+                    // Holding the trigger on an empty gun dry-fires at the gun's firing cadence,
+                    // only after the last real shot's cooldown has elapsed.
+                    if (shootCounter == 0 && emptyClickTimer == 0)
                     {
                         SoundEngine.PlaySound(CurrentStats.EmptyClickSound with
                         {
