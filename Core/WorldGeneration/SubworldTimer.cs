@@ -5,7 +5,7 @@ namespace OvermorrowMod.Core.WorldGeneration
 {
     public static class SubworldTimer
     {
-        public static readonly int Duration = ModUtils.SecondsToTicks(65);
+        public static readonly int Duration = ModUtils.SecondsToTicks(420);
         public static readonly int WarnThreshold = ModUtils.SecondsToTicks(60);
         public static readonly int EndSoundLead = 50;
 
