@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
+using Terraria;
 using Terraria.Audio;
 
 namespace OvermorrowMod.Core.WorldGeneration
@@ -49,6 +50,7 @@ namespace OvermorrowMod.Core.WorldGeneration
 
         public static void Tick()
         {
+            if (Main.gamePaused) return;
             if (!Running || RemainingTicks <= 0) return;
 
             RemainingTicks--;

@@ -17,6 +17,11 @@ namespace OvermorrowMod.Core.UI
     {
         public static bool visible = false;
 
+        /// <summary>
+        /// True once the pop-out animation has fully settled and the picker is not fading out.
+        /// </summary>
+        public static bool IsInteractive { get; private set; }
+
         public NPC chestNPC;
         public int[] itemIds;
         public int selectedIndex = -1;
@@ -56,6 +61,9 @@ namespace OvermorrowMod.Core.UI
 
         // Tick by which the last slot has landed. Buttons start fading in here.
         private const int ButtonsAppearTick = (3 - 1) * PopoutStaggerTicks + PopoutFlightTicks; // 66
+
+        // popoutTimer value once the slots have landed and the buttons have fully faded in.
+        public const int OpenAnimationTicks = ButtonsAppearTick + ButtonFadeInTicks; // 86
 
         public override void OnInitialize()
         {
@@ -98,9 +106,10 @@ namespace OvermorrowMod.Core.UI
             if (confirmButton != null) 
                 confirmButton.animOpacity = 0f;
 
-            if (denyButton != null) 
+            if (denyButton != null)
                 denyButton.animOpacity = 0f;
 
+            IsInteractive = false;
             visible = true;
         }
 
@@ -113,6 +122,7 @@ namespace OvermorrowMod.Core.UI
 
         private void FinishHide()
         {
+            IsInteractive = false;
             visible = false;
             chestNPC = null;
             isClosing = false;
@@ -192,6 +202,8 @@ namespace OvermorrowMod.Core.UI
             {
                 popoutTimer++;
             }
+
+            IsInteractive = !isClosing && popoutTimer >= OpenAnimationTicks;
 
             // World-to-UI: chest center for the launch start, and chest +
             // vertical offset for the row of landing positions.

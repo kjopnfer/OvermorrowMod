@@ -37,7 +37,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             {
                 Player player = Main.LocalPlayer;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<RestLight>(), 0, 0f, player.whoAmI);
-                SubworldTimer.AddTime(15);
+                if (SubworldTimer.RemainingTicks > 0) SubworldTimer.AddTime(15);
                 return true;
             }
 
