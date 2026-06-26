@@ -1,6 +1,5 @@
 using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Core.Items;
-using Terraria.ID;
 
 namespace OvermorrowMod.Common.Items.Guns
 {
@@ -121,23 +120,6 @@ namespace OvermorrowMod.Common.Items.Guns
         }
 
         /// <summary>
-        /// Checks if a weapon type is a gun/ranged weapon
-        /// </summary>
-        public static bool IsRangedWeapon(this WeaponType weaponType)
-        {
-            return weaponType.HasFlag(WeaponType.Revolver) ||
-                   weaponType.HasFlag(WeaponType.Handgun) ||
-                   weaponType.HasFlag(WeaponType.Shotgun) ||
-                   weaponType.HasFlag(WeaponType.Musket) ||
-                   weaponType.HasFlag(WeaponType.Rifle) ||
-                   weaponType.HasFlag(WeaponType.SubMachineGun) ||
-                   weaponType.HasFlag(WeaponType.MachineGun) ||
-                   weaponType.HasFlag(WeaponType.Launcher) ||
-                   weaponType.HasFlag(WeaponType.Sniper) ||
-                   weaponType.HasFlag(WeaponType.Bow);
-        }
-
-        /// <summary>
         /// Checks if a weapon type is a gun (excludes bows)
         /// </summary>
         public static bool IsGun(this WeaponType weaponType)
@@ -151,6 +133,14 @@ namespace OvermorrowMod.Common.Items.Guns
                    weaponType.HasFlag(WeaponType.MachineGun) ||
                    weaponType.HasFlag(WeaponType.Launcher) ||
                    weaponType.HasFlag(WeaponType.Sniper);
+        }
+
+        /// <summary>
+        /// Checks if a weapon type is a ranged weapon (guns plus bows).
+        /// </summary>
+        public static bool IsRangedWeapon(this WeaponType weaponType)
+        {
+            return weaponType.IsGun() || weaponType.HasFlag(WeaponType.Bow);
         }
     }
 }
@@ -175,7 +165,8 @@ namespace OvermorrowMod.Core.Items.Guns
 
         public static GunBuilder AsRevolver(this GunBuilder builder)
         {
-            return builder.AsWeaponType(WeaponType.Revolver);
+            return builder.AsWeaponType(WeaponType.Revolver)
+                .WithSpinCylinderOnReload();
         }
 
         public static GunBuilder AsHandgun(this GunBuilder builder)
@@ -188,7 +179,8 @@ namespace OvermorrowMod.Core.Items.Guns
         public static GunBuilder AsShotgun(this GunBuilder builder)
         {
             return builder.AsWeaponType(WeaponType.Shotgun)
-                .WithBonusBullets(3); // Shotguns fire multiple pellets
+                .WithBonusBullets(3) // Shotguns fire multiple pellets
+                .WithBulletUITexture("GunBullet_Shotgun");
         }
 
         public static GunBuilder AsRifle(this GunBuilder builder)
@@ -204,6 +196,7 @@ namespace OvermorrowMod.Core.Items.Guns
         public static GunBuilder AsMachineGun(this GunBuilder builder)
         {
             return builder.AsWeaponType(WeaponType.MachineGun)
+                .WithFireMode(GunFireMode.Automatic)
                 .WithShootTime(6)
                 .WithShootAnimation(6)
                 .WithReload(false)
@@ -222,7 +215,8 @@ namespace OvermorrowMod.Core.Items.Guns
         public static GunBuilder AsLauncher(this GunBuilder builder)
         {
             return builder.AsWeaponType(WeaponType.Launcher)
-                .WithDamageMultiplier(3.0f);
+                .WithDamageMultiplier(3.0f)
+                .WithBulletUITexture("GunBullet_Rocket");
         }
 
         public static GunBuilder AsMusket(this GunBuilder builder)
@@ -247,147 +241,5 @@ namespace OvermorrowMod.Core.Items.Guns
                 _ => new[] { (30, 70) }
             };
         }
-
-        /// <summary>
-        /// Quick factory methods for common weapon types
-        /// </summary>
-        public static GunStats QuickRevolver(int maxShots = 6, int reloadTime = 60, int recoil = 15)
-        {
-            return new GunBuilder()
-                .AsRevolver()
-                .WithMaxShots(maxShots)
-                .WithReloadTime(reloadTime)
-                .WithRecoil(recoil)
-                .Build();
-        }
-
-        public static GunStats QuickShotgun(int maxShots = 2, int bonusBullets = 3, int recoil = 25)
-        {
-            return new GunBuilder()
-                .AsShotgun()
-                .WithMaxShots(maxShots)
-                .WithBonusBullets(bonusBullets)
-                .WithRecoil(recoil)
-                .Build();
-        }
-
-        public static GunStats QuickRifle(int maxShots = 10, int shootTime = 12, int recoil = 8)
-        {
-            return new GunBuilder()
-                .AsRifle()
-                .WithMaxShots(maxShots)
-                .WithShootTime(shootTime)
-                .WithRecoil(recoil)
-                .Build();
-        }
-
-        public static GunStats QuickSniper(float damageMultiplier = 2.5f, int chargeTime = 120)
-        {
-            return new GunBuilder()
-                .AsSniper()
-                .WithDamageMultiplier(damageMultiplier)
-                .WithChargeTime(chargeTime)
-                .Build();
-        }
-
-        public static GunStats QuickMachineGun(int maxShots = 100, int chargeTime = 60)
-        {
-            return new GunBuilder()
-                .AsMachineGun()
-                .WithMaxShots(maxShots)
-                .WithChargeTime(chargeTime)
-                .Build();
-        }
-    }
-
-    /// <summary>
-    /// Updated gun presets using the WeaponType system
-    /// </summary>
-    public static class WeaponTypeGunPresets
-    {
-        public static readonly GunStats BasicRevolver = new GunBuilder()
-            .AsRevolver()
-            .Build();
-
-        public static readonly GunStats FastRevolver = new GunBuilder()
-            .AsRevolver()
-            .WithFireRateMultiplier(0.7f)
-            .WithReloadSpeedMultiplier(0.8f)
-            .Build();
-
-        public static readonly GunStats HeavyRevolver = new GunBuilder()
-            .AsRevolver()
-            .WithDamageMultiplier(1.5f)
-            .WithRecoil(25)
-            .WithMaxShots(5)
-            .Build();
-
-        public static readonly GunStats DoubleShotgun = new GunBuilder()
-            .AsShotgun()
-            .WithMaxShots(2)
-            .WithBonusBullets(5)
-            .WithRecoil(30)
-            .Build();
-
-        public static readonly GunStats PumpShotgun = new GunBuilder()
-            .AsShotgun()
-            .WithMaxShots(6)
-            .WithBonusBullets(3)
-            .WithRecoil(20)
-            .WithReloadTime(100)
-            .Build();
-
-        public static readonly GunStats AssaultRifle = new GunBuilder()
-            .AsRifle()
-            .WithMaxShots(30)
-            .WithShootTime(8)
-            .WithReloadTime(120)
-            .Build();
-
-        public static readonly GunStats BattleRifle = new GunBuilder()
-            .AsRifle()
-            .WithMaxShots(20)
-            .WithShootTime(15)
-            .WithDamageMultiplier(1.3f)
-            .WithRecoil(15)
-            .Build();
-
-        public static readonly GunStats AntiMaterielRifle = new GunBuilder()
-            .AsSniper()
-            .WithDamageMultiplier(4.0f)
-            .WithRecoil(50)
-            .WithReloadTime(150)
-            .WithChargeTime(180)
-            .Build();
-
-        public static readonly GunStats LightMachineGun = new GunBuilder()
-            .AsMachineGun()
-            .WithMaxShots(80)
-            .WithChargeTime(45)
-            .WithRecoil(8)
-            .Build();
-
-        public static readonly GunStats GrenadeLauncher = new GunBuilder()
-            .AsLauncher()
-            .WithMaxShots(6)
-            .WithReloadTime(120)
-            .WithDamageMultiplier(2.5f)
-            .WithBulletType(ProjectileID.Grenade)
-            .Build();
-
-        public static readonly GunStats FlintlockMusket = new GunBuilder()
-            .AsMusket()
-            .WithMaxShots(1)
-            .WithReloadTime(90)
-            .WithDamageMultiplier(2.0f)
-            .WithRecoil(20)
-            .Build();
-
-        public static readonly GunStats Uzi = new GunBuilder()
-            .AsSubMachineGun()
-            .WithMaxShots(25)
-            .WithShootTime(4)
-            .WithRecoil(4)
-            .Build();
     }
 }
