@@ -18,25 +18,40 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
         public override int ParentItem => ItemID.Handgun;
         public override WeaponType WeaponType => WeaponType.Handgun;
 
-        public override GunStats BaseStats => new GunBuilder()
-            .AsHandgun()
-            .WithMaxShots(10)
-            .WithReloadTime(40)
-            .WithRecoil(15)
-            .WithShootSound(SoundID.Item41)
-            .WithReloadSound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/HandgunReload"))
-            .WithClickZone(45, 60)
-            .WithPositionOffset(new Vector2(16, -8), new Vector2(14, -2))
-            .WithBulletShootPosition(new Vector2(10, 20), new Vector2(-10, -10))
-            .WithProjectileScale(0.9f)
-            .WithShootTime(20)
-            .WithShootAnimation(20)
-            .Build();
+        private int useTimeBonus = 0;
+        public override GunStats BaseStats
+        {
+            get
+            {
+                var stats = new GunBuilder()
+                    .AsHandgun()
+                    .WithMaxShots(10)
+                    .WithReloadTime(40)
+                    .WithRecoil(15)
+                    .WithShootSound(SoundID.Item41)
+                    .WithReloadSound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/HandgunReload"))
+                    .WithClickZone(45, 60)
+                    .WithPositionOffset(new Vector2(16, -8), new Vector2(14, -2))
+                    .WithBulletShootPosition(new Vector2(10, 20), new Vector2(-10, -10))
+                    .WithProjectileScale(0.9f)
+                    .WithShootTime(20)
+                    .WithShootAnimation(20)
+                    .Build();
+
+                stats.UseTimeModifier = useTimeBonus;
+                return stats;
+            }
+        }
+
+        public override void OnReloadStart(Player player)
+        {
+            useTimeBonus = 0;
+        }
 
         protected override void OnReloadSuccessCore(Player player)
         {
             // Reload gives faster fire rate
-            CurrentStats.UseTimeModifier = -8;
+            useTimeBonus = -8;
         }
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)

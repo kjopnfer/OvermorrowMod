@@ -17,19 +17,29 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
         public override int ParentItem => ItemID.Boomstick;
         public override WeaponType WeaponType => WeaponType.Shotgun;
 
-        public override GunStats BaseStats => new GunBuilder()
-            .AsShotgun()
-            .WithMaxShots(2)
-            .WithReloadTime(90)
-            .WithRecoil(25)
-            .WithShootSound(SoundID.Item36)
-            .WithReloadSound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/ShotgunReload"))
-            .WithClickZones((25, 40), (65, 80))
-            .WithPositionOffset(new Vector2(14, -7), new Vector2(14, -2))
-            .WithBulletShootPosition(new Vector2(15, 15), new Vector2(15, -5))
-            .WithProjectileScale(1f)
-            .WithTwoHanded()
-            .Build();
+        private int bonusBullets = 0;
+        public override GunStats BaseStats
+        {
+            get
+            {
+                var stats = new GunBuilder()
+                    .AsShotgun()
+                    .WithMaxShots(2)
+                    .WithReloadTime(90)
+                    .WithRecoil(25)
+                    .WithShootSound(SoundID.Item36)
+                    .WithReloadSound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/ShotgunReload"))
+                    .WithClickZones((25, 40), (65, 80))
+                    .WithPositionOffset(new Vector2(14, -7), new Vector2(14, -2))
+                    .WithBulletShootPosition(new Vector2(15, 15), new Vector2(15, -5))
+                    .WithProjectileScale(1f)
+                    .WithTwoHanded()
+                    .Build();
+
+                stats.BonusBullets += bonusBullets;
+                return stats;
+            }
+        }
 
         protected override List<int> OnGunShootCore(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
@@ -74,9 +84,14 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
 
         }
 
+        public override void OnReloadStart(Player player)
+        {
+            bonusBullets = 0;
+        }
+
         protected override void OnReloadZoneHit(Player player, int zoneIndex, int clicksLeft)
         {
-            CurrentStats.BonusBullets++;
+            bonusBullets++;
         }
     }
 }

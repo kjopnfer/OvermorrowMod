@@ -15,17 +15,27 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
         public override int ParentItem => ItemID.Revolver;
         public override WeaponType WeaponType => WeaponType.Revolver;
 
-        public override GunStats BaseStats => new GunBuilder()
-            .AsRevolver()
-            .WithMaxShots(6)
-            .WithReloadTime(60)
-            .WithRecoil(10)
-            .WithShootSound(SoundID.Item41)
-            .WithClickZone(45, 60)
-            .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
-            .WithBulletShootPosition(new Vector2(15, 16), new Vector2(15, -6))
-            .WithProjectileScale(0.85f)
-            .Build();
+        private int bonusDamage = 0;
+        public override GunStats BaseStats
+        {
+            get
+            {
+                var stats = new GunBuilder()
+                    .AsRevolver()
+                    .WithMaxShots(6)
+                    .WithReloadTime(60)
+                    .WithRecoil(10)
+                    .WithShootSound(SoundID.Item41)
+                    .WithClickZone(45, 60)
+                    .WithPositionOffset(new Vector2(18, -5), new Vector2(18, -5))
+                    .WithBulletShootPosition(new Vector2(15, 16), new Vector2(15, -6))
+                    .WithProjectileScale(0.85f)
+                    .Build();
+
+                stats.BonusDamage = bonusDamage;
+                return stats;
+            }
+        }
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
         {
@@ -52,10 +62,15 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged
             DropMultipleCasings(Projectile, player, 6);
         }
 
+        public override void OnReloadStart(Player player)
+        {
+            bonusDamage = 0;
+        }
+
         protected override void OnReloadSuccessCore(Player player)
         {
             // Perfect reload gives 20% damage bonus
-            CurrentStats.BonusDamage = (int)(Projectile.damage * 0.2f);
+            bonusDamage = (int)(Projectile.damage * 0.2f);
         }
 
         protected override void OnReloadZoneHit(Player player, int zoneIndex, int clicksLeft)
