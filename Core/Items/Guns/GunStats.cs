@@ -7,11 +7,42 @@ using Terraria.ID;
 namespace OvermorrowMod.Core.Items.Guns
 {
     /// <summary>
+    /// How the trigger drives shots for a gun.
+    /// </summary>
+    public enum GunFireMode
+    {
+        /// <summary>
+        /// One shot per trigger pull.
+        /// </summary>
+        SemiAuto,
+
+        /// <summary>
+        /// Holding the trigger charges up then fires continuously, consuming ammo per shot.
+        /// </summary>
+        Automatic
+    }
+
+    /// <summary>
     /// Contains all statistical and behavioral properties for a gun.
     /// This class is used by the gun system to determine how a gun behaves and can be modified by accessories.
     /// </summary>
     public class GunStats
     {
+        /// <summary>
+        /// How the trigger drives shots.
+        /// </summary>
+        public GunFireMode FireMode = GunFireMode.SemiAuto;
+
+        /// <summary>
+        /// Whether the cylinder visually spins on a successful reload.
+        /// </summary>
+        public bool SpinCylinderOnReload = false;
+
+        /// <summary>
+        /// Texture name (under the gun UI directory) for the chambered-round icons.
+        /// </summary>
+        public string BulletUITexture = "GunBullet";
+
         /// <summary>
         /// Percentage chance (0-100) to not consume ammo when firing.
         /// Multiple sources stack additively up to 100%.

@@ -164,7 +164,7 @@ namespace OvermorrowMod.Common.Items.Guns
         public ref float PrimaryCounter => ref Projectile.ai[0];
         public ref float SecondaryCounter => ref Projectile.ai[1];
 
-        public int rightClickDelay = 0;
+        private int rightClickDelay = 0;
 
         private bool triggerHeldLastFrame = false;
         private int emptyClickTimer = 0;
@@ -298,7 +298,7 @@ namespace OvermorrowMod.Common.Items.Guns
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2 + recoilRotation);
         }
 
-        public int ShotsFired = 0;
+        public int ShotsFired { get; private set; } = 0;
 
         protected readonly struct Round
         {
@@ -328,11 +328,11 @@ namespace OvermorrowMod.Common.Items.Guns
 
         private int shootCounter = 0;
         public int chargeCounter { private set; get; } = 0;
-        public bool hasReleased = false;
+        private bool hasReleased = false;
 
         private void HandleGunUse()
         {
-            if (WeaponType == WeaponType.MachineGun || CurrentStats.MaxShots > 50) // Machine gun behavior
+            if (CurrentStats.FireMode == GunFireMode.Automatic)
             {
                 HandleMinigunUse();
                 return;
@@ -530,7 +530,7 @@ namespace OvermorrowMod.Common.Items.Guns
 
         private bool reloadFail = false;
         public bool reloadSuccess { get; private set; } = false;
-        public int reloadTime = 0;
+        protected int reloadTime = 0;
         private int clickDelay = 0;
         public int reloadDelay { get; private set; } = 0;
         private int reloadBuffer = 10;
@@ -705,7 +705,7 @@ namespace OvermorrowMod.Common.Items.Guns
         /// </summary>
         protected virtual void OnReloadFailCore(Player player) { }
 
-        public List<BulletObject> BulletDisplay = new();
+        protected List<BulletObject> BulletDisplay = new();
 
         #region Ammo Drawing
         private void DrawAmmo()
@@ -776,7 +776,7 @@ namespace OvermorrowMod.Common.Items.Guns
         }
         #endregion
 
-        public float reloadRotation = 0;
+        protected float reloadRotation = 0;
 
         public virtual bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor) { return true; }
 
@@ -792,7 +792,7 @@ namespace OvermorrowMod.Common.Items.Guns
             }
 
             // Handle revolver spin effect
-            if (WeaponType == WeaponType.Revolver)
+            if (CurrentStats.SpinCylinderOnReload)
             {
                 if (reloadDelay > 0 && reloadSuccess)
                 {
@@ -855,7 +855,7 @@ namespace OvermorrowMod.Common.Items.Guns
 
         private string GetBulletTexture()
         {
-            return WeaponType.GetDefaultBulletTexture();
+            return CurrentStats.BulletUITexture;
         }
 
         #region Helper Methods
@@ -1013,21 +1013,6 @@ namespace OvermorrowMod.Common.Items.Guns
             }
         }
 
-        public void UpdateBulletDisplay()
-        {
-            List<BulletObject> activeBullets = new List<BulletObject>();
-
-            foreach (BulletObject bullet in BulletDisplay)
-            {
-                if (bullet.isActive)
-                {
-                    activeBullets.Add(bullet);
-                }
-            }
-
-            BulletDisplay = activeBullets;
-        }
-
         public void PopBulletDisplay()
         {
             for (int i = BulletDisplay.Count - 1; i >= 0; i--)
@@ -1066,33 +1051,10 @@ namespace OvermorrowMod.Common.Items.Guns
 
         private void ResetReloadZones()
         {
-            // Print the call stack to see where this is being called from
-            var stackTrace = new System.Diagnostics.StackTrace(true);
-            for (int i = 0; i < Math.Min(5, stackTrace.FrameCount); i++)
-            {
-                var frame = stackTrace.GetFrame(i);
-            }
-
             foreach (ReloadZone clickZone in ClickZones)
             {
                 clickZone.HasClicked = false;
             }
-        }
-
-        private bool CheckInZone(float clickPercentage, out int zoneIndex)
-        {
-            for (int i = 0; i < ClickZones.Count; i++)
-            {
-                var zone = ClickZones[i];
-                if (!zone.HasClicked && clickPercentage >= zone.StartPercentage && clickPercentage <= zone.EndPercentage)
-                {
-                    zoneIndex = i;
-                    return true;
-                }
-            }
-
-            zoneIndex = -1;
-            return false;
         }
 
         protected void SpawnBulletCasing(Projectile projectile, Player player, Vector2 position, Vector2 offset = default, float scale = 0.75f, bool sticky = true)
