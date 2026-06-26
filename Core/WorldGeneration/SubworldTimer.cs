@@ -17,6 +17,8 @@ namespace OvermorrowMod.Core.WorldGeneration
         public static int RemainingTicks { get; private set; } = Duration;
         public static bool Running { get; private set; }
 
+        public static bool IsExpired => Running && RemainingTicks <= 0;
+
         private static float displayTicks = Duration;
         private static float scrollFrom;
         private static int scrollElapsed;
