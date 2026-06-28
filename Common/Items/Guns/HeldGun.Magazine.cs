@@ -50,11 +50,17 @@ namespace OvermorrowMod.Common.Items.Guns
         protected List<BulletObject> BulletDisplay = new();
 
         /// <summary>
-        /// Replaces the round that will be fired last with one that fires <paramref name="projectileType"/>
+        /// Replaces the round that will be fired last with one that fires <paramref name="projectileType"/>,
+        /// up to <paramref name="maxSimultaneous"/> such rounds chambered at once.
         /// </summary>
-        public void EnchantFinalRound(int projectileType, string iconTexturePath, Color iconColor)
+        public void EnchantFinalRound(int projectileType, string iconTexturePath, Color iconColor, int maxSimultaneous)
         {
             if (loadedRounds.Count == 0) return;
+
+            int enchantedCount = 0;
+            foreach (var round in loadedRounds)
+                if (round.ProjectileType == projectileType) enchantedCount++;
+            if (enchantedCount >= maxSimultaneous) return;
 
             int last = loadedRounds.Count - 1;
             loadedRounds[last] = new Round(loadedRounds[last].ItemType, projectileType, iconTexturePath, iconColor);

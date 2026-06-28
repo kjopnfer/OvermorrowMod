@@ -52,7 +52,7 @@ namespace OvermorrowMod.Content.Items.Archives.Accessories
 
         public void OnReloadSuccess(HeldGun gun, Player player, List<BulletObject> bullets)
         {
-            gun.EnchantFinalRound(ModContent.ProjectileType<ArcaneBullet>(), AssetDirectory.ArchiveItems + "MagicBullet", new Color(200, 120, 255));
+            gun.EnchantFinalRound(ModContent.ProjectileType<ArcaneBullet>(), AssetDirectory.ArchiveItems + "MagicBullet", Color.White, 2);
         }
     }
 }
