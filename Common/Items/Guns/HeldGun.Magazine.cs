@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Globals;
 using System;
@@ -20,11 +21,15 @@ namespace OvermorrowMod.Common.Items.Guns
         {
             public readonly int ItemType;
             public readonly int ProjectileType;
+            public readonly string IconTexturePath;
+            public readonly Color IconColor;
 
-            public Round(int itemType, int projectileType)
+            public Round(int itemType, int projectileType, string iconTexturePath = null, Color iconColor = default)
             {
                 ItemType = itemType;
                 ProjectileType = projectileType;
+                IconTexturePath = iconTexturePath;
+                IconColor = iconColor;
             }
         }
 
@@ -43,6 +48,36 @@ namespace OvermorrowMod.Common.Items.Guns
         private void SyncMagazineCounter() => ShotsFired = Math.Max(0, MaxShots - loadedRounds.Count);
 
         protected List<BulletObject> BulletDisplay = new();
+
+        /// <summary>
+        /// Replaces the round that will be fired last with one that fires <paramref name="projectileType"/>
+        /// </summary>
+        public void EnchantFinalRound(int projectileType, string iconTexturePath, Color iconColor)
+        {
+            if (loadedRounds.Count == 0) return;
+
+            int last = loadedRounds.Count - 1;
+            loadedRounds[last] = new Round(loadedRounds[last].ItemType, projectileType, iconTexturePath, iconColor);
+            ApplyRoundIcon(last);
+        }
+
+        /// <summary>
+        /// Paints an enchanted round's icon onto its display slot.
+        /// </summary>
+        private void ApplyRoundIcon(int roundIndex)
+        {
+            var round = loadedRounds[roundIndex];
+            if (round.IconTexturePath == null) return;
+
+            int displayIndex = BulletDisplay.Count - 1 - roundIndex;
+            if (displayIndex < 0 || displayIndex >= BulletDisplay.Count) return;
+
+            var icon = BulletDisplay[displayIndex];
+            icon.CustomTexturePath = round.IconTexturePath;
+            icon.BulletColor = round.IconColor;
+            icon.GlowColor = round.IconColor;
+            icon.GlowIntensity = 0.6f;
+        }
 
         private bool LoadGunInfo()
         {
@@ -75,7 +110,7 @@ namespace OvermorrowMod.Common.Items.Guns
 
         /// <summary>
         /// Fills the chamber to capacity with factory rounds the first time the gun is equipped, without
-        /// drawing from the inventory. Once these are spent, reloading pulls from the inventory as usual.
+        /// drawing from the inventory. Once these are spent, reloading pulls from the inventory.
         /// </summary>
         private void PreloadMagazine()
         {
@@ -187,6 +222,11 @@ namespace OvermorrowMod.Common.Items.Guns
             for (int i = 0; i < loadedRounds.Count; i++)
             {
                 BulletDisplay.Add(new BulletObject(GetBulletTexture(), Main.rand.Next(0, 9) * 7));
+            }
+
+            for (int i = 0; i < loadedRounds.Count; i++)
+            {
+                ApplyRoundIcon(i);
             }
         }
 
