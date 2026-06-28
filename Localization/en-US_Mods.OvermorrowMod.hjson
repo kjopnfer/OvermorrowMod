@@ -1,4 +1,8 @@
-Keybinds.Reload.DisplayName: Reload
+Keybinds: {
+	Reload.DisplayName: Reload
+	ParticleDebugSpawn.DisplayName: Particle Debug Spawn
+	ParticleEditorToggle.DisplayName: Particle Editor Toggle
+}
 
 UI: {
 	ReloadBindHint: Reload key unbound: bind one in Controls

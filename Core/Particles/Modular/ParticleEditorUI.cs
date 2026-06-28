@@ -503,24 +503,57 @@ namespace OvermorrowMod.Core.Particles.Modular
 
         private static void CopyCSharp(ParticleSpec s)
         {
+            var d = new ParticleSpec();
+            var parts = new List<string>();
+            void Add(bool changed, string text) { if (changed) parts.Add(text); }
+            string Low(bool b) => b ? "true" : "false";
+
+            Add(s.Shape != d.Shape, $"Shape = EmitShape.{s.Shape}");
+            Add(s.Count != d.Count, $"Count = {s.Count}");
+            Add(s.ShapeRadius != d.ShapeRadius, $"ShapeRadius = {F(s.ShapeRadius)}");
+            Add(s.ConeSpread != d.ConeSpread, $"ConeSpread = {F(s.ConeSpread)}");
+            Add(s.DirectionMode != d.DirectionMode, $"DirectionMode = EmitDirection.{s.DirectionMode}");
+            Add(s.Angle != d.Angle, $"Angle = {F(s.Angle)}");
+            Add(s.SpreadDeg != d.SpreadDeg, $"SpreadDeg = {F(s.SpreadDeg)}");
+            Add(s.SpeedMin != d.SpeedMin, $"SpeedMin = {F(s.SpeedMin)}");
+            Add(s.SpeedMax != d.SpeedMax, $"SpeedMax = {F(s.SpeedMax)}");
+            Add(s.Drag != d.Drag, $"Drag = {F(s.Drag)}");
+            Add(s.Gravity != d.Gravity, $"Gravity = new Vector2({F(s.Gravity.X)}, {F(s.Gravity.Y)})");
+            Add(s.Turbulence != d.Turbulence, $"Turbulence = {F(s.Turbulence)}");
+            Add(s.AngularVelMin != d.AngularVelMin, $"AngularVelMin = {F(s.AngularVelMin)}");
+            Add(s.AngularVelMax != d.AngularVelMax, $"AngularVelMax = {F(s.AngularVelMax)}");
+            Add(s.Orientation != d.Orientation, $"Orientation = ParticleOrientation.{s.Orientation}");
+            Add(s.RotationOffsetDeg != d.RotationOffsetDeg, $"RotationOffsetDeg = {F(s.RotationOffsetDeg)}");
+            Add(s.FlipHorizontal != d.FlipHorizontal, $"FlipHorizontal = {Low(s.FlipHorizontal)}");
+            Add(s.FlipVertical != d.FlipVertical, $"FlipVertical = {Low(s.FlipVertical)}");
+            Add(s.LifetimeMin != d.LifetimeMin, $"LifetimeMin = {s.LifetimeMin}");
+            Add(s.LifetimeMax != d.LifetimeMax, $"LifetimeMax = {s.LifetimeMax}");
+            Add(s.StartScaleMin != d.StartScaleMin, $"StartScaleMin = {F(s.StartScaleMin)}");
+            Add(s.StartScaleMax != d.StartScaleMax, $"StartScaleMax = {F(s.StartScaleMax)}");
+            Add(s.EndScale != d.EndScale, $"EndScale = {F(s.EndScale)}");
+            Add(s.ScaleEasing != d.ScaleEasing, $"ScaleEasing = ParticleEasing.{s.ScaleEasing}");
+            Add(s.AlphaFadeInFrac != d.AlphaFadeInFrac, $"AlphaFadeInFrac = {F(s.AlphaFadeInFrac)}");
+            Add(s.AlphaFadeOutFrac != d.AlphaFadeOutFrac, $"AlphaFadeOutFrac = {F(s.AlphaFadeOutFrac)}");
+            Add(s.StartColor != d.StartColor, $"StartColor = new Color({s.StartColor.R}, {s.StartColor.G}, {s.StartColor.B})");
+            Add(s.EndColor != d.EndColor, $"EndColor = new Color({s.EndColor.R}, {s.EndColor.G}, {s.EndColor.B})");
+            Add(s.Texture != d.Texture, $"Texture = \"{s.Texture}\"");
+            Add(s.Additive != d.Additive, $"Additive = {Low(s.Additive)}");
+            Add(s.DrawLayer != d.DrawLayer, $"DrawLayer = ParticleDrawLayer.{s.DrawLayer}");
+            Add(s.Shader != d.Shader, $"Shader = \"{s.Shader}\"");
+            if (s.Shader != ParticleShaderRegistry.None)
+            {
+                Add(s.ShaderColor != d.ShaderColor, $"ShaderColor = new Color({s.ShaderColor.R}, {s.ShaderColor.G}, {s.ShaderColor.B})");
+                Add(s.ShaderProgressFromAge != d.ShaderProgressFromAge, $"ShaderProgressFromAge = {Low(s.ShaderProgressFromAge)}");
+                Add(s.ShaderProgress != d.ShaderProgress, $"ShaderProgress = {F(s.ShaderProgress)}");
+            }
+
             var sb = new StringBuilder();
             sb.AppendLine("new ParticleSpec {");
-            sb.AppendLine($"    Shape = EmitShape.{s.Shape}, Count = {s.Count}, ShapeRadius = {F(s.ShapeRadius)}, ConeSpread = {F(s.ConeSpread)},");
-            sb.AppendLine($"    DirectionMode = EmitDirection.{s.DirectionMode}, Angle = {F(s.Angle)}, SpreadDeg = {F(s.SpreadDeg)},");
-            sb.AppendLine($"    SpeedMin = {F(s.SpeedMin)}, SpeedMax = {F(s.SpeedMax)}, Drag = {F(s.Drag)}, Gravity = new Vector2({F(s.Gravity.X)}, {F(s.Gravity.Y)}), Turbulence = {F(s.Turbulence)},");
-            sb.AppendLine($"    AngularVelMin = {F(s.AngularVelMin)}, AngularVelMax = {F(s.AngularVelMax)}, Orientation = ParticleOrientation.{s.Orientation},");
-            sb.AppendLine($"    LifetimeMin = {s.LifetimeMin}, LifetimeMax = {s.LifetimeMax},");
-            sb.AppendLine($"    StartScaleMin = {F(s.StartScaleMin)}, StartScaleMax = {F(s.StartScaleMax)}, EndScale = {F(s.EndScale)}, ScaleEasing = ParticleEasing.{s.ScaleEasing},");
-            sb.AppendLine($"    StartColor = new Color({s.StartColor.R}, {s.StartColor.G}, {s.StartColor.B}), EndColor = new Color({s.EndColor.R}, {s.EndColor.G}, {s.EndColor.B}),");
-            sb.AppendLine($"    AlphaFadeInFrac = {F(s.AlphaFadeInFrac)}, AlphaFadeOutFrac = {F(s.AlphaFadeOutFrac)},");
-            sb.AppendLine($"    Texture = \"{s.Texture}\", Additive = {s.Additive.ToString().ToLower()}, DrawLayer = ParticleDrawLayer.{s.DrawLayer},");
-            sb.AppendLine($"    Orientation = ParticleOrientation.{s.Orientation}, RotationOffsetDeg = {F(s.RotationOffsetDeg)}, FlipHorizontal = {s.FlipHorizontal.ToString().ToLower()}, FlipVertical = {s.FlipVertical.ToString().ToLower()},");
-            if (s.Shader != ParticleShaderRegistry.None)
-                sb.AppendLine($"    Shader = \"{s.Shader}\", ShaderColor = new Color({s.ShaderColor.R}, {s.ShaderColor.G}, {s.ShaderColor.B}), ShaderProgressFromAge = {s.ShaderProgressFromAge.ToString().ToLower()},");
+            foreach (string part in parts) sb.AppendLine($"    {part},");
             sb.AppendLine("};");
 
             SetClipboard(sb.ToString());
-            Main.NewText("Copied ParticleSpec as C# to clipboard.", Color.LightGreen);
+            Main.NewText($"Copied ParticleSpec as C# ({parts.Count} non-default fields).", Color.LightGreen);
         }
 
         private static void CopyJson(ParticleSpec spec)
