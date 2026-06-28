@@ -124,6 +124,16 @@ TooltipEntities: {
 		}
 	}
 
+	QuillArrow: {
+		DisplayName: Quill Arrow
+
+		Description: {
+			Line0: + Flies straighter and faster than a normal arrow
+			Line1: + Bounces off walls up to 3 times
+			Line2: + Pierces twice
+		}
+	}
+
 	ArcanistsHammer: {
 		DisplayName: Arcanists Hammer
 
@@ -379,6 +389,15 @@ Items: {
 	Spellshot: {
 		DisplayName: Spellshot
 		Tooltip: "{Keyword:Reload}: Converts the last bullet in your magazine to an <Projectile:Arcane Shot>"
+	}
+
+	QuillcrestHelm: {
+		DisplayName: Quillcrest Helm
+		Tooltip:
+			'''
+			5% increased ranged damage
+			{Keyword:Vigor}: Bows have a chance to fire an additional <Projectile:Quill Arrow>
+			'''
 	}
 
 	ScholarsArmor: {
@@ -1025,6 +1044,7 @@ Projectiles: {
 	RestLight.DisplayName: Rest Light
 	ArcaneBullet.DisplayName: Arcane Bullet
 	ArcaneBurst.DisplayName: Arcane Burst
+	QuillArrow.DisplayName: Quill Arrow
 }
 
 CollectibleBonus: {
