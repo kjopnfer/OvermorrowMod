@@ -115,6 +115,15 @@ Buffs: {
 }
 
 TooltipEntities: {
+	ArcaneShot: {
+		DisplayName: Arcane Shot
+
+		Description: {
+			Line0: + On hitting an enemy or tile, bursts for area damage
+			Line1: + Inherits the damage of the shot it replaced
+		}
+	}
+
 	ArcanistsHammer: {
 		DisplayName: Arcanists Hammer
 
@@ -367,6 +376,11 @@ Keywords: {
 }
 
 Items: {
+	Spellshot: {
+		DisplayName: Spellshot
+		Tooltip: "{Keyword:Reload}: Converts the last bullet in your magazine to an <Projectile:Arcane Shot>"
+	}
+
 	ScholarsArmor: {
 		DisplayName: Scholar's Mantle
 		Tooltip: BODY
@@ -1009,6 +1023,8 @@ Projectiles: {
 	DisplayItem.DisplayName: Display Item
 	SpawnTelegraph.DisplayName: Spawn Telegraph
 	RestLight.DisplayName: Rest Light
+	ArcaneBullet.DisplayName: Arcane Bullet
+	ArcaneBurst.DisplayName: Arcane Burst
 }
 
 CollectibleBonus: {
