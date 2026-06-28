@@ -1045,6 +1045,23 @@ Projectiles: {
 	ArcaneBullet.DisplayName: Arcane Bullet
 	ArcaneBurst.DisplayName: Arcane Burst
 	QuillArrow.DisplayName: Quill Arrow
+	BorealWoodBow_Held.DisplayName: Boreal Wood Bow_ Held
+	CopperBow_Held.DisplayName: Copper Bow_ Held
+	DemonBow_Held.DisplayName: Demon Bow_ Held
+	EbonwoodBow_Held.DisplayName: Ebonwood Bow_ Held
+	GoldBow_Held.DisplayName: Gold Bow_ Held
+	IronBow_Held.DisplayName: Iron Bow_ Held
+	LeadBow_Held.DisplayName: Lead Bow_ Held
+	MoltenFury_Held.DisplayName: Molten Fury_ Held
+	PalmWoodBow_Held.DisplayName: Palm Wood Bow_ Held
+	PlatinumBow_Held.DisplayName: Platinum Bow_ Held
+	RichMahoganyBow_Held.DisplayName: Rich Mahogany Bow_ Held
+	ShadewoodBow_Held.DisplayName: Shadewood Bow_ Held
+	SilverBow_Held.DisplayName: Silver Bow_ Held
+	TendonBow_Held.DisplayName: Tendon Bow_ Held
+	TinBow_Held.DisplayName: Tin Bow_ Held
+	TungstenBow_Held.DisplayName: Tungsten Bow_ Held
+	WoodenBow_Held.DisplayName: Wooden Bow_ Held
 }
 
 CollectibleBonus: {
