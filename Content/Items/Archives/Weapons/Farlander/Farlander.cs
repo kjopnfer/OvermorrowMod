@@ -56,7 +56,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             string action = gunPlayer.FarlanderCharge < 120 ? "_Farlander" : "_FarlanderPowerShot";
             int projectile = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun" + action), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
 
-            if (gunPlayer.FarlanderPierce)
+            if (gunPlayer.FarlanderPierce && Main.projectile[projectile].penetrate != -1)
             {
                 Main.projectile[projectile].penetrate++;
                 Main.projectile[projectile].usesLocalNPCImmunity = true;
