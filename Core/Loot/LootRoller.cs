@@ -225,12 +225,6 @@ namespace OvermorrowMod.Core.Loot
             int armorMax = Math.Min(10, player.armor.Length);
             for (int i = 0; i < armorMax; i++) Accumulate(player.armor[i]);
 
-            if (player.TryGetModPlayer<SubworldPlayer>(out var subPlayer))
-            {
-                Accumulate(subPlayer.loadoutWeapon);
-                Accumulate(subPlayer.loadoutMisc);
-            }
-
             return acc;
         }
 

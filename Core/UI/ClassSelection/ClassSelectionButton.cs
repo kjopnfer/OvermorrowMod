@@ -8,23 +8,23 @@ using Terraria.ID;
 using Terraria.UI;
 using Terraria.UI.Chat;
 
-namespace OvermorrowMod.Core.UI.LoadoutSelection
+namespace OvermorrowMod.Core.UI.ClassSelection
 {
-    public enum LoadoutButtonKind { Enter, Regenerate, Close }
+    public enum ClassButtonKind { Enter, Regenerate, Close }
 
-    public class LoadoutActionButton : UIElement
+    public class ClassSelectionButton : UIElement
     {
-        public LoadoutButtonKind kind;
+        public ClassButtonKind kind;
         public Action onClick;
 
         public string Label => kind switch
         {
-            LoadoutButtonKind.Enter => "Enter",
-            LoadoutButtonKind.Regenerate => "Regenerate",
+            ClassButtonKind.Enter => "Enter",
+            ClassButtonKind.Regenerate => "Regenerate",
             _ => "Close"
         };
 
-        public Color BaseColor => kind == LoadoutButtonKind.Close ? new Color(180, 60, 60) : new Color(60, 140, 200);
+        public Color BaseColor => kind == ClassButtonKind.Close ? new Color(180, 60, 60) : new Color(60, 140, 200);
 
         public override void LeftClick(UIMouseEvent evt)
         {

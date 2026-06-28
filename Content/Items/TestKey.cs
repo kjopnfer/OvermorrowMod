@@ -1,5 +1,5 @@
 using OvermorrowMod.Common;
-using OvermorrowMod.Core.UI.LoadoutSelection;
+using OvermorrowMod.Core.UI.ClassSelection;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Items
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                LoadoutSelectionManager.Show();
+                ClassSelectionManager.Show();
             }
             return true;
         }

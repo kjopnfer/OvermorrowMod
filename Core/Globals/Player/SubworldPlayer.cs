@@ -2,6 +2,7 @@ using OvermorrowMod.Content.Items;
 using OvermorrowMod.Content.Dungeons.Inkwell;
 using OvermorrowMod.Core.WorldGeneration.TestSubworld;
 using SubworldLibrary;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -20,13 +21,8 @@ namespace OvermorrowMod.Core.Globals
         public Item[] subMiscDyes;
         public bool inSubworldNow;
 
-        // Loadout staged by the LoadoutSelection UI right before SubworldSystem.Enter. Consumed in OnEnterWorld.
-        public Item pendingLoadout;
-        public Item pendingMisc;
-
-        // Persistent loadout shown in the LoadoutSelection UI slots.
-        public Item loadoutWeapon;
-        public Item loadoutMisc;
+        // Class loadout staged by the ClassSelection UI right before SubworldSystem.Enter. Consumed in OnEnterWorld.
+        public List<Item> pendingClassItems;
 
         public override void LoadData(TagCompound tag)
         {
@@ -39,9 +35,6 @@ namespace OvermorrowMod.Core.Globals
             subMisc = tag.Get<Item[]>("SubMisc");
             subMiscDyes = tag.Get<Item[]>("SubMiscDyes");
             inSubworldNow = tag.GetBool("InSubworldNow");
-
-            if (tag.ContainsKey("LoadoutWeapon")) loadoutWeapon = ItemIO.Load(tag.Get<TagCompound>("LoadoutWeapon"));
-            if (tag.ContainsKey("LoadoutMisc")) loadoutMisc = ItemIO.Load(tag.Get<TagCompound>("LoadoutMisc"));
         }
 
         public override void SaveData(TagCompound tag)
@@ -62,9 +55,6 @@ namespace OvermorrowMod.Core.Globals
             if (subMisc != null) tag["SubMisc"] = subMisc;
             if (subMiscDyes != null) tag["SubMiscDyes"] = subMiscDyes;
             tag["InSubworldNow"] = inSubworldNow;
-
-            if (loadoutWeapon != null && !loadoutWeapon.IsAir) tag["LoadoutWeapon"] = ItemIO.Save(loadoutWeapon);
-            if (loadoutMisc != null && !loadoutMisc.IsAir) tag["LoadoutMisc"] = ItemIO.Save(loadoutMisc);
         }
 
         public override void ModifyMaxStats(out StatModifier health, out StatModifier mana)
@@ -123,17 +113,16 @@ namespace OvermorrowMod.Core.Globals
                     Player.buffTime[i] = 0;
                 }
 
-                if (pendingLoadout != null && !pendingLoadout.IsAir)
+                if (pendingClassItems != null)
                 {
-                    Player.inventory[0] = pendingLoadout.Clone();
-                }
-                if (pendingMisc != null && !pendingMisc.IsAir)
-                {
-                    Player.inventory[1] = pendingMisc.Clone();
+                    for (int i = 0; i < pendingClassItems.Count && i < Player.inventory.Length; i++)
+                    {
+                        if (pendingClassItems[i] != null && !pendingClassItems[i].IsAir)
+                            Player.inventory[i] = pendingClassItems[i].Clone();
+                    }
                 }
             }
-            pendingLoadout = null;
-            pendingMisc = null;
+            pendingClassItems = null;
 
             GrantTestKey();
         }

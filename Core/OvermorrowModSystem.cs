@@ -3,7 +3,7 @@ using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
-using OvermorrowMod.Core.UI.LoadoutSelection;
+using OvermorrowMod.Core.UI.ClassSelection;
 using OvermorrowMod.Core.UI.Shop;
 using System;
 using System.Collections.Generic;
@@ -23,8 +23,8 @@ namespace OvermorrowMod.Core
         internal UserInterface RewardInterface;
         public RewardSelection RewardSelection;
 
-        internal UserInterface LoadoutInterface;
-        public LoadoutSelection LoadoutSelection;
+        internal UserInterface ClassInterface;
+        public ClassSelection ClassSelection;
 
         internal UserInterface ShopInterface;
         public ShopDialogue ShopDialogue;
@@ -45,11 +45,11 @@ namespace OvermorrowMod.Core
 
                 RewardSelectionManager.Initialize(RewardSelection);
 
-                LoadoutInterface = new UserInterface();
-                LoadoutSelection = new LoadoutSelection();
-                LoadoutInterface.SetState(LoadoutSelection);
+                ClassInterface = new UserInterface();
+                ClassSelection = new ClassSelection();
+                ClassInterface.SetState(ClassSelection);
 
-                LoadoutSelectionManager.Initialize(LoadoutSelection);
+                ClassSelectionManager.Initialize(ClassSelection);
 
                 ShopInterface = new UserInterface();
                 ShopDialogue = new ShopDialogue();
@@ -84,7 +84,7 @@ namespace OvermorrowMod.Core
         {
             if (TitleCard != null && TitleCard.visible) TitleInterface?.Update(gameTime);
             if (RewardSelection != null && RewardSelection.visible) RewardInterface?.Update(gameTime);
-            if (LoadoutSelection != null && LoadoutSelection.visible) LoadoutInterface?.Update(gameTime);
+            if (ClassSelection != null && ClassSelection.visible) ClassInterface?.Update(gameTime);
             if (ShopDialogue.IsActive) ShopInterface?.Update(gameTime);
             else ShopDialogue?.NotifyClosed();
         }
@@ -96,7 +96,7 @@ namespace OvermorrowMod.Core
             {
                 AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
                 AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
-                AddInterfaceLayer(layers, LoadoutSelection, mouseTextIndex, LoadoutSelection.visible, "Loadout Selection");
+                AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
                 AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
             }
         }
