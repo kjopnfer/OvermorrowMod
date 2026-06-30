@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Core.Particles.Modular
 {
@@ -27,6 +28,7 @@ namespace OvermorrowMod.Core.Particles.Modular
         public EmitDirection DirectionMode { get; set; } = EmitDirection.OutwardFromShape;
         public float Angle { get; set; } = 0f;
         public float SpreadDeg { get; set; } = 360f;
+        public Vector2 InitialVelocity { get; set; } = Vector2.Zero;
         public int LifetimeMin { get; set; } = 30;
         public int LifetimeMax { get; set; } = 45;
         public float StartScaleMin { get; set; } = 0.3f;
@@ -49,6 +51,12 @@ namespace OvermorrowMod.Core.Particles.Modular
 
         // Render
         public string Texture { get; set; } = "trace_04";
+
+        /// <summary>
+        /// Optional pool of texture names. When it holds two or more, each particle randomly picks one;
+        /// otherwise <see cref="Texture"/> is used.
+        /// </summary>
+        public List<string> Textures { get; set; } = null;
         public bool Additive { get; set; } = true;
         public ParticleDrawLayer DrawLayer { get; set; } = ParticleDrawLayer.AboveAll;
         public ParticleOrientation Orientation { get; set; } = ParticleOrientation.FaceVelocity;
