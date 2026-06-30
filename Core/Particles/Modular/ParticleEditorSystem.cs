@@ -18,6 +18,7 @@ namespace OvermorrowMod.Core.Particles.Modular
 
         private static int previewTick;
         private static bool prevLeft;
+        private static float streamAccumulator;
 
         public override void UpdateUI(GameTime gameTime)
         {
@@ -39,9 +40,22 @@ namespace OvermorrowMod.Core.Particles.Modular
             if (!overPanel)
             {
                 bool leftPressed = Main.mouseLeft && !prevLeft;
-                if (leftPressed) ParticleEmitter.EmitWorld(Spec, Main.MouseWorld);     // single burst
-                if (Main.mouseRight) ParticleEmitter.EmitWorldOne(Spec, Main.MouseWorld); // hold to stream
+                if (leftPressed) ParticleEmitter.EmitWorld(Spec, Main.MouseWorld); // single burst
+
+                // Hold right-click: rate-limited stream paced by Spec.Rate (particles/sec).
+                if (Main.mouseRight)
+                {
+                    float rate = Spec.Rate > 0f ? Spec.Rate : 20f;
+                    streamAccumulator += rate / 60f;
+                    while (streamAccumulator >= 1f)
+                    {
+                        ParticleEmitter.EmitWorldOne(Spec, Main.MouseWorld);
+                        streamAccumulator -= 1f;
+                    }
+                }
+                else streamAccumulator = 0f;
             }
+            else streamAccumulator = 0f;
 
             prevLeft = Main.mouseLeft;
         }

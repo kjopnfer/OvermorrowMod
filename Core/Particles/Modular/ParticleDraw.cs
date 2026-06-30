@@ -15,7 +15,8 @@ namespace OvermorrowMod.Core.Particles.Modular
     {
         public static void Draw(SpriteBatch spriteBatch, ParticleSpec spec, ParticleState state, Vector2 screenPos, bool useShader = true)
         {
-            string path = AssetDirectory.Textures + spec.Texture;
+            string name = string.IsNullOrEmpty(state.Texture) ? spec.Texture : state.Texture;
+            string path = AssetDirectory.Textures + name;
             if (!ModContent.HasAsset(path)) path = AssetDirectory.Textures + "trace_04";
             Texture2D texture = ModContent.Request<Texture2D>(path).Value;
 

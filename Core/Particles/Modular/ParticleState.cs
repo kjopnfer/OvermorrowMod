@@ -18,6 +18,7 @@ namespace OvermorrowMod.Core.Particles.Modular
         public float AngularVel;
         public float Alpha = 1f;
         public Color Color = Color.White;
+        public string Texture;
         public bool Dead;
     }
 }

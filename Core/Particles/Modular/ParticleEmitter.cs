@@ -49,10 +49,12 @@ namespace OvermorrowMod.Core.Particles.Modular
             if (fan > 0f) dir = dir.RotatedBy(rng.NextFloat(-fan / 2f, fan / 2f));
 
             float speed = rng.NextFloat(spec.SpeedMin, spec.SpeedMax);
+            string texture = (spec.Textures != null && spec.Textures.Count > 0) ? spec.Textures[rng.Next(spec.Textures.Count)] : spec.Texture;
             var state = new ParticleState
             {
                 Position = pos,
-                Velocity = dir * speed,
+                Velocity = dir * speed + spec.InitialVelocity,
+                Texture = texture,
                 Lifetime = rng.Next(spec.LifetimeMin, spec.LifetimeMax + 1),
                 StartScale = rng.NextFloat(spec.StartScaleMin, spec.StartScaleMax),
                 AngularVel = rng.NextFloat(spec.AngularVelMin, spec.AngularVelMax),

@@ -96,7 +96,8 @@ namespace OvermorrowMod.Core.Particles.Modular
             p.Y += pane.Height + 8;
 
             // Emission
-            spec.Count = (int)Slider(sb, "Count", spec.Count, 1, 60, ref p, "count", "Particles spawned per burst.");
+            spec.Count = (int)Slider(sb, "Count", spec.Count, 1, 60, ref p, "count", "Particles spawned per burst (left-click).");
+            spec.Rate = Slider(sb, "Stream rate", spec.Rate, 0, 120, ref p, "rate", "Particles per second while holding right-click in the world. 0 = default 20/s.");
             spec.Shape = (EmitShape)Cycler(sb, "Shape", (int)spec.Shape, ShapeNames, ref p, "shp", "Where particles spawn: point, circle, ring, or cone.");
             bool areaShape = spec.Shape == EmitShape.Circle || spec.Shape == EmitShape.Ring;
             if (areaShape)
@@ -114,6 +115,7 @@ namespace OvermorrowMod.Core.Particles.Modular
             // Motion
             spec.SpeedMin = Slider(sb, "Speed min", spec.SpeedMin, 0, 25, ref p, "spmn", "Lowest launch speed (px/frame).");
             spec.SpeedMax = Slider(sb, "Speed max", spec.SpeedMax, 0, 25, ref p, "spmx", "Highest launch speed (px/frame).");
+            spec.InitialVelocity = new Vector2(Slider(sb, "Velocity X", spec.InitialVelocity.X, -25, 25, ref p, "velx", "Constant velocity added at spawn (px/frame). + right, - left. Works with Speed 0 for a straight launch."), Slider(sb, "Velocity Y", spec.InitialVelocity.Y, -25, 25, ref p, "vely", "Constant velocity added at spawn (px/frame). + down, - up."));
             spec.Drag = Slider(sb, "Drag", spec.Drag, 0, 0.5f, ref p, "drag", "Velocity lost each frame. 0 = none, higher = stops faster.");
             spec.Gravity = new Vector2(spec.Gravity.X, Slider(sb, "Gravity Y", spec.Gravity.Y, -1, 1, ref p, "grav", "Per-frame accel. +down, -up."));
             spec.Turbulence = Slider(sb, "Turbulence", spec.Turbulence, 0, 3, ref p, "turb", "Random jitter added to velocity each frame.");
@@ -134,7 +136,7 @@ namespace OvermorrowMod.Core.Particles.Modular
             spec.LifetimeMax = (int)Slider(sb, "Life max", spec.LifetimeMax, 5, 180, ref p, "lfmx", "Longest lifetime in ticks (60 = 1 second).");
             spec.StartScaleMin = Slider(sb, "Scale min", spec.StartScaleMin, 0, 2.5f, ref p, "scmn", "Lowest starting size.");
             spec.StartScaleMax = Slider(sb, "Scale max", spec.StartScaleMax, 0, 2.5f, ref p, "scmx", "Highest starting size.");
-            spec.EndScale = Slider(sb, "End scale", spec.EndScale, 0, 2.5f, ref p, "escl", "Size at end of life (interpolated over lifetime).");
+            spec.EndScale = Slider(sb, "End scale", spec.EndScale, 0, 2.5f, ref p, "escl", "Size at end of life. Set below Scale min/max to shrink over time, above it to grow.");
             spec.ScaleEasing = (ParticleEasing)Cycler(sb, "Ease", (int)spec.ScaleEasing, EaseNames, ref p, "eas", "Curve for the scale-over-life transition.");
             spec.AlphaFadeInFrac = Slider(sb, "Fade in", spec.AlphaFadeInFrac, 0, 1, ref p, "fin", "Fraction of life spent fading in.");
             spec.AlphaFadeOutFrac = Slider(sb, "Fade out", spec.AlphaFadeOutFrac, 0, 1, ref p, "fout", "Fraction of life spent fading out.");
@@ -408,12 +410,14 @@ namespace OvermorrowMod.Core.Particles.Modular
 
         private static void TextureRow(SpriteBatch sb, ParticleSpec spec, ref Vector2 pos)
         {
-            Hover(pos, "Particle sprite. Click to open the thumbnail picker.");
+            Hover(pos, "Particle sprite. In the picker, left-click sets one texture; right-click adds/removes textures to randomly choose between.");
             Text(sb, "Texture", pos, Color.White, 0.8f);
             Rectangle box = new((int)pos.X + 108, (int)pos.Y, 156, 16);
             bool over = box.Contains(Main.MouseScreen.ToPoint());
             Box(sb, box, over || texturePickerOpen ? new Color(70, 90, 120) : new Color(40, 40, 55));
-            Text(sb, spec.Texture, new Vector2(box.X + 4, box.Y + 1), Color.White, 0.75f);
+            bool pooled = spec.Textures != null && spec.Textures.Count > 1;
+            string rowText = pooled ? $"{spec.Texture}  +{spec.Textures.Count - 1}" : spec.Texture;
+            Text(sb, rowText, new Vector2(box.X + 4, box.Y + 1), pooled ? new Color(150, 220, 255) : Color.White, 0.75f);
             if (over && click) texturePickerOpen = !texturePickerOpen;
             pos.Y += 20;
         }
@@ -436,8 +440,10 @@ namespace OvermorrowMod.Core.Particles.Modular
                 int cx = i % cols, cy = i / cols;
                 Rectangle r = new(pickerRect.X + 4 + cx * cell, pickerRect.Y + 4 + cy * cell, cell - 4, cell - 4);
                 bool over = r.Contains(Main.MouseScreen.ToPoint());
-                bool selected = TextureOptions[i] == spec.Texture;
-                Box(sb, r, selected ? new Color(70, 100, 140) : over ? new Color(50, 50, 70) : new Color(28, 28, 38));
+                bool inPool = spec.Textures != null && spec.Textures.Contains(TextureOptions[i]);
+                bool isSingle = (spec.Textures == null || spec.Textures.Count == 0) && TextureOptions[i] == spec.Texture;
+                bool selected = inPool || isSingle;
+                Box(sb, r, inPool ? new Color(70, 130, 90) : selected ? new Color(70, 100, 140) : over ? new Color(50, 50, 70) : new Color(28, 28, 38));
 
                 string path = AssetDirectory.Textures + TextureOptions[i];
                 if (ModContent.HasAsset(path))
@@ -453,7 +459,15 @@ namespace OvermorrowMod.Core.Particles.Modular
                     if (click)
                     {
                         spec.Texture = TextureOptions[i];
+                        spec.Textures = null;
                         texturePickerOpen = false;
+                    }
+                    else if (rclick)
+                    {
+                        spec.Textures ??= new List<string>();
+                        if (!spec.Textures.Remove(TextureOptions[i])) spec.Textures.Add(TextureOptions[i]);
+                        if (spec.Textures.Count == 0) spec.Textures = null;
+                        else spec.Texture = spec.Textures[0];
                     }
                 }
             }
@@ -510,6 +524,7 @@ namespace OvermorrowMod.Core.Particles.Modular
 
             Add(s.Shape != d.Shape, $"Shape = EmitShape.{s.Shape}");
             Add(s.Count != d.Count, $"Count = {s.Count}");
+            Add(s.Rate != d.Rate, $"Rate = {F(s.Rate)}");
             Add(s.ShapeRadius != d.ShapeRadius, $"ShapeRadius = {F(s.ShapeRadius)}");
             Add(s.ConeSpread != d.ConeSpread, $"ConeSpread = {F(s.ConeSpread)}");
             Add(s.DirectionMode != d.DirectionMode, $"DirectionMode = EmitDirection.{s.DirectionMode}");
@@ -517,6 +532,7 @@ namespace OvermorrowMod.Core.Particles.Modular
             Add(s.SpreadDeg != d.SpreadDeg, $"SpreadDeg = {F(s.SpreadDeg)}");
             Add(s.SpeedMin != d.SpeedMin, $"SpeedMin = {F(s.SpeedMin)}");
             Add(s.SpeedMax != d.SpeedMax, $"SpeedMax = {F(s.SpeedMax)}");
+            Add(s.InitialVelocity != d.InitialVelocity, $"InitialVelocity = new Vector2({F(s.InitialVelocity.X)}, {F(s.InitialVelocity.Y)})");
             Add(s.Drag != d.Drag, $"Drag = {F(s.Drag)}");
             Add(s.Gravity != d.Gravity, $"Gravity = new Vector2({F(s.Gravity.X)}, {F(s.Gravity.Y)})");
             Add(s.Turbulence != d.Turbulence, $"Turbulence = {F(s.Turbulence)}");
@@ -537,6 +553,8 @@ namespace OvermorrowMod.Core.Particles.Modular
             Add(s.StartColor != d.StartColor, $"StartColor = new Color({s.StartColor.R}, {s.StartColor.G}, {s.StartColor.B})");
             Add(s.EndColor != d.EndColor, $"EndColor = new Color({s.EndColor.R}, {s.EndColor.G}, {s.EndColor.B})");
             Add(s.Texture != d.Texture, $"Texture = \"{s.Texture}\"");
+            if (s.Textures != null && s.Textures.Count > 0)
+                parts.Add($"Textures = new() {{ {string.Join(", ", s.Textures.ConvertAll(t => $"\"{t}\""))} }}");
             Add(s.Additive != d.Additive, $"Additive = {Low(s.Additive)}");
             Add(s.DrawLayer != d.DrawLayer, $"DrawLayer = ParticleDrawLayer.{s.DrawLayer}");
             Add(s.Shader != d.Shader, $"Shader = \"{s.Shader}\"");
