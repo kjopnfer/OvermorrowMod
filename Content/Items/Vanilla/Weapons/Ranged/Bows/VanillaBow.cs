@@ -15,10 +15,19 @@ namespace OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged.Bows
         protected virtual int ConvertArrowItem => ItemID.None;
         protected virtual int ForcedArrowProjectile => ProjectileID.None;
 
+        protected virtual float ChargeRate => 1.5f;
+        protected virtual float ChargeTime => 36f;
+        protected virtual float FireDelay => 12f;
+        protected virtual float ArrowSpeed => 13f;
+
         public override BowStats GetBaseBowStats()
         {
             return new BowStats
             {
+                ChargeSpeed = ChargeRate,
+                MaxChargeTime = ChargeTime,
+                ShootDelay = FireDelay,
+                MaxSpeed = ArrowSpeed,
                 StringColor = BowStringColor,
                 ConvertArrow = ConvertArrowItem,
                 ArrowType = ForcedArrowProjectile

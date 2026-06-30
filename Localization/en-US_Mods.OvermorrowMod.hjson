@@ -336,7 +336,7 @@ Keywords: {
 
 	Focus: {
 		DisplayName: Focus
-		Description: Triggers when firing a shot during the weapon's white flash window
+		Description: Triggers when firing a shot while the weapon is fully charged and flashing white
 	}
 
 	MindDown: {

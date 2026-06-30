@@ -379,7 +379,7 @@ namespace OvermorrowMod.Common.Items.Bows
         /// Determines if the current shot will be a power shot based on charge time and flash counter.
         /// </summary>
         /// <returns>True if this shot is a power shot, false otherwise.</returns>
-        private bool IsPowerShot() => flashCounter >= 6 && flashCounter <= 36;
+        private bool IsPowerShot() => drawCounter >= ModifiedChargeTime;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -451,7 +451,7 @@ namespace OvermorrowMod.Common.Items.Bows
             if (drawCounter >= ModifiedChargeTime)
             {
                 if (flashCounter == 0) SoundEngine.PlaySound(SoundID.MaxMana);
-                if (flashCounter < 48 && !Main.gamePaused) flashCounter++;
+                if (!Main.gamePaused) flashCounter++;
             }
 
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
@@ -467,7 +467,7 @@ namespace OvermorrowMod.Common.Items.Bows
 
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-            float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 12f), 0, 1);
+            float flashProgress = 0.5f + 0.5f * (float)Math.Sin(flashCounter / 12f);
 
             Effect effect = OvermorrowModFile.Instance.ColorFill.Value;
             effect.Parameters["ColorFillColor"].SetValue(Color.White.ToVector3());
