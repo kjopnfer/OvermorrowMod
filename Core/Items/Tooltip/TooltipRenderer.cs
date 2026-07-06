@@ -81,25 +81,38 @@ namespace OvermorrowMod.Core.Items
         {
             if (keywords.Count == 0) return;
 
-            float containerWidth = tooltipCount == 0 ? 0 : TooltipConfiguration.CONTAINER_WIDTH;
+            // Entities flip to the left when the cursor is on the right half, matching DrawTooltipEntities.
+            bool hasEntities = tooltipCount > 0;
+            bool entitiesOnLeft = hasEntities && Main.MouseScreen.X > Main.screenWidth / 2;
+            bool entitiesOnRight = hasEntities && !entitiesOnLeft;
+
             float lineWidth = ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X;
             float boxWidth = TooltipConfiguration.KEYWORD_WIDTH + 40;
 
-            // Sit to the right of the item tooltip (past any entity container), and
-            // only flip to the left of it when the right placement runs off-screen.
-            float rightX = x + lineWidth + containerWidth + TooltipConfiguration.CONTAINER_OFFSET;
+            // Sit clear of any entity container on the same side, hugging its edge with a small gap.
+            const float AdjacentGap = 5f;
+            float entityShift = TooltipConfiguration.CONTAINER_WIDTH + 10;
+            float rightX = x + lineWidth + (entitiesOnRight ? TooltipConfiguration.CONTAINER_WIDTH : 0) + TooltipConfiguration.CONTAINER_OFFSET;
+            float leftX = x - (entitiesOnLeft ? entityShift : 0) - AdjacentGap - boxWidth;
+
             bool placeLeft = rightX + boxWidth > Main.screenWidth;
-            float boxX = placeLeft ? x - TooltipConfiguration.CONTAINER_OFFSET - boxWidth : rightX;
+            float boxX = placeLeft ? leftX : rightX;
+
+            // Shift the whole stack up together when it overflows the bottom edge.
+            float stackHeight = 0;
+            foreach (string keyword in keywords)
+                stackHeight += CalculateKeywordHeight(keyword) + 5 + TooltipConfiguration.BOTTOM_PADDING;
+
+            float startY = y;
+            if (startY + stackHeight > Main.screenHeight)
+                startY = Main.screenHeight - stackHeight;
+            if (startY < 0) startY = 0;
 
             float offset = 0;
             foreach (string keyword in keywords)
             {
                 float height = CalculateKeywordHeight(keyword);
-                float boxY = y + offset;
-                if (boxY + height > Main.screenHeight)
-                    boxY = Main.screenHeight - height;
-
-                DrawKeywordTooltip(spriteBatch, keyword, new Vector2(boxX, boxY), height);
+                DrawKeywordTooltip(spriteBatch, keyword, new Vector2(boxX, startY + offset), height);
                 offset += height + 5 + TooltipConfiguration.BOTTOM_PADDING;
             }
         }
