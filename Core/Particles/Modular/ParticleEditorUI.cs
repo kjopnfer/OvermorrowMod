@@ -5,8 +5,10 @@ using OvermorrowMod.Common.Utilities;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameInput;
@@ -37,6 +39,12 @@ namespace OvermorrowMod.Core.Particles.Modular
 
         private static bool texturePickerOpen;
         private static Rectangle pickerRect;
+
+        // Safeguards: destructive buttons arm on first click and only fire on a second click; the spec
+        // from before the last destructive action is kept so Undo can restore it.
+        private static string _armed;
+        private static int _armedTimer;
+        private static ParticleSpec _undo;
 
         public static void ClearFocus()
         {
@@ -80,6 +88,8 @@ namespace OvermorrowMod.Core.Particles.Modular
             click = Main.mouseLeft && !prevLeft;
             rclick = Main.mouseRight && !prevRight;
             hoverTip = null;
+
+            if (_armedTimer > 0 && --_armedTimer == 0) _armed = null;
 
             Box(sb, Panel, new Color(18, 18, 26) * 0.93f);
             Outline(sb, Panel, new Color(80, 80, 110));
@@ -153,8 +163,10 @@ namespace OvermorrowMod.Core.Particles.Modular
 
             if (Button(sb, "Copy as C#", ref p, "copy", "Copy this spec as a C# ParticleSpec to the clipboard.")) CopyCSharp(spec);
             if (Button(sb, "Copy JSON", ref p, "copyjson", "Copy this spec as JSON (re-importable with Paste JSON).")) CopyJson(spec);
-            if (Button(sb, "Paste JSON", ref p, "pastejson", "Load a spec from JSON on the clipboard as a baseline to tweak.")) PasteJson();
-            if (Button(sb, "Reset", ref p, "reset", "Reset all values to defaults.")) ParticleEditorSystem.Spec = new();
+            if (DangerButton(sb, "Paste JSON", ref p, "pastejson", "OVERWRITES the current spec with JSON from the clipboard. Click twice to confirm; Undo restores it.")) { Snapshot(); PasteJson(); }
+            if (DangerButton(sb, "Paste C#", ref p, "pastecs", "OVERWRITES the current spec with a C# literal from the clipboard. Click twice to confirm; Undo restores it.")) { Snapshot(); PasteCSharp(); }
+            if (DangerButton(sb, "Reset", ref p, "reset", "OVERWRITES the current spec with defaults. Click twice to confirm; Undo restores it.")) { Snapshot(); ParticleEditorSystem.Spec = new(); }
+            if (Button(sb, "Undo", ref p, "undo", "Restore the spec from before the last Paste/Reset (click again to redo).")) Undo();
 
             // Preview pane, drawn last. Plain alpha draw to keep the UI spritebatch state intact
             // (additive glow is visible on world-spawned particles).
@@ -406,6 +418,44 @@ namespace OvermorrowMod.Core.Particles.Modular
             return over && click;
         }
 
+        /// <summary>
+        /// A button that must be clicked twice to fire: the first click arms it (for a couple seconds),
+        /// the second confirms. Guards destructive actions against a single accidental click.
+        /// </summary>
+        private static bool DangerButton(SpriteBatch sb, string label, ref Vector2 pos, string id, string tip)
+        {
+            bool armed = _armed == id;
+            Rectangle box = new((int)pos.X, (int)pos.Y, 156, 20);
+            bool over = box.Contains(Main.MouseScreen.ToPoint());
+            if (tip != null && over) hoverTip = tip;
+
+            Color fill = armed ? new Color(170, 55, 55) : over ? new Color(120, 80, 55) : new Color(70, 52, 46);
+            Box(sb, box, fill);
+            Text(sb, armed ? label + "  - click again" : label, new Vector2(box.X + 6, box.Y + 3), armed ? Color.White : new Color(240, 205, 190), 0.8f);
+            pos.Y += 24;
+
+            if (over && click)
+            {
+                if (armed) { _armed = null; _armedTimer = 0; return true; }
+                _armed = id;
+                _armedTimer = 150;
+            }
+            return false;
+        }
+
+        private static void Snapshot() => _undo = Clone(ParticleEditorSystem.Spec);
+
+        private static void Undo()
+        {
+            if (_undo == null) { Main.NewText("Nothing to undo.", Color.Gray); return; }
+            var current = Clone(ParticleEditorSystem.Spec);
+            ParticleEditorSystem.Spec = _undo;
+            _undo = current;
+            Main.NewText("Restored the previous ParticleSpec.", Color.LightGreen);
+        }
+
+        private static ParticleSpec Clone(ParticleSpec s) => s with { Textures = s.Textures == null ? null : new List<string>(s.Textures) };
+
         // ----- texture picker -----
 
         private static void TextureRow(SpriteBatch sb, ParticleSpec spec, ref Vector2 pos)
@@ -592,6 +642,173 @@ namespace OvermorrowMod.Core.Particles.Modular
             {
                 Main.NewText("Clipboard does not contain a valid ParticleSpec JSON.", Color.OrangeRed);
             }
+        }
+
+        private static void PasteCSharp()
+        {
+            string text = GetClipboard();
+            if (!string.IsNullOrWhiteSpace(text) && TryParseCSharp(text, out ParticleSpec loaded))
+            {
+                ParticleEditorSystem.Spec = loaded;
+                Main.NewText("Loaded ParticleSpec from clipboard C#.", Color.LightGreen);
+            }
+            else
+            {
+                Main.NewText("Clipboard does not contain a valid C# ParticleSpec.", Color.OrangeRed);
+            }
+        }
+
+        /// <summary>
+        /// Parses a C# <c>new ParticleSpec { ... }</c> literal (as produced by Copy as C#) back into a
+        /// spec. Tolerant of surrounding <c>var x =</c> / trailing semicolons and of bare field lists.
+        /// </summary>
+        private static bool TryParseCSharp(string text, out ParticleSpec spec)
+        {
+            spec = new ParticleSpec();
+            try
+            {
+                int open = text.IndexOf('{');
+                if (open >= 0)
+                {
+                    int close = MatchBrace(text, open);
+                    if (close > open) text = text.Substring(open + 1, close - open - 1);
+                }
+
+                int parsed = 0;
+                foreach (var (name, value) in SplitAssignments(text))
+                    if (ApplyCSharpField(spec, name, value)) parsed++;
+
+                if (parsed == 0) { spec = new ParticleSpec(); return false; }
+                return true;
+            }
+            catch { spec = new ParticleSpec(); return false; }
+        }
+
+        private static int MatchBrace(string s, int open)
+        {
+            int depth = 0;
+            for (int i = open; i < s.Length; i++)
+            {
+                if (s[i] == '{') depth++;
+                else if (s[i] == '}') { depth--; if (depth == 0) return i; }
+            }
+            return -1;
+        }
+
+        private static List<(string Name, string Value)> SplitAssignments(string body)
+        {
+            var result = new List<(string, string)>();
+            int depth = 0, start = 0;
+            for (int i = 0; i <= body.Length; i++)
+            {
+                char c = i < body.Length ? body[i] : ',';
+                if (c == '(' || c == '{' || c == '[') depth++;
+                else if (c == ')' || c == '}' || c == ']') depth--;
+                else if ((c == ',' || c == '\n') && depth == 0)
+                {
+                    string seg = body.Substring(start, i - start).Trim();
+                    start = i + 1;
+                    int eq = seg.IndexOf('=');
+                    if (eq <= 0) continue;
+                    result.Add((seg.Substring(0, eq).Trim(), seg.Substring(eq + 1).Trim()));
+                }
+            }
+            return result;
+        }
+
+        private static bool ApplyCSharpField(ParticleSpec s, string name, string v)
+        {
+            switch (name)
+            {
+                case "Shape": s.Shape = PEnum<EmitShape>(v); return true;
+                case "ShapeRadius": s.ShapeRadius = PF(v); return true;
+                case "ConeSpread": s.ConeSpread = PF(v); return true;
+                case "Count": s.Count = PI(v); return true;
+                case "Rate": s.Rate = PF(v); return true;
+                case "SpeedMin": s.SpeedMin = PF(v); return true;
+                case "SpeedMax": s.SpeedMax = PF(v); return true;
+                case "DirectionMode": s.DirectionMode = PEnum<EmitDirection>(v); return true;
+                case "Angle": s.Angle = PF(v); return true;
+                case "SpreadDeg": s.SpreadDeg = PF(v); return true;
+                case "InitialVelocity": s.InitialVelocity = PVec(v); return true;
+                case "LifetimeMin": s.LifetimeMin = PI(v); return true;
+                case "LifetimeMax": s.LifetimeMax = PI(v); return true;
+                case "StartScaleMin": s.StartScaleMin = PF(v); return true;
+                case "StartScaleMax": s.StartScaleMax = PF(v); return true;
+                case "EndScale": s.EndScale = PF(v); return true;
+                case "StartRotationMin": s.StartRotationMin = PF(v); return true;
+                case "StartRotationMax": s.StartRotationMax = PF(v); return true;
+                case "ScaleEasing": s.ScaleEasing = PEnum<ParticleEasing>(v); return true;
+                case "StartColor": s.StartColor = PColor(v); return true;
+                case "EndColor": s.EndColor = PColor(v); return true;
+                case "AlphaFadeInFrac": s.AlphaFadeInFrac = PF(v); return true;
+                case "AlphaFadeOutFrac": s.AlphaFadeOutFrac = PF(v); return true;
+                case "Drag": s.Drag = PF(v); return true;
+                case "Gravity": s.Gravity = PVec(v); return true;
+                case "AngularVelMin": s.AngularVelMin = PF(v); return true;
+                case "AngularVelMax": s.AngularVelMax = PF(v); return true;
+                case "Turbulence": s.Turbulence = PF(v); return true;
+                case "Texture": s.Texture = PStr(v); return true;
+                case "Textures": s.Textures = PStrList(v); return true;
+                case "Additive": s.Additive = PBool(v); return true;
+                case "DrawLayer": s.DrawLayer = PEnum<ParticleDrawLayer>(v); return true;
+                case "Orientation": s.Orientation = PEnum<ParticleOrientation>(v); return true;
+                case "RotationOffsetDeg": s.RotationOffsetDeg = PF(v); return true;
+                case "FlipHorizontal": s.FlipHorizontal = PBool(v); return true;
+                case "FlipVertical": s.FlipVertical = PBool(v); return true;
+                case "Shader": s.Shader = PStr(v); return true;
+                case "ShaderColor": s.ShaderColor = PColor(v); return true;
+                case "ShaderProgress": s.ShaderProgress = PF(v); return true;
+                case "ShaderProgressFromAge": s.ShaderProgressFromAge = PBool(v); return true;
+                default: return false;
+            }
+        }
+
+        private static float PF(string v) => float.Parse(v.Trim().TrimEnd('f', 'F'), NumberStyles.Float, CultureInfo.InvariantCulture);
+        private static int PI(string v) => (int)Math.Round(PF(v));
+        private static bool PBool(string v) => v.Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
+
+        private static T PEnum<T>(string v) where T : struct
+        {
+            string name = v.Trim();
+            int dot = name.LastIndexOf('.');
+            if (dot >= 0) name = name.Substring(dot + 1);
+            return (T)Enum.Parse(typeof(T), name.Trim(), true);
+        }
+
+        private static string InParens(string v)
+        {
+            int a = v.IndexOf('('), b = v.LastIndexOf(')');
+            return a >= 0 && b > a ? v.Substring(a + 1, b - a - 1) : v;
+        }
+
+        private static Color PColor(string v)
+        {
+            var m = Regex.Matches(InParens(v), @"-?\d+");
+            if (m.Count >= 4) return new Color(int.Parse(m[0].Value), int.Parse(m[1].Value), int.Parse(m[2].Value), int.Parse(m[3].Value));
+            if (m.Count >= 3) return new Color(int.Parse(m[0].Value), int.Parse(m[1].Value), int.Parse(m[2].Value));
+            return Color.White;
+        }
+
+        private static Vector2 PVec(string v)
+        {
+            var m = Regex.Matches(InParens(v), @"-?\d*\.?\d+");
+            float x = m.Count > 0 ? float.Parse(m[0].Value, NumberStyles.Float, CultureInfo.InvariantCulture) : 0f;
+            float y = m.Count > 1 ? float.Parse(m[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture) : 0f;
+            return new Vector2(x, y);
+        }
+
+        private static string PStr(string v)
+        {
+            int a = v.IndexOf('"'), b = v.LastIndexOf('"');
+            return a >= 0 && b > a ? v.Substring(a + 1, b - a - 1) : v.Trim();
+        }
+
+        private static List<string> PStrList(string v)
+        {
+            var list = new List<string>();
+            foreach (Match m in Regex.Matches(v, "\"([^\"]*)\"")) list.Add(m.Groups[1].Value);
+            return list.Count > 0 ? list : null;
         }
 
         private static void SetClipboard(string text)
