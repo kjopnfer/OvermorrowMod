@@ -134,6 +134,15 @@ TooltipEntities: {
 		}
 	}
 
+	RelicBolt: {
+		DisplayName: Relic Bolt
+
+		Description: {
+			Line0: + Increases your defense by 3
+			Line1: + Deals damage equal to your defense when launched
+		}
+	}
+
 	ArcanistsHammer: {
 		DisplayName: Arcanists Hammer
 
@@ -397,6 +406,16 @@ Items: {
 			'''
 			5% increased ranged damage
 			{Keyword:Vigor}: Bows have a chance to fire an additional <Projectile:Quill Arrow>
+			'''
+	}
+
+	RelicArmor: {
+		DisplayName: Relic Armor
+		Tooltip:
+			'''
+			6% increased critical strike chance
+			{Keyword:Strike}: Critical hits have a 50% chance to spawn a <Projectile:Relic Bolt>
+			Double tap DOWN to launch a <Projectile:Relic Bolt> at the cursor
 			'''
 	}
 
@@ -1044,6 +1063,8 @@ Projectiles: {
 	RestLight.DisplayName: Rest Light
 	ArcaneBullet.DisplayName: Arcane Bullet
 	ArcaneBurst.DisplayName: Arcane Burst
+	RelicExplosion.DisplayName: Relic Explosion
+	RelicBolt.DisplayName: Relic Bolt
 	QuillArrow.DisplayName: Quill Arrow
 	BorealWoodBow_Held.DisplayName: Boreal Wood Bow_ Held
 	CopperBow_Held.DisplayName: Copper Bow_ Held
