@@ -40,12 +40,16 @@ namespace OvermorrowMod.Core.Globals
 
         public override void SetControls()
         {
+            if (!RunState.InRun) return;
+
             if (ConsumeDoubleTap(Player.controlRight && Player.releaseRight, Cardinal.Right)) tapDirection = 1;
             else if (ConsumeDoubleTap(Player.controlLeft && Player.releaseLeft, Cardinal.Left)) tapDirection = -1;
         }
 
         public override void PreUpdateMovement()
         {
+            if (!RunState.InRun) return;
+
             if (dashTicksLeft == 0 && tapDirection != 0)
             {
                 TryStartDash();
