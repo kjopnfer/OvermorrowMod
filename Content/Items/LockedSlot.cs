@@ -38,7 +38,7 @@ namespace OvermorrowMod.Content.Items
         public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.RemoveAll(line => line.Mod == "Terraria" && line.Name.StartsWith("Favorite"));
 
         /// <summary>
-        /// Redraws the plain slot background over the favorited one vanilla draws, then the chained X and padlock on top.
+        /// Draws a darkened slot background over the favorited one vanilla draws, then the chained X and padlock on top.
         /// </summary>
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
@@ -46,7 +46,8 @@ namespace OvermorrowMod.Content.Items
             Texture2D chain = ModContent.Request<Texture2D>(AssetDirectory.Misc + "LockChain").Value;
             Texture2D padlock = TextureAssets.Item[Type].Value;
 
-            spriteBatch.Draw(background, position, null, Main.inventoryBack, 0f, background.Size() / 2f, Main.inventoryScale, SpriteEffects.None, 0f);
+            Color backgroundColor = Main.inventoryBack.MultiplyRGB(new Color(90, 90, 90));
+            spriteBatch.Draw(background, position, null, backgroundColor, 0f, background.Size() / 2f, Main.inventoryScale, SpriteEffects.None, 0f);
 
             float slotSize = background.Width * Main.inventoryScale;
             float chainScale = Main.inventoryScale * 0.5f;
