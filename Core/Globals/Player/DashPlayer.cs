@@ -9,7 +9,7 @@ namespace OvermorrowMod.Core.Globals
 {
     public class DashPlayer : ModPlayer
     {
-        private const int DashTicks = 10;
+        private const int DashTicks = 8;
         private const float DashSpeed = 14f;
         private const float SlideDecay = 0.75f;
         private const int MaxCharges = 2;
