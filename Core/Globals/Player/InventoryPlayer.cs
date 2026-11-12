@@ -10,7 +10,7 @@ namespace OvermorrowMod.Core.Globals
     /// <summary>
     /// Locks every hotbar and main inventory slot past the open counts with a <see cref="LockedSlot"/> placeholder while in a run.
     /// </summary>
-    public class RunInventoryPlayer : ModPlayer
+    public class InventoryPlayer : ModPlayer
     {
         public const int OpenHotbarSlots = 3;
         public const int OpenInventorySlots = 5;
