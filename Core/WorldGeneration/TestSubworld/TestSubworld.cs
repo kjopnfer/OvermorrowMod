@@ -31,10 +31,9 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         // button has no effect.
         public override bool ShouldSave => false;
 
-        public override List<GenPass> Tasks =>
-        [
-            new TestGenPass("Loading", 1, () => new SubworldDoorRoom("OvermorrowMod/TestSubworld2"), () => new InkwellDoorRoom("OvermorrowMod/InkwellSubworld"), () => new ArchiveContent())
-        ];
+        public override List<GenPass> Tasks => [CreateGenPass()];
+
+        public static TestGenPass CreateGenPass() => new TestGenPass("Loading", 1, () => new SubworldDoorRoom("OvermorrowMod/TestSubworld2"), () => new InkwellDoorRoom("OvermorrowMod/InkwellSubworld"), () => new ArchiveContent());
 
         public override void OnLoad()
         {

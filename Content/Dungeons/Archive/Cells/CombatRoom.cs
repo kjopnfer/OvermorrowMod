@@ -59,27 +59,20 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             return false;
         }
 
-        /// <summary>Enforce minimum spacing between combat rooms and the cap.</summary>
-        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, Func<int, int, GridRoom> pendingLookup = null)
+        /// <summary>
+        /// Keep combat rooms away from every <see cref="DoorRoom"/> (the starting room included) and from each other,
+        /// and cap how many a dungeon holds, counting the searching path's placements too.
+        /// </summary>
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, PendingPlacements pending = null)
         {
-            // Door-proximity check.
-            for (int dc = 0; dc < grid.Cols; dc++)
+            foreach (var door in grid.AnchorsOf(typeof(DoorRoom)))
             {
-                for (int dr = 0; dr < grid.Rows; dr++)
+                for (int sc = 0; sc < CellWidth; sc++)
                 {
-                    var dSlot = grid.GetSlot(dc, dr);
-                    if (dSlot == null || dSlot.IsEmpty) continue;
-                    if (dSlot.Room is not DoorRoom) continue;
-
-                    for (int sc = 0; sc < CellWidth; sc++)
+                    for (int sr = 0; sr < CellHeight; sr++)
                     {
-                        for (int sr = 0; sr < CellHeight; sr++)
-                        {
-                            int dist = Math.Max(
-                                Math.Abs((anchor.X + sc) - dc),
-                                Math.Abs((anchor.Y + sr) - dr));
-                            if (dist < MinDistanceFromDoor) return false;
-                        }
+                        int dist = Math.Max(Math.Abs(anchor.X + sc - door.X), Math.Abs(anchor.Y + sr - door.Y));
+                        if (dist < MinDistanceFromDoor) return false;
                     }
                 }
             }
@@ -94,7 +87,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             {
                 for (int r = rMin; r <= rMax; r++)
                 {
-                    var room = GetEffectiveRoomAt(grid, pendingLookup, c, r);
+                    var room = GetEffectiveRoomAt(grid, pending, c, r);
                     if (room is CombatRoom)
                     {
                         int dist = Math.Max(Math.Abs(c - anchor.X), Math.Abs(r - anchor.Y));
@@ -103,21 +96,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
                 }
             }
 
-            var seen = new HashSet<GridRoom>();
-            int combatCount = 0;
-            for (int c = 0; c < grid.Cols; c++)
-            {
-                for (int r = 0; r < grid.Rows; r++)
-                {
-                    var slot = grid.GetSlot(c, r);
-                    if (slot == null || slot.IsEmpty) continue;
-
-                    if (slot.Room is CombatRoom && seen.Add(slot.Room))
-                        combatCount++;
-                }
-            }
-
-            return combatCount < MaxInstancesPerDungeon;
+            return grid.CountPlacements(typeof(CombatRoom)) + (pending?.Count(typeof(CombatRoom)) ?? 0) < MaxInstancesPerDungeon;
         }
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "CombatRoom.aseprite";

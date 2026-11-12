@@ -51,10 +51,10 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         /// A corridor cannot sit directly above or below a shaft, since
         /// shafts only accept bookshelves on their vertical ends.
         /// </summary>
-        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, Func<int, int, GridRoom> pendingLookup = null)
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, PendingPlacements pending = null)
         {
-            var above = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y - 1);
-            var below = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y + 1);
+            var above = GetEffectiveRoomAt(grid, pending, anchor.X, anchor.Y - 1);
+            var below = GetEffectiveRoomAt(grid, pending, anchor.X, anchor.Y + 1);
             if (above is ShaftCell) return false;
             if (below is ShaftCell) return false;
             return true;

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using System.Threading.Tasks;
 using Terraria.DataStructures;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
@@ -113,16 +114,41 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>Sets the dungeon the player spawns in.</summary>
         public void SetRoot(int node) => _rootId = node;
 
-        /// <summary>Generates every dungeon, positions them from the graph, pairs the doors, and sets the spawn.</summary>
+        /// <summary>
+        /// Plans every dungeon without placing tiles. Each dungeon plans from its own seed drawn from
+        /// <paramref name="rand"/>, so the result is the same in parallel and sequential mode.
+        /// </summary>
+        public DungeonPlan[] Plan(Random rand, PlanOptions options)
+        {
+            var seeds = new int[_nodes.Count];
+            for (int i = 0; i < seeds.Length; i++)
+                seeds[i] = rand.Next();
+
+            var plans = new DungeonPlan[_nodes.Count];
+            void PlanDungeon(int i) => plans[i] = GridGenerator.Plan(_nodes[i].Content, new Random(seeds[i]), DoorDirectionsFor(i), ExtraRoomsFor(i), i, options);
+
+            if (options.Sequential)
+            {
+                for (int i = 0; i < _nodes.Count; i++)
+                    PlanDungeon(i);
+            }
+            else
+            {
+                Parallel.For(0, _nodes.Count, PlanDungeon);
+            }
+            return plans;
+        }
+
+        /// <summary>
+        /// Generates every dungeon, positions them from the graph, pairs the doors, and sets the spawn.
+        /// </summary>
         public void Build(Point worldCenter, Random rand)
         {
             if (_nodes.Count == 0) return;
             if (_rootId < 0) _rootId = 0;
 
             // 1. Plan each tile placement without placing tiles.
-            var plans = new DungeonPlan[_nodes.Count];
-            for (int i = 0; i < _nodes.Count; i++)
-                plans[i] = GridGenerator.Plan(_nodes[i].Content, rand, DoorDirectionsFor(i), ExtraRoomsFor(i));
+            var plans = Plan(rand, new PlanOptions { Diagnostics = true });
 
             // 2. Position from the graph using the measured footprints.
             AssignCoarseCoords();

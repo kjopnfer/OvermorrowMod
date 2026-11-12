@@ -65,10 +65,10 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             }
         }
 
-        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, System.Func<int, int, GridRoom> pendingLookup = null)
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, PendingPlacements pending = null)
         {
-            var above = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y - 1);
-            var below = GetEffectiveRoomAt(grid, pendingLookup, anchor.X, anchor.Y + 1);
+            var above = GetEffectiveRoomAt(grid, pending, anchor.X, anchor.Y - 1);
+            var below = GetEffectiveRoomAt(grid, pending, anchor.X, anchor.Y + 1);
             if (above != null && above is not (BookshelfCell or ShaftCell))
                 return false;
             if (below != null && below is not (BookshelfCell or ShaftCell))
