@@ -752,11 +752,6 @@ Items: {
 		Tooltip: ""
 	}
 
-	TestKey: {
-		DisplayName: Test Key
-		Tooltip: ""
-	}
-
 	BadgeOfCourage: {
 		DisplayName: Badge Of Courage
 		Tooltip: ""

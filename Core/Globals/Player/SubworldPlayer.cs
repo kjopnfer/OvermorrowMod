@@ -1,4 +1,3 @@
-using OvermorrowMod.Content.Items;
 using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using System.Collections.Generic;
@@ -122,19 +121,6 @@ namespace OvermorrowMod.Core.Globals
                 }
             }
             pendingClassItems = null;
-
-            GrantTestKey();
-        }
-
-        private void GrantTestKey()
-        {
-            int keyType = ModContent.ItemType<TestKey>();
-            if (Player.inventory[9] == null || Player.inventory[9].IsAir || Player.inventory[9].type == keyType)
-            {
-                var key = new Item();
-                key.SetDefaults(keyType);
-                Player.inventory[9] = key;
-            }
         }
 
         private static Item[] ClonedSlots(Item[] src)
