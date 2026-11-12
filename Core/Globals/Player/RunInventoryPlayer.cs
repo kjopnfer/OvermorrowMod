@@ -17,6 +17,8 @@ namespace OvermorrowMod.Core.Globals
         public const int OpenInventorySlots = 5;
         private const int HotbarSlots = 10;
 
+        private int lastSelectedItem;
+
         public static bool IsLocked(int slot) => (slot >= OpenHotbarSlots && slot < HotbarSlots) || (slot >= HotbarSlots + OpenInventorySlots && slot < Main.InventoryItemSlotsCount);
 
         public override void Load()
@@ -48,6 +50,19 @@ namespace OvermorrowMod.Core.Globals
 
                 if (item.type == lockedType) item.favorited = true;
             }
+        }
+
+        /// <summary>
+        /// Moves a selection that landed on a locked hotbar slot to the open slot on the far side, so scrolling wraps over the open slots only.
+        /// </summary>
+        public override void PostUpdate()
+        {
+            if (Player.whoAmI != Main.myPlayer || !RunState.InRun) return;
+
+            if (Player.selectedItem < HotbarSlots && IsLocked(Player.selectedItem))
+                Player.selectedItem = lastSelectedItem == 0 ? OpenHotbarSlots - 1 : 0;
+
+            lastSelectedItem = Player.selectedItem;
         }
 
         public override void ProcessTriggers(TriggersSet triggersSet)
