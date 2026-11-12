@@ -1,9 +1,6 @@
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Items.Collectibles;
-using OvermorrowMod.Content.Dungeons.Inkwell;
-using OvermorrowMod.Core.WorldGeneration.ArchiveSubworld;
-using OvermorrowMod.Core.WorldGeneration.TestSubworld;
-using SubworldLibrary;
+using OvermorrowMod.Core.WorldGeneration;
 using System;
 using System.Collections.Generic;
 using Terraria.ID;
@@ -15,7 +12,7 @@ namespace OvermorrowMod.Core.Loot
     {
         public override void PostSetupContent()
         {
-            LootPoolRegistry.Register<ArchivePool>(() => SubworldSystem.IsActive<ArchiveSubworld>() || SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>() || SubworldSystem.IsActive<InkwellSubworld>());
+            LootPoolRegistry.Register<ArchivePool>(() => RunState.InRun);
             LootPoolRegistry.Register<CollectiblesPool>(() => false);
             ScanLootAttributes();
             RegisterVanillaWildcards();

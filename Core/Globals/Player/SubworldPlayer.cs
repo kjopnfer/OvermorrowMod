@@ -1,6 +1,5 @@
 using OvermorrowMod.Content.Items;
-using OvermorrowMod.Content.Dungeons.Inkwell;
-using OvermorrowMod.Core.WorldGeneration.TestSubworld;
+using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using System.Collections.Generic;
 using Terraria;
@@ -76,7 +75,7 @@ namespace OvermorrowMod.Core.Globals
 
         public override void OnEnterWorld()
         {
-            bool inSubworld = SubworldSystem.IsActive<TestSubworld>() || SubworldSystem.IsActive<TestSubworld2>() || SubworldSystem.IsActive<InkwellSubworld>();
+            bool inSubworld = RunState.InRun;
 
             if (inSubworld != inSubworldNow)
             {
