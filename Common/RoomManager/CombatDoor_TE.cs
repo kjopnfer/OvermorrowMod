@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
+using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.WorldGeneration;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,6 +21,9 @@ namespace OvermorrowMod.Common.RoomManager
         public int StateTimer = 0;
 
         public bool IsLocked = false;
+
+        private bool lightsInitialized = false;
+        private bool expirationHandled = false;
 
         // If true, NPC doesnt spawn on rejoin
         public bool IsDisabled = false;
@@ -148,8 +153,65 @@ namespace OvermorrowMod.Common.RoomManager
 
         public override void Update()
         {
+            InitializeRoomLighting();
+            HandleTimeExpiration();
             ManageDoorNPC();
             AdvanceStateMachine();
+        }
+
+        /// <summary>
+        /// When the run timer hits zero, disable every combat room that the player is not in
+        /// </summary>
+        private void HandleTimeExpiration()
+        {
+            if (expirationHandled) return;
+            if (!SubworldTimer.IsExpired) return;
+
+            if (IsDisabled)
+            {
+                expirationHandled = true;
+                return;
+            }
+
+            // IsLocked stays true for the duration of an active fight in this room.
+            if (IsLocked) return;
+
+            expirationHandled = true;
+            IgniteRoom();
+            BeginVanish();
+        }
+
+        private void IgniteRoom()
+        {
+            var sibling = Sibling;
+            if (sibling == null) return;
+            if (Position.X >= sibling.Position.X) return;
+
+            int leftX = Position.X;
+            int rightX = sibling.Position.X;
+            int top = Position.Y - ArchiveLights.CombatRoomHeight;
+
+            var roomRect = new Rectangle(leftX, top, rightX - leftX, ArchiveLights.CombatRoomHeight);
+            ArchiveLights.SetRegion(roomRect, 1f, ModUtils.SecondsToTicks(1.5f));
+        }
+
+        private void InitializeRoomLighting()
+        {
+            if (lightsInitialized) return;
+            if (IsDisabled) { lightsInitialized = true; return; }
+
+            var sibling = Sibling;
+            if (sibling == null) return;
+
+            lightsInitialized = true;
+            if (Position.X >= sibling.Position.X) return;
+
+            int leftX = Position.X;
+            int rightX = sibling.Position.X;
+            int top = Position.Y - ArchiveLights.CombatRoomHeight;
+
+            var roomRect = new Rectangle(leftX, top, rightX - leftX, ArchiveLights.CombatRoomHeight);
+            ArchiveLights.SetRegion(roomRect, 0f, 0, instant: true);
         }
 
         public override bool IsTileValidForEntity(int x, int y) => true;
@@ -215,7 +277,7 @@ namespace OvermorrowMod.Common.RoomManager
 
         private void SpawnDoorNPC()
         {
-            Vector2 spawnPos = Position.ToWorldCoordinates(8, 16);
+            Vector2 spawnPos = new Vector2(Position.X * 16 + 8, Position.Y * 16 - 128);
             int npcType = ModContent.NPCType<CombatDoorCollision>();
             int idx = NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnPos.X, (int)spawnPos.Y, npcType);
             if (idx < 0 || idx >= Main.npc.Length) return;

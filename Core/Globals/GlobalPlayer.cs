@@ -1,4 +1,6 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items;
 using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Items.Accessories;
 using Terraria;
@@ -33,6 +35,15 @@ namespace OvermorrowMod.Core.Globals
         {
             AlertBonus = 0;
             AggroLossBonus = 0;
+        }
+
+        public static Vector2 PendingTeleportTarget;
+        public static int PendingTeleportFrames;
+
+        public static void RequestTeleport(Vector2 target, int holdFrames = 6)
+        {
+            PendingTeleportTarget = target;
+            PendingTeleportFrames = holdFrames;
         }
 
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
@@ -95,6 +106,16 @@ namespace OvermorrowMod.Core.Globals
 
         public override void PostUpdate()
         {
+            if (PendingTeleportFrames > 0 && Player.whoAmI == Main.myPlayer)
+            {
+                Player.position = PendingTeleportTarget;
+                Player.oldPosition = PendingTeleportTarget;
+                Player.velocity = Vector2.Zero;
+                Player.fallStart = (int)(PendingTeleportTarget.Y / 16f);
+                Player.gfxOffY = 0f;
+                PendingTeleportFrames--;
+            }
+
             if (RespiteCounter < RespiteThreshold)
                 RespiteCounter++;
             else
@@ -120,7 +141,7 @@ namespace OvermorrowMod.Core.Globals
             for (int i = 0; i < 10; i++)
             {
                 Item hotbarItem = Player.inventory[i];
-                if (!hotbarItem.IsAir)
+                if (!hotbarItem.IsAir && hotbarItem.ModItem is not LockedSlot)
                 {
                     AccessoryKeywords.TriggerQuickslot(Player, hotbarItem);
                 }

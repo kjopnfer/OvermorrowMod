@@ -5,8 +5,12 @@ using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
+using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
+using OvermorrowMod.Core.WorldGeneration;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
@@ -25,6 +29,23 @@ namespace OvermorrowMod.Content.Misc
 
         private Phase phase = Phase.Setup;
         private readonly List<int> spawnedNPCs = new();
+
+        private const int TotalWaves = 2;
+        private int currentWave = 0;
+        private int waveDelayTimer = 0;
+        private const int WaveDelayTicks = 90;
+        private const float WaveBlasterBookChance = 0.35f;
+
+        private const int TelegraphDuration = 70;
+        private int telegraphTimer = 0;
+        private readonly List<PendingSpawn> pendingSpawns = new();
+
+        private struct PendingSpawn
+        {
+            public int Type;
+            public int TileX;
+            public int FloorRow;
+        }
 
         private bool endTriggered = false;
         private bool dedupeChecked = false;
@@ -46,6 +67,17 @@ namespace OvermorrowMod.Content.Misc
         private const int CleanupDuration = 360;
 
         private const int MinTilesFromDoor = 4;
+
+        private static readonly RarityModifier RewardModifier = new(rare: 5);
+        private const int RewardOfferCount = 3;
+
+        private static readonly (ItemKind Kind, int Weight)[] RewardCategories =
+        {
+            (ItemKind.Consumable, 45),
+            (ItemKind.Accessory, 30),
+            (ItemKind.Weapon, 15),
+            (ItemKind.Armor, 10),
+        };
 
         public override string Texture => AssetDirectory.Misc + "RewardChest";
 
@@ -84,7 +116,10 @@ namespace OvermorrowMod.Content.Misc
         {
             if (isCleaningUp) return;
             if (itemId > 0)
+            {
                 Main.LocalPlayer.QuickSpawnItem(NPC.GetSource_Loot(), itemId);
+                LootRoller.GiveCompanionAmmo(NPC.GetSource_Loot(), Main.LocalPlayer.Center, itemId);
+            }
             isCleaningUp = true;
             cleanupTimer = 0;
         }
@@ -117,7 +152,6 @@ namespace OvermorrowMod.Content.Misc
                 NPC.velocity = Vector2.Zero;
             }
 
-            // Singleton-per-room dedupe, runs once.
             if (!dedupeChecked)
             {
                 dedupeChecked = true;
@@ -165,8 +199,9 @@ namespace OvermorrowMod.Content.Misc
             EmitRays();
             if (isOpen && !wasOpen)
             {
-                int[] testItems = new[] { (int)ItemID.LifeCrystal, ItemID.MagicMirror, ItemID.GoldCoin };
-                RewardSelectionManager.ShowFor(NPC, testItems);
+                int[] offered = RollCombatReward();
+                if (offered.Length > 0)
+                    RewardSelectionManager.ShowFor(NPC, offered);
             }
             else if (!isOpen && wasOpen)
             {
@@ -187,6 +222,63 @@ namespace OvermorrowMod.Content.Misc
             }
         }
 
+        private int[] RollCombatReward()
+        {
+            var gear = LootPoolRegistry.GetActive();
+            if (gear == null) return System.Array.Empty<int>();
+            var collectibles = LootPoolRegistry.Get<CollectiblesPool>();
+
+            var offers = new List<int>(RewardOfferCount);
+            var used = new HashSet<int>();
+
+            for (int slot = 0; slot < RewardOfferCount; slot++)
+            {
+                int id = RollRewardSlot(gear, collectibles, used);
+                if (id == 0) continue;
+                offers.Add(id);
+                used.Add(id);
+            }
+
+            return offers.ToArray();
+        }
+
+        private int RollRewardSlot(LootPool gear, LootPool collectibles, HashSet<int> used)
+        {
+            ItemKind primary = PickRewardCategory();
+            int id = RollCategory(primary, gear, collectibles, used);
+            if (id != 0) return id;
+
+            foreach (var category in RewardCategories)
+            {
+                if (category.Kind == primary) continue;
+                id = RollCategory(category.Kind, gear, collectibles, used);
+                if (id != 0) return id;
+            }
+            return 0;
+        }
+
+        private int RollCategory(ItemKind kind, LootPool gear, LootPool collectibles, HashSet<int> used)
+        {
+            if (kind == ItemKind.Consumable)
+                return LootRoller.RollOne(collectibles, ItemKind.Consumable, default, Main.LocalPlayer, used);
+
+            return LootRoller.RollOne(gear, kind, RewardModifier, Main.LocalPlayer, used);
+        }
+
+        private static ItemKind PickRewardCategory()
+        {
+            int total = 0;
+            foreach (var category in RewardCategories) total += category.Weight;
+
+            int roll = Main.rand.Next(total);
+            foreach (var category in RewardCategories)
+            {
+                roll -= category.Weight;
+                if (roll < 0) return category.Kind;
+            }
+            return RewardCategories[0].Kind;
+        }
+
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)
         {
             bool bothClosed = left.State == CombatDoor_TE.DoorState.Closed &&
@@ -198,28 +290,66 @@ namespace OvermorrowMod.Content.Misc
             left.IsLocked = true;
             right.IsLocked = true;
 
-            SpawnFirstWave(left, right);
+            SpawnWave();
+            IgniteRoomLights(left, right);
             phase = Phase.Combat;
+        }
+
+        private static void IgniteRoomLights(CombatDoor_TE left, CombatDoor_TE right)
+        {
+            int leftX = System.Math.Min(left.Position.X, right.Position.X);
+            int rightX = System.Math.Max(left.Position.X, right.Position.X);
+            int top = left.Position.Y - ArchiveLights.CombatRoomHeight;
+
+            var roomRect = new Rectangle(leftX, top, rightX - leftX, ArchiveLights.CombatRoomHeight);
+            ArchiveLights.SetRegion(roomRect, 1f, ModUtils.SecondsToTicks(1.5f));
         }
 
         private void UpdateCombat()
         {
-            bool anyAlive = false;
+            if (pendingSpawns.Count > 0)
+            {
+                if (--telegraphTimer > 0) return;
+                ResolvePendingSpawns();
+                return;
+            }
+
+            int aliveCount = 0;
+            Player target = null;
             for (int i = 0; i < spawnedNPCs.Count; i++)
             {
                 int idx = spawnedNPCs[i];
-                if (idx >= 0 && idx < Main.npc.Length && Main.npc[idx].active)
+                if (idx < 0 || idx >= Main.npc.Length) continue;
+
+                NPC enemy = Main.npc[idx];
+                if (!enemy.active) continue;
+                if (enemy.ModNPC is not OvermorrowNPC modNPC || modNPC.CombatOrchestratorWhoAmI != NPC.whoAmI) continue;
+
+                aliveCount++;
+
+                if (!modNPC.TargetingModule.HasTarget())
                 {
-                    anyAlive = true;
-                    break;
+                    target ??= FindCombatTarget();
+                    if (target != null) modNPC.TargetingModule.SetTarget(target);
                 }
             }
 
-            if (!anyAlive)
+            if (aliveCount > 0)
             {
-                EnterEnd();
-                phase = Phase.End;
+                waveDelayTimer = 0;
+                return;
             }
+
+            if (currentWave < TotalWaves)
+            {
+                if (++waveDelayTimer < WaveDelayTicks) return;
+
+                SpawnWave();
+                return;
+            }
+
+            EnterEnd();
+            phase = Phase.End;
         }
 
         private void UpdateEnd()
@@ -254,8 +384,17 @@ namespace OvermorrowMod.Content.Misc
                 openingBuildupTimer = OpeningBuildupDuration;
         }
 
-        private void SpawnFirstWave(CombatDoor_TE left, CombatDoor_TE right)
+        private void SpawnWave()
         {
+            var left = LeftDoor;
+            var right = RightDoor;
+            if (left == null || right == null) return;
+
+            currentWave++;
+            waveDelayTimer = 0;
+            spawnedNPCs.Clear();
+            pendingSpawns.Clear();
+
             int leftDoorX = System.Math.Min(left.Position.X, right.Position.X);
             int rightDoorX = System.Math.Max(left.Position.X, right.Position.X);
             int floorRow = left.Position.Y;
@@ -269,22 +408,94 @@ namespace OvermorrowMod.Content.Misc
             int ratAX = Main.rand.Next(leftMinX, leftMaxX + 1);
             int ratBX = Main.rand.Next(rightMinX, rightMaxX + 1);
 
+            QueueSpawn(PickWaveEnemy(), ratAX, floorRow, 1);
+            QueueSpawn(PickWaveEnemy(), ratBX, floorRow, -1);
+
+            telegraphTimer = TelegraphDuration;
+        }
+
+        private static int PickWaveEnemy()
+        {
+            if (Main.rand.NextFloat() < WaveBlasterBookChance)
+                return ModContent.NPCType<BlasterBook>();
+            return ModContent.NPCType<ArchiveRat>();
+        }
+
+        private const int TelegraphCenterOffsetY = 20;
+        private void QueueSpawn(int npcType, int tileX, int floorRow, int spinDirection)
+        {
+            pendingSpawns.Add(new PendingSpawn { Type = npcType, TileX = tileX, FloorRow = floorRow });
+
+            int worldX = tileX * 16 + 8;
             int worldYBottom = (floorRow + 1) * 16;
-            int ratType = ModContent.NPCType<ArchiveRat>();
+            float telegraphY = worldYBottom - TelegraphCenterOffsetY;
+            if (SpawnsFlying(npcType))
+                telegraphY -= FlyingSpawnHeightTiles * 16;
+            Vector2 telegraphCenter = new Vector2(worldX, telegraphY);
 
-            int a = NPC.NewNPC(NPC.GetSource_FromAI(), ratAX * 16 + 8, worldYBottom, ratType);
-            int b = NPC.NewNPC(NPC.GetSource_FromAI(), ratBX * 16 + 8, worldYBottom, ratType);
+            Projectile.NewProjectile(NPC.GetSource_FromAI(), telegraphCenter, Vector2.Zero, ModContent.ProjectileType<SpawnTelegraph>(), 0, 0f, Main.myPlayer, spinDirection, TelegraphDuration);
+        }
 
-            if (a >= 0 && a < Main.npc.Length)
+        private static bool SpawnsFlying(int npcType) => ContentSamples.NpcsByNetId[npcType].noGravity;
+
+        private void ResolvePendingSpawns()
+        {
+            Player target = FindCombatTarget();
+            foreach (PendingSpawn spawn in pendingSpawns)
+                SpawnEnemy(spawn.Type, spawn.TileX, spawn.FloorRow, target);
+
+            pendingSpawns.Clear();
+        }
+
+        // Tiles above the floor that gravity-less enemies are lifted to when spawned.
+        private const int FlyingSpawnHeightTiles = 6;
+
+        private void SpawnEnemy(int npcType, int tileX, int floorRow, Player target)
+        {
+            int worldX = tileX * 16 + 8;
+            int worldYBottom = (floorRow + 1) * 16;
+
+            int index = NPC.NewNPC(NPC.GetSource_FromAI(), worldX, worldYBottom, npcType);
+            if (index < 0 || index >= Main.npc.Length) return;
+
+            NPC enemy = Main.npc[index];
+            Vector2 anchor = new Vector2(worldX, worldYBottom);
+
+            if (enemy.noGravity)
+                enemy.position.Y -= FlyingSpawnHeightTiles * 16;
+
+            if (enemy.ModNPC is OvermorrowNPC modNPC)
             {
-                spawnedNPCs.Add(a);
-                SpawnRedBurst(Main.npc[a].Center);
+                modNPC.AnchorPosition = anchor;
+                modNPC.CombatOrchestratorWhoAmI = NPC.whoAmI;
+                if (target != null) modNPC.TargetingModule.SetTarget(target);
+
+                if (modNPC is LivingGrimoire grimoire)
+                    grimoire.RevealAndFly();
             }
-            if (b >= 0 && b < Main.npc.Length)
+
+            spawnedNPCs.Add(index);
+            SpawnRedBurst(enemy.Center);
+        }
+
+        private Player FindCombatTarget()
+        {
+            Player nearest = null;
+            float nearestDistance = float.MaxValue;
+            for (int i = 0; i < Main.maxPlayers; i++)
             {
-                spawnedNPCs.Add(b);
-                SpawnRedBurst(Main.npc[b].Center);
+                Player player = Main.player[i];
+                if (!player.active || player.dead) continue;
+
+                float distance = Vector2.DistanceSquared(player.Center, NPC.Center);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearest = player;
+                }
             }
+
+            return nearest;
         }
 
         private static void SpawnRedBurst(Vector2 position)
@@ -316,6 +527,7 @@ namespace OvermorrowMod.Content.Misc
             endTriggered = true;
 
             Main.NewText("Room cleared!", Color.Gold);
+            SubworldTimer.AddTime(30);
 
             Texture2D circleTex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
             Texture2D pulseTex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "pulse", AssetRequestMode.ImmediateLoad).Value;

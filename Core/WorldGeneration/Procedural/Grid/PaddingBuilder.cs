@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
@@ -20,7 +19,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     /// </summary>
     public static class PaddingBuilder
     {
-        public static void BuildAll(DungeonGrid grid, int fillTileType)
+        public static void BuildAll(DungeonGrid grid, int fillTileType, DungeonPalette palette)
         {
             // Collect every room anchor first so we can sort by
             // PaddingPriority before painting. Rooms with higher priority
@@ -64,13 +63,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 int vp = DungeonGrid.VerticalPadding;
 
                 room.BuildPadding(new PaddingContext(
-                    Direction.Top,    anchor.X,      anchor.Y - vp, w,  vp, fillTileType, grid, anchorCol, anchorRow));
+                    Direction.Top,    anchor.X,      anchor.Y - vp, w,  vp, fillTileType, grid, anchorCol, anchorRow, palette));
                 room.BuildPadding(new PaddingContext(
-                    Direction.Bottom, anchor.X,      anchor.Y + h,  w,  vp, fillTileType, grid, anchorCol, anchorRow));
+                    Direction.Bottom, anchor.X,      anchor.Y + h,  w,  vp, fillTileType, grid, anchorCol, anchorRow, palette));
                 room.BuildPadding(new PaddingContext(
-                    Direction.Left,   anchor.X - hp, anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
+                    Direction.Left,   anchor.X - hp, anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow, palette));
                 room.BuildPadding(new PaddingContext(
-                    Direction.Right,  anchor.X + w,  anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow));
+                    Direction.Right,  anchor.X + w,  anchor.Y,      hp, h,  fillTileType, grid, anchorCol, anchorRow, palette));
             }
         }
 

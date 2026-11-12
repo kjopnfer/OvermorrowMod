@@ -34,6 +34,7 @@ namespace OvermorrowMod.Common.Items.Guns
         public Color AuraColor = Color.White;
         public float AuraSize = 1f;
         public string CustomTexture = "";
+        public string CustomTexturePath = "";
 
         // Flexible property system for accessories
         public Dictionary<string, object> Properties = new Dictionary<string, object>();
@@ -95,6 +96,7 @@ namespace OvermorrowMod.Common.Items.Guns
             AuraColor = Color.White;
             AuraSize = 1f;
             CustomTexture = "";
+            CustomTexturePath = "";
             Properties.Clear();
             CustomDrawMethods.Clear();
         }
@@ -130,7 +132,9 @@ namespace OvermorrowMod.Common.Items.Guns
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             string textureToUse = string.IsNullOrEmpty(CustomTexture) ? BulletTexture : CustomTexture;
-            Texture2D bulletTexture = ModContent.Request<Texture2D>(AssetDirectory.GunUI + textureToUse).Value;
+            Texture2D bulletTexture = !string.IsNullOrEmpty(CustomTexturePath)
+                ? ModContent.Request<Texture2D>(CustomTexturePath).Value
+                : ModContent.Request<Texture2D>(AssetDirectory.GunUI + textureToUse).Value;
 
             float baseScale = ScaleMultiplier;
             Color drawColor = BulletColor;

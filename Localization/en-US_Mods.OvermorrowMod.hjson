@@ -1,3 +1,14 @@
+Keybinds: {
+	Reload.DisplayName: Reload
+	ParticleDebugSpawn.DisplayName: Particle Debug Spawn
+	ParticleEditorToggle.DisplayName: Particle Editor Toggle
+}
+
+UI: {
+	ReloadBindHint: Reload key unbound: bind one in Controls
+	RewardSelection.Title: Choose One
+}
+
 Tiles: {
 	ArchiveDoor.MapEntry: Archive Door
 	Lamp.MapEntry: Lamp
@@ -20,6 +31,8 @@ Tiles: {
 	}
 
 	BigChest.MapEntry: Big Chest
+	SubworldDoor.MapEntry: Subworld Door
+	InkwellDoor.MapEntry: Inkwell Door
 }
 
 Biomes: {
@@ -61,8 +74,8 @@ Buffs: {
 			'''
 			Gain 25% increased movement speed
 			Your next melee strike gains 100% crit chance
-			The first enemy you kill restore 40 health
-			'Like a story refusing to end too soon, you gain one last surge to keep fighting.'
+			The first enemy you kill restores 40 health
+			'This cannot be how the story ends.'
 			'''
 	}
 
@@ -102,6 +115,34 @@ Buffs: {
 }
 
 TooltipEntities: {
+	ArcaneShot: {
+		DisplayName: Arcane Shot
+
+		Description: {
+			Line0: + On hitting an enemy or tile, bursts for area damage
+			Line1: + Inherits the damage of the shot it replaced
+		}
+	}
+
+	QuillArrow: {
+		DisplayName: Quill Arrow
+
+		Description: {
+			Line0: + Flies straighter and faster than a normal arrow
+			Line1: + Bounces off walls up to 3 times
+			Line2: + Pierces twice
+		}
+	}
+
+	RelicBolt: {
+		DisplayName: Relic Bolt
+
+		Description: {
+			Line0: + Increases your defense by 3
+			Line1: + Deals damage equal to your defense when launched
+		}
+	}
+
 	ArcanistsHammer: {
 		DisplayName: Arcanists Hammer
 
@@ -267,6 +308,11 @@ LoadingTips: {
 }
 
 Keywords: {
+	Collectible: {
+		DisplayName: Collectible
+		Description: A consumable that grants an effect for the current run.
+	}
+
 	Aerial: {
 		DisplayName: Aerial
 		Description: Activates while airborne
@@ -299,7 +345,7 @@ Keywords: {
 
 	Focus: {
 		DisplayName: Focus
-		Description: Triggers when firing a shot during the weapon's white flash window
+		Description: Triggers when firing a shot while the weapon is fully charged and flashing white
 	}
 
 	MindDown: {
@@ -349,6 +395,30 @@ Keywords: {
 }
 
 Items: {
+	Spellshot: {
+		DisplayName: Spellshot
+		Tooltip: "{Keyword:Reload}: Converts the last bullet in your magazine to an <Projectile:Arcane Shot>"
+	}
+
+	QuillcrestHelm: {
+		DisplayName: Quillcrest Helm
+		Tooltip:
+			'''
+			5% increased ranged damage
+			{Keyword:Vigor}: Bows have a chance to fire an additional <Projectile:Quill Arrow>
+			'''
+	}
+
+	RelicArmor: {
+		DisplayName: Relic Armor
+		Tooltip:
+			'''
+			6% increased critical strike chance
+			{Keyword:Strike}: Critical hits have a 50% chance to spawn a <Projectile:Relic Bolt>
+			Double tap DOWN to launch a <Projectile:Relic Bolt> at the cursor
+			'''
+	}
+
 	ScholarsArmor: {
 		DisplayName: Scholar's Mantle
 		Tooltip: BODY
@@ -593,11 +663,17 @@ Items: {
 	BandOfFocus: {
 		DisplayName: Band Of Focus
 		Tooltip: "{Keyword:Vigor}: Gain 15% increased Magic critical strike chance"
-		Flavor:
+		Flavor: Turns out it's really hard to focus if you're dying.
+	}
+
+	BondingNecklace: {
+		DisplayName: Necklace of Bonding
+		Tooltip:
 			'''
-			Congratulations, you're healthy. 
-			Have some magical murder as a reward.
+			Increases your max number of minions by 1
+			Gain 2 maximum health for each minion you control
 			'''
+		Flavor: F is for friends who do stuff together.
 	}
 
 	SimpleScabbard: {
@@ -609,11 +685,7 @@ Items: {
 			- If you did not have <Buff:Sharpened Intent> before, restore 20 health
 			- This buff does not expire while {Keyword:Respite} is active
 			'''
-		Flavor:
-			'''
-			A novice knows how to swing a blade,
-			a master knows when to hold it still.
-			'''
+		Flavor: A novice knows how to swing a blade, a master knows when to.
 	}
 
 	OrnateChalice: {
@@ -655,11 +727,11 @@ Items: {
 		DisplayName: Antler Wand
 		Tooltip:
 			'''
-			+2 max minions
+			Increases your max number of minions by 2
 			Your max health is decreased by 60
 			Every 5 seconds, spawn a <Projectile:Fae Orb> for each minion you control
 			'''
-		Flavor: Comes with a lifetime supply of magical assistance and a modest reduction in lifetime.
+		Flavor: For centuries, the Fae tricked the unwary for their names. Then they discovered coffee shops.
 	}
 
 	CarvingKnife: {
@@ -672,7 +744,7 @@ Items: {
 			- Retrieving the knife after a {Keyword:Strike} grants <Buff:Invisibility> for 4 seconds
 			While under <Buff:Invisibility>, gain 15% increased movement speed
 			'''
-		Flavor: Carried around by Rat Rogues, it cuts through flesh as easily as it slips through shadows.
+		Flavor: Why do Rat Rogues carry knives? To cut cheese.
 	}
 
 	CarvingKnifeNew: {
@@ -680,8 +752,188 @@ Items: {
 		Tooltip: ""
 	}
 
-	TestKey: {
-		DisplayName: Test Key
+	LockedSlot: {
+		DisplayName: Locked Slot
+		Tooltip: ""
+	}
+
+	BadgeOfCourage: {
+		DisplayName: Badge Of Courage
+		Tooltip: ""
+	}
+
+	BadgeOfPrecision: {
+		DisplayName: Badge Of Precision
+		Tooltip: ""
+	}
+
+	BadgeOfSolidarity: {
+		DisplayName: Badge Of Solidarity
+		Tooltip: ""
+	}
+
+	BadgeOfStrength: {
+		DisplayName: Badge Of Strength
+		Tooltip: ""
+	}
+
+	BeefWellington: {
+		DisplayName: Beef Wellington
+		Tooltip: ""
+	}
+
+	Bread: {
+		DisplayName: Bread
+		Tooltip: ""
+		Flavor: You will starve again, unless you learn the meaning of the law
+	}
+
+	Cabernet: {
+		DisplayName: Cabernet
+		Tooltip: ""
+	}
+
+	CarribeanPiece: {
+		DisplayName: Carribean Piece
+		Tooltip: ""
+	}
+
+	Chardonnay: {
+		DisplayName: Chardonnay
+		Tooltip: ""
+	}
+
+	Chocolate: {
+		DisplayName: Chocolate
+		Tooltip: ""
+	}
+
+	Coffee: {
+		DisplayName: Coffee
+		Tooltip: ""
+		Flavor: Cheetos. Chicken.
+	}
+
+	DeepwaterPearls: {
+		DisplayName: Deepwater Pearls
+		Tooltip: ""
+	}
+
+	Doohickey: {
+		DisplayName: Doohickey
+		Tooltip: ""
+	}
+
+	FourLeafClover: {
+		DisplayName: Four Leaf Clover
+		Tooltip: ""
+	}
+
+	FreshApple: {
+		DisplayName: Fresh Apple
+		Tooltip: ""
+		Flavor: May reduce the spawn chance of doctors
+	}
+
+	Gruel: {
+		DisplayName: Gruel
+		Tooltip: ""
+	}
+
+	Milk: {
+		DisplayName: Milk
+		Tooltip: ""
+	}
+
+	MoldyBread: {
+		DisplayName: Moldy Bread
+		Tooltip: ""
+	}
+
+	Onion: {
+		DisplayName: Onion
+		Tooltip: ""
+		Flavor: A lifetime of battles bound in parchment and hide
+	}
+
+	Paintbrush: {
+		DisplayName: Paintbrush
+		Tooltip: ""
+	}
+
+	PinotNoir: {
+		DisplayName: Pinot Noir
+		Tooltip: ""
+	}
+
+	Port: {
+		DisplayName: Port
+		Tooltip: ""
+	}
+
+	PredatorsTalisman: {
+		DisplayName: Predators Talisman
+		Tooltip: ""
+	}
+
+	QuakeBadge: {
+		DisplayName: Quake Badge
+		Tooltip: ""
+	}
+
+	Riesling: {
+		DisplayName: Riesling
+		Tooltip: ""
+	}
+
+	Rose: {
+		DisplayName: Rose
+		Tooltip: ""
+	}
+
+	RubyBeadNecklace: {
+		DisplayName: Ruby Bead Necklace
+		Tooltip: ""
+	}
+
+	SauvignonBlanc: {
+		DisplayName: Sauvignon Blanc
+		Tooltip: ""
+	}
+
+	SharpeningStone: {
+		DisplayName: Sharpening Stone
+		Tooltip: ""
+	}
+
+	SomethingHeavy: {
+		DisplayName: Something Heavy
+		Tooltip: ""
+		Flavor: What's heavier? A kilogram of steel or a kilogram of feathers?
+	}
+
+	SugarCubes: {
+		DisplayName: Sugar Cubes
+		Tooltip: ""
+	}
+
+	SundropBerry: {
+		DisplayName: Sundrop Berry
+		Tooltip: ""
+	}
+
+	WavebreakBadge: {
+		DisplayName: Wavebreak Badge
+		Tooltip: ""
+	}
+
+	Wurst: {
+		DisplayName: Wurst
+		Tooltip: ""
+	}
+
+	Zinfandel: {
+		DisplayName: Zinfandel
 		Tooltip: ""
 	}
 }
@@ -716,6 +968,20 @@ NPCs: {
 	CombatDoorCollision.DisplayName: Combat Door Collision
 	CombatOrchestrator.DisplayName: Combat Orchestrator
 	WoodenLadderCollision.DisplayName: Wooden Ladder Collision
+	CartShopkeeper.DisplayName: Cart Shopkeeper
+	GhostCrawler.DisplayName: ???
+	GhostHead.DisplayName: Ghost Head
+}
+
+Dialogue: {
+	CartShopkeeper: {
+		Line0: Funny thing about the deep places: they take the people but leave the things. I just tidy up after.
+		Line1: Why charge coin? Let's just say blood and brawls aren't the only things that change hands down here. You'll find it. Or it'll find you.
+		Line2: I sell you gear for coin today. Tomorrow, if this place keeps you, I'll come collect it back. Nothing down here ever goes to waste.
+		Line3: Picked clean off the ones who didn't walk out. No sense leaving good steel to rust on a corpse, eh? Have a look.
+		Line4: Buying, or selling? Sell, I'd advise. Sooner or later it all finds its way to my cart, free of charge. Might as well get paid first, friend.
+		Line5: Who am I? Ha. I'm the fellow who's still here when everyone else isn't. Let's leave it at that.
+	}
 }
 
 Bestiary: {
@@ -793,4 +1059,56 @@ Projectiles: {
 	CarvingKnifeSlashNew.DisplayName: Carving Knife Slash New
 	CarvingKnifeSlash.DisplayName: Carving Knife Slash
 	DisplayItem.DisplayName: Display Item
+	SpawnTelegraph.DisplayName: Spawn Telegraph
+	RestLight.DisplayName: Rest Light
+	ArcaneBullet.DisplayName: Arcane Bullet
+	ArcaneBurst.DisplayName: Arcane Burst
+	RelicExplosion.DisplayName: Relic Explosion
+	RelicBolt.DisplayName: Relic Bolt
+	QuillArrow.DisplayName: Quill Arrow
+	BorealWoodBow_Held.DisplayName: Boreal Wood Bow_ Held
+	CopperBow_Held.DisplayName: Copper Bow_ Held
+	DemonBow_Held.DisplayName: Demon Bow_ Held
+	EbonwoodBow_Held.DisplayName: Ebonwood Bow_ Held
+	GoldBow_Held.DisplayName: Gold Bow_ Held
+	IronBow_Held.DisplayName: Iron Bow_ Held
+	LeadBow_Held.DisplayName: Lead Bow_ Held
+	MoltenFury_Held.DisplayName: Molten Fury_ Held
+	PalmWoodBow_Held.DisplayName: Palm Wood Bow_ Held
+	PlatinumBow_Held.DisplayName: Platinum Bow_ Held
+	RichMahoganyBow_Held.DisplayName: Rich Mahogany Bow_ Held
+	ShadewoodBow_Held.DisplayName: Shadewood Bow_ Held
+	SilverBow_Held.DisplayName: Silver Bow_ Held
+	TendonBow_Held.DisplayName: Tendon Bow_ Held
+	TinBow_Held.DisplayName: Tin Bow_ Held
+	TungstenBow_Held.DisplayName: Tungsten Bow_ Held
+	WoodenBow_Held.DisplayName: Wooden Bow_ Held
+}
+
+CollectibleBonus: {
+	Increase: - Increases {0} by {1}
+	Decrease: - Decreases {0} by {1}
+
+	Stat: {
+		MaxLife: maximum life
+		MaxMana: maximum mana
+		DefenseFlat: defense
+		DefensePercent: defense
+		DamagePercent: damage
+		DamageFlat: damage
+		CritChance: critical strike chance
+		MoveSpeedPercent: movement speed
+		Knockback: knockback
+		ArmorPenetration: armor penetration
+		Luck: luck
+	}
+}
+
+CollectibleEffect: {
+	ExtraCoinsOnHit: - Hitting an enemy has a chance to produce additional coins
+	ArtEnemyDropBoost: - Art-type enemies drop more monkey stones
+	ShopHealDiscount: - Healing potions in shops are {Increase:20%} cheaper to purchase
+	ShopMarkup: - Shop items become {Decrease:20%} more expensive
+	RestAreaHeal: - Heal an additional {Increase:10} HP at rest areas
+	DecreaseSourceScaling: - For all collectibles, equipment, or pacts that decrease player stats, gain {Increase:2%} damage and {Increase:1%} critical chance
 }

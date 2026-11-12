@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.NPCs
 {
     public class GroundDashAttack : BaseAttackState
     {
-        public override int Weight => 3;
+        public override int Weight => 1 + (int)(OvermorrowNPC.Personality.Aggression * 5);
 
         /// <summary>
         /// Prevent exiting until attack is done.

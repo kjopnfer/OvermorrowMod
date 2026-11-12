@@ -1,11 +1,16 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Projectiles.Archives;
+using OvermorrowMod.Core.WorldGeneration;
+using System;
 using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -21,6 +26,35 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
 
         public override bool CanExplode(int i, int j) => false;
+
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+
+        public override bool RightClick(int i, int j)
+        {
+            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            var te = FireplaceRest_TE.GetOrCreate(bl.X, bl.Y);
+            if (te != null && te.TryRest(Main.LocalPlayer))
+            {
+                Player player = Main.LocalPlayer;
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<RestLight>(), 0, 0f, player.whoAmI);
+                if (SubworldTimer.RemainingTicks > 0) SubworldTimer.AddTime(15);
+                return true;
+            }
+
+            return base.RightClick(i, j);
+        }
+
+        public override void MouseOver(int i, int j)
+        {
+            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            if (FireplaceRest_TE.IsRested(bl.X, bl.Y)) return;
+
+            Player player = Main.LocalPlayer;
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = ItemID.LesserHealingPotion;
+        }
+
         public override void SetStaticDefaults()
         {
             AnimationFrameHeight = 54;
@@ -31,7 +65,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Main.tileWaterDeath[Type] = false;
             Main.tileLavaDeath[Type] = false;
 
-            TileID.Sets.Campfire[Type] = true;
+            //TileID.Sets.Campfire[Type] = true;
 
             AdjTiles = new int[] { TileID.Campfire };
 
@@ -49,6 +83,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
             TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(254, 121, 2));
+
+            ArchiveLights.LightTileTypes.Add(Type);
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -61,7 +97,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             if (Main.tile[i, j].TileFrameY < 36)
             {
-                Main.SceneMetrics.HasCampfire = true;
+                //Main.SceneMetrics.HasCampfire = true;
             }
         }
 
@@ -116,8 +152,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 float pulse = Main.rand.Next(28, 42) * 0.005f;
                 pulse += (270 - Main.mouseTextColor) / 700f;
 
-                r = 1.2f + pulse; // Increase red for a more vibrant orange
-                g = 0.55f + pulse; // Slightly lower green for a deeper orange
+                float brightness = ArchiveLights.GetBrightness(i, j);
+                r = (1.2f + pulse) * brightness; // Increase red for a more vibrant orange
+                g = (0.55f + pulse) * brightness; // Slightly lower green for a deeper orange
                 b = 0; // Keep blue at 0 for a pure orange hue
             }
 
@@ -154,8 +191,36 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Rectangle drawRectangle = new Rectangle(tile.TileFrameX, tile.TileFrameY + addFrY, 16, 16);
 
             // The flame is manually drawn separate from the tile texture so that it can be drawn at full brightness.
-            spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            Color flameColor = Color.White * ArchiveLights.GetBrightness(i, j);
+            spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, flameColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
+            {
+                DrawRestPrompt(i, j, spriteBatch, zero);
+            }
+        }
+
+        private static void DrawRestPrompt(int i, int j, SpriteBatch spriteBatch, Vector2 zero)
+        {
+            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            if (FireplaceRest_TE.IsRested(bl.X, bl.Y)) return;
+
+            const float OuterRadius = 200f;
+            const float InnerRadius = 120f;
+
+            Vector2 fireplaceCenter = new Vector2(i * 16 + 48, j * 16 + 24);
+            float dist = Vector2.Distance(Main.LocalPlayer.Center, fireplaceCenter);
+            float proximity = MathHelper.Clamp((OuterRadius - dist) / (OuterRadius - InnerRadius), 0f, 1f);
+            if (proximity <= 0f) return;
+
+            Texture2D icon = TextureAssets.Item[ItemID.LesserHealingPotion].Value;
+            float bob = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 4f;
+            float pulse = 0.85f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.15f;
+            float alpha = proximity * pulse;
+
+            Vector2 drawPos = new Vector2(i * 16 + 48, j * 16 - 14 + bob);
+            Vector2 screenPos = drawPos - Main.screenPosition + zero;
+            spriteBatch.Draw(icon, screenPos, null, Color.White * alpha, 0f, icon.Size() / 2f, 1f, SpriteEffects.None, 0f);
         }
     }
 }

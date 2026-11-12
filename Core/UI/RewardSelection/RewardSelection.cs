@@ -1,8 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.Misc;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.Localization;
 using Terraria.UI;
+using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Core.UI
 {
@@ -12,6 +16,11 @@ namespace OvermorrowMod.Core.UI
     public class RewardSelection : UIState
     {
         public static bool visible = false;
+
+        /// <summary>
+        /// True once the pop-out animation has fully settled and the picker is not fading out.
+        /// </summary>
+        public static bool IsInteractive { get; private set; }
 
         public NPC chestNPC;
         public int[] itemIds;
@@ -38,6 +47,10 @@ namespace OvermorrowMod.Core.UI
         public const int ButtonGap = 32;
         public const int ButtonRowGap = 24;
         public const int ButtonFadeInTicks = 20;
+        public const int TitleGap = 18;
+
+        private Vector2 rowCenter;
+        private float titleOpacity;
 
         // Order slots launch in: left first, right second, middle third.
         private static readonly int[] PopOrder = { 0, 2, 1 };
@@ -48,6 +61,9 @@ namespace OvermorrowMod.Core.UI
 
         // Tick by which the last slot has landed. Buttons start fading in here.
         private const int ButtonsAppearTick = (3 - 1) * PopoutStaggerTicks + PopoutFlightTicks; // 66
+
+        // popoutTimer value once the slots have landed and the buttons have fully faded in.
+        public const int OpenAnimationTicks = ButtonsAppearTick + ButtonFadeInTicks; // 86
 
         public override void OnInitialize()
         {
@@ -90,9 +106,10 @@ namespace OvermorrowMod.Core.UI
             if (confirmButton != null) 
                 confirmButton.animOpacity = 0f;
 
-            if (denyButton != null) 
+            if (denyButton != null)
                 denyButton.animOpacity = 0f;
 
+            IsInteractive = false;
             visible = true;
         }
 
@@ -105,6 +122,7 @@ namespace OvermorrowMod.Core.UI
 
         private void FinishHide()
         {
+            IsInteractive = false;
             visible = false;
             chestNPC = null;
             isClosing = false;
@@ -185,12 +203,17 @@ namespace OvermorrowMod.Core.UI
                 popoutTimer++;
             }
 
+            IsInteractive = !isClosing && popoutTimer >= OpenAnimationTicks;
+
             // World-to-UI: chest center for the launch start, and chest +
             // vertical offset for the row of landing positions.
             Vector2 chestUI = WorldToUI(lastWorldAnchor);
             Vector2 rowCenterUI = WorldToUI(lastWorldAnchor + new Vector2(0, -VerticalOffsetAboveChest));
             int totalWidth = SlotSize * 3 + SlotSpacing * 2;
             float fadeOutMul = isClosing ? (drawCounter / (float)FadeTicks) : 1f;
+
+            rowCenter = rowCenterUI;
+            titleOpacity = MathHelper.Clamp(popoutTimer / (float)PopoutFlightTicks, 0f, 1f) * fadeOutMul;
 
             for (int i = 0; i < slots.Length; i++)
             {
@@ -267,6 +290,19 @@ namespace OvermorrowMod.Core.UI
         {
             if (!visible) return;
             base.Draw(spriteBatch);
+            DrawTitle(spriteBatch);
+        }
+
+        private void DrawTitle(SpriteBatch spriteBatch)
+        {
+            if (titleOpacity <= 0f) return;
+
+            string text = Language.GetTextValue(LocalizationPath.UI + "RewardSelection.Title");
+            var font = FontAssets.MouseText.Value;
+            Vector2 size = ChatManager.GetStringSize(font, text, Vector2.One);
+            Vector2 pos = new Vector2(rowCenter.X - size.X / 2f, rowCenter.Y - SlotSize / 2f - TitleGap - size.Y);
+
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, text, pos, Color.White * titleOpacity, 0f, Vector2.Zero, Vector2.One);
         }
     }
 }

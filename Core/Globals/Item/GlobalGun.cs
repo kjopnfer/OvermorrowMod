@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Input;
 using OvermorrowMod.Common.Items.Bows;
 using OvermorrowMod.Common.Items.Guns;
 using OvermorrowMod.Content.Items.Vanilla.Weapons.Ranged;
@@ -49,6 +50,11 @@ namespace OvermorrowMod.Core.Globals
                 if (Language.Exists(localizationKey))
                 {
                     tooltips.Add(new TooltipLine(Mod, $"{tooltipKey}0", Language.GetTextValue(localizationKey)));
+                }
+
+                if (OvermorrowKeybinds.ReloadKeybind != null && OvermorrowKeybinds.ReloadKeybind.GetAssignedKeys().Count == 0)
+                {
+                    tooltips.Add(new TooltipLine(Mod, "ReloadBindHint", Language.GetTextValue(LocalizationPath.UI + "ReloadBindHint")) { OverrideColor = new Color(150, 150, 150) });
                 }
             }
 

@@ -19,6 +19,31 @@ namespace OvermorrowMod.Core.NPCs
             this.substates = substates;
         }
 
+        /// <summary>
+        /// Picks one substate from the candidates with probability proportional to its weight.
+        /// Returns null when there are no candidates.
+        /// </summary>
+        protected static T PickWeightedRandom(List<T> valid)
+        {
+            if (valid == null || valid.Count == 0)
+                return null;
+
+            int totalWeight = valid.Sum(s => s.Weight);
+            if (totalWeight <= 0)
+                return valid[0];
+
+            int roll = Main.rand.Next(totalWeight);
+            int accumulated = 0;
+            foreach (T state in valid)
+            {
+                accumulated += state.Weight;
+                if (roll < accumulated)
+                    return state;
+            }
+
+            return valid[0];
+        }
+
 
         public bool ContainsSubstate(State substate)
         {

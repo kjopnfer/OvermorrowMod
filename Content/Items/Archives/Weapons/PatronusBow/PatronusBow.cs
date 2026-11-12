@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
@@ -94,6 +96,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         }
     }
 
+    [Loot<ArchivePool>(ItemType.Ranged, Rarity.Rare)]
     public class PatronusBow : ModBow<PatronusBow_Held>, ITooltipEntities, IWeaponClassification
     {
         public List<TooltipEntity> TooltipObjects()

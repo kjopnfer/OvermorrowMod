@@ -8,6 +8,8 @@ using OvermorrowMod.Core.Items.Guns;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
+using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Loot.Pools;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives.Weapons
@@ -54,7 +56,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             string action = gunPlayer.FarlanderCharge < 120 ? "_Farlander" : "_FarlanderPowerShot";
             int projectile = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun" + action), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
 
-            if (gunPlayer.FarlanderPierce)
+            if (gunPlayer.FarlanderPierce && Main.projectile[projectile].penetrate != -1)
             {
                 Main.projectile[projectile].penetrate++;
                 Main.projectile[projectile].usesLocalNPCImmunity = true;
@@ -106,6 +108,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
         }
     }
 
+    [Loot<ArchivePool>(ItemType.Ranged, Rarity.Rare)]
     public class Farlander : ModGun<FarlanderHeld>
     {
         public override WeaponType WeaponType => WeaponType.Sniper;

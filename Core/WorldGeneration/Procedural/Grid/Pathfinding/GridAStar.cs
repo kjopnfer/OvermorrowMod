@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +15,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
     /// </summary>
     public static class GridAStar
     {
-        private const int MaxExpansionsPerSegment = 15000;
+        private const int MaxExpansionsPerSegment = 3000;
 
         /// <summary>Plans a path from start to goal through optional waypoints. Returns null if none exists.</summary>
         public static List<PathStep> FindPath(
@@ -30,7 +29,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             IReadOnlyDictionary<Type, int> streakLimits = null,
             IReadOnlyDictionary<Type, int> minStreakLimits = null,
             HashSet<Type> waypointAcceptableTypes = null,
-            int maxVerticalRun = int.MaxValue)
+            int maxVerticalRun = int.MaxValue,
+            int shaftRowWindow = int.MaxValue,
+            int maxExpansions = MaxExpansionsPerSegment)
         {
             if (edgeCost == null) throw new ArgumentNullException(nameof(edgeCost));
             if (startCell == null) throw new ArgumentNullException(nameof(startCell));
@@ -59,7 +60,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 var segmentSteps = FindSegment(
                     grid, segmentStart, segmentGoal, prevForSegment, startStreak,
                     edgeCost, blocked, streakLimits, minStreakLimits, isFinalSegment,
-                    waypointAcceptableTypes, maxVerticalRun, fullPath);
+                    waypointAcceptableTypes, maxVerticalRun, shaftRowWindow, maxExpansions, fullPath);
 
                 if (segmentSteps == null) return null;
 
@@ -116,6 +117,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             bool isFinalSegment,
             HashSet<Type> waypointAcceptableTypes,
             int maxVerticalRun,
+            int shaftRowWindow,
+            int maxExpansions,
             List<PathStep> priorSegmentSteps)
         {
             var startNode = new Node(start, startCell.GetType(), startStreak, 0);
@@ -125,7 +128,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             toExplore.Enqueue(startNode, Heuristic(start, goal));
 
             int expansions = 0;
-            while (toExplore.Count > 0 && expansions++ < MaxExpansionsPerSegment)
+            while (toExplore.Count > 0 && expansions++ < maxExpansions)
             {
                 var current = toExplore.Dequeue();
 
@@ -178,6 +181,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     }
                 }
 
+                // Hoisted once per dequeue: every prior chain-walk lookup
+                // (FootprintIsAvailable, AntiFusionOk, IsValidPlacement,
+                // OpenSidesMatch, PathHasShaftInColumn) was O(N) in the
+                // current path length. Building a flat dict here makes them
+                // all O(1) for the rest of this expansion.
+                var pathOccupied = BuildPathOccupied(current, cameFrom, priorSegmentSteps, out var pathShafts);
+                Func<int, int, GridRoom> pathCellLookup = (x, y) =>
+                    pathOccupied.TryGetValue(new Point(x, y), out var p) ? p.cell : null;
+                Func<int, int, (GridRoom cell, Point anchor)?> pathCellWithAnchorLookup = (x, y) =>
+                    pathOccupied.TryGetValue(new Point(x, y), out var p) ? ((GridRoom, Point)?)(p.cell, p.anchor) : null;
+
                 foreach (var exit in prevCell.Exits)
                 {
                     var candNext = new Point(current.Position.X + exit.CursorDelta.X,
@@ -189,12 +203,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                             candNext.X + candidate.AnchorOffsetFromCursor.X,
                             candNext.Y + candidate.AnchorOffsetFromCursor.Y);
 
-                        // pendingLookup exposes in-progress path cells so structural checks see them too.
-                        if (!FootprintIsAvailable(grid, candidate, anchor, blocked, current, cameFrom, priorSegmentSteps))
+                        if (!FootprintIsAvailable(grid, candidate, anchor, blocked, pathOccupied))
                             continue;
-                        var capturedCurrent = current;
-                        if (!candidate.IsValidPlacement(grid, anchor,
-                                (x, y) => LookupPathCell(capturedCurrent, cameFrom, priorSegmentSteps, x, y)))
+                        if (!candidate.IsValidPlacement(grid, anchor, pathCellLookup))
                             continue;
 
                         // Anti-fusion: a candidate's footprint must not border
@@ -204,8 +215,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         // produce a connected hallway via shared open sides,
                         // which is the mechanism behind every accidental loop
                         // we've seen.
-                        if (!AntiFusionOk(grid, candidate, anchor, start, startCell, goal,
-                                          current, cameFrom, priorSegmentSteps))
+                        if (!AntiFusionOk(grid, candidate, anchor, start, startCell, goal, pathOccupied))
                             continue;
 
                         // Cardinal entries: candidate must expose an exit on the entry face.
@@ -231,24 +241,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         }
 
                         // Shared borders must agree: both open or both closed. Catches intra- and cross-path collisions.
-                        if (!OpenSidesMatch(candidate, anchor, grid,
-                                (x, y) => LookupPathCellWithAnchor(capturedCurrent, cameFrom, priorSegmentSteps, x, y)))
+                        if (!OpenSidesMatch(candidate, anchor, grid, pathCellWithAnchorLookup))
                             continue;
 
                         // Path-aware shaft adjacency: the cost function rejects
-                        // shafts whose adjacent columns already contain shafts
-                        // in the committed grid, but a single A* call's
-                        // placements aren't committed until FindPath returns.
-                        // Walk this path's cameFrom plus prior-segment steps
-                        // so two shafts placed within the same FindPath also
-                        // get caught.
-                        if (candidate is ShaftCell)
-                        {
-                            if (PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X - 1)
-                                || PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X)
-                                || PathHasShaftInColumn(current, cameFrom, priorSegmentSteps, anchor.X + 1))
-                                continue;
-                        }
+                        // shafts adjacent to shafts in the committed grid, but a
+                        // single A* call's placements aren't committed until
+                        // FindPath returns. pathShafts mirrors the same info for
+                        // shafts placed earlier in this run. shaftRowWindow limits
+                        // the veto to nearby rows (int.MaxValue = whole column).
+                        if (candidate.Type == RoomType.VerticalConnector && PathShaftWithin(pathShafts, anchor, shaftRowWindow))
+                            continue;
 
                         // Streak: same type increments, different resets, exceed-limit skips.
                         var candType = candidate.GetType();
@@ -327,8 +330,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         /// </summary>
         private static bool FootprintIsAvailable(
             DungeonGrid grid, GridRoom candidate, Point anchor,
-            HashSet<Point> blocked, Node current, Dictionary<Node, EdgeRecord> cameFrom,
-            List<PathStep> priorSegmentSteps)
+            HashSet<Point> blocked,
+            Dictionary<Point, (GridRoom cell, Point anchor)> pathOccupied)
         {
             for (int sc = 0; sc < candidate.CellWidth; sc++)
             {
@@ -340,48 +343,62 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
                     if (slot == null) return false;
                     if (!slot.IsEmpty) return false;
-                    if (blocked.Contains(new Point(x, y))) return false;
+                    var pt = new Point(x, y);
+                    if (blocked.Contains(pt)) return false;
+                    if (pathOccupied.ContainsKey(pt)) return false;
                 }
             }
+            return true;
+        }
 
-            // Walk the current segment's in-progress path for footprint overlap.
-            var node = current;
-            while (cameFrom.TryGetValue(node, out var rec))
+        /// <summary>
+        /// Builds a per-sub-cell dictionary of the points occupied by the current
+        /// segment's in-progress path plus any prior-segment steps. Replaces
+        /// O(N) cameFrom chain walks inside the inner loop with O(1) lookups.
+        /// Also emits the anchors of ShaftCells placed in this path
+        /// (used by the path-aware shaft adjacency check).
+        /// </summary>
+        private static Dictionary<Point, (GridRoom cell, Point anchor)> BuildPathOccupied(
+            Node current, Dictionary<Node, EdgeRecord> cameFrom,
+            List<PathStep> priorSegmentSteps, out List<Point> pathShafts)
+        {
+            var dict = new Dictionary<Point, (GridRoom, Point)>();
+            pathShafts = new List<Point>();
+
+            var n = current;
+            while (cameFrom.TryGetValue(n, out var rec))
             {
-                if (FootprintsOverlap(rec.Cell, rec.Anchor, candidate, anchor))
-                    return false;
-                node = rec.Parent;
+                for (int sc = 0; sc < rec.Cell.CellWidth; sc++)
+                    for (int sr = 0; sr < rec.Cell.CellHeight; sr++)
+                        dict[new Point(rec.Anchor.X + sc, rec.Anchor.Y + sr)] = (rec.Cell, rec.Anchor);
+                if (rec.Cell.Type == RoomType.VerticalConnector) pathShafts.Add(rec.Anchor);
+                n = rec.Parent;
             }
-
-            // Also walk earlier segments of the same FindPath. Their cells
-            // aren't committed to the grid yet (FindPath stamps everything
-            // only after returning), so the grid check above doesn't see
-            // them. Without this walk a 2-segment spine could place a
-            // 2x2 stair in segment 1 and another 2x2 stair in segment 2
-            // whose footprints overlap.
             if (priorSegmentSteps != null)
             {
                 for (int i = 0; i < priorSegmentSteps.Count; i++)
                 {
                     var step = priorSegmentSteps[i];
-                    if (FootprintsOverlap(step.Cell, step.Anchor, candidate, anchor))
-                        return false;
+                    for (int sc = 0; sc < step.Cell.CellWidth; sc++)
+                        for (int sr = 0; sr < step.Cell.CellHeight; sr++)
+                            dict[new Point(step.Anchor.X + sc, step.Anchor.Y + sr)] = (step.Cell, step.Anchor);
+                    if (step.Cell.Type == RoomType.VerticalConnector) pathShafts.Add(step.Anchor);
                 }
             }
-
-            return true;
+            return dict;
         }
 
-        /// <summary>Rectangle-overlap test on two footprints.</summary>
-        private static bool FootprintsOverlap(GridRoom a, Point aAnchor, GridRoom b, Point bAnchor)
+        /// <summary>
+        /// True if a shaft already placed in this path sits in an adjacent column
+        /// (col +/- 1) within <paramref name="rowWindow"/> rows of <paramref name="anchor"/>.
+        /// With rowWindow = int.MaxValue this is column-global (any row).
+        /// </summary>
+        private static bool PathShaftWithin(List<Point> pathShafts, Point anchor, int rowWindow)
         {
-            int aRight = aAnchor.X + a.CellWidth;
-            int aBottom = aAnchor.Y + a.CellHeight;
-            int bRight = bAnchor.X + b.CellWidth;
-            int bBottom = bAnchor.Y + b.CellHeight;
-
-            return aAnchor.X < bRight && aRight > bAnchor.X
-                && aAnchor.Y < bBottom && aBottom > bAnchor.Y;
+            foreach (var s in pathShafts)
+                if (Math.Abs(s.X - anchor.X) <= 1 && Math.Abs(s.Y - anchor.Y) <= rowWindow)
+                    return true;
+            return false;
         }
 
         /// <summary>
@@ -486,8 +503,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             GridRoom candidate, Point anchor,
             Point start, GridRoom startCell,
             Point goal,
-            Node current, Dictionary<Node, EdgeRecord> cameFrom,
-            List<PathStep> priorSegmentSteps)
+            Dictionary<Point, (GridRoom cell, Point anchor)> pathOccupied)
         {
             int candW = candidate.CellWidth;
             int candH = candidate.CellHeight;
@@ -538,8 +554,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         if (nSlot.IsEmpty) continue;       // empty cell, no fusion possible
 
                         // In this segment's own in-progress path? Same A* run, OK.
-                        if (LookupPathCell(current, cameFrom, priorSegmentSteps, nx, ny) != null)
-                            continue;
+                        if (pathOccupied.ContainsKey(new Point(nx, ny))) continue;
 
                         // Foreign occupied cell. Reject this candidate.
                         return false;
@@ -547,65 +562,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 }
             }
             return true;
-        }
-
-        /// <summary>True if any in-progress placement (current segment or prior) is a ShaftCell at the given column.</summary>
-        private static bool PathHasShaftInColumn(Node node, Dictionary<Node, EdgeRecord> cameFrom,
-                                                 List<PathStep> priorSegmentSteps, int col)
-        {
-            var n = node;
-            while (cameFrom.TryGetValue(n, out var rec))
-            {
-                if (rec.Cell is ShaftCell && rec.Anchor.X == col) return true;
-                n = rec.Parent;
-            }
-            if (priorSegmentSteps != null)
-            {
-                for (int i = 0; i < priorSegmentSteps.Count; i++)
-                {
-                    var step = priorSegmentSteps[i];
-                    if (step.Cell is ShaftCell && step.Anchor.X == col) return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>Returns the in-progress path cell at (x, y), or null. Caller falls back to the grid.</summary>
-        private static GridRoom LookupPathCell(Node node, Dictionary<Node, EdgeRecord> cameFrom,
-                                               List<PathStep> priorSegmentSteps, int x, int y)
-        {
-            var found = LookupPathCellWithAnchor(node, cameFrom, priorSegmentSteps, x, y);
-            return found?.cell;
-        }
-
-        /// <summary>Like <see cref="LookupPathCell"/> but also returns the cell's anchor for sub-cell math.</summary>
-        private static (GridRoom cell, Point anchor)? LookupPathCellWithAnchor(
-            Node node, Dictionary<Node, EdgeRecord> cameFrom,
-            List<PathStep> priorSegmentSteps, int x, int y)
-        {
-            var n = node;
-            while (cameFrom.TryGetValue(n, out var rec))
-            {
-                if (x >= rec.Anchor.X && x < rec.Anchor.X + rec.Cell.CellWidth
-                 && y >= rec.Anchor.Y && y < rec.Anchor.Y + rec.Cell.CellHeight)
-                {
-                    return (rec.Cell, rec.Anchor);
-                }
-                n = rec.Parent;
-            }
-            if (priorSegmentSteps != null)
-            {
-                for (int i = 0; i < priorSegmentSteps.Count; i++)
-                {
-                    var step = priorSegmentSteps[i];
-                    if (x >= step.Anchor.X && x < step.Anchor.X + step.Cell.CellWidth
-                     && y >= step.Anchor.Y && y < step.Anchor.Y + step.Cell.CellHeight)
-                    {
-                        return (step.Cell, step.Anchor);
-                    }
-                }
-            }
-            return null;
         }
 
         /// <summary>True if the occupied goal accepts the walker's arriving cell type on its facing exit.</summary>

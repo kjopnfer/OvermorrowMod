@@ -81,20 +81,38 @@ namespace OvermorrowMod.Core.Items
         {
             if (keywords.Count == 0) return;
 
-            float offset = 0;
-            float containerWidth = tooltipCount == 0 ? 0 : TooltipConfiguration.CONTAINER_WIDTH;
+            // Entities flip to the left when the cursor is on the right half, matching DrawTooltipEntities.
+            bool hasEntities = tooltipCount > 0;
+            bool entitiesOnLeft = hasEntities && Main.MouseScreen.X > Main.screenWidth / 2;
+            bool entitiesOnRight = hasEntities && !entitiesOnLeft;
 
+            float lineWidth = ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X;
+            float boxWidth = TooltipConfiguration.KEYWORD_WIDTH + 40;
+
+            // Sit clear of any entity container on the same side, hugging its edge with a small gap.
+            const float AdjacentGap = 5f;
+            float entityShift = TooltipConfiguration.CONTAINER_WIDTH + 10;
+            float rightX = x + lineWidth + (entitiesOnRight ? TooltipConfiguration.CONTAINER_WIDTH : 0) + TooltipConfiguration.CONTAINER_OFFSET;
+            float leftX = x - (entitiesOnLeft ? entityShift : 0) - AdjacentGap - boxWidth;
+
+            bool placeLeft = rightX + boxWidth > Main.screenWidth;
+            float boxX = placeLeft ? leftX : rightX;
+
+            // Shift the whole stack up together when it overflows the bottom edge.
+            float stackHeight = 0;
+            foreach (string keyword in keywords)
+                stackHeight += CalculateKeywordHeight(keyword) + 5 + TooltipConfiguration.BOTTOM_PADDING;
+
+            float startY = y;
+            if (startY + stackHeight > Main.screenHeight)
+                startY = Main.screenHeight - stackHeight;
+            if (startY < 0) startY = 0;
+
+            float offset = 0;
             foreach (string keyword in keywords)
             {
-                Vector2 position = new Vector2(
-                    x + containerWidth + TooltipConfiguration.CONTAINER_OFFSET +
-                    ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X,
-                    y + offset);
-
                 float height = CalculateKeywordHeight(keyword);
-                position = AdjustForScreenBounds(position, height, x, widestLine);
-
-                DrawKeywordTooltip(spriteBatch, keyword, position, height);
+                DrawKeywordTooltip(spriteBatch, keyword, new Vector2(boxX, startY + offset), height);
                 offset += height + 5 + TooltipConfiguration.BOTTOM_PADDING;
             }
         }
@@ -539,25 +557,6 @@ namespace OvermorrowMod.Core.Items
             {
                 float yOverflow = y + yOffset + height - Main.screenHeight;
                 position -= new Vector2(0, yOverflow);
-            }
-
-            return position;
-        }
-
-        public static Vector2 AdjustForScreenBounds(Vector2 position, float height, int x, string widestLine)
-        {
-            if (position.Y + height > Main.screenHeight)
-            {
-                float yOverflow = position.Y + height - Main.screenHeight;
-                position -= new Vector2(0, yOverflow);
-            }
-
-            if (Main.MouseScreen.X > Main.screenWidth / 2)
-            {
-                position = new Vector2(
-                    x + TooltipConfiguration.RIGHT_OFFSET - TooltipConfiguration.CONTAINER_WIDTH -
-                    ChatManager.GetStringSize(FontAssets.MouseText.Value, widestLine, Vector2.One).X,
-                    position.Y);
             }
 
             return position;

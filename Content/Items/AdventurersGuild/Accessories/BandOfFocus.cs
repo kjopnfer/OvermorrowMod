@@ -3,11 +3,13 @@ using OvermorrowMod.Common.Items;
 using OvermorrowMod.Core.Items.Accessories;
 using Terraria;
 using Terraria.ID;
+using OvermorrowMod.Core.Loot;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
 {
     [AutoloadEquip(EquipType.HandsOn)]
+    [Loot(ItemType.Generic, Rarity.Rare)]
     public class BandOfFocus : OvermorrowAccessory
     {
         public override string Texture => AssetDirectory.GuildItems + Name;
@@ -22,7 +24,7 @@ namespace OvermorrowMod.Content.Items.AdventurersGuild.Accessories
         protected override void SetAccessoryEffects(AccessoryDefinition definition)
         {
             definition.AddVigorEffect(
-                condition: (player) => true, // Vigor keyword already checks for 80%+ health
+                condition: (player) => true,
                 effect: (player) =>
                 {
                     player.GetCritChance(DamageClass.Magic) += 15;

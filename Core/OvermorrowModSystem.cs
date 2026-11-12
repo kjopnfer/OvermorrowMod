@@ -1,7 +1,10 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
+using OvermorrowMod.Core.UI.ClassSelection;
+using OvermorrowMod.Core.UI.Shop;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -20,6 +23,12 @@ namespace OvermorrowMod.Core
         internal UserInterface RewardInterface;
         public RewardSelection RewardSelection;
 
+        internal UserInterface ClassInterface;
+        public ClassSelection ClassSelection;
+
+        internal UserInterface ShopInterface;
+        public ShopDialogue ShopDialogue;
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -35,6 +44,16 @@ namespace OvermorrowMod.Core
                 RewardInterface.SetState(RewardSelection);
 
                 RewardSelectionManager.Initialize(RewardSelection);
+
+                ClassInterface = new UserInterface();
+                ClassSelection = new ClassSelection();
+                ClassInterface.SetState(ClassSelection);
+
+                ClassSelectionManager.Initialize(ClassSelection);
+
+                ShopInterface = new UserInterface();
+                ShopDialogue = new ShopDialogue();
+                ShopInterface.SetState(ShopDialogue);
             }
         }
 
@@ -61,27 +80,34 @@ namespace OvermorrowMod.Core
             PrimitiveManager.UpdateTrails();
         }
 
+        public override void UpdateUI(GameTime gameTime)
+        {
+            if (TitleCard != null && TitleCard.visible) TitleInterface?.Update(gameTime);
+            if (RewardSelection != null && RewardSelection.visible) RewardInterface?.Update(gameTime);
+            if (ClassSelection != null && ClassSelection.visible) ClassInterface?.Update(gameTime);
+            if (ShopDialogue.IsActive) ShopInterface?.Update(gameTime);
+            else ShopDialogue?.NotifyClosed();
+        }
+
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
             {
-                AddInterfaceLayer(layers, TitleInterface, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
-                AddInterfaceLayer(layers, RewardInterface, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
+                AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
+                AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
+                AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
+                AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
             }
         }
 
-        public static void AddInterfaceLayer(List<GameInterfaceLayer> layers, UserInterface userInterface, UIState state, int index, bool visible, string customName = null)
+        public static void AddInterfaceLayer(List<GameInterfaceLayer> layers, UIState state, int index, bool visible, string customName = null)
         {
             string name = customName == null ? state.ToString() : customName;
             layers.Insert(index, new LegacyGameInterfaceLayer("OvermorrowMod: " + name,
                 delegate
                 {
-                    if (visible)
-                    {
-                        userInterface.Update(Main._drawInterfaceGameTime);
-                        state.Draw(Main.spriteBatch);
-                    }
+                    if (visible) state.Draw(Main.spriteBatch);
                     return true;
                 }, InterfaceScaleType.UI));
         }

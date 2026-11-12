@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Cells;
 using System;
 using System.Collections.Generic;
 
@@ -50,7 +49,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             int minSubgoalSpacing)
         {
             const int MaxCandidatesPerRoom = 8;
-            const int MaxOuterAttempts = 30;
+            const int MaxOuterAttempts = 10;
 
             var rooms = new List<RoomState>(requiredRoomFactories.Count);
             foreach (var factory in requiredRoomFactories)

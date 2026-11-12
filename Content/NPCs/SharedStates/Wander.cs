@@ -28,6 +28,12 @@ namespace OvermorrowMod.Content.NPCs
         /// <param name="npc"></param>
         /// <param name="minRange">The minimum range in tiles that the NPC must choose to wander from.</param>
         /// <param name="maxRange">The maxmimum range in tiles that the NPC can choose to wander to.</param>
+        private const int MaxWanderTicks = 240;
+        private const int MaxWallTicks = 20;
+
+        private int wanderTicks;
+        private int wallTicks;
+
         public Wander(OvermorrowNPC npc, int minRange = 4, int maxRange = 10) : base(npc)
         {
             MinWanderRange = minRange;
@@ -37,46 +43,44 @@ namespace OvermorrowMod.Content.NPCs
         public override void Enter()
         {
             IsFinished = false;
+            wanderTicks = 0;
+            wallTicks = 0;
             NPC.velocity.X = 0;
-            if (OvermorrowNPC.SpawnPoint != null)
+
+            if (!OvermorrowNPC.IdleAnchor.HasValue)
             {
-                Vector2 spawnPosition = OvermorrowNPC.SpawnPoint.Position.ToWorldCoordinates();
-
-                // Start from max range and work down to min range
-                for (int range = MaxWanderRange; range >= MinWanderRange; range--)
-                {
-                    if (TryFindValidPosition(spawnPosition, range, out Vector2 validPosition))
-                    {
-                        OvermorrowNPC.TargetingModule.MiscTargetPosition = validPosition;
-                        return;
-                    }
-                }
-
-                // If min range still didn't work, try fractional partitions of min range
-                float[] fractions = { 0.75f, 0.5f, 0.25f, 0.1f };
-                foreach (float fraction in fractions)
-                {
-                    int fractionalRange = Math.Max(1, (int)(MinWanderRange * fraction));
-                    if (TryFindValidPosition(spawnPosition, fractionalRange, out Vector2 validPosition))
-                    {
-                        OvermorrowNPC.TargetingModule.MiscTargetPosition = validPosition;
-                        return;
-                    }
-                }
-
-                // No valid position found at any range
                 IsFinished = true;
                 OvermorrowNPC.IdleCounter = Main.rand.Next(30, 60);
+                return;
             }
-            else
+
+            Vector2 spawnPosition = OvermorrowNPC.IdleAnchor.Value;
+
+            // Start from max range and work down to min range
+            for (int range = MaxWanderRange; range >= MinWanderRange; range--)
             {
-                if (OvermorrowNPC.SpawnerID.HasValue)
+                if (TryFindValidPosition(spawnPosition, range, out Vector2 validPosition))
                 {
-                }
-                else
-                {
+                    OvermorrowNPC.TargetingModule.MiscTargetPosition = validPosition;
+                    return;
                 }
             }
+
+            // If min range still didn't work, try fractional partitions of min range
+            float[] fractions = { 0.75f, 0.5f, 0.25f, 0.1f };
+            foreach (float fraction in fractions)
+            {
+                int fractionalRange = Math.Max(1, (int)(MinWanderRange * fraction));
+                if (TryFindValidPosition(spawnPosition, fractionalRange, out Vector2 validPosition))
+                {
+                    OvermorrowNPC.TargetingModule.MiscTargetPosition = validPosition;
+                    return;
+                }
+            }
+
+            // No valid position found at any range
+            IsFinished = true;
+            OvermorrowNPC.IdleCounter = Main.rand.Next(30, 60);
         }
 
         private bool TryFindValidPosition(Vector2 spawnPos, int range, out Vector2 position)
@@ -151,24 +155,32 @@ namespace OvermorrowMod.Content.NPCs
 
             // TODO: Change this to an NPC properties module.
             float maxSpeed = 1.8f;
-            if (OvermorrowNPC.SpawnPoint != null)
-            {
-                if (OvermorrowNPC.TargetingModule.MiscTargetPosition.HasValue)
-                {
-                    Vector2 targetPosition = OvermorrowNPC.TargetingModule.MiscTargetPosition.Value;
-                    NPC.direction = NPC.GetDirectionFrom(targetPosition);
-                    Vector2 distance = NPC.Move(targetPosition, 0.2f, maxSpeed, 8f);
+            if (!OvermorrowNPC.TargetingModule.MiscTargetPosition.HasValue) return;
 
-                    if (distance.X <= ModUtils.TilesToPixels(1))
-                    {
-                        if (!IsFinished) // Prevent setting multiple times
-                        {
-                            OvermorrowNPC.IdleCounter = Main.rand.Next(12, 15) * 10;
-                            IsFinished = true;
-                            NPC.velocity.X = 0;
-                        }
-                    }
+            Vector2 targetPosition = OvermorrowNPC.TargetingModule.MiscTargetPosition.Value;
+            NPC.direction = NPC.GetDirectionFrom(targetPosition);
+            Vector2 distance = NPC.Move(targetPosition, 0.2f, maxSpeed, 8f);
+
+            if (distance.X <= ModUtils.TilesToPixels(1))
+            {
+                if (!IsFinished) // Prevent setting multiple times
+                {
+                    OvermorrowNPC.IdleCounter = Main.rand.Next(12, 15) * 10;
+                    IsFinished = true;
+                    NPC.velocity.X = 0;
                 }
+
+                return;
+            }
+
+            bool wedged = NPC.collideX && (++wallTicks >= MaxWallTicks);
+            if (!NPC.collideX) wallTicks = 0;
+
+            if (wedged || ++wanderTicks >= MaxWanderTicks)
+            {
+                OvermorrowNPC.IdleCounter = Main.rand.Next(30, 60);
+                IsFinished = true;
+                NPC.velocity.X = 0;
             }
         }
     }

@@ -5,10 +5,14 @@ namespace OvermorrowMod.Common
         public const string Localization = "Mods.OvermorrowMod.";
 
         public const string Buffs = Localization + "Buffs.";
+        public const string Dialogue = Localization + "Dialogue.";
         public const string Bestiary = Localization + "Bestiary.";
         public const string Keywords = Localization + "Keywords.";
         public const string TooltipEntities = Localization + "TooltipEntities.";
         public const string LoadingTips = Localization + "LoadingTips.";
         public const string Items = Localization + "Items.";
+        public const string UI = Localization + "UI.";
+        public const string CollectibleBonus = Localization + "CollectibleBonus.";
+        public const string CollectibleEffect = Localization + "CollectibleEffect.";
     }
 }

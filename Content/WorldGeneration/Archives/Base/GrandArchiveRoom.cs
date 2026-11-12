@@ -146,7 +146,6 @@ namespace OvermorrowMod.Content.WorldGeneration.Archives
             if (stackSize < 1)
                 stackSize = 1;
 
-            // Place bottom tile � must succeed
             bool success = WorldGen.PlaceObject(x, y, ModContent.TileType<BookPile>(), true, Main.rand.Next(0, 4));
             if (!success)
                 return false;
