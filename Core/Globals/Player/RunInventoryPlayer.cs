@@ -9,7 +9,6 @@ namespace OvermorrowMod.Core.Globals
 {
     /// <summary>
     /// Locks every hotbar and main inventory slot past the open counts with a <see cref="LockedSlot"/> placeholder while in a run.
-    /// Coin and ammo slots are never locked.
     /// </summary>
     public class RunInventoryPlayer : ModPlayer
     {
