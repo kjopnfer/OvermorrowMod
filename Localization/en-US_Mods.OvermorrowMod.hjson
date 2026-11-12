@@ -754,7 +754,7 @@ Items: {
 
 	LockedSlot: {
 		DisplayName: Locked Slot
-		Tooltip: Locked for this run
+		Tooltip: ""
 	}
 
 	BadgeOfCourage: {
