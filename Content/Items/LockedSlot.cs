@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -34,12 +35,20 @@ namespace OvermorrowMod.Content.Items
             Item.TurnToAir();
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.RemoveAll(line => line.Mod == "Terraria" && line.Name.StartsWith("Favorite"));
+
+        /// <summary>
+        /// Redraws the plain slot background over the favorited one vanilla draws, then the chained X and padlock on top.
+        /// </summary>
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
+            Texture2D background = TextureAssets.InventoryBack.Value;
             Texture2D chain = ModContent.Request<Texture2D>(AssetDirectory.Misc + "LockChain").Value;
             Texture2D padlock = TextureAssets.Item[Type].Value;
 
-            float slotSize = TextureAssets.InventoryBack.Width() * Main.inventoryScale;
+            spriteBatch.Draw(background, position, null, Main.inventoryBack, 0f, background.Size() / 2f, Main.inventoryScale, SpriteEffects.None, 0f);
+
+            float slotSize = background.Width * Main.inventoryScale;
             float chainScale = Main.inventoryScale * 0.5f;
             float linkLength = chain.Height * chainScale;
             int links = (int)(slotSize * 0.8f * MathF.Sqrt(2f) / linkLength);
