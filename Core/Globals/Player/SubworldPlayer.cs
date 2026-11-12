@@ -2,6 +2,7 @@ using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -113,10 +114,14 @@ namespace OvermorrowMod.Core.Globals
 
                 if (pendingClassItems != null)
                 {
-                    for (int i = 0; i < pendingClassItems.Count && i < Player.inventory.Length; i++)
+                    int slot = 0;
+                    int ammoSlot = Main.InventoryAmmoSlotsStart;
+                    foreach (Item item in pendingClassItems)
                     {
-                        if (pendingClassItems[i] != null && !pendingClassItems[i].IsAir)
-                            Player.inventory[i] = pendingClassItems[i].Clone();
+                        if (item == null || item.IsAir) continue;
+
+                        if (item.ammo != AmmoID.None) Player.inventory[ammoSlot++] = item.Clone();
+                        else Player.inventory[slot++] = item.Clone();
                     }
                 }
             }

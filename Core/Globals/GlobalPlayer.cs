@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Content.Items;
 using OvermorrowMod.Core.Items;
 using OvermorrowMod.Core.Items.Accessories;
 using Terraria;
@@ -140,7 +141,7 @@ namespace OvermorrowMod.Core.Globals
             for (int i = 0; i < 10; i++)
             {
                 Item hotbarItem = Player.inventory[i];
-                if (!hotbarItem.IsAir)
+                if (!hotbarItem.IsAir && hotbarItem.ModItem is not LockedSlot)
                 {
                     AccessoryKeywords.TriggerQuickslot(Player, hotbarItem);
                 }
