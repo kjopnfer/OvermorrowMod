@@ -103,10 +103,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     flipWithDirection: true
                 ),
                 prioritizeAggro: true
-            )
-            {
-                ShowDebugVisualization = true
-            };
+            );
         }
 
         public override List<BaseIdleState> InitializeIdleStates() => new List<BaseIdleState> {

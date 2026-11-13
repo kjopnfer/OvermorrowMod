@@ -58,16 +58,6 @@ namespace OvermorrowMod.Core.NPCs
         }
 
         /// <summary>
-        /// Legacy property. Use AttackRadius instead for more control.
-        /// </summary>
-        [System.Obsolete("Use AttackRadius instead for more flexible range shapes.")]
-        public float MaxAttackRange
-        {
-            get => AttackRadius?.GetMaxRadius() ?? 0f;
-            set => AttackRadius = AggroRadius.Circle(value);
-        }
-
-        /// <summary>
         /// Legacy property. Use AlertRadius instead for more control.
         /// </summary>
         [System.Obsolete("Use AlertRadius instead for more flexible range shapes.")]

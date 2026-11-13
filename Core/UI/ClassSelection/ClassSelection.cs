@@ -31,10 +31,10 @@ namespace OvermorrowMod.Core.UI.ClassSelection
 
         private static readonly Dictionary<CharacterClass, (int type, int stack)[]> Loadouts = new()
         {
-            [CharacterClass.Warrior] = new (int, int)[] { (ItemID.GoldBroadsword, 1), (ItemID.EnchantedBoomerang, 1) },
-            [CharacterClass.Mage] = new (int, int)[] { (ItemID.DiamondStaff, 1), (ItemID.WandofSparking, 1) },
-            [CharacterClass.Ranger] = new (int, int)[] { (ItemID.GoldBow, 1), (ItemID.Musket, 1), (ItemID.WoodenArrow, 150), (ItemID.MusketBall, 150) },
-            [CharacterClass.Summoner] = new (int, int)[] { (ItemID.SlimeStaff, 1), (ItemID.BlandWhip, 1) },
+            [CharacterClass.Warrior] = new (int, int)[] { (ItemID.GoldBroadsword, 1), (ItemID.EnchantedBoomerang, 1), (ItemID.LesserHealingPotion, 2) },
+            [CharacterClass.Mage] = new (int, int)[] { (ItemID.DiamondStaff, 1), (ItemID.WandofSparking, 1), (ItemID.LesserHealingPotion, 2) },
+            [CharacterClass.Ranger] = new (int, int)[] { (ItemID.GoldBow, 1), (ItemID.Musket, 1), (ItemID.LesserHealingPotion, 2), (ItemID.WoodenArrow, 150), (ItemID.MusketBall, 150) },
+            [CharacterClass.Summoner] = new (int, int)[] { (ItemID.SlimeStaff, 1), (ItemID.BlandWhip, 1), (ItemID.LesserHealingPotion, 2) },
         };
 
         public static int MainWeaponType(CharacterClass c) => Loadouts[c][0].type;

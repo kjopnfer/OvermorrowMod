@@ -182,7 +182,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             float xDistance = Math.Abs(NPC.Center.X - npc.TargetingModule.Target.Center.X);
             float yDistance = Math.Abs(NPC.Center.Y - npc.TargetingModule.Target.Center.Y);
 
-            bool isWithinXRange = xDistance <= npc.TargetingModule.Config.MaxAttackRange;
+            bool isWithinXRange = xDistance <= (npc.TargetingModule.Config.AttackRadius?.GetMaxRadius() ?? 0f);
             bool isWithinYRange = yDistance < 200;
             bool hasLineOfSight = Collision.CanHitLine(npc.TargetingModule.Target.Center, 1, 1, NPC.Center, 1, 1);
 

@@ -129,10 +129,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     flipWithDirection: true
                 ),
                 prioritizeAggro: true
-            )
-            {
-                ShowDebugVisualization = true
-            };
+            );
         }
 
         protected override PersonalityProfile PersonalityRanges => new PersonalityProfile
@@ -362,7 +359,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemDropRule.Common(ItemID.Rat, chanceDenominator: 10));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 50));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CarvingKnife>(), chanceDenominator: 50));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 20));

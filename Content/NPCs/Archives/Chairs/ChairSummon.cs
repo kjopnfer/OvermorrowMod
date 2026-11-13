@@ -82,10 +82,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     flipWithDirection: true
                 ),
                 prioritizeAggro: true
-            )
-            {
-                ShowDebugVisualization = true
-            };
+            );
         }
 
         protected State AIState => AIStateMachine.GetCurrentSubstate();
