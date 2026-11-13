@@ -85,6 +85,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         {
             new CellExit(
                 _descendLeftToRight ? new Point(2, 1) : new Point(2, -1),
+                Direction.Right,
                 // CombatRoom intentionally excluded: planner-placed only.
                 new GridRoom[] { new BookshelfCell(), new CorridorCell() })
         };

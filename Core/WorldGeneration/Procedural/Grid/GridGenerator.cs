@@ -757,20 +757,20 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private BranchPlacement? TryPlaceBranchThroughSecondCombat(DungeonGrid grid, List<PathStep> spineSteps, List<Point> requiredAnchors, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             Point spineCombatAnchor = default;
-            bool found = false;
+            GridRoom spineCombat = null;
             foreach (var anchor in requiredAnchors)
             {
                 var slot = grid.GetSlot(anchor.X, anchor.Y);
                 if (slot != null && !slot.IsEmpty && slot.Room.Type == RoomType.Combat)
                 {
                     spineCombatAnchor = anchor;
-                    found = true;
+                    spineCombat = slot.Room;
                     break;
                 }
             }
-            if (!found) return null;
+            if (spineCombat == null) return null;
 
-            int spineCombatRight = spineCombatAnchor.X + 2;  // CombatRoom is 3 wide
+            int spineCombatRight = spineCombatAnchor.X + spineCombat.CellWidth - 1;
 
             // Partition non-feature bookshelf/corridor spine cells around the combat.
             var beforeNodes = new List<PathStep>();
