@@ -14,7 +14,7 @@ namespace OvermorrowMod.Core.Globals
     {
         public const int OpenHotbarSlots = 3;
         public const int OpenInventorySlots = 5;
-        private const int HotbarSlots = 10;
+        public const int HotbarSlots = 10;
 
         private int lastSelectedItem;
 
