@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Core.WorldGeneration;
 using System;
 using Terraria;
@@ -12,7 +13,7 @@ namespace OvermorrowMod.Core.Globals
         private const int DashTicks = 8;
         private const float DashSpeed = 14f;
         private const float SlideDecay = 0.75f;
-        private const int MaxCharges = 2;
+        public const int MaxCharges = 2;
         private const int RechargeTicks = 45;
 
         /// <summary>
@@ -28,6 +29,13 @@ namespace OvermorrowMod.Core.Globals
         private int tapDirection;
 
         private bool Dashing => dashTicksLeft > 0 || sliding;
+
+        public int Charges => charges;
+
+        /// <summary>
+        /// 1 while charges are spent and the recharge hasn't started, falling to 0 as the charges refill.
+        /// </summary>
+        public float RechargeFraction => charges == MaxCharges ? 0f : Dashing ? 1f : rechargeTicksLeft / (float)RechargeTicks;
 
         public override void OnEnterWorld() => ResetDash();
 
@@ -62,6 +70,8 @@ namespace OvermorrowMod.Core.Globals
 
         public override void PostUpdate()
         {
+            if (RunState.InRun) Player.AddBuff(ModContent.BuffType<DashBuff>(), 2);
+
             if (Dashing && Player.velocity.X == 0f) EndDash();
 
             if (!Dashing && rechargeTicksLeft > 0 && --rechargeTicksLeft == 0) charges = MaxCharges;

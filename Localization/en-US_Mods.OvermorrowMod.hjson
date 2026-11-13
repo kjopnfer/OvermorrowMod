@@ -165,6 +165,15 @@ Buffs: {
 		DisplayName: Super Mana Regeneration
 		Description: Massively increased mana regeneration
 	}
+
+	DashBuff: {
+		DisplayName: Dash
+		Description:
+			'''
+			Double-tap left or right to dash
+			{0} of {1} charges ready
+			'''
+	}
 }
 
 TooltipEntities: {
