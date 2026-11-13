@@ -129,10 +129,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     flipWithDirection: true
                 ),
                 prioritizeAggro: true
-            )
-            {
-                ShowDebugVisualization = true
-            };
+            );
         }
 
         protected override PersonalityProfile PersonalityRanges => new PersonalityProfile

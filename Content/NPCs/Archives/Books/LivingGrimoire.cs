@@ -109,10 +109,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
                 attackRadius: null,
                 alertRadius: null,
                 prioritizeAggro: true
-            )
-            {
-                ShowDebugVisualization = true
-            };
+            );
         }
 
         /// <summary>
@@ -149,9 +146,6 @@ namespace OvermorrowMod.Content.NPCs.Archives
                     flipWithDirection: true
                 ),
                 prioritizeAggro: true)
-                {
-                    ShowDebugVisualization = true
-                }
            );
 
             TargetingModule.SetTarget(currentTarget);
