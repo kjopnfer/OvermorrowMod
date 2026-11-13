@@ -228,9 +228,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             {
                 if (!r.IsPlaced) continue;
                 var slot = grid.GetSlot(r.PlacedAnchor.X, r.PlacedAnchor.Y);
-                // Use the cursor position (anchor minus its offset) as the docking point.
-                var cursor = new Point(r.PlacedAnchor.X - r.Prototype.AnchorOffsetFromCursor.X, r.PlacedAnchor.Y - r.Prototype.AnchorOffsetFromCursor.Y);
-                list.Add(new Subgoal { Pos = cursor, Room = slot.Room, IsDoor = false, Owner = r });
+                list.Add(new Subgoal { Pos = r.PlacedAnchor, Room = slot.Room, IsDoor = false, Owner = r });
             }
             list.Add(new Subgoal { Pos = endDoorPos, Room = endDoorRoom, IsDoor = true });
             list.Sort((a, b) => a.Pos.X.CompareTo(b.Pos.X));

@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
 using System;
 using System.Collections.Generic;
@@ -126,6 +127,61 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine($"combat branch in final layout: {Share(plans.Count(p => p.Stats.BranchPlaced), n)}");
             sb.AppendLine($"aux branches placed: {Share(plans.Sum(p => p.Stats.AuxPlaced), plans.Sum(p => p.Stats.AuxAttempts))}");
             sb.AppendLine($"forks: {plans.Sum(p => p.Stats.Forks)}, short stubs: {plans.Sum(p => p.Stats.ForkStubs)}, unplaced: {plans.Sum(p => p.Stats.ForkFailures)}");
+            var unreachable = plans.Select(UnreachableRooms).ToList();
+            sb.AppendLine($"rooms unreachable from the spawn: {unreachable.Sum()} in {unreachable.Count(u => u > 0)} of {n} dungeons");
+        }
+
+        private static readonly Direction[] Sides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };
+
+        /// <summary>
+        /// Number of placed rooms that can't be reached from the spawn room by walking through matching open sides.
+        /// </summary>
+        public static int UnreachableRooms(DungeonPlan plan)
+        {
+            var grid = plan.Grid;
+            var visited = new HashSet<Point>();
+            var reachedGroups = new HashSet<int>();
+            var queue = new Queue<Point>();
+            var spawnSlot = grid.GetSlot(plan.SpawnAnchor.X, plan.SpawnAnchor.Y);
+            if (spawnSlot != null && !spawnSlot.IsEmpty)
+            {
+                visited.Add(plan.SpawnAnchor);
+                queue.Enqueue(plan.SpawnAnchor);
+            }
+            while (queue.Count > 0)
+            {
+                var p = queue.Dequeue();
+                var slot = grid.GetSlot(p.X, p.Y);
+                reachedGroups.Add(slot.GroupId);
+                for (int sc = 0; sc < slot.Room.CellWidth; sc++)
+                {
+                    for (int sr = 0; sr < slot.Room.CellHeight; sr++)
+                    {
+                        var q = new Point(p.X - slot.SubCol + sc, p.Y - slot.SubRow + sr);
+                        if (visited.Add(q)) queue.Enqueue(q);
+                    }
+                }
+                foreach (var side in Sides)
+                {
+                    if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, side)) continue;
+                    var q = new Point(p.X + side.Step().X, p.Y + side.Step().Y);
+                    var neighbor = grid.GetSlot(q.X, q.Y);
+                    if (neighbor == null || neighbor.IsEmpty) continue;
+                    if (!neighbor.Room.IsOpenSide(neighbor.SubCol, neighbor.SubRow, side.Opposite())) continue;
+                    if (visited.Add(q)) queue.Enqueue(q);
+                }
+            }
+
+            var allGroups = new HashSet<int>();
+            for (int c = 0; c < grid.Cols; c++)
+            {
+                for (int r = 0; r < grid.Rows; r++)
+                {
+                    var slot = grid.GetSlot(c, r);
+                    if (!slot.IsEmpty) allGroups.Add(slot.GroupId);
+                }
+            }
+            return allGroups.Count - reachedGroups.Count;
         }
 
         private static void AppendRoomCounts(StringBuilder sb, List<DungeonPlan> plans)
