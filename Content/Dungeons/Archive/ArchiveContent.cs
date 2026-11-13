@@ -128,20 +128,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         {
             var anchorSlot = grid.GetSlot(anchor.X, anchor.Y);
             if (anchorSlot == null || anchorSlot.IsEmpty) return;
-            int groupId = anchorSlot.GroupId;
-
-            for (int sc = 0; sc < newRoom.CellWidth; sc++)
-            {
-                for (int sr = 0; sr < newRoom.CellHeight; sr++)
-                {
-                    var slot = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
-                    if (slot == null) continue;
-                    slot.Room = newRoom;
-                    slot.SubCol = sc;
-                    slot.SubRow = sr;
-                    slot.GroupId = groupId;
-                }
-            }
+            grid.Place(newRoom, anchor.X, anchor.Y, anchorSlot.GroupId);
         }
 
         public override void Decorate(DungeonGrid grid)

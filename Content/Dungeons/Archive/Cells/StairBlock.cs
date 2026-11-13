@@ -81,7 +81,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         /// Descending: cursor moves (+2, +1) to the lower-right landing's east neighbor.
         /// Ascending:  cursor moves (+2, -1) to the upper-right landing's east neighbor.
         /// </summary>
-        public override CellExit[] Exits => new[]
+        protected override CellExit[] CreateExits() => new[]
         {
             new CellExit(
                 _descendLeftToRight ? new Point(2, 1) : new Point(2, -1),
@@ -94,14 +94,14 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         /// shafts only accept bookshelves on their vertical ends. The same
         /// rule applies to the bottom row sitting above a shaft.
         /// </summary>
-        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, Func<int, int, GridRoom> pendingLookup = null)
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, PendingPlacements pending = null)
         {
             for (int dc = 0; dc < 2; dc++)
             {
-                var above = GetEffectiveRoomAt(grid, pendingLookup, anchor.X + dc, anchor.Y - 1);
+                var above = GetEffectiveRoomAt(grid, pending, anchor.X + dc, anchor.Y - 1);
                 if (above is ShaftCell) return false;
 
-                var below = GetEffectiveRoomAt(grid, pendingLookup, anchor.X + dc, anchor.Y + 2);
+                var below = GetEffectiveRoomAt(grid, pending, anchor.X + dc, anchor.Y + 2);
                 if (below is ShaftCell) return false;
             }
             return true;

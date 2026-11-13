@@ -43,12 +43,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>Local door cell per connection direction.</summary>
         public Dictionary<LayoutDirection, Point> DoorAnchors;
 
+        public PlanStats Stats;
+
         public int FootprintWidth => (BoundsMax.X - BoundsMin.X) * DungeonGrid.HorizontalSpacing + DungeonGrid.CellTileWidth + StoneMarginX * 2;
         public int FootprintHeight => (BoundsMax.Y - BoundsMin.Y) * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight + StoneMarginY * 2;
     }
 
-    /// <summary>A*-based dungeon generator. Critical-path / spine only.</summary>
-    public static class GridGenerator
+    /// <summary>
+    /// Plans a dungeon on a cell grid with A* (spine, combat branch, aux branches, fork doors) and paints plans into the world.
+    /// </summary>
+    public sealed class GridGenerator
     {
         /// <summary>
         /// Width of the un-buildable border ring.
@@ -61,18 +65,36 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         private const int ForkHeadroom = 12;
 
-        /// <summary>
-        /// The content being built, used by the room-creating helpers. Assigned at the start of each <see cref="Plan"/> call.
-        /// </summary>
-        private static DungeonContent ActiveContent;
+        private readonly DungeonContent _content;
+        private readonly IReadOnlyDictionary<Type, double> _typeWeights;
+        private readonly IReadOnlyDictionary<Type, int> _streakLimits;
+        private readonly IReadOnlyDictionary<Type, int> _minStreakLimits;
+        private readonly int _maxVerticalRun;
+        private readonly List<Func<GridRoom>> _requiredRooms;
+        private readonly List<Func<GridRoom>> _spineRequiredRooms;
+        private readonly int _dungeonIndex;
+        private readonly bool _diagnostics;
+        private readonly bool _validateReachability;
+        private readonly PlanStats _stats = new();
+        private GridAStar _search;
 
-        // Tuning and required-room set for the current build, assigned from ActiveContent at the start of Build.
-        private static IReadOnlyDictionary<Type, double> TypeWeights;
-        private static IReadOnlyDictionary<Type, int> StreakLimits;
-        private static IReadOnlyDictionary<Type, int> MinStreakLimits;
-        private static int MaxVerticalRun;
-        private static List<Func<GridRoom>> RequiredRooms;
-        private static List<Func<GridRoom>> SpineRequiredRooms;
+        private GridGenerator(DungeonContent content, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options)
+        {
+            _content = content;
+            _typeWeights = content.TypeWeights;
+            _streakLimits = content.StreakLimits;
+            _minStreakLimits = content.MinStreakLimits;
+            _maxVerticalRun = content.MaxVerticalRun;
+            // _requiredRooms is the dungeon's own feature set (also what forks decorate with).
+            // _spineRequiredRooms adds the per-dungeon extras (e.g. a portal door) the spine must place
+            // exactly once, kept out of the fork's feature picker so they are never duplicated.
+            _requiredRooms = content.RequiredRooms;
+            _spineRequiredRooms = new List<Func<GridRoom>>(content.RequiredRooms);
+            if (extraRequiredRooms != null) _spineRequiredRooms.AddRange(extraRequiredRooms);
+            _dungeonIndex = dungeonIndex;
+            _diagnostics = options.Diagnostics;
+            _validateReachability = options.ValidateReachability;
+        }
 
         /// <summary>
         /// Plans one dungeon in local grid coordinates without painting any tiles. The spine
@@ -87,23 +109,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Per-dungeon feature rooms the generator must also place (e.g. a subworld portal door),
         /// on top of the content's own required rooms.
         /// </param>
-        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms)
+        /// <param name="dungeonIndex">
+        /// The dungeon's index in its layout, used to label log lines and the dump file.
+        /// </param>
+        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options) => new GridGenerator(content, extraRequiredRooms, dungeonIndex, options).PlanDungeon(rand, doorDirections);
+
+        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<LayoutDirection> doorDirections)
         {
             var dirSet = new HashSet<LayoutDirection>(doorDirections);
             bool doorAtStart = dirSet.Contains(LayoutDirection.West);
             bool doorAtEnd = dirSet.Contains(LayoutDirection.East);
-
-            ActiveContent = content;
-            TypeWeights = content.TypeWeights;
-            StreakLimits = content.StreakLimits;
-            MinStreakLimits = content.MinStreakLimits;
-            MaxVerticalRun = content.MaxVerticalRun;
-            // RequiredRooms is the dungeon's own feature set (also what forks decorate with).
-            // SpineRequiredRooms adds the per-dungeon extras (e.g. a portal door) the spine must place
-            // exactly once, kept out of the fork's feature picker so they are never duplicated.
-            RequiredRooms = content.RequiredRooms;
-            SpineRequiredRooms = new List<Func<GridRoom>>(content.RequiredRooms);
-            if (extraRequiredRooms != null) SpineRequiredRooms.AddRange(extraRequiredRooms);
+            var content = _content;
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -132,6 +148,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             const double SpineElevationPenalty = 0.4;
 
             var borderBlocked = BuildBorderBlockedSet(gridCols, gridRows);
+            _search = new GridAStar(grid, borderBlocked, _streakLimits, _minStreakLimits, _maxVerticalRun, _validateReachability, _stats);
 
             int baseRow = 0;
             int startRow = 0, endRow = 0;
@@ -159,18 +176,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             {
                 if (buildAttempt > 0)
                 {
-                    for (int c = 0; c < gridCols; c++)
-                    {
-                        for (int r = 0; r < gridRows; r++)
-                        {
-                            var s = grid.GetSlot(c, r);
-                            if (s == null) continue;
-                            s.Room = null;
-                            s.SubCol = 0;
-                            s.SubRow = 0;
-                            s.GroupId = 0;
-                        }
-                    }
+                    grid.ClearAll();
                     spineSteps = null;
                     requiredAnchors = null;
                 }
@@ -198,13 +204,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         {
                             for (int r = 0; r < gridRows; r++)
                             {
-                                var s = grid.GetSlot(c, r);
-                                if (s == null || s.IsEmpty) continue;
                                 if ((c == start.X && r == start.Y) || (c == endTarget.X && r == endTarget.Y)) continue;  // endpoints stay
-                                s.Room = null;
-                                s.SubCol = 0;
-                                s.SubRow = 0;
-                                s.GroupId = 0;
+                                grid.ClearSlot(c, r);
                             }
                         }
                         spineSteps = null;
@@ -236,14 +237,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     }
 
                     noiseField = PathfindingCost.BuildSimplexNoiseField(grid.Cols, grid.Rows, rand.Next());
-                    EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, TypeWeights);
+                    EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, _typeWeights);
 
                     EdgeCost shaftAdjacencyAwareCost = (anchor, candidate) =>
                     {
                         if (candidate.Type == RoomType.VerticalConnector
-                            && (ColumnContainsShaft(grid, anchor.X - 1)
-                             || ColumnContainsShaft(grid, anchor.X)
-                             || ColumnContainsShaft(grid, anchor.X + 1)))
+                            && (grid.ColumnHasShaft(anchor.X - 1)
+                             || grid.ColumnHasShaft(anchor.X)
+                             || grid.ColumnHasShaft(anchor.X + 1)))
                         {
                             return double.PositiveInfinity;
                         }
@@ -262,12 +263,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
 
-                    var plan = SpinePlanner.TryPlanSpine(grid, start, endTarget, startDoor, endDoor, SpineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, StreakLimits, MinStreakLimits, MaxVerticalRun, EdgeBorder, MinDoorDistance, MinSubgoalSpacing);
+                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, endDoor, _spineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, EdgeBorder, MinDoorDistance, MinSubgoalSpacing, _diagnostics ? Log : null);
+                    _stats.SpineAttempts++;
 
                     spineSteps = plan.Steps;
                     requiredAnchors = plan.RequiredAnchors ?? new List<Point>();
 
-                    if (spineSteps == null) continue;
+                    if (spineSteps == null)
+                    {
+                        _stats.SpineAttemptsWithoutRoute++;
+                        continue;
+                    }
 
                     int minR = startRow, maxR = startRow;
                     foreach (var step in spineSteps)
@@ -279,8 +285,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (endRow > maxR) maxR = endRow;
                     bool spanOk = (maxR - minR) >= MinSpineSpan;
 
-                    int missingRequiredCount = SpineRequiredRooms.Count - requiredAnchors.Count;
+                    int missingRequiredCount = _spineRequiredRooms.Count - requiredAnchors.Count;
                     if (missingRequiredCount < 0) missingRequiredCount = 0;
+                    if (missingRequiredCount > 0) _stats.SpineAttemptsMissingRequired++;
 
                     int totalAnchors = 0;
                     for (int c = 0; c < gridCols; c++)
@@ -295,14 +302,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     int spineSpanRows = maxR - minR;
 
                     // Spine must have exactly one Combat with no bypass around it.
-                    int spineCombatCount = CountCombatRooms(grid);
+                    int spineCombatCount = grid.CountPlacements(RoomType.Combat);
                     bool spineHasOneCombat = spineCombatCount == 1;
                     bool combatMandatory = !HasCombatBypass(grid, start, endTarget);
 
                     BranchPlacement? branchPlacement = null;
                     if (spineHasOneCombat && combatMandatory)
-                        branchPlacement = TryPlaceBranchThroughSecondCombat(grid, spineSteps, requiredAnchors, spineCostFn, borderBlocked, gridCols, gridRows, rand);
+                    {
+                        _search.Phase = SearchPhase.Branch;
+                        branchPlacement = TryPlaceBranchThroughSecondCombat(grid, spineSteps, requiredAnchors, spineCostFn, gridCols, gridRows, rand);
+                        _search.Phase = SearchPhase.Spine;
+                    }
                     bool branchPlaced = branchPlacement.HasValue;
+                    if (branchPlaced) _stats.SpineAttemptsWithBranch++;
 
                     int score = 10 * spineSpanRows + totalAnchors;
                     score -= 10000 * missingRequiredCount;
@@ -311,20 +323,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (!combatMandatory) score -= 9000;
                     if (!branchPlaced) score -= 7000;
 
-                    Terraria.ModLoader.Logging.PublicLogger.Info($"OvermorrowDungeon spine attempt build={buildAttempt} spine={spineAttempt}: span={spineSpanRows} required={requiredAnchors.Count}/{SpineRequiredRooms.Count} spineCombat={spineCombatCount} mandatory={combatMandatory} branch={branchPlaced} score={score}");
+                    Log($"OvermorrowDungeon spine attempt build={buildAttempt} spine={spineAttempt}: span={spineSpanRows} required={requiredAnchors.Count}/{_spineRequiredRooms.Count} spineCombat={spineCombatCount} mandatory={combatMandatory} branch={branchPlaced} score={score}");
 
                     if (score > bestScore)
                     {
                         bestScore = score;
-                        bestGridSnapshot = new (GridRoom, int, int, int)[gridCols, gridRows];
-                        for (int c = 0; c < gridCols; c++)
-                        {
-                            for (int r = 0; r < gridRows; r++)
-                            {
-                                var s = grid.GetSlot(c, r);
-                                bestGridSnapshot[c, r] = (s.Room, s.SubCol, s.SubRow, s.GroupId);
-                            }
-                        }
+                        bestGridSnapshot = grid.CaptureSlots();
                         bestSpineSteps = new List<PathStep>(spineSteps);
                         bestElevation = (double[])elevation.Clone();
                         bestRequiredAnchors = new List<Point>(requiredAnchors);
@@ -352,21 +356,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
 
+            _stats.Accepted = buildAccepted;
             if (bestGridSnapshot != null && !buildAccepted)
             {
-                for (int c = 0; c < gridCols; c++)
-                {
-                    for (int r = 0; r < gridRows; r++)
-                    {
-                        var s = grid.GetSlot(c, r);
-                        if (s == null) continue;
-                        var (room, sc, sr, gid) = bestGridSnapshot[c, r];
-                        s.Room = room;
-                        s.SubCol = sc;
-                        s.SubRow = sr;
-                        s.GroupId = gid;
-                    }
-                }
+                grid.RestoreSlots(bestGridSnapshot);
                 spineSteps = bestSpineSteps;
                 elevation = bestElevation;
                 requiredAnchors = bestRequiredAnchors;
@@ -378,13 +371,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 // Rebuild cost function for downstream consumers.
                 noiseField = PathfindingCost.BuildSimplexNoiseField(grid.Cols, grid.Rows, rand.Next());
-                EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, TypeWeights);
+                EdgeCost noiseCostFn = PathfindingCost.FromNoise(noiseField, _typeWeights);
                 EdgeCost shaftAdjacencyAwareCost = (anchor, candidate) =>
                 {
                     if (candidate.Type == RoomType.VerticalConnector
-                        && (ColumnContainsShaft(grid, anchor.X - 1)
-                         || ColumnContainsShaft(grid, anchor.X)
-                         || ColumnContainsShaft(grid, anchor.X + 1)))
+                        && (grid.ColumnHasShaft(anchor.X - 1)
+                         || grid.ColumnHasShaft(anchor.X)
+                         || grid.ColumnHasShaft(anchor.X + 1)))
                     {
                         return double.PositiveInfinity;
                     }
@@ -442,6 +435,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             var spinePath = new DungeonPath(id: 1, role: PathRole.Spine, parent: null, steps: spineSteps ?? new List<PathStep>(), combatAnchor: spineCombatAnchor);
             paths.Add(spinePath);
 
+            _stats.BranchPlaced = bestBranchPlacement.HasValue;
             if (bestBranchPlacement.HasValue)
             {
                 var bp = bestBranchPlacement.Value;
@@ -449,7 +443,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
 
             // Phase 2: aux branches
-            TryAddAuxBranches(grid, paths, spineCostFn, borderBlocked, gridCols, gridRows, rand);
+            _search.Phase = SearchPhase.Aux;
+            _stats.AuxAttempts = MaxAuxBranchAttempts;
+            _stats.AuxPlaced = TryAddAuxBranches(grid, paths, spineCostFn, gridCols, gridRows, rand);
 
             // Doors keyed by direction (anchors only). Endpoint doors are the spine
             // start/end; every other direction is a fork branch toward it.
@@ -459,25 +455,32 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             // Fork legs route on plain noise with no elevation term, so a branch is free to leave the
             // spine's row rather than being pulled back toward it.
-            EdgeCost forkCostFn = PathfindingCost.FromNoise(noiseField, TypeWeights);
+            EdgeCost forkCostFn = PathfindingCost.FromNoise(noiseField, _typeWeights);
 
+            _search.Phase = SearchPhase.Fork;
             foreach (var dir in dirSet)
             {
                 if (dir == LayoutDirection.East || dir == LayoutDirection.West) continue;
-                Point? forkAnchor = TryAddForkDoor(grid, paths, dir, start, forkCostFn, borderBlocked, gridCols, gridRows, rand);
+                _stats.Forks++;
+                Point? forkAnchor = TryAddForkDoor(grid, paths, dir, start, forkCostFn, gridCols, gridRows, rand);
                 if (forkAnchor.HasValue)
+                {
                     doorAnchors[dir] = forkAnchor.Value;
+                }
                 else
-                    Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: could not place {dir} fork door; connection unpaired.");
+                {
+                    _stats.ForkFailures++;
+                    LogWarn($"OvermorrowDungeon: could not place {dir} fork door; connection unpaired.");
+                }
             }
 
-            int finalCombats = CountCombatRooms(grid);
-            bool finalMandatory = !HasCombatBypass(grid, start, endTarget);
-            bool finalTreeShaped = IsTreeShaped(grid, start);
-            Terraria.ModLoader.Logging.PublicLogger.Info($"OvermorrowDungeon final: combats={finalCombats} mandatory={finalMandatory} tree={finalTreeShaped}");
-
             stopwatch.Stop();
-            DumpGrid(grid, baseRow, start, endTarget, requiredAnchors, elevation, stopwatch.ElapsedMilliseconds);
+            _stats.ElapsedMs = stopwatch.ElapsedMilliseconds;
+            if (_diagnostics)
+            {
+                Log($"OvermorrowDungeon final: combats={grid.CountPlacements(RoomType.Combat)} mandatory={!HasCombatBypass(grid, start, endTarget)} tree={IsTreeShaped(grid, start)}");
+                DumpGrid(grid, _dungeonIndex, baseRow, start, endTarget, requiredAnchors, elevation, stopwatch.ElapsedMilliseconds);
+            }
 
             // Measure the occupied region: the dungeon's real footprint.
             int minCol = int.MaxValue, minRow = int.MaxValue, maxCol = int.MinValue, maxRow = int.MinValue;
@@ -503,6 +506,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 BoundsMax = new Point(maxCol, maxRow),
                 SpawnAnchor = spawnAnchor,
                 DoorAnchors = doorAnchors,
+                Stats = _stats,
             };
         }
 
@@ -614,7 +618,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>Writes the diagnostic grid dump; failures are logged, not thrown.</summary>
-        private static void DumpGrid(DungeonGrid grid, int baseRow, Point start, Point endTarget, List<Point> requiredAnchors, double[] elevation, long elapsedMs)
+        private static void DumpGrid(DungeonGrid grid, int dungeonIndex, int baseRow, Point start, Point endTarget, List<Point> requiredAnchors, double[] elevation, long elapsedMs)
         {
             try
             {
@@ -631,7 +635,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 };
                 string dumpFolder = System.IO.Path.Combine(Terraria.Main.SavePath, "OvermorrowDungeonDumps");
                 System.IO.Directory.CreateDirectory(dumpFolder);
-                string fileName = $"dump_{System.DateTime.Now:yyyyMMdd_HHmmss_fff}.txt";
+                string fileName = $"dump_{System.DateTime.Now:yyyyMMdd_HHmmss_fff}_d{dungeonIndex}.txt";
                 string dumpPath = System.IO.Path.Combine(dumpFolder, fileName);
                 GridDiagnostics.DumpFullGrid(grid, dumpPath, config);
             }
@@ -639,6 +643,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             {
                 Terraria.ModLoader.Logging.PublicLogger.Warn($"GridDiagnostics dump failed: {ex.Message}");
             }
+        }
+
+        private void Log(string message)
+        {
+            if (_diagnostics) Terraria.ModLoader.Logging.PublicLogger.Info($"[dungeon {_dungeonIndex}] {message}");
+        }
+
+        private void LogWarn(string message)
+        {
+            if (_diagnostics) Terraria.ModLoader.Logging.PublicLogger.Warn($"[dungeon {_dungeonIndex}] {message}");
         }
 
         /// <summary>Clamps a row inside the playable area, leaving room for 2-row stair footprints.</summary>
@@ -740,7 +754,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// to spine nodes on either side of the spine's combat. Rolls back
         /// fully and returns null on failure.
         /// </summary>
-        private static BranchPlacement? TryPlaceBranchThroughSecondCombat(DungeonGrid grid, List<PathStep> spineSteps, List<Point> requiredAnchors, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand)
+        private BranchPlacement? TryPlaceBranchThroughSecondCombat(DungeonGrid grid, List<PathStep> spineSteps, List<Point> requiredAnchors, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             Point spineCombatAnchor = default;
             bool found = false;
@@ -771,7 +785,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
             if (beforeNodes.Count == 0 || afterNodes.Count == 0) return null;
 
-            var branchCombatProto = ActiveContent.CreateCombat(true);
+            var branchCombatProto = _content.CreateCombat(true);
             int bw = branchCombatProto.CellWidth;
             int bh = branchCombatProto.CellHeight;
             const int BranchDepthMin = 4;
@@ -799,7 +813,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (!FootprintAndNeighborsClear(grid, branchCombatProto, posCandidate)) continue;
                 if (!branchCombatProto.IsValidPlacement(grid, posCandidate)) continue;
 
-                var branchCombat = ActiveContent.CreateCombat(true);
+                var branchCombat = _content.CreateCombat(true);
                 grid.Place(branchCombat, posCandidate.X, posCandidate.Y, grid.NextGroupId());
 
                 ShuffleInPlace(beforeNodes, rand);
@@ -809,7 +823,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 for (int aIdx = 0; aIdx < beforeCap && !success.HasValue; aIdx++)
                 {
                     var nodeA = beforeNodes[aIdx];
-                    var leg1 = GridAStar.FindPath(grid, nodeA.Anchor, posCandidate, nodeA.Cell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
+                    var leg1 = _search.FindPath(nodeA.Anchor, posCandidate, nodeA.Cell, costFn);
                     if (leg1 == null) continue;
 
                     foreach (var step in leg1)
@@ -819,7 +833,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     for (int bIdx = 0; bIdx < afterCap; bIdx++)
                     {
                         var nodeB = afterNodes[bIdx];
-                        leg2 = GridAStar.FindPath(grid, posCandidate, nodeB.Anchor, branchCombat, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
+                        leg2 = _search.FindPath(posCandidate, nodeB.Anchor, branchCombat, costFn);
                         if (leg2 != null) break;
                     }
 
@@ -839,7 +853,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     else
                     {
                         foreach (var step in leg1)
-                            ClearFootprint(grid, step.Cell, step.Anchor);
+                            grid.Clear(step.Cell, step.Anchor.X, step.Anchor.Y);
                     }
                 }
 
@@ -847,7 +861,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 // Every (nodeA, nodeB) at this position failed to close.
                 // Roll the combat back and try a fresh position.
-                ClearFootprint(grid, branchCombat, posCandidate);
+                grid.Clear(branchCombat, posCandidate.X, posCandidate.Y);
             }
 
             return null;
@@ -870,10 +884,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Best-effort aux branches off the spine or branch 1 only. Each is a
         /// closed loop or a chest-terminated dead end.
         /// </summary>
-        private static void TryAddAuxBranches(DungeonGrid grid, List<DungeonPath> paths, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand)
+        private int TryAddAuxBranches(DungeonGrid grid, List<DungeonPath> paths, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             int parentLimit = System.Math.Min(2, paths.Count);
-            if (parentLimit == 0) return;
+            if (parentLimit == 0) return 0;
 
             int placed = 0;
             for (int attempt = 0; attempt < MaxAuxBranchAttempts; attempt++)
@@ -883,8 +897,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 int newId = paths.Count + 1;
 
                 DungeonPath result = closedLoop
-                    ? TryAddClosedLoopAux(grid, parent, newId, costFn, borderBlocked, gridCols, gridRows, rand)
-                    : TryAddDeadEndAux(grid, parent, newId, costFn, borderBlocked, gridCols, gridRows, rand);
+                    ? TryAddClosedLoopAux(grid, parent, newId, costFn, gridCols, gridRows, rand)
+                    : TryAddDeadEndAux(grid, parent, newId, costFn, gridCols, gridRows, rand);
 
                 if (result != null)
                 {
@@ -893,14 +907,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
 
-            Terraria.ModLoader.Logging.PublicLogger.Info($"OvermorrowDungeon aux branches placed: {placed}/{MaxAuxBranchAttempts}");
+            Log($"OvermorrowDungeon aux branches placed: {placed}/{MaxAuxBranchAttempts}");
+            return placed;
         }
 
         /// <summary>
         /// Picks two nearby parent nodes and routes a closed-loop branch
         /// between them. Loops crossing the parent's combat get their own combat.
         /// </summary>
-        private static DungeonPath TryAddClosedLoopAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand)
+        private DungeonPath TryAddClosedLoopAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             if (parent.Steps.Count < 2) return null;
 
@@ -918,17 +933,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 bool needsCombat = parent.ClosedLoopAcrossCombat(a.Anchor, b.Anchor);
 
                 DungeonPath placed = needsCombat
-                    ? TryAuxAcrossCombat(grid, parent, a, b, newId, costFn, borderBlocked, gridCols, gridRows, rand)
-                    : TryAuxSameSide(grid, parent, a, b, newId, costFn, borderBlocked, rand);
+                    ? TryAuxAcrossCombat(grid, parent, a, b, newId, costFn, gridCols, gridRows, rand)
+                    : TryAuxSameSide(grid, parent, a, b, newId, costFn, rand);
                 if (placed != null) return placed;
             }
             return null;
         }
 
         /// <summary>Same-side closed loop: a single A* leg, no new combat.</summary>
-        private static DungeonPath TryAuxSameSide(DungeonGrid grid, DungeonPath parent, PathStep a, PathStep b, int newId, EdgeCost costFn, HashSet<Point> borderBlocked, Random rand)
+        private DungeonPath TryAuxSameSide(DungeonGrid grid, DungeonPath parent, PathStep a, PathStep b, int newId, EdgeCost costFn, Random rand)
         {
-            var legSteps = GridAStar.FindPath(grid, a.Anchor, b.Anchor, a.Cell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
+            var legSteps = _search.FindPath(a.Anchor, b.Anchor, a.Cell, costFn);
             if (legSteps == null) return null;
 
             foreach (var s in legSteps)
@@ -938,9 +953,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>Across-combat closed loop: place a third combat, route two A* legs through it.</summary>
-        private static DungeonPath TryAuxAcrossCombat(DungeonGrid grid, DungeonPath parent, PathStep a, PathStep b, int newId, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand)
+        private DungeonPath TryAuxAcrossCombat(DungeonGrid grid, DungeonPath parent, PathStep a, PathStep b, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
-            var combatProto = ActiveContent.CreateCombat(true);
+            var combatProto = _content.CreateCombat(true);
             int cw = combatProto.CellWidth;
             int ch = combatProto.CellHeight;
             int midX = (a.Anchor.X + b.Anchor.X) / 2;
@@ -958,25 +973,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (!FootprintAndNeighborsClear(grid, combatProto, pos)) continue;
                 if (!combatProto.IsValidPlacement(grid, pos)) continue;
 
-                var auxCombat = ActiveContent.CreateCombat(true);
+                var auxCombat = _content.CreateCombat(true);
                 grid.Place(auxCombat, pos.X, pos.Y, grid.NextGroupId());
 
-                var leg1 = GridAStar.FindPath(grid, a.Anchor, pos, a.Cell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
+                var leg1 = _search.FindPath(a.Anchor, pos, a.Cell, costFn);
                 if (leg1 == null)
                 {
-                    ClearFootprint(grid, auxCombat, pos);
+                    grid.Clear(auxCombat, pos.X, pos.Y);
                     continue;
                 }
 
                 foreach (var s in leg1)
                     grid.Place(s.Cell, s.Anchor.X, s.Anchor.Y, grid.NextGroupId());
 
-                var leg2 = GridAStar.FindPath(grid, pos, b.Anchor, auxCombat, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
+                var leg2 = _search.FindPath(pos, b.Anchor, auxCombat, costFn);
                 if (leg2 == null)
                 {
                     foreach (var s in leg1)
-                        ClearFootprint(grid, s.Cell, s.Anchor);
-                    ClearFootprint(grid, auxCombat, pos);
+                        grid.Clear(s.Cell, s.Anchor.X, s.Anchor.Y);
+                    grid.Clear(auxCombat, pos.X, pos.Y);
                     continue;
                 }
 
@@ -993,7 +1008,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>Dead-end aux branch terminating in a ChestRoom.</summary>
-        private static DungeonPath TryAddDeadEndAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand)
+        private DungeonPath TryAddDeadEndAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             if (parent.Steps.Count == 0) return null;
 
@@ -1015,18 +1030,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (tx < EdgeBorder + 1 || tx >= gridCols - EdgeBorder - 1) continue;
                     if (ty < EdgeBorder || ty >= gridRows - EdgeBorder) continue;
 
-                    var chestProto = ActiveContent.CreateTreasure(true);
+                    var chestProto = _content.CreateTreasure(true);
                     var targetPos = new Point(tx, ty);
                     if (!FootprintAndNeighborsClear(grid, chestProto, targetPos)) continue;
                     if (!chestProto.IsValidPlacement(grid, targetPos)) continue;
 
-                    var chest = ActiveContent.CreateTreasure(true);
+                    var chest = _content.CreateTreasure(true);
                     grid.Place(chest, tx, ty, grid.NextGroupId());
 
-                    var legSteps = GridAStar.FindPath(grid, nodeA.Anchor, targetPos, nodeA.Cell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun);
+                    var legSteps = _search.FindPath(nodeA.Anchor, targetPos, nodeA.Cell, costFn);
                     if (legSteps == null)
                     {
-                        ClearFootprint(grid, chest, targetPos);
+                        grid.Clear(chest, targetPos.X, targetPos.Y);
                         continue;
                     }
 
@@ -1061,7 +1076,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// one does a short fallback door place, so the connection is never lost. Attaches away from
         /// the spine start so the door tends toward the middle/end. Returns the door anchor, or null.
         /// </summary>
-        private static Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand)
+        private Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             int parentLimit = System.Math.Min(2, paths.Count);
             if (parentLimit == 0) return null;
@@ -1075,7 +1090,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // lean horizontal; only a true North/South fork leans into the vertical headroom.
             bool favorHorizontal = delta.X != 0;
 
-            GridRoom DoorCell() => ActiveContent.CreateDoor(true);
+            GridRoom DoorCell() => _content.CreateDoor(true);
 
             const int ForkStartMargin = 6;   // keep misc doors away from the entrance
 
@@ -1106,20 +1121,20 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 Point shaftPos = new Point(c, r + dy);
                 Point b0 = new Point(c, r + 2 * dy);
 
-                var shaft = ActiveContent.CreateVerticalConnector(false);
-                var landing = ActiveContent.CreateFiller(false);
+                var shaft = _content.CreateVerticalConnector(false);
+                var landing = _content.CreateFiller(false);
                 grid.Place(shaft, shaftPos.X, shaftPos.Y, grid.NextGroupId());
                 grid.Place(landing, b0.X, b0.Y, grid.NextGroupId());
                 var prefix = new List<PathStep> { new PathStep(shaft, shaftPos), new PathStep(landing, b0) };
 
                 for (int attempt = 0; attempt < ForkSpineAttempts; attempt++)
                 {
-                    Point? doorAnchor = TryHeadroomSpine(grid, b0, landing, dx, dy, favorHorizontal, DoorCell, costFn, borderBlocked, gridCols, gridRows, rand, prefix, paths);
+                    Point? doorAnchor = TryHeadroomSpine(grid, b0, landing, dx, dy, favorHorizontal, DoorCell, costFn, gridCols, gridRows, rand, prefix, paths);
                     if (doorAnchor.HasValue) return doorAnchor;
                 }
 
-                ClearFootprint(grid, landing, b0);
-                ClearFootprint(grid, shaft, shaftPos);
+                grid.Clear(landing, b0.X, b0.Y);
+                grid.Clear(shaft, shaftPos.X, shaftPos.Y);
             }
 
             // Last resort: a short door beside the landing so the connection is never lost. Rare,
@@ -1139,15 +1154,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     || DoorWithinDistance(grid, fb, MinExitDoorSpacing))
                     continue;
 
-                var shaft = ActiveContent.CreateVerticalConnector(false);
-                var landing = ActiveContent.CreateFiller(false);
+                var shaft = _content.CreateVerticalConnector(false);
+                var landing = _content.CreateFiller(false);
                 var fbDoor = DoorCell();
                 grid.Place(shaft, shaftPos.X, shaftPos.Y, grid.NextGroupId());
                 grid.Place(landing, b0.X, b0.Y, grid.NextGroupId());
                 grid.Place(fbDoor, fb.X, fb.Y, grid.NextGroupId());
                 var steps = new List<PathStep> { new PathStep(shaft, shaftPos), new PathStep(landing, b0), new PathStep(fbDoor, fb) };
                 paths.Add(new DungeonPath(id: paths.Count + 1, role: PathRole.DeadEndBranch, parent: paths[0], steps: steps, combatAnchor: null, placeholderAnchor: fb));
-                Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: {dir} fork fell back to a short exit (no sub-spine fit).");
+                _stats.ForkStubs++;
+                LogWarn($"OvermorrowDungeon: {dir} fork fell back to a short exit (no sub-spine fit).");
                 return fb;
             }
             return null;
@@ -1176,9 +1192,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <see cref="MinForkSpan"/> so the result is never a stubby exit. Returns the door anchor, or
         /// null if nothing routed.
         /// </summary>
-        private static Point? TryHeadroomSpine(DungeonGrid grid, Point b0, GridRoom startCell, int dx, int dy, bool favorHorizontal, Func<GridRoom> doorFactory, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand, List<PathStep> prefix, List<DungeonPath> paths)
+        private Point? TryHeadroomSpine(DungeonGrid grid, Point b0, GridRoom startCell, int dx, int dy, bool favorHorizontal, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<PathStep> prefix, List<DungeonPath> paths)
         {
-            var factories = new List<Func<GridRoom>>(RequiredRooms ?? new List<Func<GridRoom>>());
+            var factories = new List<Func<GridRoom>>(_requiredRooms);
             ShuffleInPlace(factories, rand);
             int featureCount = System.Math.Min(factories.Count, ForkFeatureCount);
 
@@ -1189,14 +1205,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             for (int f = 0; f < featureCount; f++)
             {
-                if (!TryLinkForkNode(grid, factories[f], dx, dy, favorHorizontal, costFn, borderBlocked, gridCols, gridRows, rand, placed, steps, ref prevAnchor, ref prevCell))
+                if (!TryLinkForkNode(grid, factories[f], dx, dy, favorHorizontal, costFn, gridCols, gridRows, rand, placed, steps, ref prevAnchor, ref prevCell))
                 {
                     RollbackChain(grid, placed);
                     return null;
                 }
             }
 
-            Point? doorAnchor = TryLinkForkDoor(grid, prevAnchor, prevCell, dx, dy, favorHorizontal, doorFactory, costFn, borderBlocked, gridCols, gridRows, rand, placed, steps);
+            Point? doorAnchor = TryLinkForkDoor(grid, prevAnchor, prevCell, dx, dy, favorHorizontal, doorFactory, costFn, gridCols, gridRows, rand, placed, steps);
             if (!doorAnchor.HasValue)
             {
                 RollbackChain(grid, placed);
@@ -1221,7 +1237,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// room and corridor are committed, appended to <paramref name="placed"/>/<paramref name="steps"/>,
         /// and the chain end advances. Returns false (grid left clean for this node) if nothing fit.
         /// </summary>
-        private static bool TryLinkForkNode(DungeonGrid grid, Func<GridRoom> factory, int dx, int dy, bool favorHorizontal, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps, ref Point prevAnchor, ref GridRoom prevCell)
+        private bool TryLinkForkNode(DungeonGrid grid, Func<GridRoom> factory, int dx, int dy, bool favorHorizontal, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps, ref Point prevAnchor, ref GridRoom prevCell)
         {
             var proto = factory();
             proto.IsFeature = true;
@@ -1245,10 +1261,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 node.IsFeature = true;
                 grid.Place(node, pos.X, pos.Y, grid.NextGroupId());
 
-                var leg = GridAStar.FindPath(grid, prevAnchor, pos, prevCell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun, maxExpansions: ForkLegMaxExpansions);
+                var leg = _search.FindPath(prevAnchor, pos, prevCell, costFn, maxExpansions: ForkLegMaxExpansions);
                 if (leg == null)
                 {
-                    ClearFootprint(grid, node, pos);
+                    grid.Clear(node, pos.X, pos.Y);
                     continue;
                 }
                 foreach (var s in leg)
@@ -1271,7 +1287,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// final corridor to it. Committed cells are appended to <paramref name="placed"/>/<paramref name="steps"/>.
         /// Returns the door anchor, or null (grid left clean for this attempt) if nothing fit.
         /// </summary>
-        private static Point? TryLinkForkDoor(DungeonGrid grid, Point prevAnchor, GridRoom prevCell, int dx, int dy, bool favorHorizontal, Func<GridRoom> doorFactory, EdgeCost costFn, HashSet<Point> borderBlocked, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps)
+        private Point? TryLinkForkDoor(DungeonGrid grid, Point prevAnchor, GridRoom prevCell, int dx, int dy, bool favorHorizontal, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps)
         {
             var (colMin, colSpan, _, _) = ForkReach(favorHorizontal);
 
@@ -1293,10 +1309,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 var door = doorFactory();
                 grid.Place(door, pos.X, pos.Y, grid.NextGroupId());
 
-                var leg = GridAStar.FindPath(grid, prevAnchor, pos, prevCell, costFn, blocked: borderBlocked, streakLimits: StreakLimits, minStreakLimits: MinStreakLimits, maxVerticalRun: MaxVerticalRun, maxExpansions: ForkLegMaxExpansions);
+                var leg = _search.FindPath(prevAnchor, pos, prevCell, costFn, maxExpansions: ForkLegMaxExpansions);
                 if (leg == null)
                 {
-                    ClearFootprint(grid, door, pos);
+                    grid.Clear(door, pos.X, pos.Y);
                     continue;
                 }
                 foreach (var s in leg)
@@ -1315,7 +1331,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static void RollbackChain(DungeonGrid grid, List<(GridRoom cell, Point anchor)> placed)
         {
             for (int i = placed.Count - 1; i >= 0; i--)
-                ClearFootprint(grid, placed[i].cell, placed[i].anchor);
+                grid.Clear(placed[i].cell, placed[i].anchor.X, placed[i].anchor.Y);
         }
 
         private static bool IsEmptyCell(DungeonGrid grid, int x, int y)
@@ -1337,21 +1353,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static DoorPlacement MakeDoorPlacement(DungeonGrid grid, Point doorAnchor) =>
             new DoorPlacement(CellCenterTile(grid, doorAnchor));
 
-        /// <summary>True if any door anchor sits within <paramref name="minCells"/> cells of <paramref name="candidate"/>.</summary>
+        /// <summary>
+        /// True if any door anchor sits within <paramref name="minCells"/> cells of <paramref name="candidate"/>.
+        /// </summary>
         private static bool DoorWithinDistance(DungeonGrid grid, Point candidate, int minCells)
         {
-            for (int c = 0; c < grid.Cols; c++)
-            {
-                for (int r = 0; r < grid.Rows; r++)
-                {
-                    var s = grid.GetSlot(c, r);
-                    if (s == null || s.IsEmpty) continue;
-                    if (s.Room.Type != RoomType.Door) continue;
-                    if (s.SubCol != 0 || s.SubRow != 0) continue;
-                    if (System.Math.Abs(c - candidate.X) + System.Math.Abs(r - candidate.Y) < minCells)
-                        return true;
-                }
-            }
+            foreach (var door in grid.DoorAnchors)
+                if (System.Math.Abs(door.X - candidate.X) + System.Math.Abs(door.Y - candidate.Y) < minCells)
+                    return true;
             return false;
         }
 
@@ -1397,23 +1406,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return true;
         }
 
-        /// <summary>Clears every sub-cell of <paramref name="room"/>'s footprint at <paramref name="anchor"/>.</summary>
-        private static void ClearFootprint(DungeonGrid grid, GridRoom room, Point anchor)
-        {
-            for (int sc = 0; sc < room.CellWidth; sc++)
-            {
-                for (int sr = 0; sr < room.CellHeight; sr++)
-                {
-                    var s = grid.GetSlot(anchor.X + sc, anchor.Y + sr);
-                    if (s == null) continue;
-                    s.Room = null;
-                    s.SubCol = 0;
-                    s.SubRow = 0;
-                    s.GroupId = 0;
-                }
-            }
-        }
-
         /// <summary>Fisher-Yates in-place shuffle.</summary>
         private static void ShuffleInPlace<T>(List<T> list, Random rand)
         {
@@ -1422,22 +1414,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 int j = rand.Next(i + 1);
                 (list[i], list[j]) = (list[j], list[i]);
             }
-        }
-
-        /// <summary>Counts CombatRoom anchors on the grid (sub-cells excluded).</summary>
-        private static int CountCombatRooms(DungeonGrid grid)
-        {
-            int count = 0;
-            for (int c = 0; c < grid.Cols; c++)
-            {
-                for (int r = 0; r < grid.Rows; r++)
-                {
-                    var s = grid.GetSlot(c, r);
-                    if (s == null || s.IsEmpty) continue;
-                    if (s.Room.Type == RoomType.Combat && s.SubCol == 0 && s.SubRow == 0) count++;
-                }
-            }
-            return count;
         }
 
         /// <summary>Blocks the EdgeBorder ring so A* never places cells there.</summary>
@@ -1540,19 +1516,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     }
                 }
             }
-        }
-
-        /// <summary>True if any ShaftCell sits in this column.</summary>
-        private static bool ColumnContainsShaft(DungeonGrid grid, int col)
-        {
-            if (col < 0 || col >= grid.Cols) return false;
-            for (int row = 0; row < grid.Rows; row++)
-            {
-                var slot = grid.GetSlot(col, row);
-                if (slot != null && !slot.IsEmpty && slot.Room.Type == RoomType.VerticalConnector)
-                    return true;
-            }
-            return false;
         }
 
     }

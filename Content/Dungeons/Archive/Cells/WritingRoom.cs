@@ -70,42 +70,14 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 
         /// <summary>
         /// Cap total writing rooms, enforce minimum spacing between them,
-        /// and keep them away from doors. Counts unique room instances
-        /// across the committed grid AND in-progress placements.
+        /// and keep them away from doors. Counts placements on the committed
+        /// grid and on the searching path.
         /// </summary>
-        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, Func<int, int, GridRoom> pendingLookup = null)
+        public override bool IsValidPlacement(DungeonGrid grid, Point anchor, PendingPlacements pending = null)
         {
-            int radius = Math.Max(MinSpacingBetweenWritingRooms, MinDistanceFromDoor);
-            int cMin = Math.Max(0, anchor.X - radius);
-            int cMax = Math.Min(grid.Cols - 1, anchor.X + radius);
-            int rMin = Math.Max(0, anchor.Y - radius);
-            int rMax = Math.Min(grid.Rows - 1, anchor.Y + radius);
-
-            for (int c = cMin; c <= cMax; c++)
-            {
-                for (int r = rMin; r <= rMax; r++)
-                {
-                    var room = GetEffectiveRoomAt(grid, pendingLookup, c, r);
-                    if (room == null) continue;
-                    int dist = Math.Max(Math.Abs(c - anchor.X), Math.Abs(r - anchor.Y));
-                    if (room is WritingRoom && dist < MinSpacingBetweenWritingRooms) return false;
-                    if (room is DoorRoom && dist < MinDistanceFromDoor) return false;
-                }
-            }
-
-            // Lounge count cap: cheap grid-only pass.
-            var seen = new HashSet<GridRoom>();
-            int count = 0;
-            for (int c = 0; c < grid.Cols; c++)
-            {
-                for (int r = 0; r < grid.Rows; r++)
-                {
-                    var slot = grid.GetSlot(c, r);
-                    if (slot == null || slot.IsEmpty) continue;
-                    if (slot.Room is WritingRoom && seen.Add(slot.Room)) count++;
-                }
-            }
-            return count < MaxInstancesPerDungeon;
+            if (AnyCellWithin(grid, pending, typeof(WritingRoom), anchor, MinSpacingBetweenWritingRooms)) return false;
+            if (AnyCellWithin(grid, pending, typeof(DoorRoom), anchor, MinDistanceFromDoor)) return false;
+            return grid.CountPlacements(typeof(WritingRoom)) + (pending?.Count(typeof(WritingRoom)) ?? 0) < MaxInstancesPerDungeon;
         }
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "WritingRoom.aseprite";

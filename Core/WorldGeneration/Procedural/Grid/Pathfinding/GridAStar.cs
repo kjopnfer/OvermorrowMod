@@ -1,337 +1,295 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 {
     /// <summary>
     /// A* over grid cells with project-specific extensions:
     /// multi-cell footprints (stairs span multiple squares and must not collide
-    /// with the grid, blocked zones, or earlier placements in the same path);
-    /// waypoint segmentation (start → wp1 → ... → goal, with the previous cell
-    /// and streak counter carrying across segment boundaries); and occupied-goal
-    /// arrival, where the goal already holds a pre-placed cell (e.g. a door)
-    /// and the path must physically dock against its facing exit.
+    /// with the grid, blocked zones, or earlier placements in the same path)
+    /// and occupied-goal arrival, where the goal already holds a pre-placed cell
+    /// (e.g. a door) and the path must physically dock against its facing exit.
+    /// One instance serves every search on one grid and reuses its buffers between searches.
     /// </summary>
-    public static class GridAStar
+    public sealed class GridAStar
     {
-        private const int MaxExpansionsPerSegment = 3000;
+        public const int DefaultMaxExpansions = 3000;
 
-        /// <summary>Plans a path from start to goal through optional waypoints. Returns null if none exists.</summary>
-        public static List<PathStep> FindPath(
-            DungeonGrid grid,
-            Point start,
-            Point goal,
-            GridRoom startCell,
-            EdgeCost edgeCost,
-            IReadOnlyList<Point> waypoints = null,
-            HashSet<Point> blocked = null,
-            IReadOnlyDictionary<Type, int> streakLimits = null,
-            IReadOnlyDictionary<Type, int> minStreakLimits = null,
-            HashSet<Type> waypointAcceptableTypes = null,
-            int maxVerticalRun = int.MaxValue,
-            int shaftRowWindow = int.MaxValue,
-            int maxExpansions = MaxExpansionsPerSegment)
+        private static readonly (Direction side, int dx, int dy, Direction opposite)[] Sides =
         {
-            if (edgeCost == null) throw new ArgumentNullException(nameof(edgeCost));
-            if (startCell == null) throw new ArgumentNullException(nameof(startCell));
+            (Direction.Top, 0, -1, Direction.Bottom),
+            (Direction.Bottom, 0, 1, Direction.Top),
+            (Direction.Left, -1, 0, Direction.Right),
+            (Direction.Right, 1, 0, Direction.Left),
+        };
 
-            blocked ??= new HashSet<Point>();
-            streakLimits ??= new Dictionary<Type, int>();
-            minStreakLimits ??= new Dictionary<Type, int>();
+        private static readonly (int dx, int dy)[] Neighbors8 = { (1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1) };
 
-            // Stops: start, waypoints in order, goal.
-            var stops = new List<Point> { start };
-            if (waypoints != null) stops.AddRange(waypoints);
-            stops.Add(goal);
+        private readonly DungeonGrid _grid;
+        private readonly bool[] _blocked;
+        private readonly IReadOnlyDictionary<Type, int> _streakLimits;
+        private readonly IReadOnlyDictionary<Type, int> _minStreakLimits;
+        private readonly int _maxVerticalRun;
+        private readonly bool _validateReachability;
+        private readonly PlanStats _stats;
+        private readonly PendingPlacements _pending;
+        private readonly List<Point> _pathShafts = new();
 
-            // Plan one segment at a time. Previous cell and streak carry across
-            // boundaries so streak caps hold and the path stays connected.
-            var fullPath = new List<PathStep>();
-            GridRoom prevForSegment = startCell;
-            Point segmentStart = start;
-            int startStreak = 1;
+        // A node's parent, best cost and placed cell are overwritten whenever a cheaper route to it is found,
+        // so walking parents always follows the current best chain.
+        private readonly Dictionary<Node, int> _nodeIds = new();
+        private readonly List<Node> _nodes = new();
+        private readonly List<double> _bestCost = new();
+        private readonly List<int> _parent = new();
+        private readonly List<GridRoom> _placedCell = new();
+        private readonly List<Point> _placedAnchor = new();
+        private readonly PriorityQueue<int, double> _toExplore = new();
 
-            for (int i = 1; i < stops.Count; i++)
+        private readonly int[] _floodMark;
+        private readonly int[] _floodQueue;
+        private readonly int[] _passableMark;
+        private readonly bool[] _passable;
+        private int _floodId;
+
+        private Point _start;
+        private Point _goal;
+        private GridRoom _startCell;
+        private int _startWidth;
+        private int _startHeight;
+        private int _goalWidth;
+        private int _goalHeight;
+        private bool _goalOccupied;
+
+        /// <summary>
+        /// The generation phase the next searches are counted under.
+        /// </summary>
+        public SearchPhase Phase { get; set; }
+
+        public GridAStar(DungeonGrid grid, HashSet<Point> blocked, IReadOnlyDictionary<Type, int> streakLimits, IReadOnlyDictionary<Type, int> minStreakLimits, int maxVerticalRun, bool validateReachability, PlanStats stats)
+        {
+            _grid = grid;
+            _streakLimits = streakLimits;
+            _minStreakLimits = minStreakLimits;
+            _maxVerticalRun = maxVerticalRun;
+            _validateReachability = validateReachability;
+            _stats = stats;
+            _pending = new PendingPlacements(grid.Cols, grid.Rows);
+            _floodMark = new int[grid.Cols * grid.Rows];
+            _floodQueue = new int[grid.Cols * grid.Rows];
+            _passableMark = new int[grid.Cols * grid.Rows];
+            _passable = new bool[grid.Cols * grid.Rows];
+
+            _blocked = new bool[grid.Cols * grid.Rows];
+            foreach (var p in blocked)
+                _blocked[Index(p.X, p.Y)] = true;
+        }
+
+        /// <summary>
+        /// Plans a path from start to goal.
+        /// </summary>
+        /// <returns>The placed steps in order, or null if the goal is unreachable or the expansion budget runs out.</returns>
+        public List<PathStep> FindPath(Point start, Point goal, GridRoom startCell, EdgeCost edgeCost, int maxExpansions = DefaultMaxExpansions)
+        {
+            long began = Stopwatch.GetTimestamp();
+            var phase = _stats.Searches[(int)Phase];
+            phase.Calls++;
+
+            _start = start;
+            _goal = goal;
+            _startCell = startCell;
+            _startWidth = startCell.CellWidth;
+            _startHeight = startCell.CellHeight;
+            var goalSlot = _grid.GetSlot(goal.X, goal.Y);
+            _goalOccupied = goalSlot != null && !goalSlot.IsEmpty;
+            _goalWidth = _goalOccupied ? goalSlot.Room.CellWidth : 1;
+            _goalHeight = _goalOccupied ? goalSlot.Room.CellHeight : 1;
+
+            List<PathStep> path;
+            if (!GoalReachable())
             {
-                Point segmentGoal = stops[i];
-                bool isFinalSegment = (i == stops.Count - 1);
-
-                var segmentSteps = FindSegment(
-                    grid, segmentStart, segmentGoal, prevForSegment, startStreak,
-                    edgeCost, blocked, streakLimits, minStreakLimits, isFinalSegment,
-                    waypointAcceptableTypes, maxVerticalRun, shaftRowWindow, maxExpansions, fullPath);
-
-                if (segmentSteps == null) return null;
-
-                fullPath.AddRange(segmentSteps);
-
-                if (segmentSteps.Count > 0)
+                phase.Rejected++;
+                path = null;
+                if (_validateReachability)
                 {
-                    // Streak must be computed BEFORE prevForSegment is reassigned.
-                    startStreak = ComputeFinalStreak(segmentSteps, startStreak, prevForSegment);
-                    prevForSegment = segmentSteps[segmentSteps.Count - 1].Cell;
+                    path = Search(edgeCost, maxExpansions, out _, out _);
+                    if (path != null) phase.RejectedSolvable++;
+                }
+            }
+            else
+            {
+                path = Search(edgeCost, maxExpansions, out int expansions, out bool budgetSpent);
+                phase.Expansions += expansions;
+                if (path != null)
+                {
+                    phase.SuccessExpansions += expansions;
+                    _stats.Successes.Add(new SearchSample(Phase, Math.Abs(start.X - goal.X) + Math.Abs(start.Y - goal.Y), expansions));
                 }
                 else
                 {
-                    // Empty segment: arrived at a pre-placed waypoint. Continue from inside it.
-                    var goalSlot = grid.GetSlot(segmentGoal.X, segmentGoal.Y);
-                    if (goalSlot != null && !goalSlot.IsEmpty)
-                    {
-                        prevForSegment = goalSlot.Room;
-                        startStreak = 1;
-                    }
+                    phase.Failures++;
+                    if (budgetSpent) phase.BudgetSpentFailures++;
                 }
-
-                segmentStart = segmentGoal;
             }
-
-            return fullPath;
+            phase.Ticks += Stopwatch.GetTimestamp() - began;
+            return path;
         }
 
-        /// <summary>Replays a segment to find the trailing streak count, used to seed the next segment.</summary>
-        private static int ComputeFinalStreak(List<PathStep> steps, int startStreak, GridRoom startCell)
+        private List<PathStep> Search(EdgeCost edgeCost, int maxExpansions, out int expansions, out bool budgetSpent)
         {
-            int streak = startStreak;
-            Type prevType = startCell.GetType();
-            foreach (var step in steps)
+            _nodeIds.Clear();
+            _nodes.Clear();
+            _bestCost.Clear();
+            _parent.Clear();
+            _placedCell.Clear();
+            _placedAnchor.Clear();
+            _toExplore.Clear();
+
+            int startId = AddNode(new Node(_start, _startCell.GetType(), 1, 0));
+            _bestCost[startId] = 0.0;
+            _toExplore.Enqueue(startId, Heuristic(_start, _goal));
+
+            expansions = 0;
+            budgetSpent = false;
+            int budget = 0;
+            while (_toExplore.Count > 0 && budget++ < maxExpansions)
             {
-                Type curType = step.Cell.GetType();
-                streak = (curType == prevType) ? streak + 1 : 1;
-                prevType = curType;
-            }
-            return streak;
-        }
+                expansions++;
+                int currentId = _toExplore.Dequeue();
+                var current = _nodes[currentId];
 
-        // Plans a single segment between two stops.
-        private static List<PathStep> FindSegment(
-            DungeonGrid grid,
-            Point start,
-            Point goal,
-            GridRoom startCell,
-            int startStreak,
-            EdgeCost edgeCost,
-            HashSet<Point> blocked,
-            IReadOnlyDictionary<Type, int> streakLimits,
-            IReadOnlyDictionary<Type, int> minStreakLimits,
-            bool isFinalSegment,
-            HashSet<Type> waypointAcceptableTypes,
-            int maxVerticalRun,
-            int shaftRowWindow,
-            int maxExpansions,
-            List<PathStep> priorSegmentSteps)
-        {
-            var startNode = new Node(start, startCell.GetType(), startStreak, 0);
-            var bestKnownCost = new Dictionary<Node, double> { [startNode] = 0.0 };
-            var cameFrom = new Dictionary<Node, EdgeRecord>();
-            var toExplore = new PriorityQueue<Node, double>();
-            toExplore.Enqueue(startNode, Heuristic(start, goal));
-
-            int expansions = 0;
-            while (toExplore.Count > 0 && expansions++ < maxExpansions)
-            {
-                var current = toExplore.Dequeue();
-
-                // Goal reached by placing a cell on it (empty goal/waypoint).
-                if (current.Position == goal)
+                // Goal reached by placing a cell on it (empty goal).
+                if (current.Position == _goal)
                 {
-                    // Intermediate waypoints must end on a type the next segment can continue from.
-                    if (!isFinalSegment
-                        && waypointAcceptableTypes != null
-                        && !waypointAcceptableTypes.Contains(current.PrevType))
-                    {
+                    // Cannot end the path on a type that has not satisfied its minimum chain length.
+                    if (_minStreakLimits.TryGetValue(current.PrevType, out int minS) && current.Streak < minS)
                         continue;
-                    }
-                    // Min-streak: cannot end the path on a type that has not
-                    // satisfied its minimum chain length.
-                    if (minStreakLimits.TryGetValue(current.PrevType, out int minS)
-                        && current.Streak < minS)
-                        continue;
-                    return ReconstructPath(current, cameFrom);
+                    return ReconstructPath(currentId);
                 }
 
-                GridRoom prevCell = current.Equals(startNode)
-                    ? startCell
-                    : cameFrom[current].Cell;
+                GridRoom prevCell = currentId == startId ? _startCell : _placedCell[currentId];
 
                 // Arrival at an already-occupied goal (e.g. pre-placed door or required room).
                 // Valid if any of prev's exits steps onto the goal and the goal accepts the arriving type.
-                {
-                    foreach (var exit in prevCell.Exits)
-                    {
-                        var landing = new Point(current.Position.X + exit.CursorDelta.X,
-                                                current.Position.Y + exit.CursorDelta.Y);
-                        if (landing != goal) continue;
-                        if (!TargetAcceptsArrivalFromExit(grid, goal, exit, current.PrevType)) continue;
-
-                        // Min-streak applies when arriving at an occupied goal too.
-                        if (minStreakLimits.TryGetValue(current.PrevType, out int minA)
-                            && current.Streak < minA)
-                            continue;
-
-                        if (!isFinalSegment && waypointAcceptableTypes != null)
-                        {
-                            var goalSlot = grid.GetSlot(goal.X, goal.Y);
-                            var goalType = goalSlot?.Room?.GetType();
-                            if (goalType == null || !waypointAcceptableTypes.Contains(goalType))
-                                continue;
-                        }
-
-                        return ReconstructPath(current, cameFrom);
-                    }
-                }
-
-                // Hoisted once per dequeue: every prior chain-walk lookup
-                // (FootprintIsAvailable, AntiFusionOk, IsValidPlacement,
-                // OpenSidesMatch, PathHasShaftInColumn) was O(N) in the
-                // current path length. Building a flat dict here makes them
-                // all O(1) for the rest of this expansion.
-                var pathOccupied = BuildPathOccupied(current, cameFrom, priorSegmentSteps, out var pathShafts);
-                Func<int, int, GridRoom> pathCellLookup = (x, y) =>
-                    pathOccupied.TryGetValue(new Point(x, y), out var p) ? p.cell : null;
-                Func<int, int, (GridRoom cell, Point anchor)?> pathCellWithAnchorLookup = (x, y) =>
-                    pathOccupied.TryGetValue(new Point(x, y), out var p) ? ((GridRoom, Point)?)(p.cell, p.anchor) : null;
-
                 foreach (var exit in prevCell.Exits)
                 {
-                    var candNext = new Point(current.Position.X + exit.CursorDelta.X,
-                                             current.Position.Y + exit.CursorDelta.Y);
+                    var landing = new Point(current.Position.X + exit.CursorDelta.X, current.Position.Y + exit.CursorDelta.Y);
+                    if (landing != _goal) continue;
+                    if (!TargetAcceptsArrivalFromExit(exit, current.PrevType)) continue;
+                    if (_minStreakLimits.TryGetValue(current.PrevType, out int minA) && current.Streak < minA) continue;
+                    return ReconstructPath(currentId);
+                }
+
+                StampPath(currentId);
+                double currentCost = _bestCost[currentId];
+                bool prevStreakUnmet = _minStreakLimits.TryGetValue(current.PrevType, out int minPrev) && current.Streak < minPrev;
+
+                // Every check below is a pure filter, ordered cheapest first.
+                foreach (var exit in prevCell.Exits)
+                {
+                    // Vertical run: counts consecutive vertical moves; horizontal resets to 0.
+                    int newVerticalRun = (exit.CursorDelta.Y != 0 && exit.CursorDelta.X == 0) ? current.VerticalRun + 1 : 0;
+                    if (newVerticalRun > _maxVerticalRun) continue;
+
+                    var candNext = new Point(current.Position.X + exit.CursorDelta.X, current.Position.Y + exit.CursorDelta.Y);
+                    bool isCardinalSource = (exit.CursorDelta.X == 0) ^ (exit.CursorDelta.Y == 0);
 
                     foreach (var candidate in exit.AllowedNext)
                     {
-                        var anchor = new Point(
-                            candNext.X + candidate.AnchorOffsetFromCursor.X,
-                            candNext.Y + candidate.AnchorOffsetFromCursor.Y);
-
-                        if (!FootprintIsAvailable(grid, candidate, anchor, blocked, pathOccupied))
-                            continue;
-                        if (!candidate.IsValidPlacement(grid, anchor, pathCellLookup))
-                            continue;
-
-                        // Anti-fusion: a candidate's footprint must not border
-                        // a foreign cell (one that's neither in this A* call's
-                        // path nor part of the segment's start/goal subgoal).
-                        // Without this, two A* calls placing cells side-by-side
-                        // produce a connected hallway via shared open sides,
-                        // which is the mechanism behind every accidental loop
-                        // we've seen.
-                        if (!AntiFusionOk(grid, candidate, anchor, start, startCell, goal, pathOccupied))
-                            continue;
-
-                        // Cardinal entries: candidate must expose an exit on the entry face.
-                        // Compare signs, not deltas, so a 1-wide cell can dock against a 2-wide source.
-                        // Skipped for diagonal (stair) sources and for candidates with no cardinal exits.
-                        bool isCardinalSource = (exit.CursorDelta.X == 0) ^ (exit.CursorDelta.Y == 0);
-                        if (isCardinalSource)
-                        {
-                            int srcSignX = System.Math.Sign(exit.CursorDelta.X);
-                            int srcSignY = System.Math.Sign(exit.CursorDelta.Y);
-                            bool candHasCardinalExit = false;
-                            bool candHasMatchingExit = false;
-                            foreach (var ce in candidate.Exits)
-                            {
-                                bool ceCardinal = (ce.CursorDelta.X == 0) ^ (ce.CursorDelta.Y == 0);
-                                if (ceCardinal) candHasCardinalExit = true;
-                                int ceSignX = System.Math.Sign(ce.CursorDelta.X);
-                                int ceSignY = System.Math.Sign(ce.CursorDelta.Y);
-                                if (ceCardinal && ceSignX == -srcSignX && ceSignY == -srcSignY)
-                                { candHasMatchingExit = true; break; }
-                            }
-                            if (candHasCardinalExit && !candHasMatchingExit) continue;
-                        }
-
-                        // Shared borders must agree: both open or both closed. Catches intra- and cross-path collisions.
-                        if (!OpenSidesMatch(candidate, anchor, grid, pathCellWithAnchorLookup))
-                            continue;
-
-                        // Path-aware shaft adjacency: the cost function rejects
-                        // shafts adjacent to shafts in the committed grid, but a
-                        // single A* call's placements aren't committed until
-                        // FindPath returns. pathShafts mirrors the same info for
-                        // shafts placed earlier in this run. shaftRowWindow limits
-                        // the veto to nearby rows (int.MaxValue = whole column).
-                        if (candidate.Type == RoomType.VerticalConnector && PathShaftWithin(pathShafts, anchor, shaftRowWindow))
-                            continue;
-
                         // Streak: same type increments, different resets, exceed-limit skips.
+                        // Leaving a type before its minimum streak is satisfied is rejected.
                         var candType = candidate.GetType();
-                        int newStreak = (candType == current.PrevType) ? current.Streak + 1 : 1;
-                        if (streakLimits.TryGetValue(candType, out int maxStreak) && newStreak > maxStreak)
-                            continue;
+                        bool sameType = candType == current.PrevType;
+                        int newStreak = sameType ? current.Streak + 1 : 1;
+                        bool hasStreakLimit = _streakLimits.TryGetValue(candType, out int maxStreak);
+                        if (hasStreakLimit && newStreak > maxStreak) continue;
+                        if (!sameType && prevStreakUnmet) continue;
 
-                        // Grid-aware horizontal chain check: counts already-committed
-                        // same-type cells extending left and right of the anchor's row.
-                        // Catches the case where two separate paths each respect the
-                        // path-level streak but stitch their placements into one long
-                        // visual chain. Bounded walks with early exit so this stays
-                        // cheap (~10 array reads per candidate worst case).
-                        if (streakLimits.TryGetValue(candType, out int hMax))
-                        {
-                            int chain = 1;
-                            int x = anchor.X - 1;
-                            while (x >= 0 && chain <= hMax)
-                            {
-                                var s = grid.GetSlot(x, anchor.Y);
-                                if (s == null || s.IsEmpty) break;
-                                if (s.Room.GetType() != candType) break;
-                                chain++;
-                                x--;
-                            }
-                            x = anchor.X + candidate.CellWidth;
-                            while (x < grid.Cols && chain <= hMax)
-                            {
-                                var s = grid.GetSlot(x, anchor.Y);
-                                if (s == null || s.IsEmpty) break;
-                                if (s.Room.GetType() != candType) break;
-                                chain++;
-                                x++;
-                            }
-                            if (chain > hMax) continue;
-                        }
+                        var anchor = new Point(candNext.X + candidate.AnchorOffsetFromCursor.X, candNext.Y + candidate.AnchorOffsetFromCursor.Y);
+                        if (!FootprintIsAvailable(candidate, anchor)) continue;
 
-                        // Min-streak: leaving a type before its minimum is satisfied is rejected.
-                        if (candType != current.PrevType
-                            && minStreakLimits.TryGetValue(current.PrevType, out int minPrev)
-                            && current.Streak < minPrev)
-                            continue;
+                        // Committed same-type cells extending left and right of the anchor's row count toward
+                        // the streak too, so two paths can't stitch their placements into one long chain.
+                        if (hasStreakLimit && HorizontalChainLength(candType, anchor, candidate.CellWidth, maxStreak) > maxStreak) continue;
 
-                        // Vertical run: counts consecutive vertical moves; horizontal resets to 0.
-                        int newVerticalRun = (exit.CursorDelta.Y != 0 && exit.CursorDelta.X == 0)
-                            ? current.VerticalRun + 1
-                            : 0;
-                        if (newVerticalRun > maxVerticalRun) continue;
+                        // The cost function rejects shafts beside committed shafts; this covers shafts placed
+                        // earlier on the same path, which are not committed until the search returns.
+                        if (candidate.Type == RoomType.VerticalConnector && PathShaftInAdjacentColumn(anchor)) continue;
+
+                        if (isCardinalSource && !HasMatchingCardinalExit(candidate, exit.CursorDelta)) continue;
+
+                        if (!AntiFusionOk(candidate, anchor)) continue;
+                        if (!OpenSidesMatch(candidate, anchor)) continue;
+
+                        long validStart = Stopwatch.GetTimestamp();
+                        bool valid = candidate.IsValidPlacement(_grid, anchor, _pending);
+                        _stats.ValidPlacementTicks += Stopwatch.GetTimestamp() - validStart;
+                        if (!valid) continue;
 
                         double cost = edgeCost(anchor, candidate);
                         if (double.IsPositiveInfinity(cost)) continue;
 
                         var neighbor = new Node(candNext, candType, newStreak, newVerticalRun);
-                        double newCost = bestKnownCost[current] + cost;
+                        double newCost = currentCost + cost;
 
-                        if (bestKnownCost.TryGetValue(neighbor, out double existingCost) && newCost >= existingCost)
-                            continue;
+                        if (_nodeIds.TryGetValue(neighbor, out int neighborId))
+                        {
+                            if (newCost >= _bestCost[neighborId]) continue;
+                        }
+                        else
+                        {
+                            neighborId = AddNode(neighbor);
+                        }
 
-                        bestKnownCost[neighbor] = newCost;
-                        cameFrom[neighbor] = new EdgeRecord(current, candidate, anchor);
-                        toExplore.Enqueue(neighbor, newCost + Heuristic(candNext, goal));
+                        _bestCost[neighborId] = newCost;
+                        _parent[neighborId] = currentId;
+                        _placedCell[neighborId] = candidate;
+                        _placedAnchor[neighborId] = anchor;
+                        _toExplore.Enqueue(neighborId, newCost + Heuristic(candNext, _goal));
                     }
                 }
             }
 
+            budgetSpent = budget > maxExpansions;
             return null;
         }
 
-        /// <summary>Manhattan distance heuristic.</summary>
-        private static double Heuristic(Point from, Point to) =>
-            Math.Abs(from.X - to.X) + Math.Abs(from.Y - to.Y);
+        private int AddNode(Node node)
+        {
+            int id = _nodes.Count;
+            _nodeIds[node] = id;
+            _nodes.Add(node);
+            _bestCost.Add(double.PositiveInfinity);
+            _parent.Add(-1);
+            _placedCell.Add(null);
+            _placedAnchor.Add(default);
+            return id;
+        }
+
+        private static double Heuristic(Point from, Point to) => Math.Abs(from.X - to.X) + Math.Abs(from.Y - to.Y);
+
+        private int Index(int col, int row) => col * _grid.Rows + row;
 
         /// <summary>
-        /// True if the candidate fits: every square in-bounds, empty, not blocked,
-        /// and not overlapping any earlier placement in this path (matters for multi-cell pieces).
+        /// Loads the path that leads to node <paramref name="id"/> into the pending placements and collects its shafts.
         /// </summary>
-        private static bool FootprintIsAvailable(
-            DungeonGrid grid, GridRoom candidate, Point anchor,
-            HashSet<Point> blocked,
-            Dictionary<Point, (GridRoom cell, Point anchor)> pathOccupied)
+        private void StampPath(int id)
+        {
+            _pending.StartPath();
+            _pathShafts.Clear();
+            for (int n = id; _parent[n] >= 0; n = _parent[n])
+            {
+                var cell = _placedCell[n];
+                _pending.Add(cell, _placedAnchor[n]);
+                if (cell.Type == RoomType.VerticalConnector) _pathShafts.Add(_placedAnchor[n]);
+            }
+        }
+
+        /// <summary>
+        /// True if every square of the footprint is in-bounds, empty, not blocked, and not already on this path.
+        /// </summary>
+        private bool FootprintIsAvailable(GridRoom candidate, Point anchor)
         {
             for (int sc = 0; sc < candidate.CellWidth; sc++)
             {
@@ -339,117 +297,97 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 {
                     int x = anchor.X + sc;
                     int y = anchor.Y + sr;
-                    var slot = grid.GetSlot(x, y);
-
-                    if (slot == null) return false;
-                    if (!slot.IsEmpty) return false;
-                    var pt = new Point(x, y);
-                    if (blocked.Contains(pt)) return false;
-                    if (pathOccupied.ContainsKey(pt)) return false;
+                    var slot = _grid.GetSlot(x, y);
+                    if (slot == null || !slot.IsEmpty) return false;
+                    if (_blocked[Index(x, y)]) return false;
+                    if (_pending.Contains(x, y)) return false;
                 }
             }
             return true;
         }
 
         /// <summary>
-        /// Builds a per-sub-cell dictionary of the points occupied by the current
-        /// segment's in-progress path plus any prior-segment steps. Replaces
-        /// O(N) cameFrom chain walks inside the inner loop with O(1) lookups.
-        /// Also emits the anchors of ShaftCells placed in this path
-        /// (used by the path-aware shaft adjacency check).
+        /// True if the candidate exposes a cardinal exit on the face it is entered from, or has no cardinal exits.
+        /// Compares signs, not deltas, so a 1-wide cell can dock against a 2-wide source.
         /// </summary>
-        private static Dictionary<Point, (GridRoom cell, Point anchor)> BuildPathOccupied(
-            Node current, Dictionary<Node, EdgeRecord> cameFrom,
-            List<PathStep> priorSegmentSteps, out List<Point> pathShafts)
+        private static bool HasMatchingCardinalExit(GridRoom candidate, Point sourceDelta)
         {
-            var dict = new Dictionary<Point, (GridRoom, Point)>();
-            pathShafts = new List<Point>();
-
-            var n = current;
-            while (cameFrom.TryGetValue(n, out var rec))
+            int srcSignX = Math.Sign(sourceDelta.X);
+            int srcSignY = Math.Sign(sourceDelta.Y);
+            bool hasCardinalExit = false;
+            foreach (var ce in candidate.Exits)
             {
-                for (int sc = 0; sc < rec.Cell.CellWidth; sc++)
-                    for (int sr = 0; sr < rec.Cell.CellHeight; sr++)
-                        dict[new Point(rec.Anchor.X + sc, rec.Anchor.Y + sr)] = (rec.Cell, rec.Anchor);
-                if (rec.Cell.Type == RoomType.VerticalConnector) pathShafts.Add(rec.Anchor);
-                n = rec.Parent;
+                bool ceCardinal = (ce.CursorDelta.X == 0) ^ (ce.CursorDelta.Y == 0);
+                if (!ceCardinal) continue;
+                hasCardinalExit = true;
+                if (Math.Sign(ce.CursorDelta.X) == -srcSignX && Math.Sign(ce.CursorDelta.Y) == -srcSignY) return true;
             }
-            if (priorSegmentSteps != null)
-            {
-                for (int i = 0; i < priorSegmentSteps.Count; i++)
-                {
-                    var step = priorSegmentSteps[i];
-                    for (int sc = 0; sc < step.Cell.CellWidth; sc++)
-                        for (int sr = 0; sr < step.Cell.CellHeight; sr++)
-                            dict[new Point(step.Anchor.X + sc, step.Anchor.Y + sr)] = (step.Cell, step.Anchor);
-                    if (step.Cell.Type == RoomType.VerticalConnector) pathShafts.Add(step.Anchor);
-                }
-            }
-            return dict;
+            return !hasCardinalExit;
         }
 
-        /// <summary>
-        /// True if a shaft already placed in this path sits in an adjacent column
-        /// (col +/- 1) within <paramref name="rowWindow"/> rows of <paramref name="anchor"/>.
-        /// With rowWindow = int.MaxValue this is column-global (any row).
-        /// </summary>
-        private static bool PathShaftWithin(List<Point> pathShafts, Point anchor, int rowWindow)
+        private bool PathShaftInAdjacentColumn(Point anchor)
         {
-            foreach (var s in pathShafts)
-                if (Math.Abs(s.X - anchor.X) <= 1 && Math.Abs(s.Y - anchor.Y) <= rowWindow)
-                    return true;
+            foreach (var s in _pathShafts)
+                if (Math.Abs(s.X - anchor.X) <= 1) return true;
             return false;
         }
 
         /// <summary>
-        /// True if every external border of the candidate's footprint agrees with its neighbor:
-        /// both open or both closed. Empty neighbors and internal sub-cell edges are ignored.
+        /// Length of the run of committed <paramref name="type"/> cells on the anchor's row that the candidate would join,
+        /// counting the candidate as one. Stops counting once it exceeds <paramref name="limit"/>.
         /// </summary>
-        private static bool OpenSidesMatch(GridRoom candidate, Point anchor,
-                                           DungeonGrid grid,
-                                           Func<int, int, (GridRoom cell, Point anchor)?> pendingAnchorLookup)
+        private int HorizontalChainLength(Type type, Point anchor, int width, int limit)
         {
-            var dirs = new (Direction side, int dx, int dy, Direction opposite)[]
+            int chain = 1;
+            for (int x = anchor.X - 1; x >= 0 && chain <= limit; x--)
             {
-                (Direction.Top,    0, -1, Direction.Bottom),
-                (Direction.Bottom, 0,  1, Direction.Top),
-                (Direction.Left,  -1, 0, Direction.Right),
-                (Direction.Right,  1, 0, Direction.Left),
-            };
+                var s = _grid.GetSlot(x, anchor.Y);
+                if (s == null || s.IsEmpty || s.Room.GetType() != type) break;
+                chain++;
+            }
+            for (int x = anchor.X + width; x < _grid.Cols && chain <= limit; x++)
+            {
+                var s = _grid.GetSlot(x, anchor.Y);
+                if (s == null || s.IsEmpty || s.Room.GetType() != type) break;
+                chain++;
+            }
+            return chain;
+        }
 
+        /// <summary>
+        /// True if every external border of the candidate's footprint agrees with its neighbor, on this path or
+        /// committed: both open or both closed. Empty neighbors and internal sub-cell edges are ignored.
+        /// </summary>
+        private bool OpenSidesMatch(GridRoom candidate, Point anchor)
+        {
             for (int sc = 0; sc < candidate.CellWidth; sc++)
             {
                 for (int sr = 0; sr < candidate.CellHeight; sr++)
                 {
-                    foreach (var d in dirs)
+                    foreach (var d in Sides)
                     {
                         // Internal seams between sub-cells of the same candidate.
                         int neighborSubCol = sc + d.dx;
                         int neighborSubRow = sr + d.dy;
-                        if (neighborSubCol >= 0 && neighborSubCol < candidate.CellWidth
-                         && neighborSubRow >= 0 && neighborSubRow < candidate.CellHeight)
+                        if (neighborSubCol >= 0 && neighborSubCol < candidate.CellWidth && neighborSubRow >= 0 && neighborSubRow < candidate.CellHeight)
                             continue;
 
                         int gx = anchor.X + sc + d.dx;
                         int gy = anchor.Y + sr + d.dy;
 
                         // Pending placements first, then committed grid.
-                        GridRoom neighbor = null;
-                        int neighborSubX = 0, neighborSubY = 0;
-
-                        if (pendingAnchorLookup != null)
+                        GridRoom neighbor;
+                        int neighborSubX;
+                        int neighborSubY;
+                        if (_pending.TryGet(gx, gy, out var pendingCell, out var pendingAnchor))
                         {
-                            var pending = pendingAnchorLookup(gx, gy);
-                            if (pending.HasValue)
-                            {
-                                neighbor = pending.Value.cell;
-                                neighborSubX = gx - pending.Value.anchor.X;
-                                neighborSubY = gy - pending.Value.anchor.Y;
-                            }
+                            neighbor = pendingCell;
+                            neighborSubX = gx - pendingAnchor.X;
+                            neighborSubY = gy - pendingAnchor.Y;
                         }
-                        if (neighbor == null)
+                        else
                         {
-                            var slot = grid.GetSlot(gx, gy);
+                            var slot = _grid.GetSlot(gx, gy);
                             if (slot == null || slot.IsEmpty) continue;
                             neighbor = slot.Room;
                             neighborSubX = slot.SubCol;
@@ -458,30 +396,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
                         bool ourSide = candidate.IsOpenSide(sc, sr, d.side);
                         bool theirSide = neighbor.IsOpenSide(neighborSubX, neighborSubY, d.opposite);
-
                         if (ourSide != theirSide) return false;
+                        if (!ourSide) continue;
 
-                        // Mutual AllowedNeighbors check on top of geometry.
-                        // Asymmetric IsFeature exemption: when one side is a
-                        // planner-placed feature (door, anchor combat, etc.)
-                        // we skip the candidate's own whitelist so standard
-                        // rooms don't have to list every feature type, but
-                        // the feature's whitelist still gates what can dock
-                        // against it.
-                        if (ourSide)
+                        // Mutual AllowedNeighbors check on top of geometry. When one side is a planner-placed
+                        // feature, the other side's whitelist is skipped so standard rooms don't have to list
+                        // every feature type, but the feature's own whitelist still gates what can dock against it.
+                        if (!neighbor.IsFeature)
                         {
-                            if (!neighbor.IsFeature)
-                            {
-                                var weAccept = candidate.GetAcceptedNeighbors(sc, sr, d.side);
-                                if (weAccept == null || !weAccept.Contains(neighbor.GetType()))
-                                    return false;
-                            }
-                            if (!candidate.IsFeature)
-                            {
-                                var theyAccept = neighbor.GetAcceptedNeighbors(neighborSubX, neighborSubY, d.opposite);
-                                if (theyAccept == null || !theyAccept.Contains(candidate.GetType()))
-                                    return false;
-                            }
+                            var weAccept = candidate.GetAcceptedNeighbors(sc, sr, d.side);
+                            if (weAccept == null || !weAccept.Contains(neighbor.GetType()))
+                                return false;
+                        }
+                        if (!candidate.IsFeature)
+                        {
+                            var theyAccept = neighbor.GetAcceptedNeighbors(neighborSubX, neighborSubY, d.opposite);
+                            if (theyAccept == null || !theyAccept.Contains(candidate.GetType()))
+                                return false;
                         }
                     }
                 }
@@ -490,38 +421,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         }
 
         /// <summary>
-        /// Anti-fusion: rejects candidates whose footprint borders a foreign
-        /// cell (a cell that's not part of this segment's path and not the
-        /// segment's start or goal subgoal). Endpoint cells are exempt because
-        /// docking against them is the whole point. Without this check, two
-        /// A* segments placing cells side-by-side connect via shared open
-        /// sides into accidental loops. Cardinal neighbors only — diagonals
-        /// don't form connections through grid-cell borders.
+        /// Rejects candidates whose footprint borders a foreign cell: an occupied cell that is not on this path
+        /// and not inside the start or goal footprint. Two paths placed side by side would join through shared
+        /// open sides into a loop. Cardinal neighbors only, since diagonals don't connect through cell borders.
         /// </summary>
-        private static bool AntiFusionOk(
-            DungeonGrid grid,
-            GridRoom candidate, Point anchor,
-            Point start, GridRoom startCell,
-            Point goal,
-            Dictionary<Point, (GridRoom cell, Point anchor)> pathOccupied)
+        private bool AntiFusionOk(GridRoom candidate, Point anchor)
         {
             int candW = candidate.CellWidth;
             int candH = candidate.CellHeight;
-
-            // Footprint of the segment's start subgoal. If startCell is null,
-            // treat as 1x1 (door / arbitrary point).
-            int startW = startCell?.CellWidth ?? 1;
-            int startH = startCell?.CellHeight ?? 1;
-
-            // Footprint of the segment's goal subgoal. Look up the grid; if
-            // the goal hasn't been pre-placed (rare), treat as 1x1.
-            int goalW = 1, goalH = 1;
-            var goalSlot = grid.GetSlot(goal.X, goal.Y);
-            if (goalSlot != null && !goalSlot.IsEmpty)
-            {
-                goalW = goalSlot.Room.CellWidth;
-                goalH = goalSlot.Room.CellHeight;
-            }
 
             for (int sc = 0; sc < candW; sc++)
             {
@@ -530,33 +437,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     int ix = anchor.X + sc;
                     int iy = anchor.Y + sr;
 
-                    // Four cardinal neighbors of this footprint sub-cell.
-                    var neighbors = new (int x, int y)[]
+                    foreach (var d in Sides)
                     {
-                        (ix + 1, iy), (ix - 1, iy), (ix, iy + 1), (ix, iy - 1),
-                    };
-                    foreach (var (nx, ny) in neighbors)
-                    {
-                        // Inside the candidate's own footprint? Same room, skip.
-                        if (nx >= anchor.X && nx < anchor.X + candW
-                         && ny >= anchor.Y && ny < anchor.Y + candH) continue;
+                        int nx = ix + d.dx;
+                        int ny = iy + d.dy;
 
-                        // Inside the segment's start subgoal footprint? Allowed.
-                        if (nx >= start.X && nx < start.X + startW
-                         && ny >= start.Y && ny < start.Y + startH) continue;
+                        if (nx >= anchor.X && nx < anchor.X + candW && ny >= anchor.Y && ny < anchor.Y + candH) continue;
+                        if (InEndpointFootprint(nx, ny)) continue;
 
-                        // Inside the segment's goal subgoal footprint? Allowed.
-                        if (nx >= goal.X && nx < goal.X + goalW
-                         && ny >= goal.Y && ny < goal.Y + goalH) continue;
+                        var nSlot = _grid.GetSlot(nx, ny);
+                        if (nSlot == null || nSlot.IsEmpty) continue;
+                        if (_pending.Contains(nx, ny)) continue;
 
-                        var nSlot = grid.GetSlot(nx, ny);
-                        if (nSlot == null) continue;       // off-grid
-                        if (nSlot.IsEmpty) continue;       // empty cell, no fusion possible
-
-                        // In this segment's own in-progress path? Same A* run, OK.
-                        if (pathOccupied.ContainsKey(new Point(nx, ny))) continue;
-
-                        // Foreign occupied cell. Reject this candidate.
                         return false;
                     }
                 }
@@ -564,14 +456,97 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return true;
         }
 
-        /// <summary>True if the occupied goal accepts the walker's arriving cell type on its facing exit.</summary>
-        private static bool TargetAcceptsArrivalFromExit(DungeonGrid grid, Point goal, CellExit walkerExit, Type walkerType)
+        /// <summary>
+        /// True inside the start footprint (the start cell's size at the start point) or the goal footprint
+        /// (the occupying room's size at the goal point, or 1x1 for an empty goal).
+        /// </summary>
+        private bool InEndpointFootprint(int x, int y)
         {
-            var slot = grid.GetSlot(goal.X, goal.Y);
-            if (slot == null || slot.IsEmpty) return false;
+            if (x >= _start.X && x < _start.X + _startWidth && y >= _start.Y && y < _start.Y + _startHeight) return true;
+            return x >= _goal.X && x < _goal.X + _goalWidth && y >= _goal.Y && y < _goal.Y + _goalHeight;
+        }
+
+        /// <summary>
+        /// Flood fill over the cells any path could occupy: in-bounds, empty, not blocked, and with no occupied
+        /// cardinal neighbor outside the start and goal footprints. Every cell of every footprint A* can place
+        /// passes this filter, each footprint contains its cursor, and consecutive footprints touch, so a false
+        /// result means A* cannot reach the goal.
+        /// </summary>
+        private bool GoalReachable()
+        {
+            if (_start == _goal) return true;
+
+            _floodId++;
+            int head = 0;
+            int tail = 0;
+
+            foreach (var exit in _startCell.Exits)
+            {
+                int x = _start.X + exit.CursorDelta.X;
+                int y = _start.Y + exit.CursorDelta.Y;
+                if (_goalOccupied && x == _goal.X && y == _goal.Y) return true;
+                if (!Passable(x, y)) continue;
+                int i = Index(x, y);
+                if (_floodMark[i] == _floodId) continue;
+                _floodMark[i] = _floodId;
+                _floodQueue[tail++] = i;
+            }
+
+            while (head < tail)
+            {
+                int i = _floodQueue[head++];
+                int x = i / _grid.Rows;
+                int y = i % _grid.Rows;
+                if (_goalOccupied ? Math.Max(Math.Abs(x - _goal.X), Math.Abs(y - _goal.Y)) <= 1 : x == _goal.X && y == _goal.Y) return true;
+
+                foreach (var (dx, dy) in Neighbors8)
+                {
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    if (!Passable(nx, ny)) continue;
+                    int ni = Index(nx, ny);
+                    if (_floodMark[ni] == _floodId) continue;
+                    _floodMark[ni] = _floodId;
+                    _floodQueue[tail++] = ni;
+                }
+            }
+            return false;
+        }
+
+        private bool Passable(int x, int y)
+        {
+            if (x < 0 || x >= _grid.Cols || y < 0 || y >= _grid.Rows) return false;
+            int i = Index(x, y);
+            if (_passableMark[i] == _floodId) return _passable[i];
+            _passableMark[i] = _floodId;
+            _passable[i] = ComputePassable(x, y, i);
+            return _passable[i];
+        }
+
+        private bool ComputePassable(int x, int y, int index)
+        {
+            if (!_grid.GetSlot(x, y).IsEmpty || _blocked[index]) return false;
+            foreach (var d in Sides)
+            {
+                int nx = x + d.dx;
+                int ny = y + d.dy;
+                var n = _grid.GetSlot(nx, ny);
+                if (n == null || n.IsEmpty) continue;
+                if (InEndpointFootprint(nx, ny)) continue;
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// True if the occupied goal accepts the walker's arriving cell type on its facing exit.
+        /// </summary>
+        private bool TargetAcceptsArrivalFromExit(CellExit walkerExit, Type walkerType)
+        {
+            if (!_goalOccupied) return false;
 
             var oppositeDelta = new Point(-walkerExit.CursorDelta.X, -walkerExit.CursorDelta.Y);
-            foreach (var targetExit in slot.Room.Exits)
+            foreach (var targetExit in _grid.GetSlot(_goal.X, _goal.Y).Room.Exits)
             {
                 if (targetExit.CursorDelta != oppositeDelta) continue;
                 foreach (var opt in targetExit.AllowedNext)
@@ -583,22 +558,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return false;
         }
 
-        /// <summary>Walks the cameFrom chain back from goal to start, then reverses to placement order.</summary>
-        private static List<PathStep> ReconstructPath(Node end, Dictionary<Node, EdgeRecord> cameFrom)
+        /// <summary>
+        /// Walks the parent chain back from the end node, then reverses to placement order.
+        /// </summary>
+        private List<PathStep> ReconstructPath(int endId)
         {
             var steps = new List<PathStep>();
-            var node = end;
-            while (cameFrom.TryGetValue(node, out var rec))
-            {
-                steps.Add(new PathStep(rec.Cell, rec.Anchor));
-                node = rec.Parent;
-            }
+            for (int n = endId; _parent[n] >= 0; n = _parent[n])
+                steps.Add(new PathStep(_placedCell[n], _placedAnchor[n]));
             steps.Reverse();
-
             return steps;
         }
 
-        /// <summary>One A* search state: position, last cell type, streak, vertical run.</summary>
+        /// <summary>
+        /// One A* search state: position, last cell type, streak, vertical run.
+        /// </summary>
         private readonly struct Node : IEquatable<Node>
         {
             public Point Position { get; }
@@ -614,28 +588,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 VerticalRun = verticalRun;
             }
 
-            public bool Equals(Node other) =>
-                Position == other.Position
-                && PrevType == other.PrevType
-                && Streak == other.Streak
-                && VerticalRun == other.VerticalRun;
+            public bool Equals(Node other) => Position == other.Position && PrevType == other.PrevType && Streak == other.Streak && VerticalRun == other.VerticalRun;
             public override bool Equals(object obj) => obj is Node n && Equals(n);
             public override int GetHashCode() => HashCode.Combine(Position.X, Position.Y, PrevType, Streak, VerticalRun);
-        }
-
-        /// <summary>cameFrom record: parent node, placed cell, and footprint anchor.</summary>
-        private readonly struct EdgeRecord
-        {
-            public Node Parent { get; }
-            public GridRoom Cell { get; }
-            public Point Anchor { get; }
-
-            public EdgeRecord(Node parent, GridRoom cell, Point anchor)
-            {
-                Parent = parent;
-                Cell = cell;
-                Anchor = anchor;
-            }
         }
     }
 }

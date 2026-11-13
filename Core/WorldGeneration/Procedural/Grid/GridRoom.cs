@@ -78,18 +78,32 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         protected virtual GridRoom[] AllowedNeighbors(Direction side) => Array.Empty<GridRoom>();
 
+        private HashSet<Type>[] _acceptedBySide;
+        private CellExit[] _exits;
+
         /// <summary>
         /// The room types accepted on the given sub-cell edge, or null to reject all.
-        /// Sub-cell-aware rooms (e.g. stairs) override this directly.
+        /// Sub-cell-aware rooms (e.g. stairs) override this directly. Callers must not modify the returned set.
         /// </summary>
         public virtual HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side)
         {
             if (IsInternalEdge(subCol, subRow, side)) return null;
-            var neighbors = AllowedNeighbors(side);
-            if (neighbors == null || neighbors.Length == 0) return null;
-            var set = new HashSet<Type>();
-            foreach (var n in neighbors) set.Add(n.GetType());
-            return set;
+            _acceptedBySide ??= BuildAcceptedBySide();
+            return _acceptedBySide[(int)side];
+        }
+
+        private HashSet<Type>[] BuildAcceptedBySide()
+        {
+            var sets = new HashSet<Type>[4];
+            foreach (Direction side in Enum.GetValues(typeof(Direction)))
+            {
+                var neighbors = AllowedNeighbors(side);
+                if (neighbors == null || neighbors.Length == 0) continue;
+                var set = new HashSet<Type>();
+                foreach (var n in neighbors) set.Add(n.GetType());
+                sets[(int)side] = set;
+            }
+            return sets;
         }
 
         /// <summary>
@@ -140,20 +154,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public virtual Point AnchorOffsetFromCursor => Point.Zero;
 
         /// <summary>
-        /// Directional exits the walker can take from this cell. Default: one cardinal exit per side
-        /// that has allowed neighbors. Rooms with non-cardinal exits override this.
+        /// Directional exits the walker can take from this cell, built once per instance by <see cref="CreateExits"/>.
         /// </summary>
-        public virtual CellExit[] Exits
+        public CellExit[] Exits => _exits ??= CreateExits();
+
+        /// <summary>
+        /// Default: one cardinal exit per side that has allowed neighbors. Rooms with non-cardinal exits override this.
+        /// </summary>
+        protected virtual CellExit[] CreateExits()
         {
-            get
-            {
-                var list = new List<CellExit>(4);
-                AddCardinalExit(list, Direction.Right, new Point(CellWidth, 0));
-                AddCardinalExit(list, Direction.Left, new Point(-1, 0));
-                AddCardinalExit(list, Direction.Bottom, new Point(0, CellHeight));
-                AddCardinalExit(list, Direction.Top, new Point(0, -1));
-                return list.ToArray();
-            }
+            var list = new List<CellExit>(4);
+            AddCardinalExit(list, Direction.Right, new Point(CellWidth, 0));
+            AddCardinalExit(list, Direction.Left, new Point(-1, 0));
+            AddCardinalExit(list, Direction.Bottom, new Point(0, CellHeight));
+            AddCardinalExit(list, Direction.Top, new Point(0, -1));
+            return list.ToArray();
         }
 
         private void AddCardinalExit(List<CellExit> list, Direction side, Point delta)
@@ -164,26 +179,44 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         /// <summary>
         /// Structural validity check against neighbors outside the walker's forward direction.
-        /// Default accepts any placement. pendingLookup exposes uncommitted in-path placements.
+        /// Default accepts any placement.
         /// </summary>
-        public virtual bool IsValidPlacement(DungeonGrid grid, Microsoft.Xna.Framework.Point anchor,
-                                              System.Func<int, int, GridRoom> pendingLookup = null) => true;
+        /// <param name="pending">The searching path's uncommitted placements, or null outside a search.</param>
+        public virtual bool IsValidPlacement(DungeonGrid grid, Point anchor, PendingPlacements pending = null) => true;
 
         /// <summary>
-        /// Resolves the cell at a grid position, preferring uncommitted placements via pendingLookup.
+        /// Resolves the cell at a grid position, preferring the searching path's uncommitted placements.
         /// </summary>
-        protected static GridRoom GetEffectiveRoomAt(DungeonGrid grid,
-                                                    System.Func<int, int, GridRoom> pendingLookup,
-                                                    int x, int y)
+        protected static GridRoom GetEffectiveRoomAt(DungeonGrid grid, PendingPlacements pending, int x, int y)
         {
-            if (pendingLookup != null)
-            {
-                var pending = pendingLookup(x, y);
-                if (pending != null) return pending;
-            }
+            var pendingRoom = pending?.CellAt(x, y);
+            if (pendingRoom != null) return pendingRoom;
             var slot = grid.GetSlot(x, y);
             if (slot == null || slot.IsEmpty) return null;
             return slot.Room;
+        }
+
+        /// <summary>
+        /// True if any cell of a committed or pending room of <paramref name="roomType"/> (or a subclass) lies within
+        /// Chebyshev distance below <paramref name="distance"/> of <paramref name="point"/>.
+        /// </summary>
+        protected static bool AnyCellWithin(DungeonGrid grid, PendingPlacements pending, Type roomType, Point point, int distance)
+        {
+            foreach (var anchor in grid.AnchorsOf(roomType))
+                if (FootprintWithin(grid.GetSlot(anchor.X, anchor.Y).Room, anchor, point, distance)) return true;
+            if (pending == null) return false;
+            foreach (var step in pending.Steps)
+                if (roomType.IsInstanceOfType(step.Cell) && FootprintWithin(step.Cell, step.Anchor, point, distance)) return true;
+            return false;
+        }
+
+        private static bool FootprintWithin(GridRoom room, Point anchor, Point point, int distance)
+        {
+            int right = anchor.X + room.CellWidth - 1;
+            int bottom = anchor.Y + room.CellHeight - 1;
+            int dx = point.X < anchor.X ? anchor.X - point.X : point.X > right ? point.X - right : 0;
+            int dy = point.Y < anchor.Y ? anchor.Y - point.Y : point.Y > bottom ? point.Y - bottom : 0;
+            return Math.Max(dx, dy) < distance;
         }
 
         /// <summary>
