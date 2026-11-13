@@ -112,6 +112,7 @@ namespace OvermorrowMod.Common.Items.Daggers
             Item.useAnimation = 8;
             Item.useTime = 8;
             Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(gold: 1);
             Item.useStyle = ItemUseStyleID.HiddenAnimation;
 
             Item.knockBack = 2;
