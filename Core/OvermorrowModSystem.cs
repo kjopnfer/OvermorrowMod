@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.UI.ClassSelection;
+using OvermorrowMod.Core.UI.MonkeyStones;
 using OvermorrowMod.Core.UI.RunStats;
 using OvermorrowMod.Core.UI.Shop;
 using System;
@@ -32,6 +33,8 @@ namespace OvermorrowMod.Core
 
         public RunStatsPanel RunStatsPanel;
 
+        public MonkeyStoneDisplay MonkeyStoneDisplay;
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -59,6 +62,8 @@ namespace OvermorrowMod.Core
                 ShopInterface.SetState(ShopDialogue);
 
                 RunStatsPanel = new RunStatsPanel();
+
+                MonkeyStoneDisplay = new MonkeyStoneDisplay();
             }
         }
 
@@ -104,6 +109,7 @@ namespace OvermorrowMod.Core
                 AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
                 AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
                 AddInterfaceLayer(layers, RunStatsPanel, mouseTextIndex, RunStatsPanel.PopupVisible || RunStatsPanel.TabVisible, "Stats");
+                AddInterfaceLayer(layers, MonkeyStoneDisplay, mouseTextIndex, true, "Monkey Stones");
             }
         }
 
