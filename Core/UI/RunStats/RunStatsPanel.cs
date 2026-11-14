@@ -93,6 +93,8 @@ namespace OvermorrowMod.Core.UI.RunStats
         private int collectedTotal;
         private int builtVersion = -1;
         private float scrollOffset;
+        private bool draggingScrollbar;
+        private float dragGrabOffset;
 
         private static readonly RasterizerState ClipRasterizer = new() { CullMode = CullMode.None, ScissorTestEnable = true };
 
@@ -125,6 +127,9 @@ namespace OvermorrowMod.Core.UI.RunStats
             Rectangle clip = new(bounds.X, bounds.Y + Padding, Width, height - Padding * 2);
             int maxScroll = Math.Max(0, contentHeight - clip.Height);
 
+            Rectangle track = new(bounds.Right - Padding, clip.Y, Padding, clip.Height);
+            int thumbHeight = ThumbHeight(clip.Height, contentHeight);
+
             if (bounds.Contains(Main.MouseScreen.ToPoint()))
             {
                 Main.LocalPlayer.mouseInterface = true;
@@ -134,6 +139,12 @@ namespace OvermorrowMod.Core.UI.RunStats
                     scrollOffset -= PlayerInput.ScrollWheelDeltaForUI / 120f * ScrollStep;
                 }
             }
+
+            if (maxScroll > 0)
+                UpdateScrollbarDrag(track, thumbHeight, maxScroll);
+            else
+                draggingScrollbar = false;
+
             scrollOffset = MathHelper.Clamp(scrollOffset, 0f, maxScroll);
 
             Utils.DrawInvBG(spriteBatch, bounds, PanelColor * 0.94f * opacity);
@@ -151,7 +162,35 @@ namespace OvermorrowMod.Core.UI.RunStats
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, previousRasterizer, null, Main.UIScaleMatrix);
 
             if (maxScroll > 0)
-                DrawScrollbar(spriteBatch, clip, bounds.Right - Padding / 2 - ScrollbarWidth / 2, contentHeight, scrollOffset / maxScroll, opacity);
+                DrawScrollbar(spriteBatch, clip, bounds.Right - Padding / 2 - ScrollbarWidth / 2, thumbHeight, scrollOffset / maxScroll, opacity);
+        }
+
+        /// <summary>
+        /// Pressing anywhere on the track grabs the thumb (jumping it under the cursor when pressed off the thumb), and holding the button drags it.
+        /// </summary>
+        private void UpdateScrollbarDrag(Rectangle track, int thumbHeight, int maxScroll)
+        {
+            if (!Main.mouseLeft)
+            {
+                draggingScrollbar = false;
+                return;
+            }
+
+            int travel = track.Height - thumbHeight;
+            if (!draggingScrollbar && Main.mouseLeftRelease && track.Contains(Main.MouseScreen.ToPoint()))
+            {
+                float thumbY = track.Y + travel * (scrollOffset / maxScroll);
+                bool onThumb = Main.MouseScreen.Y >= thumbY && Main.MouseScreen.Y < thumbY + thumbHeight;
+                dragGrabOffset = onThumb ? Main.MouseScreen.Y - thumbY : thumbHeight / 2f;
+                draggingScrollbar = true;
+                Main.mouseLeftRelease = false;
+            }
+
+            if (draggingScrollbar)
+            {
+                Main.LocalPlayer.mouseInterface = true;
+                scrollOffset = (Main.MouseScreen.Y - dragGrabOffset - track.Y) / travel * maxScroll;
+            }
         }
 
         private void DrawContent(SpriteBatch spriteBatch, int x, int y, Rectangle clip, float opacity)
@@ -294,14 +333,15 @@ namespace OvermorrowMod.Core.UI.RunStats
             return height + Math.Max(0, sections - 1) * SectionGap;
         }
 
-        private static void DrawScrollbar(SpriteBatch spriteBatch, Rectangle clip, int x, int contentHeight, float progress, float opacity)
+        private void DrawScrollbar(SpriteBatch spriteBatch, Rectangle clip, int x, int thumbHeight, float progress, float opacity)
         {
             Texture2D pixel = TextureAssets.MagicPixel.Value;
-            int thumbHeight = Math.Max(MinThumbHeight, clip.Height * clip.Height / contentHeight);
             int thumbY = clip.Y + (int)((clip.Height - thumbHeight) * progress);
             spriteBatch.Draw(pixel, new Rectangle(x, clip.Y, ScrollbarWidth, clip.Height), CellColor * opacity);
-            spriteBatch.Draw(pixel, new Rectangle(x, thumbY, ScrollbarWidth, thumbHeight), NameColor * 0.8f * opacity);
+            spriteBatch.Draw(pixel, new Rectangle(x, thumbY, ScrollbarWidth, thumbHeight), NameColor * (draggingScrollbar ? 1f : 0.8f) * opacity);
         }
+
+        private static int ThumbHeight(int visibleHeight, int contentHeight) => Math.Max(MinThumbHeight, visibleHeight * visibleHeight / contentHeight);
 
         /// <summary>
         /// Converts a rectangle in UI coordinates to screen pixels for the scissor test, clamped to the viewport.
