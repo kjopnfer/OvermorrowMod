@@ -662,25 +662,21 @@ Items: {
 	ChaosDiamond: {
 		DisplayName: Aetherion
 		Tooltip: ""
-		Flavor: Impossible to forge, impossible to replicate.
 	}
 
 	MonkeyStoneBlue: {
 		DisplayName: Miranth
 		Tooltip: ""
-		Flavor: Fragile and fleeting, yet sought after for reasons no scholar can explain.
 	}
 
 	MonkeyStoneGreen: {
 		DisplayName: Sylvite
 		Tooltip: ""
-		Flavor: Sought by collectors and sages alike for the promise it holds.
 	}
 
 	MonkeyStoneOrange: {
 		DisplayName: Solenith
 		Tooltip: ""
-		Flavor: Power radiates from within, unstable and unpredictable.
 	}
 
 	ArtOfBallistics: {
