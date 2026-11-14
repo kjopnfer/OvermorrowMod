@@ -6,6 +6,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
@@ -115,7 +116,11 @@ namespace OvermorrowMod.Content.Misc
         public void ClaimReward(int itemId)
         {
             if (isCleaningUp) return;
-            if (itemId > 0)
+            if (itemId > 0 && ContentSamples.ItemsByType[itemId].ModItem is CollectibleItem collectible)
+            {
+                collectible.Apply(Main.LocalPlayer, 1);
+            }
+            else if (itemId > 0)
             {
                 Main.LocalPlayer.QuickSpawnItem(NPC.GetSource_Loot(), itemId);
                 LootRoller.GiveCompanionAmmo(NPC.GetSource_Loot(), Main.LocalPlayer.Center, itemId);
