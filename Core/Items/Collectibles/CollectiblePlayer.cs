@@ -17,10 +17,32 @@ namespace OvermorrowMod.Core.Items.Collectibles
         /// </summary>
         public int DecreasingSourceCount;
 
+        /// <summary>
+        /// Item type to count of every collectible consumed, in first-collected order.
+        /// </summary>
+        public readonly Dictionary<int, int> Collected = new();
+
+        /// <summary>
+        /// Increments on every change to collectible state, so displays can rebuild only when it differs.
+        /// </summary>
+        public int Version { get; private set; }
+
+        public float DecreaseSourceDamageBonus => 2f * DecreasingSourceCount * GetEffect(CollectibleEffect.DecreaseSourceScaling);
+
+        public float DecreaseSourceCritBonus => 1f * DecreasingSourceCount * GetEffect(CollectibleEffect.DecreaseSourceScaling);
+
         public void Add(CollectibleStat stat, float amount)
         {
             totals.TryGetValue(stat, out float current);
             totals[stat] = current + amount;
+            Version++;
+        }
+
+        public void Collect(int itemType)
+        {
+            Collected.TryGetValue(itemType, out int count);
+            Collected[itemType] = count + 1;
+            Version++;
         }
 
         public float Get(CollectibleStat stat) => totals.TryGetValue(stat, out float value) ? value : 0f;
@@ -29,6 +51,7 @@ namespace OvermorrowMod.Core.Items.Collectibles
         {
             effects.TryGetValue(effect, out float current);
             effects[effect] = current + magnitude;
+            Version++;
         }
 
         public float GetEffect(CollectibleEffect effect) => effects.TryGetValue(effect, out float value) ? value : 0f;
@@ -38,6 +61,8 @@ namespace OvermorrowMod.Core.Items.Collectibles
             totals.Clear();
             effects.Clear();
             DecreasingSourceCount = 0;
+            Collected.Clear();
+            Version++;
         }
 
         public override void ModifyMaxStats(out StatModifier health, out StatModifier mana)
@@ -62,15 +87,8 @@ namespace OvermorrowMod.Core.Items.Collectibles
             if (defensePercent != 0f)
                 Player.statDefense += (int)(Player.statDefense * (defensePercent / 100f));
 
-            float damagePercent = Get(CollectibleStat.DamagePercent);
-            float critChance = Get(CollectibleStat.CritChance);
-
-            float scaling = GetEffect(CollectibleEffect.DecreaseSourceScaling);
-            if (scaling != 0f)
-            {
-                damagePercent += 2f * DecreasingSourceCount * scaling;
-                critChance += 1f * DecreasingSourceCount * scaling;
-            }
+            float damagePercent = Get(CollectibleStat.DamagePercent) + DecreaseSourceDamageBonus;
+            float critChance = Get(CollectibleStat.CritChance) + DecreaseSourceCritBonus;
 
             if (damagePercent != 0f)
                 Player.GetDamage(DamageClass.Generic) += damagePercent / 100f;
