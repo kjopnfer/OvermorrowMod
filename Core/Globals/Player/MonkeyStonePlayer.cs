@@ -1,5 +1,6 @@
 using OvermorrowMod.Content.Items.Archives;
 using System;
+using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -22,6 +23,27 @@ namespace OvermorrowMod.Core.Globals
 
             banked[(int)tier] -= amount;
             return true;
+        }
+
+        /// <summary>
+        /// Banks any stone that reached the inventory or cursor without being picked up from the world.
+        /// </summary>
+        public override void PostUpdate()
+        {
+            if (Player.whoAmI != Main.myPlayer) return;
+
+            foreach (Item item in Player.inventory)
+                Bank(item);
+
+            Bank(Main.mouseItem);
+        }
+
+        private void Bank(Item item)
+        {
+            if (item.ModItem is not MonkeyStone stone) return;
+
+            Add(stone.Tier, item.stack);
+            item.TurnToAir();
         }
 
         public override void SaveData(TagCompound tag)
