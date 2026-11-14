@@ -21,10 +21,6 @@ namespace OvermorrowMod.Core.Items.Collectibles
         /// Item type to count of every collectible consumed, in first-collected order.
         /// </summary>
         public readonly Dictionary<int, int> Collected = new();
-
-        /// <summary>
-        /// Increments on every change to collectible state, so displays can rebuild only when it differs.
-        /// </summary>
         public int Version { get; private set; }
 
         public float DecreaseSourceDamageBonus => 2f * DecreasingSourceCount * GetEffect(CollectibleEffect.DecreaseSourceScaling);

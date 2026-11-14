@@ -12,9 +12,6 @@ namespace OvermorrowMod.Core.Globals
 {
     public class SubworldPlayer : ModPlayer
     {
-        /// <summary>
-        /// Max life inside a subworld before any bonuses. Life Crystals and Life Fruit don't apply there.
-        /// </summary>
         public const int BaseMaxLife = 100;
 
         public Item[] mainInventory;
