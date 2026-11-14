@@ -52,6 +52,8 @@ namespace OvermorrowMod.Core.UI
         private Vector2 rowCenter;
         private float titleOpacity;
 
+        public float Opacity => titleOpacity;
+
         // Order slots launch in: left first, right second, middle third.
         private static readonly int[] PopOrder = { 0, 2, 1 };
 

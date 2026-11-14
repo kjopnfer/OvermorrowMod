@@ -66,8 +66,12 @@ namespace OvermorrowMod.Common.RoomManager
             }
         }
 
-        /// <summary>True while the door is fully closed and collision should block the player.</summary>
-        public bool IsBlocking => State == DoorState.Closed;
+        /// <summary>
+        /// True while the door is fully closed and its column is filled with <see cref="CombatDoorBarrier"/> tiles.
+        /// </summary>
+        public bool IsBlocking => State == DoorState.Closed && !IsDisabled;
+
+        private const int DoorHeightTiles = 9;
 
         /// <summary>
         /// Begins the open animation and syncs the sibling. On the first
@@ -157,6 +161,36 @@ namespace OvermorrowMod.Common.RoomManager
             HandleTimeExpiration();
             ManageDoorNPC();
             AdvanceStateMachine();
+            SyncBarrier();
+        }
+
+        /// <summary>
+        /// Barrier tiles are written without reframing so the floor and ceiling next to the door keep their sprites.
+        /// Placement waits while the player stands in the doorway, so a closing door never traps them inside solid tiles.
+        /// </summary>
+        private void SyncBarrier()
+        {
+            int barrierType = ModContent.TileType<CombatDoorBarrier>();
+            int top = Position.Y - DoorHeightTiles + 1;
+            Tile bottom = Framing.GetTileSafely(Position.X, Position.Y);
+            bool placed = bottom.HasTile && bottom.TileType == barrierType;
+            if (placed == IsBlocking) return;
+
+            if (IsBlocking && Main.LocalPlayer.Hitbox.Intersects(new Rectangle(Position.X * 16, top * 16, 16, DoorHeightTiles * 16))) return;
+
+            for (int y = top; y <= Position.Y; y++)
+            {
+                Tile tile = Framing.GetTileSafely(Position.X, y);
+                if (IsBlocking && !tile.HasTile)
+                {
+                    tile.HasTile = true;
+                    tile.TileType = (ushort)barrierType;
+                }
+                else if (!IsBlocking && tile.HasTile && tile.TileType == barrierType)
+                {
+                    tile.HasTile = false;
+                }
+            }
         }
 
         /// <summary>

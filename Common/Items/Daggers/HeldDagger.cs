@@ -39,6 +39,7 @@ namespace OvermorrowMod.Common.Items.Daggers
         };
 
         private int totalTime;
+        private int comboCount;
         private int playerDirection = 1;
         private SlashRenderer slashRenderer;
         private SlashPath fullSlashPath;
@@ -65,14 +66,14 @@ namespace OvermorrowMod.Common.Items.Daggers
 
         public override void OnSpawn(IEntitySource source)
         {
-            ModDaggerBase item = player.HeldItem.ModItem as ModDaggerBase;
+            comboCount = ((ModDaggerBase)player.HeldItem.ModItem).ComboCount;
             if (OffhandFlag == 1)
             {
-                SwingDirection = item.ComboCount == 3 ? -SwingDirection : SwingDirection;
-                if (item.ComboCount != 3) totalTime += 3;
+                SwingDirection = comboCount == 3 ? -SwingDirection : SwingDirection;
+                if (comboCount != 3) totalTime += 3;
             }
 
-            if (item.ComboCount == 3)
+            if (comboCount == 3)
             {
                 Projectile.CritChance += 100;
                 Projectile.damage = (int)(Projectile.damage * 1.5f);
@@ -94,6 +95,12 @@ namespace OvermorrowMod.Common.Items.Daggers
 
         public override void AI()
         {
+            if (player.HeldItem.ModItem is not ModDaggerBase)
+            {
+                Projectile.Kill();
+                return;
+            }
+
             if (OffhandFlag != 1)
                 player.heldProj = Projectile.whoAmI;
 
@@ -105,20 +112,18 @@ namespace OvermorrowMod.Common.Items.Daggers
 
         private void InitializeSlash()
         {
-            ModDaggerBase item = player.HeldItem.ModItem as ModDaggerBase;
-
             Vector2 center = player.MountedCenter;
             float radiusX = Main.rand.Next(8, 10) * 5f;
             float radiusY = Main.rand.Next(4, 9) * 5f;
             float ellipseRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation();
 
-            if (item.ComboCount == 3)
+            if (comboCount == 3)
             {
                 radiusX = 40f;
                 radiusY = OffhandFlag == 1 ? 45f : 20f;
             }
 
-            if (OffhandFlag == 1 && item.ComboCount < 3)
+            if (OffhandFlag == 1 && comboCount < 3)
             {
                 ellipseRotation += MathHelper.ToRadians(45f * playerDirection);
 
@@ -584,8 +589,7 @@ namespace OvermorrowMod.Common.Items.Daggers
 
             Main.spriteBatch.Draw(texture, player.Center - Main.screenPosition + off + new Vector2(0, Main.player[Projectile.owner].gfxOffY), null, lightColor, Projectile.rotation + rotationOffset, drawOrigin, Projectile.scale, spriteEffects, 0);
 
-            ModDaggerBase item = player.HeldItem.ModItem as ModDaggerBase;
-            if (item.ComboCount == 0 && OffhandFlag != 1 && player.ownedProjectileCounts[this.Type] == 2) // Only draw once from main hand
+            if (comboCount == 0 && OffhandFlag != 1 && player.ownedProjectileCounts[this.Type] == 2) // Only draw once from main hand
             {
                 int elapsedTicks = totalTime - Projectile.timeLeft;
                 float progress = elapsedTicks / (float)totalTime;

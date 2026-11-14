@@ -40,6 +40,8 @@ namespace OvermorrowMod.Core.Items.Collectibles
 
         protected virtual void SafeSetDefaults() { }
 
+        public bool Describes(CollectibleEffect effect) => DescribedEffects != null && Array.IndexOf(DescribedEffects, effect) >= 0;
+
         public override bool? UseItem(Player player)
         {
             if (player.whoAmI == Main.myPlayer)
@@ -58,6 +60,8 @@ namespace OvermorrowMod.Core.Items.Collectibles
 
                 if (lowersAStat)
                     collectible.DecreasingSourceCount++;
+
+                collectible.Collect(Item.type);
 
                 if (heal > 0)
                 {

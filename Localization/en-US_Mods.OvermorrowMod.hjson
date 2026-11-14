@@ -7,6 +7,59 @@ Keybinds: {
 UI: {
 	ReloadBindHint: Reload key unbound: bind one in Controls
 	RewardSelection.Title: Choose One
+
+	RunStats: {
+		Stats: Stats
+		Effects: Additional Effects
+		Collected: Collected
+		ItemCount: "{0} items"
+
+		Stat: {
+			MaxLife: Max life
+			MaxMana: Max mana
+			Defense: Defense
+			DamagePercent: Damage
+			DamageFlat: Damage
+			CritChance: Crit chance
+			MoveSpeed: Move speed
+			KnockbackPercent: Knockback
+			KnockbackFlat: Knockback
+			ArmorPenetration: Armor pen.
+			Luck: Luck
+		}
+
+		Effect: {
+			ExtraCoinsOnHit: {
+				Title: Coins on hit
+				Value: "{0}% chance to produce extra coins"
+			}
+
+			ArtEnemyDropBoost: {
+				Title: Monkey stones
+				Value: Art-type enemies drop more (x{0})
+			}
+
+			ShopHealDiscount: {
+				Title: Healing potion prices
+				Value: "{0}% cheaper"
+			}
+
+			ShopMarkup: {
+				Title: Shop prices
+				Value: +{0}% more expensive
+			}
+
+			RestAreaHeal: {
+				Title: Rest area healing
+				Value: +{0} HP
+			}
+
+			DecreaseSourceScaling: {
+				Title: "{0} downside items"
+				Value: +{1}% damage, +{2}% crit chance
+			}
+		}
+	}
 }
 
 Tiles: {
@@ -111,6 +164,15 @@ Buffs: {
 	ChaliceMana: {
 		DisplayName: Super Mana Regeneration
 		Description: Massively increased mana regeneration
+	}
+
+	DashBuff: {
+		DisplayName: Dash
+		Description:
+			'''
+			Double-tap left or right to dash
+			{0} of {1} charges ready
+			'''
 	}
 }
 

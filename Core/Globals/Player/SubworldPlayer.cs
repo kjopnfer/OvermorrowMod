@@ -12,6 +12,8 @@ namespace OvermorrowMod.Core.Globals
 {
     public class SubworldPlayer : ModPlayer
     {
+        public const int BaseMaxLife = 100;
+
         public Item[] mainInventory;
         public Item[] mainArmor;
         public Item[] mainMisc;
@@ -63,9 +65,9 @@ namespace OvermorrowMod.Core.Globals
             health = StatModifier.Default;
             mana = StatModifier.Default;
 
-            if (SubworldSystem.AnyActive() && Player.statLifeMax > 100)
+            if (SubworldSystem.AnyActive() && Player.statLifeMax > BaseMaxLife)
             {
-                health = new StatModifier(1f, 1f, 0f, -(Player.statLifeMax - 100));
+                health = new StatModifier(1f, 1f, 0f, -(Player.statLifeMax - BaseMaxLife));
             }
         }
 

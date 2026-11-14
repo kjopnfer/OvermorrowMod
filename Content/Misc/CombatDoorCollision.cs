@@ -1,4 +1,3 @@
-using CollisionLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
@@ -43,29 +42,11 @@ namespace OvermorrowMod.Content.Misc
             if (inst != null)
                 NPC.position.Y = ClosedY + inst.YOffsetPixels;
 
-            // Colliders only while Closed; otherwise the player walks through.
-            if (inst != null && inst.IsBlocking)
-            {
-                colliders = new CollisionSurface[]
-                {
-                    new CollisionSurface(NPC.TopLeft, NPC.BottomLeft,
-                        new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
-                    new CollisionSurface(NPC.TopRight, NPC.BottomRight,
-                        new int[] { CollisionID.Solid, CollisionID.Solid, 0, 0 }, true),
-                };
-            }
-            else
-            {
-                colliders = null;
-            }
             return true;
         }
 
         public override void AI()
         {
-            if (colliders != null)
-                foreach (var c in colliders) c.Update();
-
             const float InteractRangeTiles = 7f;
             float interactRange = InteractRangeTiles * 16f;
             bool playerInRange = Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) <= interactRange;
@@ -80,12 +61,6 @@ namespace OvermorrowMod.Content.Misc
                 if (Main.mouseRight && Main.mouseRightRelease)
                     DoorInstance?.Open();
             }
-        }
-
-        public override void PostAI()
-        {
-            if (colliders != null)
-                foreach (var c in colliders) c.PostUpdate();
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

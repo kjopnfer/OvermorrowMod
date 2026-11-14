@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.UI.ClassSelection;
+using OvermorrowMod.Core.UI.RunStats;
 using OvermorrowMod.Core.UI.Shop;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace OvermorrowMod.Core
 
         internal UserInterface ShopInterface;
         public ShopDialogue ShopDialogue;
+
+        public RunStatsPanel RunStatsPanel;
 
         public override void Load()
         {
@@ -54,6 +57,8 @@ namespace OvermorrowMod.Core
                 ShopInterface = new UserInterface();
                 ShopDialogue = new ShopDialogue();
                 ShopInterface.SetState(ShopDialogue);
+
+                RunStatsPanel = new RunStatsPanel();
             }
         }
 
@@ -98,6 +103,7 @@ namespace OvermorrowMod.Core
                 AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
                 AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
                 AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
+                AddInterfaceLayer(layers, RunStatsPanel, mouseTextIndex, RunStatsPanel.PopupVisible || RunStatsPanel.TabVisible, "Stats");
             }
         }
 
