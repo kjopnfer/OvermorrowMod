@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.Items.Collectibles
             CollectibleEffect.ShopMarkup,
         };
 
-        protected override void OnConsumed(Player player)
+        protected override void OnApplied(Player player)
         {
             player.GetModPlayer<CollectiblePlayer>().SetEffect(CollectibleEffect.ShopMarkup, 0.20f);
         }

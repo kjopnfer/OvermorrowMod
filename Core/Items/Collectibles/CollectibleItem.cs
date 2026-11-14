@@ -2,7 +2,9 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Core.Loot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -11,6 +13,8 @@ namespace OvermorrowMod.Core.Items.Collectibles
 {
     public abstract class CollectibleItem : ModItem
     {
+        private const int MaxPickupBonuses = 2;
+
         public override string Texture => AssetDirectory.Collectibles + Name;
 
         public abstract Rarity Rarity { get; }
@@ -27,12 +31,6 @@ namespace OvermorrowMod.Core.Items.Collectibles
             Item.width = 24;
             Item.height = 24;
             Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.useStyle = ItemUseStyleID.EatFood;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useTurn = true;
-            Item.UseSound = SoundID.Item2;
             Item.rare = LootRarityItem.RarityType(Rarity);
             Item.value = Item.sellPrice(silver: 50);
             SafeSetDefaults();
@@ -42,11 +40,25 @@ namespace OvermorrowMod.Core.Items.Collectibles
 
         public bool Describes(CollectibleEffect effect) => DescribedEffects != null && Array.IndexOf(DescribedEffects, effect) >= 0;
 
-        public override bool? UseItem(Player player)
+        public override bool ItemSpace(Player player) => true;
+
+        public override bool OnPickup(Player player)
         {
-            if (player.whoAmI == Main.myPlayer)
+            Apply(player, Item.stack);
+            ShowPickup(player);
+            return false;
+        }
+
+        /// <summary>
+        /// Grants this collectible's bonuses and effects <paramref name="count"/> times and records it as collected.
+        /// </summary>
+        public void Apply(Player player, int count)
+        {
+            if (player.whoAmI != Main.myPlayer) return;
+
+            var collectible = player.GetModPlayer<CollectiblePlayer>();
+            for (int i = 0; i < count; i++)
             {
-                var collectible = player.GetModPlayer<CollectiblePlayer>();
                 int heal = 0;
                 bool lowersAStat = false;
                 foreach (var bonus in Bonuses)
@@ -70,16 +82,28 @@ namespace OvermorrowMod.Core.Items.Collectibles
                     player.HealEffect(heal);
                 }
 
-                OnConsumed(player);
+                OnApplied(player);
             }
-            return true;
         }
 
         /// <summary>
-        /// Sets any non-stat effect flags on the consuming player. Stat bonuses
+        /// Shows the item name and a short bonus summary over the player, with a pickup sound.
+        /// </summary>
+        public void ShowPickup(Player player)
+        {
+            string text = Item.Name;
+            if (Bonuses.Length > 0)
+                text += ": " + string.Join(", ", Bonuses.Take(MaxPickupBonuses).Select(ShortBonus)) + (Bonuses.Length > MaxPickupBonuses ? " ..." : "");
+
+            CombatText.NewText(player.Hitbox, RarityColors.For(Rarity), text);
+            SoundEngine.PlaySound(SoundID.Grab, player.Center);
+        }
+
+        /// <summary>
+        /// Sets any non-stat effect flags on the player. Stat bonuses
         /// declared in <see cref="Bonuses"/> are already applied before this runs.
         /// </summary>
-        protected virtual void OnConsumed(Player player) { }
+        protected virtual void OnApplied(Player player) { }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -105,6 +129,14 @@ namespace OvermorrowMod.Core.Items.Collectibles
             string noun = Language.GetTextValue(LocalizationPath.CollectibleBonus + "Stat." + bonus.Stat);
             string verbKey = LocalizationPath.CollectibleBonus + (positive ? "Increase" : "Decrease");
             return Language.GetTextValue(verbKey, noun, value);
+        }
+
+        private static string ShortBonus(CollectibleBonus bonus)
+        {
+            string sign = bonus.Amount >= 0f ? "+" : "-";
+            string unit = IsPercent(bonus.Stat) ? "%" : "";
+            string noun = Language.GetTextValue(LocalizationPath.CollectibleBonus + "Stat." + bonus.Stat);
+            return sign + Math.Abs(bonus.Amount).ToString("0") + unit + " " + noun;
         }
 
         private static bool IsPercent(CollectibleStat stat) => stat switch
