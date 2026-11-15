@@ -33,8 +33,8 @@ namespace OvermorrowMod.Core.UI.MonkeyStones
         private const int TimerClearance = 50;
         private const float RowTextScale = 0.8f;
 
-        private const int ColumnX = 571;
-        private const int ColumnLabelX = 569;
+        private const int ColumnX = 577;
+        private const int ColumnLabelX = 575;
         private const int ColumnLabelY = 84;
         private const float LabelScale = 0.75f;
         private const float InventoryScale = 0.6f;
