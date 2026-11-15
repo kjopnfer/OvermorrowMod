@@ -39,16 +39,12 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         };
 
         /// <summary>
-        /// Connects only on the bottom-left and bottom-right subcells.
+        /// Open on the left and right of both rows.
         /// </summary>
         public override bool IsOpenSide(int subCol, int subRow, Direction side)
         {
             if (IsInternalEdge(subCol, subRow, side)) return false;
-
-            if (subCol == 0 && subRow == 1 && side == Direction.Left) return true;
-            if (subCol == 2 && subRow == 1 && side == Direction.Right) return true;
-
-            return false;
+            return (subCol == 0 && side == Direction.Left) || (subCol == 2 && side == Direction.Right);
         }
 
         /// <summary>Cursor sits at the bottom row where the ports are.</summary>
