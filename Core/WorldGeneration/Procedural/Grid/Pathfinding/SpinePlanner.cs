@@ -220,18 +220,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
         private static List<Subgoal> BuildSubgoalList(DungeonGrid grid, List<RoomState> rooms, Point startDoorPos, Point endDoorPos, GridRoom startDoorRoom, GridRoom endDoorRoom)
         {
-            var list = new List<Subgoal>
-            {
-                new Subgoal { Pos = startDoorPos, Room = startDoorRoom, IsDoor = true },
-            };
+            // The doors are the spine's ends, so a required room placed beyond a door is visited
+            // as a detour from that door rather than hanging off it as a dead end.
+            var list = new List<Subgoal>();
             foreach (var r in rooms)
             {
                 if (!r.IsPlaced) continue;
                 var slot = grid.GetSlot(r.PlacedAnchor.X, r.PlacedAnchor.Y);
                 list.Add(new Subgoal { Pos = r.PlacedAnchor, Room = slot.Room, IsDoor = false, Owner = r });
             }
-            list.Add(new Subgoal { Pos = endDoorPos, Room = endDoorRoom, IsDoor = true });
             list.Sort((a, b) => a.Pos.X.CompareTo(b.Pos.X));
+            list.Insert(0, new Subgoal { Pos = startDoorPos, Room = startDoorRoom, IsDoor = true });
+            list.Add(new Subgoal { Pos = endDoorPos, Room = endDoorRoom, IsDoor = true });
             return list;
         }
 
