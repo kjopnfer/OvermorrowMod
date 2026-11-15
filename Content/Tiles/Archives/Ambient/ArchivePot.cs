@@ -59,7 +59,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             if (Main.rand.NextBool(monkeyStoneChance))
             {
-                yield return new Item(ModContent.ItemType<MonkeyStoneBlue>());
+                yield return new Item(ModContent.ItemType<MonkeyStoneGreen>());
                 yield break;
             }
 

@@ -362,7 +362,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 50));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CarvingKnife>(), chanceDenominator: 50));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 20));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneBlue>(), chanceDenominator: 5));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneGreen>(), chanceDenominator: 5));
         }
     }
 }

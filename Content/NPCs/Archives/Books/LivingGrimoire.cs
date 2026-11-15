@@ -370,7 +370,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 20));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneBlue>(), chanceDenominator: 5));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneGreen>(), chanceDenominator: 5));
         }
     }
 }

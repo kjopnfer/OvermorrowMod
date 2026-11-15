@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Archives
 {
-    public enum MonkeyStoneTier { Blue, Green, Orange, Chaos }
+    public enum MonkeyStoneTier { Green, Blue, Orange, Chaos }
 
     public abstract class MonkeyStone : ModItem
     {
@@ -18,8 +18,8 @@ namespace OvermorrowMod.Content.Items.Archives
 
         private Rarity Rarity => Tier switch
         {
-            MonkeyStoneTier.Blue => Rarity.Common,
-            MonkeyStoneTier.Green => Rarity.Rare,
+            MonkeyStoneTier.Blue => Rarity.Rare,
+            MonkeyStoneTier.Green => Rarity.Common,
             MonkeyStoneTier.Orange => Rarity.Epic,
             _ => Rarity.Legendary,
         };
