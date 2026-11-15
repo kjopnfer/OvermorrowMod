@@ -1465,7 +1465,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return sides;
         }
 
-        /// <summary>Paints stone over capped sides. Runs after PaddingBuilder.</summary>
+        /// <summary>
+        /// Paints stone over capped sides. Runs after PaddingBuilder.
+        /// A side cap also covers the padding row below the cell, where the connector's floor sits.
+        /// </summary>
         private static void ApplySideCaps(DungeonGrid grid, HashSet<(Point cell, Direction side)> sidesToCap, int fillTileType)
         {
             ushort fill = (ushort)fillTileType;
@@ -1497,14 +1500,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         x = cellOrigin.X - DungeonGrid.HorizontalPadding;
                         y = cellOrigin.Y;
                         w = DungeonGrid.HorizontalPadding;
-                        h = DungeonGrid.CellTileHeight;
+                        h = DungeonGrid.CellTileHeight + DungeonGrid.VerticalPadding;
                         break;
                     case Direction.Right:
                     default:
                         x = cellOrigin.X + DungeonGrid.CellTileWidth;
                         y = cellOrigin.Y;
                         w = DungeonGrid.HorizontalPadding;
-                        h = DungeonGrid.CellTileHeight;
+                        h = DungeonGrid.CellTileHeight + DungeonGrid.VerticalPadding;
                         break;
                 }
 
