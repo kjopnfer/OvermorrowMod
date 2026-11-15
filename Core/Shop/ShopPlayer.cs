@@ -38,9 +38,6 @@ namespace OvermorrowMod.Core.Shop
             }
         }
 
-        /// <summary>
-        /// Removes the purchased copy vanilla handed over: from the cursor on a normal buy, or from the inventory on a shift-click buy.
-        /// </summary>
         private void RemoveBoughtCopy(int type)
         {
             if (Main.mouseItem.type == type)

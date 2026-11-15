@@ -6,9 +6,6 @@ using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Core.Globals
 {
-    /// <summary>
-    /// The player's banked Monkey Stones, one count per tier. Stones never occupy inventory slots, so runs and deaths leave the counts alone.
-    /// </summary>
     public class MonkeyStonePlayer : ModPlayer
     {
         private readonly int[] banked = new int[Enum.GetValues<MonkeyStoneTier>().Length];
@@ -25,9 +22,6 @@ namespace OvermorrowMod.Core.Globals
             return true;
         }
 
-        /// <summary>
-        /// Banks any stone that reached the inventory or cursor without being picked up from the world.
-        /// </summary>
         public override void PostUpdate()
         {
             if (Player.whoAmI != Main.myPlayer) return;

@@ -52,9 +52,6 @@ namespace OvermorrowMod.Core.Items.Collectibles
 
         public float GetEffect(CollectibleEffect effect) => effects.TryGetValue(effect, out float value) ? value : 0f;
 
-        /// <summary>
-        /// Applies any collectible that reached the inventory or cursor without being picked up from the world.
-        /// </summary>
         public override void PostUpdate()
         {
             if (Player.whoAmI != Main.myPlayer) return;

@@ -66,9 +66,6 @@ namespace OvermorrowMod.Core.UI
 
         public float Opacity => titleOpacity;
 
-        /// <summary>
-        /// True while the picker is shown or a confirmed collectible is still flying to the player.
-        /// </summary>
         public bool Active => visible || flightType > 0;
 
         // Order slots launch in: left first, right second, middle third.
@@ -187,9 +184,6 @@ namespace OvermorrowMod.Core.UI
                 slots[i].selected = (i == idx);
         }
 
-        /// <summary>
-        /// Moves the chosen icon out of its slot so it can fly to the player.
-        /// </summary>
         private void StartFlight(int itemId)
         {
             flightType = itemId;

@@ -47,6 +47,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(gold: 1);
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
             Item.knockBack = 2;

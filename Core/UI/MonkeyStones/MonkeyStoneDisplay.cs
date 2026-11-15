@@ -17,10 +17,6 @@ using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Core.UI.MonkeyStones
 {
-    /// <summary>
-    /// Shows the banked Monkey Stone counts: a Stones column beside the coin and ammo columns while the inventory is open, and a row right of the hotbar while it is closed during a run.
-    /// Positions follow vanilla's hotbar and inventory layout.
-    /// </summary>
     public class MonkeyStoneDisplay : UIState
     {
         private const int HotbarStartX = 20;
@@ -71,9 +67,6 @@ namespace OvermorrowMod.Core.UI.MonkeyStones
             }
         }
 
-        /// <summary>
-        /// Draws the entries in one line, or as a 2x2 block when one line would reach the run timer centered at the top of the screen.
-        /// </summary>
         private static void DrawRow(SpriteBatch spriteBatch, MonkeyStonePlayer wallet)
         {
             float x = HotbarRight() + EntryGap;

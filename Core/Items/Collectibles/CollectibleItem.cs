@@ -49,9 +49,6 @@ namespace OvermorrowMod.Core.Items.Collectibles
             return false;
         }
 
-        /// <summary>
-        /// Grants this collectible's bonuses and effects <paramref name="count"/> times and records it as collected.
-        /// </summary>
         public void Apply(Player player, int count)
         {
             if (player.whoAmI != Main.myPlayer) return;
@@ -86,9 +83,6 @@ namespace OvermorrowMod.Core.Items.Collectibles
             }
         }
 
-        /// <summary>
-        /// Shows the item name and a short bonus summary over the player, with a pickup sound.
-        /// </summary>
         public void ShowPickup(Player player)
         {
             string text = Item.Name;
