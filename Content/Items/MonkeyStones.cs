@@ -1,5 +1,6 @@
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Loot;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,11 +16,19 @@ namespace OvermorrowMod.Content.Items.Archives
 
         public abstract MonkeyStoneTier Tier { get; }
 
+        private Rarity Rarity => Tier switch
+        {
+            MonkeyStoneTier.Blue => Rarity.Rare,
+            MonkeyStoneTier.Green => Rarity.Common,
+            MonkeyStoneTier.Orange => Rarity.Legendary,
+            _ => Rarity.Epic,
+        };
+
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 24;
-            Item.rare = ItemRarityID.Expert;
+            Item.rare = LootRarityItem.RarityType(Rarity);
             Item.maxStack = 9999;
         }
 
