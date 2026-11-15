@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
-        private const bool DebugAI = true;
+        private const bool DebugAI = false;
         private int afterimageLinger = 0;
         public override void OnSpawn(IEntitySource source)
         {
