@@ -74,7 +74,9 @@ namespace OvermorrowMod.Core.Items.Collectibles
             item.TurnToAir();
         }
 
-        public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
+        public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource) => Reset();
+
+        public void Reset()
         {
             totals.Clear();
             effects.Clear();

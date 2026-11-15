@@ -1,3 +1,4 @@
+using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using System.Collections.Generic;
@@ -117,6 +118,7 @@ namespace OvermorrowMod.Core.Globals
                 if (pendingClassItems != null)
                 {
                     ClearRunItems();
+                    Player.GetModPlayer<CollectiblePlayer>().Reset();
 
                     int slot = 0;
                     int ammoSlot = Main.InventoryAmmoSlotsStart;
