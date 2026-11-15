@@ -63,6 +63,8 @@ namespace OvermorrowMod.Content.Misc
 
         private bool wasOpen = false;
 
+        private int[] offeredRewards;
+
         public bool isCleaningUp = false;
         public int cleanupTimer = 0;
         private const int CleanupDuration = 360;
@@ -204,9 +206,9 @@ namespace OvermorrowMod.Content.Misc
             EmitRays();
             if (isOpen && !wasOpen)
             {
-                int[] offered = RollCombatReward();
-                if (offered.Length > 0)
-                    RewardSelectionManager.ShowFor(NPC, offered);
+                offeredRewards ??= RollCombatReward();
+                if (offeredRewards.Length > 0)
+                    RewardSelectionManager.ShowFor(NPC, offeredRewards);
             }
             else if (!isOpen && wasOpen)
             {
