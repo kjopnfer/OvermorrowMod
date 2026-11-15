@@ -18,10 +18,10 @@ namespace OvermorrowMod.Content.Items.Archives
 
         private Rarity Rarity => Tier switch
         {
-            MonkeyStoneTier.Blue => Rarity.Rare,
-            MonkeyStoneTier.Green => Rarity.Common,
-            MonkeyStoneTier.Orange => Rarity.Legendary,
-            _ => Rarity.Epic,
+            MonkeyStoneTier.Blue => Rarity.Common,
+            MonkeyStoneTier.Green => Rarity.Rare,
+            MonkeyStoneTier.Orange => Rarity.Epic,
+            _ => Rarity.Legendary,
         };
 
         public override void SetDefaults()
