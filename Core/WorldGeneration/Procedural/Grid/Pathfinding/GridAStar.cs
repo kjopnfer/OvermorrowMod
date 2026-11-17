@@ -420,9 +420,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         }
 
         /// <summary>
-        /// Rejects candidates whose footprint borders a foreign cell: an occupied cell that is not on this path
-        /// and not inside the start or goal footprint. Two paths placed side by side would join through shared
-        /// open sides into a loop. Cardinal neighbors only, since diagonals don't connect through cell borders.
+        /// Rejects candidates that border a foreign cell (an occupied cell that is not on this path and not inside
+        /// the start or goal footprint) where either side of the shared border is open. Two paths joined through an
+        /// open border would form a loop. Borders closed on both sides stay walls, so separate paths may touch there.
+        /// Cardinal neighbors only, since diagonals don't connect through cell borders.
         /// </summary>
         private bool AntiFusionOk(GridRoom candidate, Point anchor)
         {
@@ -448,7 +449,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         if (nSlot == null || nSlot.IsEmpty) continue;
                         if (_pending.Contains(nx, ny)) continue;
 
-                        return false;
+                        if (candidate.IsOpenSide(sc, sr, d.side)) return false;
+                        if (nSlot.Room.IsOpenSide(nSlot.SubCol, nSlot.SubRow, d.opposite)) return false;
                     }
                 }
             }
@@ -461,7 +463,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
         /// <summary>
         /// Flood fill over the cells any path could occupy: in-bounds, empty, not blocked, and with no occupied
-        /// cardinal neighbor outside the start and goal footprints. Every cell of every footprint A* can place
+        /// cardinal neighbor outside the start and goal footprints whose side facing the cell is open. Every cell of every footprint A* can place
         /// passes this filter, each footprint contains its cursor, consecutive footprints touch, and the last
         /// footprint covers the cell just outside the goal opening it arrives through, so a false result means
         /// A* cannot reach the goal.
@@ -525,7 +527,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 var n = _grid.GetSlot(nx, ny);
                 if (n == null || n.IsEmpty) continue;
                 if (InEndpointFootprint(nx, ny)) continue;
-                return false;
+                if (n.Room.IsOpenSide(n.SubCol, n.SubRow, d.opposite)) return false;
             }
             return true;
         }
