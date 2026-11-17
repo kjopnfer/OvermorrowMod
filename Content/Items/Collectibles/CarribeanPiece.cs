@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Collectibles
             CollectibleEffect.ExtraCoinsOnHit,
         };
 
-        protected override void OnConsumed(Player player)
+        protected override void OnApplied(Player player)
         {
             player.GetModPlayer<CollectiblePlayer>().SetEffect(CollectibleEffect.ExtraCoinsOnHit, 0.05f);
         }

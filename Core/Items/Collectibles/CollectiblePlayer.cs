@@ -12,13 +12,13 @@ namespace OvermorrowMod.Core.Items.Collectibles
         private readonly Dictionary<CollectibleEffect, float> effects = new();
 
         /// <summary>
-        /// Number of consumed sources that lowered a player stat. Read by effects
+        /// Number of collected sources that lowered a player stat. Read by effects
         /// that reward taking on stat penalties, such as Rose.
         /// </summary>
         public int DecreasingSourceCount;
 
         /// <summary>
-        /// Item type to count of every collectible consumed, in first-collected order.
+        /// Item type to count of every collectible applied, in first-collected order.
         /// </summary>
         public readonly Dictionary<int, int> Collected = new();
         public int Version { get; private set; }
@@ -52,7 +52,28 @@ namespace OvermorrowMod.Core.Items.Collectibles
 
         public float GetEffect(CollectibleEffect effect) => effects.TryGetValue(effect, out float value) ? value : 0f;
 
-        public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
+        public override void PostUpdate()
+        {
+            if (Player.whoAmI != Main.myPlayer) return;
+
+            foreach (Item item in Player.inventory)
+                ApplyHeld(item);
+
+            ApplyHeld(Main.mouseItem);
+        }
+
+        private void ApplyHeld(Item item)
+        {
+            if (item.ModItem is not CollectibleItem collectible) return;
+
+            collectible.Apply(Player, item.stack);
+            collectible.ShowPickup(Player);
+            item.TurnToAir();
+        }
+
+        public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource) => Reset();
+
+        public void Reset()
         {
             totals.Clear();
             effects.Clear();

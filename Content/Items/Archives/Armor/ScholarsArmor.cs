@@ -23,6 +23,7 @@ namespace OvermorrowMod.Content.Items.Archives.Armor
         {
             Item.width = 26;
             Item.height = 20;
+            Item.value = Item.sellPrice(gold: 1);
         }
 
         public override void UpdateEquip(Player player)
@@ -49,6 +50,7 @@ namespace OvermorrowMod.Content.Items.Archives.Armor
         {
             Item.width = 26;
             Item.height = 20;
+            Item.value = Item.sellPrice(gold: 1);
         }
 
         public override void UpdateEquip(Player player)
@@ -71,6 +73,7 @@ namespace OvermorrowMod.Content.Items.Archives.Armor
         {
             Item.width = 26;
             Item.height = 20;
+            Item.value = Item.sellPrice(gold: 1);
         }
 
         public override void UpdateEquip(Player player)

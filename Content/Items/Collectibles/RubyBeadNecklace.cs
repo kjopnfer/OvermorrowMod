@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Collectibles
             CollectibleEffect.RestAreaHeal,
         };
 
-        protected override void OnConsumed(Player player)
+        protected override void OnApplied(Player player)
         {
             player.GetModPlayer<CollectiblePlayer>().SetEffect(CollectibleEffect.RestAreaHeal, 10f);
         }

@@ -1,9 +1,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
+using OvermorrowMod.Core.Items.Collectibles;
+using OvermorrowMod.Core.UI.RunStats;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.UI;
 using Terraria.UI.Chat;
@@ -49,10 +53,20 @@ namespace OvermorrowMod.Core.UI
         public const int ButtonFadeInTicks = 20;
         public const int TitleGap = 18;
 
+        public const int FlightTicks = 20;
+        public const float FlightStartSize = 32f;
+        public const float FlightEndSize = 12f;
+
         private Vector2 rowCenter;
         private float titleOpacity;
 
+        private int flightType;
+        private int flightTimer;
+        private Vector2 flightStart;
+
         public float Opacity => titleOpacity;
+
+        public bool Active => visible || flightType > 0;
 
         // Order slots launch in: left first, right second, middle third.
         private static readonly int[] PopOrder = { 0, 2, 1 };
@@ -150,6 +164,8 @@ namespace OvermorrowMod.Core.UI
                 {
                     if (selectedIndex < 0) return;
                     int itemId = (itemIds != null && selectedIndex < itemIds.Length) ? itemIds[selectedIndex] : 0;
+                    if (itemId > 0 && ContentSamples.ItemsByType[itemId].ModItem is CollectibleItem)
+                        StartFlight(itemId);
                     orch.ClaimReward(itemId);
                 }
                 else // Deny
@@ -168,8 +184,26 @@ namespace OvermorrowMod.Core.UI
                 slots[i].selected = (i == idx);
         }
 
+        private void StartFlight(int itemId)
+        {
+            flightType = itemId;
+            flightTimer = 0;
+            flightStart = slots[selectedIndex].GetDimensions().Center();
+            slots[selectedIndex].SetItem(0);
+        }
+
+        private void UpdateFlight()
+        {
+            if (flightType == 0 || ++flightTimer < FlightTicks) return;
+
+            if (ContentSamples.ItemsByType[flightType].ModItem is CollectibleItem collectible)
+                collectible.ShowPickup(Main.LocalPlayer);
+            flightType = 0;
+        }
+
         public override void Update(GameTime gameTime)
         {
+            UpdateFlight();
             if (!visible) return;
 
             // Cache chest world position
@@ -290,9 +324,22 @@ namespace OvermorrowMod.Core.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (!visible) return;
-            base.Draw(spriteBatch);
-            DrawTitle(spriteBatch);
+            if (visible)
+            {
+                base.Draw(spriteBatch);
+                DrawTitle(spriteBatch);
+            }
+
+            DrawFlight(spriteBatch);
+        }
+
+        private void DrawFlight(SpriteBatch spriteBatch)
+        {
+            if (flightType == 0) return;
+
+            float progress = EasingUtils.EaseInCubic(flightTimer / (float)FlightTicks);
+            Vector2 position = Vector2.Lerp(flightStart, WorldToUI(Main.LocalPlayer.Center), progress);
+            RunStatsPanel.DrawItemIcon(spriteBatch, flightType, position, MathHelper.Lerp(FlightStartSize, FlightEndSize, progress), Color.White);
         }
 
         private void DrawTitle(SpriteBatch spriteBatch)

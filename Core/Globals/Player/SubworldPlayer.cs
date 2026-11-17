@@ -1,8 +1,7 @@
-using OvermorrowMod.Content.Items.Archives;
+using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -119,6 +118,7 @@ namespace OvermorrowMod.Core.Globals
                 if (pendingClassItems != null)
                 {
                     ClearRunItems();
+                    Player.GetModPlayer<CollectiblePlayer>().Reset();
 
                     int slot = 0;
                     int ammoSlot = Main.InventoryAmmoSlotsStart;
@@ -135,18 +135,14 @@ namespace OvermorrowMod.Core.Globals
         }
 
         /// <summary>
-        /// Empties the run inventory and equipment for a new run. Monkey Stones are the meta currency and live in the run inventory, so they are kept and moved past the hotbar, clear of the class kit.
+        /// Empties the run inventory and equipment for a new run.
         /// </summary>
         private void ClearRunItems()
         {
-            List<Item> stones = Player.inventory.Where(item => item.ModItem is MonkeyStone).ToList();
-
             foreach (Item[] slots in new[] { Player.inventory, Player.armor, Player.dye, Player.miscEquips, Player.miscDyes })
             {
                 for (int i = 0; i < slots.Length; i++) slots[i] = new Item();
             }
-
-            for (int i = 0; i < stones.Count; i++) Player.inventory[InventoryPlayer.HotbarSlots + i] = stones[i];
         }
 
         private static Item[] ClonedSlots(Item[] src)

@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
             if (Main.rand.NextBool(6))
-                yield return new Item(ModContent.ItemType<MonkeyStoneBlue>());
+                yield return new Item(ModContent.ItemType<MonkeyStoneGreen>());
         }
     }
 }

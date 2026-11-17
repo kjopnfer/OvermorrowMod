@@ -6,6 +6,7 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
+using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
@@ -62,6 +63,8 @@ namespace OvermorrowMod.Content.Misc
 
         private bool wasOpen = false;
 
+        private int[] offeredRewards;
+
         public bool isCleaningUp = false;
         public int cleanupTimer = 0;
         private const int CleanupDuration = 360;
@@ -115,7 +118,11 @@ namespace OvermorrowMod.Content.Misc
         public void ClaimReward(int itemId)
         {
             if (isCleaningUp) return;
-            if (itemId > 0)
+            if (itemId > 0 && ContentSamples.ItemsByType[itemId].ModItem is CollectibleItem collectible)
+            {
+                collectible.Apply(Main.LocalPlayer, 1);
+            }
+            else if (itemId > 0)
             {
                 Main.LocalPlayer.QuickSpawnItem(NPC.GetSource_Loot(), itemId);
                 LootRoller.GiveCompanionAmmo(NPC.GetSource_Loot(), Main.LocalPlayer.Center, itemId);
@@ -199,9 +206,9 @@ namespace OvermorrowMod.Content.Misc
             EmitRays();
             if (isOpen && !wasOpen)
             {
-                int[] offered = RollCombatReward();
-                if (offered.Length > 0)
-                    RewardSelectionManager.ShowFor(NPC, offered);
+                offeredRewards ??= RollCombatReward();
+                if (offeredRewards.Length > 0)
+                    RewardSelectionManager.ShowFor(NPC, offeredRewards);
             }
             else if (!isOpen && wasOpen)
             {

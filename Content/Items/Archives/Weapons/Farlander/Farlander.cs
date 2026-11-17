@@ -122,6 +122,7 @@ namespace OvermorrowMod.Content.Items.Archives.Weapons
             Item.autoReuse = true;
             Item.shootSpeed = 10f;
             Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(gold: 1);
             Item.useTime = 22;
             Item.useAnimation = 22;
         }
