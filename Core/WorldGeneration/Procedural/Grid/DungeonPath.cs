@@ -52,6 +52,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public IReadOnlyList<PathStep> Steps { get; }
 
         /// <summary>
+        /// Rooms placed before routing that this path passes through, such as the spine's required rooms.
+        /// </summary>
+        public IReadOnlyList<PathStep> Rooms { get; }
+
+        /// <summary>
         /// Anchor of this path's combat, or null if the path has no
         /// combat (dead-end branches, same-side closed loops).
         /// </summary>
@@ -66,7 +71,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public DungeonPath(int id, PathRole role, DungeonPath parent,
                            IReadOnlyList<PathStep> steps,
                            Point? combatAnchor,
-                           Point? placeholderAnchor = null)
+                           Point? placeholderAnchor = null,
+                           IReadOnlyList<PathStep> rooms = null)
         {
             Id = id;
             Role = role;
@@ -74,6 +80,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Steps = steps;
             CombatAnchor = combatAnchor;
             PlaceholderAnchor = placeholderAnchor;
+            Rooms = rooms ?? System.Array.Empty<PathStep>();
         }
 
         /// <summary>

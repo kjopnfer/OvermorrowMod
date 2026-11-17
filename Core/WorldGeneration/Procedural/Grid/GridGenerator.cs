@@ -432,7 +432,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     }
                 }
             }
-            var spinePath = new DungeonPath(id: 1, role: PathRole.Spine, parent: null, steps: spineSteps ?? new List<PathStep>(), combatAnchor: spineCombatAnchor);
+            var spinePath = new DungeonPath(id: 1, role: PathRole.Spine, parent: null, steps: spineSteps ?? new List<PathStep>(), combatAnchor: spineCombatAnchor, rooms: RoomSteps(grid, requiredAnchors));
             paths.Add(spinePath);
 
             _stats.BranchPlaced = bestBranchPlacement.HasValue;
@@ -772,13 +772,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             int spineCombatRight = spineCombatAnchor.X + spineCombat.CellWidth - 1;
 
-            // Partition non-feature bookshelf/corridor spine cells around the combat.
             var beforeNodes = new List<PathStep>();
             var afterNodes = new List<PathStep>();
-            foreach (var step in spineSteps)
+            foreach (var step in BranchNodes(grid, spineSteps, RoomSteps(grid, requiredAnchors)))
             {
-                if (step.Cell.IsFeature) continue;
-                if (step.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
                 int x = step.Anchor.X;
                 if (x < spineCombatAnchor.X - 1) beforeNodes.Add(step);
                 else if (x > spineCombatRight + 1) afterNodes.Add(step);
@@ -917,15 +914,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         private DungeonPath TryAddClosedLoopAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
-            if (parent.Steps.Count < 2) return null;
+            var nodes = BranchNodes(grid, parent.Steps, parent.Rooms);
+            if (nodes.Count < 2) return null;
 
             for (int npa = 0; npa < AuxNodePickAttempts; npa++)
             {
-                var a = parent.Steps[rand.Next(parent.Steps.Count)];
-                var b = parent.Steps[rand.Next(parent.Steps.Count)];
+                var a = nodes[rand.Next(nodes.Count)];
+                var b = nodes[rand.Next(nodes.Count)];
                 if (a.Anchor == b.Anchor) continue;
-                if (a.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
-                if (b.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
 
                 int manhattan = System.Math.Abs(a.Anchor.X - b.Anchor.X) + System.Math.Abs(a.Anchor.Y - b.Anchor.Y);
                 if (manhattan < MinAuxNodeManhattan || manhattan > MaxAuxNodeManhattan) continue;
@@ -1010,14 +1006,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>Dead-end aux branch terminating in a ChestRoom.</summary>
         private DungeonPath TryAddDeadEndAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
-            if (parent.Steps.Count == 0) return null;
+            var nodes = BranchNodes(grid, parent.Steps, parent.Rooms);
+            if (nodes.Count == 0) return null;
 
             var dirs = new (int dx, int dy)[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
             for (int npa = 0; npa < AuxNodePickAttempts; npa++)
             {
-                var nodeA = parent.Steps[rand.Next(parent.Steps.Count)];
-                if (nodeA.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
+                var nodeA = nodes[rand.Next(nodes.Count)];
 
                 int dirStart = rand.Next(4);
                 for (int di = 0; di < 4; di++)
@@ -1332,6 +1328,40 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         {
             for (int i = placed.Count - 1; i >= 0; i--)
                 grid.Clear(placed[i].cell, placed[i].anchor.X, placed[i].anchor.Y);
+        }
+
+        private static List<PathStep> RoomSteps(DungeonGrid grid, List<Point> anchors)
+        {
+            var rooms = new List<PathStep>();
+            if (anchors == null) return rooms;
+            foreach (var anchor in anchors)
+                rooms.Add(new PathStep(grid.GetSlot(anchor.X, anchor.Y).Room, anchor));
+            return rooms;
+        }
+
+        /// <summary>
+        /// Where a branch can start or end on a path: its bookshelf and corridor cells, and its non-combat rooms
+        /// with an opening that faces an empty cell.
+        /// </summary>
+        private static List<PathStep> BranchNodes(DungeonGrid grid, IReadOnlyList<PathStep> steps, IReadOnlyList<PathStep> rooms)
+        {
+            var nodes = new List<PathStep>();
+            foreach (var step in steps)
+            {
+                if (step.Cell.IsFeature) continue;
+                if (step.Cell.Type is RoomType.Filler or RoomType.HorizontalConnector) nodes.Add(step);
+            }
+            foreach (var room in rooms)
+            {
+                if (room.Cell.Type == RoomType.Combat) continue;
+                foreach (var opening in room.Cell.Openings)
+                {
+                    if (!IsEmptyCell(grid, room.Anchor.X + opening.OutsideCell.X, room.Anchor.Y + opening.OutsideCell.Y)) continue;
+                    nodes.Add(room);
+                    break;
+                }
+            }
+            return nodes;
         }
 
         private static bool IsEmptyCell(DungeonGrid grid, int x, int y)
