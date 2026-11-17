@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Items.Collectibles
             CollectibleEffect.DecreaseSourceScaling,
         };
 
-        protected override void OnConsumed(Player player)
+        protected override void OnApplied(Player player)
         {
             player.GetModPlayer<CollectiblePlayer>().SetEffect(CollectibleEffect.DecreaseSourceScaling, 1f);
         }

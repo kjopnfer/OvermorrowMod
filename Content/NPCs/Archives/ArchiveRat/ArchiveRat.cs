@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             SpawnModBiomes = [ModContent.GetInstance<GrandArchives>().Type];
         }
 
-        private const bool DebugAI = true;
+        private const bool DebugAI = false;
         private int afterimageLinger = 0;
         public override void OnSpawn(IEntitySource source)
         {
@@ -362,7 +362,7 @@ namespace OvermorrowMod.Content.NPCs.Archives
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ArchiveKey>(), chanceDenominator: 50));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CarvingKnife>(), chanceDenominator: 50));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cheese>(), chanceDenominator: 20));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneBlue>(), chanceDenominator: 5));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStoneGreen>(), chanceDenominator: 5));
         }
     }
 }

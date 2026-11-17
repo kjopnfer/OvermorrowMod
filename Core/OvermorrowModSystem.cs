@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.UI.ClassSelection;
+using OvermorrowMod.Core.UI.MonkeyStones;
 using OvermorrowMod.Core.UI.RunStats;
 using OvermorrowMod.Core.UI.Shop;
 using System;
@@ -32,6 +33,8 @@ namespace OvermorrowMod.Core
 
         public RunStatsPanel RunStatsPanel;
 
+        public MonkeyStoneDisplay MonkeyStoneDisplay;
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -59,6 +62,8 @@ namespace OvermorrowMod.Core
                 ShopInterface.SetState(ShopDialogue);
 
                 RunStatsPanel = new RunStatsPanel();
+
+                MonkeyStoneDisplay = new MonkeyStoneDisplay();
             }
         }
 
@@ -88,7 +93,7 @@ namespace OvermorrowMod.Core
         public override void UpdateUI(GameTime gameTime)
         {
             if (TitleCard != null && TitleCard.visible) TitleInterface?.Update(gameTime);
-            if (RewardSelection != null && RewardSelection.visible) RewardInterface?.Update(gameTime);
+            if (RewardSelection != null && RewardSelection.Active) RewardInterface?.Update(gameTime);
             if (ClassSelection != null && ClassSelection.visible) ClassInterface?.Update(gameTime);
             if (ShopDialogue.IsActive) ShopInterface?.Update(gameTime);
             else ShopDialogue?.NotifyClosed();
@@ -100,10 +105,11 @@ namespace OvermorrowMod.Core
             if (mouseTextIndex != -1)
             {
                 AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
-                AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.visible, "Reward Selection");
+                AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.Active, "Reward Selection");
                 AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
                 AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
                 AddInterfaceLayer(layers, RunStatsPanel, mouseTextIndex, RunStatsPanel.PopupVisible || RunStatsPanel.TabVisible, "Stats");
+                AddInterfaceLayer(layers, MonkeyStoneDisplay, mouseTextIndex, true, "Monkey Stones");
             }
         }
 

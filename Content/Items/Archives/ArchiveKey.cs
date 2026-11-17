@@ -16,6 +16,7 @@ namespace OvermorrowMod.Content.Items.Archives
             Item.useAnimation = 30;
             Item.useTime = 30;
             Item.rare = ItemRarityID.Expert;
+            Item.value = Item.sellPrice(silver: 50);
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.maxStack = 9999;
         }
