@@ -393,8 +393,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                             neighborSubY = slot.SubRow;
                         }
 
-                        bool ourSide = candidate.IsOpenSide(sc, sr, d.side);
-                        bool theirSide = neighbor.IsOpenSide(neighborSubX, neighborSubY, d.opposite);
+                        bool ourSide = candidate.OpensToward(sc, sr, d.side, neighbor);
+                        bool theirSide = neighbor.OpensToward(neighborSubX, neighborSubY, d.opposite, candidate);
                         if (ourSide != theirSide) return false;
                         if (!ourSide) continue;
 
@@ -449,8 +449,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         if (nSlot == null || nSlot.IsEmpty) continue;
                         if (_pending.Contains(nx, ny)) continue;
 
-                        if (candidate.IsOpenSide(sc, sr, d.side)) return false;
-                        if (nSlot.Room.IsOpenSide(nSlot.SubCol, nSlot.SubRow, d.opposite)) return false;
+                        if (candidate.OpensToward(sc, sr, d.side, nSlot.Room)) return false;
+                        if (nSlot.Room.OpensToward(nSlot.SubCol, nSlot.SubRow, d.opposite, candidate)) return false;
                     }
                 }
             }
@@ -527,7 +527,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 var n = _grid.GetSlot(nx, ny);
                 if (n == null || n.IsEmpty) continue;
                 if (InEndpointFootprint(nx, ny)) continue;
-                if (n.Room.IsOpenSide(n.SubCol, n.SubRow, d.opposite)) return false;
+                if (n.Room.OpensToward(n.SubCol, n.SubRow, d.opposite, null)) return false;
             }
             return true;
         }

@@ -687,11 +687,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (slot == null || slot.IsEmpty) continue;
                 foreach (var d in dirs)
                 {
-                    if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side)) continue;
                     var next = new Point(p.X + d.dx, p.Y + d.dy);
                     if (visited.Contains(next)) continue;
                     var nextSlot = grid.GetSlot(next.X, next.Y);
                     if (nextSlot == null || nextSlot.IsEmpty) continue;
+                    if (nextSlot.GroupId != slot.GroupId && !GridRoom.Connects(slot, d.side, nextSlot)) continue;
                     if (nextSlot.Room.Type == RoomType.Combat) continue;
                     visited.Add(next);
                     queue.Enqueue(next);
@@ -724,10 +724,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (slot == null || slot.IsEmpty) continue;
                 foreach (var d in dirs)
                 {
-                    if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side)) continue;
                     var n = new Point(p.X + d.dx, p.Y + d.dy);
                     var nSlot = grid.GetSlot(n.X, n.Y);
                     if (nSlot == null || nSlot.IsEmpty) continue;
+                    if (!GridRoom.Connects(slot, d.side, nSlot)) continue;
                     if (parent.TryGetValue(n, out var par))
                     {
                         // Visited. Cycle iff it's not the parent we came from.
@@ -1600,7 +1600,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return blocked;
         }
 
-        /// <summary>Every (cell, side) where the cell has an open side facing an empty neighbor.</summary>
+        /// <summary>
+        /// Every (cell, side) where the cell has an open side facing an empty neighbor or a neighbor it does not connect to.
+        /// </summary>
         private static HashSet<(Point cell, Direction side)> CollectDeadEndSides(DungeonGrid grid)
         {
             var sides = new HashSet<(Point, Direction)>();
@@ -1621,7 +1623,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     {
                         if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side)) continue;
                         var n = grid.GetSlot(col + d.dx, row + d.dy);
-                        if (n != null && !n.IsEmpty) continue;
+                        if (n != null && !n.IsEmpty && (n.GroupId == slot.GroupId || GridRoom.Connects(slot, d.side, n))) continue;
                         sides.Add((new Point(col, row), d.side));
                     }
                 }

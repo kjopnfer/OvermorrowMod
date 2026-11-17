@@ -279,6 +279,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public virtual bool IsOpenSide(int subCol, int subRow, Direction side) => false;
 
         /// <summary>
+        /// Whether the given sub-cell side is a doorway when <paramref name="neighbor"/> sits against it.
+        /// Default: <see cref="IsOpenSide"/>. Rooms whose padding closes a side for some neighbors override this.
+        /// </summary>
+        /// <param name="neighbor">The room across the side, or null for a room of no particular type.</param>
+        public virtual bool OpensToward(int subCol, int subRow, Direction side, GridRoom neighbor) => IsOpenSide(subCol, subRow, side);
+
+        /// <summary>
+        /// True if the two cells share a doorway: each side of the border is open toward the other room.
+        /// </summary>
+        public static bool Connects(GridSlot from, Direction side, GridSlot to) => from.Room.OpensToward(from.SubCol, from.SubRow, side, to.Room) && to.Room.OpensToward(to.SubCol, to.SubRow, side.Opposite(), from.Room);
+
+        /// <summary>
         /// Whether this cell may sit next to an empty neighbor. False for connectors,
         /// whose open sides must connect to another cell.
         /// </summary>

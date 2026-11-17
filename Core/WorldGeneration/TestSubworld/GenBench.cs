@@ -163,11 +163,10 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 }
                 foreach (var side in Sides)
                 {
-                    if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, side)) continue;
                     var q = new Point(p.X + side.Step().X, p.Y + side.Step().Y);
                     var neighbor = grid.GetSlot(q.X, q.Y);
                     if (neighbor == null || neighbor.IsEmpty) continue;
-                    if (!neighbor.Room.IsOpenSide(neighbor.SubCol, neighbor.SubRow, side.Opposite())) continue;
+                    if (!GridRoom.Connects(slot, side, neighbor)) continue;
                     if (visited.Add(q)) queue.Enqueue(q);
                 }
             }
