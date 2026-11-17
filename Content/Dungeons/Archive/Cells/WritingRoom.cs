@@ -24,6 +24,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         private const int MinDistanceFromDoor = 2;
 
         public override int PaddingPriority => 10;
+        public override bool IsJunction => true;
         private static readonly GridRoom[] HorizontalNeighbors =
         {
             new BookshelfCell(),

@@ -69,6 +69,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public bool IsFeature { get; set; } = false;
 
         /// <summary>
+        /// Whether the planner sends a reward dead end and a loop out of this room's unused openings.
+        /// The room gets at most one reward branch.
+        /// </summary>
+        public virtual bool IsJunction => false;
+
+        /// <summary>
         /// Total tile width of the footprint, including internal padding between sub-cells.
         /// </summary>
         public int FootprintWidth =>
