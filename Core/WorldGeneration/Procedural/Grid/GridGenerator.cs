@@ -558,6 +558,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
 
             PaddingBuilder.BuildAll(grid, fillTileType, palette);
+            CarveVoidStrips(plan);
             content.Decorate(grid);
             ApplySideCaps(grid, CollectDeadEndSides(grid), fillTileType);
 
@@ -603,6 +604,41 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             doors = new Dictionary<LayoutDirection, DoorPlacement>();
             foreach (var kv in plan.DoorAnchors)
                 doors[kv.Key] = MakeDoorPlacement(grid, kv.Value);
+        }
+
+        /// <summary>
+        /// Clears each void strip's bridgeless rows within the occupied rows to open air with no wall,
+        /// including the gutters between those cells. Bridge rows keep their own ceiling and deck.
+        /// </summary>
+        private static void CarveVoidStrips(DungeonPlan plan)
+        {
+            var grid = plan.Grid;
+            foreach (var strip in grid.VoidStrips)
+            {
+                int runStart = -1;
+                for (int row = plan.BoundsMin.Y; row <= plan.BoundsMax.Y + 1; row++)
+                {
+                    bool open = row <= plan.BoundsMax.Y && grid.GetSlot(strip.Col, row).IsEmpty;
+                    if (open)
+                    {
+                        if (runStart < 0) runStart = row;
+                        continue;
+                    }
+                    if (runStart < 0) continue;
+
+                    Point topLeft = grid.GridToWorld(strip.Col, runStart);
+                    Point bottomRight = grid.GridToWorld(strip.Col + strip.Width - 1, row - 1);
+                    for (int x = topLeft.X; x < bottomRight.X + DungeonGrid.CellTileWidth; x++)
+                    {
+                        for (int y = topLeft.Y; y < bottomRight.Y + DungeonGrid.CellTileHeight; y++)
+                        {
+                            WorldGenUtils.ClearTile(x, y);
+                            WorldGenUtils.ClearWall(x, y);
+                        }
+                    }
+                    runStart = -1;
+                }
+            }
         }
 
         /// <summary>Tile radius (in cells) around the spawn cleared of enemy spawns.</summary>
