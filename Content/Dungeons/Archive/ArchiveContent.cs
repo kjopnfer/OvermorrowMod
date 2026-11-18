@@ -17,6 +17,8 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         public override int Cols => 35;
         public override int Rows => 30;
 
+        public override int VoidStripCount => 2;
+
         public override int FillTile => ModContent.TileType<CastleBrick>();
         public override int LiningTile => ModContent.TileType<ArchiveWood>();
 
