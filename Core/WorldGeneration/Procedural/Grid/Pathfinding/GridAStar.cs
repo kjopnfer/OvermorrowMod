@@ -197,6 +197,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
                         var anchor = new Point(candNext.X + candidate.AnchorOffsetFromCursor.X, candNext.Y + candidate.AnchorOffsetFromCursor.Y);
                         if (!FootprintIsAvailable(candidate, anchor)) continue;
+                        if (!FitsVoidColumns(candidate, anchor)) continue;
 
                         // Committed same-type cells extending left and right of the anchor's row count toward
                         // the streak too, so two paths can't stitch their placements into one long chain.
@@ -302,6 +303,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     if (_pending.Contains(x, y)) return false;
                 }
             }
+            return true;
+        }
+
+        /// <summary>
+        /// True if the footprint is entirely on void strip columns for a bridge, or entirely off them for anything else.
+        /// </summary>
+        private bool FitsVoidColumns(GridRoom candidate, Point anchor)
+        {
+            bool bridge = candidate.Type == RoomType.Bridge;
+            for (int sc = 0; sc < candidate.CellWidth; sc++)
+                if (_grid.IsVoid(anchor.X + sc) != bridge) return false;
             return true;
         }
 

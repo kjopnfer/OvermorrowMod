@@ -146,7 +146,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static void WriteAsciiLayout(StringBuilder sb, DungeonGrid grid)
         {
             sb.AppendLine("--- Grid layout ---");
-            sb.AppendLine("Each cell shows its type wrapped in brackets. '.' = empty, '#' = out-of-bounds.");
+            sb.AppendLine("Each cell shows its type wrapped in brackets. '.' = empty, '~' = empty void strip, '#' = out-of-bounds.");
             sb.AppendLine($"Note: rows are wide ({grid.Cols} cells x {CellLabelInnerWidth + 2} chars = {grid.Cols * (CellLabelInnerWidth + 2)} chars). Use a wide editor.");
             sb.AppendLine();
 
@@ -180,7 +180,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             var slot = grid.GetSlot(col, row);
             string name;
             if (slot == null)            name = "#";
-            else if (slot.IsEmpty)       name = ".";
+            else if (slot.IsEmpty)       name = grid.IsVoid(col) ? "~" : ".";
             else
             {
                 name = slot.Room.GetType().Name;

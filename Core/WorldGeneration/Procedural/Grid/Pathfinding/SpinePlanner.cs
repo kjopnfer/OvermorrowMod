@@ -47,7 +47,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 // in their own AllowedNeighbors.
                 var prototype = factory();
                 prototype.IsFeature = true;
-                var cands = GenerateCandidates(prototype, elevation, gridCols, gridRows, startDoorPos, endDoorPos, blocked, edgeBorder, minDoorDistance, MaxCandidatesPerRoom);
+                var cands = GenerateCandidates(grid, prototype, elevation, gridCols, gridRows, startDoorPos, endDoorPos, blocked, edgeBorder, minDoorDistance, MaxCandidatesPerRoom);
                 rooms.Add(new RoomState
                 {
                     Factory = factory,
@@ -238,7 +238,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         // Returns candidate positions in a vertical band around the elevation
         // curve, sorted by closeness to the curve. Band radius scales with
         // the room's height.
-        private static List<Point> GenerateCandidates(GridRoom prototype, double[] elevation, int gridCols, int gridRows, Point startDoor, Point endDoor, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, int maxCount)
+        private static List<Point> GenerateCandidates(DungeonGrid grid, GridRoom prototype, double[] elevation, int gridCols, int gridRows, Point startDoor, Point endDoor, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, int maxCount)
         {
             int w = prototype.CellWidth;
             int h = prototype.CellHeight;
@@ -252,6 +252,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             var ranked = new List<(Point pos, double dev)>();
             for (int col = playableLeft; col <= playableRight; col++)
             {
+                if (grid.NearVoid(col, w)) continue;
+
                 // Shift the centered anchor row by the room's anchor offset so
                 // the room's CURSOR (where the spine actually docks) lands on
                 // the curve, not the top-left anchor. For default rooms with

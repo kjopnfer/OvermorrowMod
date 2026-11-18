@@ -15,6 +15,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     }
 
     /// <summary>
+    /// A run of whole grid columns, <see cref="Width"/> wide and the full grid tall, that only bridges may occupy.
+    /// </summary>
+    public readonly struct VoidStrip
+    {
+        public readonly int Col;
+        public readonly int Width;
+
+        public VoidStrip(int col, int width)
+        {
+            Col = col;
+            Width = width;
+        }
+
+        public bool Contains(int col) => col >= Col && col < Col + Width;
+    }
+
+    /// <summary>
     /// A 2D grid of cells with fixed spacing. Each slot can hold a GridRoom reference.
     /// The grid handles world-space coordinate conversion, placement validation via
     /// mutual edge compatibility, and tracks which slots are occupied.
@@ -44,6 +61,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private readonly int[] _placementsByRole = new int[Enum.GetValues(typeof(RoomType)).Length];
         private readonly int[] _shaftsPerColumn;
         private readonly List<Point> _doorAnchors = new();
+        private readonly List<VoidStrip> _voidStrips = new();
+        private readonly bool[] _voidColumns;
 
         public DungeonGrid(int cols, int rows, Point origin)
         {
@@ -52,6 +71,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Origin = origin;
             _slots = new GridSlot[cols, rows];
             _shaftsPerColumn = new int[cols];
+            _voidColumns = new bool[cols];
 
             for (int c = 0; c < cols; c++)
                 for (int r = 0; r < rows; r++)
@@ -92,6 +112,45 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public int CountPlacements(RoomType role) => _placementsByRole[(int)role];
 
         public bool ColumnHasShaft(int col) => col >= 0 && col < Cols && _shaftsPerColumn[col] > 0;
+
+        public IReadOnlyList<VoidStrip> VoidStrips => _voidStrips;
+
+        /// <summary>
+        /// Reserves <paramref name="width"/> columns from <paramref name="col"/> as a void strip. Slots are unaffected.
+        /// </summary>
+        public void AddVoidStrip(int col, int width)
+        {
+            _voidStrips.Add(new VoidStrip(col, width));
+            for (int c = col; c < col + width; c++)
+                _voidColumns[c] = true;
+        }
+
+        public bool IsVoid(int col) => col >= 0 && col < Cols && _voidColumns[col];
+
+        /// <summary>
+        /// Columns kept between a planner-placed room and a void strip, so a path can reach the strip from the room's side.
+        /// </summary>
+        public const int PlacedRoomVoidClearance = 2;
+
+        /// <summary>
+        /// True if a footprint at <paramref name="col"/>, <paramref name="width"/> wide, is on or within <see cref="PlacedRoomVoidClearance"/> columns of a void strip.
+        /// </summary>
+        public bool NearVoid(int col, int width)
+        {
+            for (int c = col - PlacedRoomVoidClearance; c < col + width + PlacedRoomVoidClearance; c++)
+                if (IsVoid(c)) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// The column's index within its void strip, or -1 if it is not in one.
+        /// </summary>
+        public int VoidStripOffset(int col)
+        {
+            foreach (var strip in _voidStrips)
+                if (strip.Contains(col)) return col - strip.Col;
+            return -1;
+        }
 
         public GridSlot GetSlot(int col, int row)
         {

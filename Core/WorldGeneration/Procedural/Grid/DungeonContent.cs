@@ -93,6 +93,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public virtual int MaxVerticalRun => 2;
 
         /// <summary>
+        /// Number of void strips reserved across the spine before it is planned. Paths cross a strip only
+        /// straight across, through rooms of type <see cref="RoomType.Bridge"/>, which the room kit must list as neighbors.
+        /// </summary>
+        public virtual int VoidStripCount => 0;
+
+        /// <summary>
+        /// Columns per void strip. A bridge spans two columns, so this is a positive multiple of 2.
+        /// </summary>
+        public virtual int VoidStripWidth => 2;
+
+        /// <summary>
         /// Dungeon-specific layout adjustment run after planning but before any cell is rendered.
         /// The dungeon may swap room instances in the grid (footprint and connectivity must match).
         /// </summary>

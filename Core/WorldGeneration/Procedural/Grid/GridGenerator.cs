@@ -147,6 +147,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             const int MinSubgoalSpacing = 2;
             const double SpineElevationPenalty = 0.4;
 
+            PlaceVoidStrips(grid, ForkHeadroom + EdgeBorder, gridCols - 1 - EdgeBorder - ForkHeadroom, rand);
+
             var borderBlocked = BuildBorderBlockedSet(gridCols, gridRows);
             _search = new GridAStar(grid, borderBlocked, _streakLimits, _minStreakLimits, _maxVerticalRun, _validateReachability, _stats);
 
@@ -654,6 +656,37 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private void LogWarn(string message)
         {
             if (_diagnostics) Terraria.ModLoader.Logging.PublicLogger.Warn($"[dungeon {_dungeonIndex}] {message}");
+        }
+
+        /// <summary>
+        /// Columns kept clear between a spine endpoint and a void strip.
+        /// </summary>
+        private const int StripEndpointMargin = 4;
+
+        /// <summary>
+        /// Minimum columns between two void strips.
+        /// </summary>
+        private const int MinStripGap = 6;
+
+        /// <summary>
+        /// Reserves the content's void strips at random columns strictly between the spine endpoint columns.
+        /// </summary>
+        private void PlaceVoidStrips(DungeonGrid grid, int startCol, int endCol, Random rand)
+        {
+            if (_content.VoidStripCount == 0) return;
+            int width = _content.VoidStripWidth;
+            if (width < 2 || width % 2 != 0) throw new InvalidOperationException($"{_content.GetType().Name}.VoidStripWidth must be a positive multiple of 2, got {width}.");
+
+            var free = new List<int>();
+            for (int c = startCol + StripEndpointMargin; c + width - 1 <= endCol - StripEndpointMargin; c++)
+                free.Add(c);
+
+            for (int i = 0; i < _content.VoidStripCount && free.Count > 0; i++)
+            {
+                int col = free[rand.Next(free.Count)];
+                grid.AddVoidStrip(col, width);
+                free.RemoveAll(c => c > col - width - MinStripGap && c < col + width + MinStripGap);
+            }
         }
 
         /// <summary>Clamps a row inside the playable area, leaving room for 2-row stair footprints.</summary>
@@ -1501,7 +1534,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static bool IsEmptyCell(DungeonGrid grid, int x, int y)
         {
             var s = grid.GetSlot(x, y);
-            return s != null && s.IsEmpty;
+            return s != null && s.IsEmpty && !grid.IsVoid(x);
         }
 
         private static bool InVerticalBounds(int gridRows, int row) => row >= EdgeBorder && row <= gridRows - 1 - EdgeBorder;
@@ -1537,6 +1570,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         {
             int w = proto.CellWidth;
             int h = proto.CellHeight;
+            if (grid.NearVoid(anchor.X, w)) return false;
 
             for (int sc = 0; sc < w; sc++)
             {

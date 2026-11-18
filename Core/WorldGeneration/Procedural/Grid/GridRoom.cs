@@ -46,7 +46,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         VerticalConnector,
         HorizontalConnector,
         DiagonalConnector,
-        Start
+        Start,
+        Bridge
     }
 
     /// <summary>
