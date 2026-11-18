@@ -612,19 +612,22 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private const int VoidStripWallThickness = 2;
 
         /// <summary>
-        /// Clears each void strip's bridgeless rows within the occupied rows to open air with no wall,
+        /// Clears each void strip's bridgeless rows, top to bottom of the stone footprint, to open air with no wall,
         /// including the gutters between those cells but not <see cref="VoidStripWallThickness"/> tiles on each outer edge.
         /// Bridge rows keep their own ceiling and deck.
         /// </summary>
         private static void CarveVoidStrips(DungeonPlan plan)
         {
             var grid = plan.Grid;
+            int marginRows = DungeonPlan.StoneMarginY / DungeonGrid.VerticalSpacing;
+            int firstRow = plan.BoundsMin.Y - marginRows;
+            int lastRow = plan.BoundsMax.Y + marginRows;
             foreach (var strip in grid.VoidStrips)
             {
                 int runStart = -1;
-                for (int row = plan.BoundsMin.Y; row <= plan.BoundsMax.Y + 1; row++)
+                for (int row = firstRow; row <= lastRow + 1; row++)
                 {
-                    bool open = row <= plan.BoundsMax.Y && grid.GetSlot(strip.Col, row).IsEmpty;
+                    bool open = row <= lastRow && (grid.GetSlot(strip.Col, row)?.IsEmpty ?? true);
                     if (open)
                     {
                         if (runStart < 0) runStart = row;
