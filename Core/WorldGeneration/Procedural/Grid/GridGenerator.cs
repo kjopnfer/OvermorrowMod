@@ -609,7 +609,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Stone left standing on each outer edge of a carved void strip run. Rooms beside a strip clear their own side gutter.
         /// </summary>
-        private const int VoidStripWallThickness = 2;
+        private const int VoidStripWallThickness = 6;
 
         /// <summary>
         /// Clears each void strip's bridgeless rows, top to bottom of the stone footprint, to open air with no wall,
