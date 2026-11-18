@@ -708,14 +708,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Minimum columns between two void strips.
         /// </summary>
-        private const int MinStripGap = 6;
+        private const int MinStripGap = 3;
 
         /// <summary>
-        /// Reserves the content's void strips at random columns strictly between the spine endpoint columns.
+        /// Reserves a rolled number of the content's void strips at random columns strictly between the spine endpoint columns.
         /// </summary>
         private void PlaceVoidStrips(DungeonGrid grid, int startCol, int endCol, Random rand)
         {
-            if (_content.VoidStripCount == 0) return;
+            if (_content.MaxVoidStrips == 0) return;
+            int count = rand.Next(_content.MinVoidStrips, _content.MaxVoidStrips + 1);
             int width = _content.VoidStripWidth;
             if (width < 2 || width % 2 != 0) throw new InvalidOperationException($"{_content.GetType().Name}.VoidStripWidth must be a positive multiple of 2, got {width}.");
 
@@ -723,7 +724,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int c = startCol + StripEndpointMargin; c + width - 1 <= endCol - StripEndpointMargin; c++)
                 free.Add(c);
 
-            for (int i = 0; i < _content.VoidStripCount && free.Count > 0; i++)
+            for (int i = 0; i < count && free.Count > 0; i++)
             {
                 int col = free[rand.Next(free.Count)];
                 grid.AddVoidStrip(col, width);
