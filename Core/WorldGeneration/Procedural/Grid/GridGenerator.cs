@@ -607,8 +607,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>
+        /// Stone left standing on each outer edge of a carved void strip run. Rooms beside a strip clear their own side gutter.
+        /// </summary>
+        private const int VoidStripWallThickness = 2;
+
+        /// <summary>
         /// Clears each void strip's bridgeless rows within the occupied rows to open air with no wall,
-        /// including the gutters between those cells. Bridge rows keep their own ceiling and deck.
+        /// including the gutters between those cells but not <see cref="VoidStripWallThickness"/> tiles on each outer edge.
+        /// Bridge rows keep their own ceiling and deck.
         /// </summary>
         private static void CarveVoidStrips(DungeonPlan plan)
         {
@@ -628,7 +634,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     Point topLeft = grid.GridToWorld(strip.Col, runStart);
                     Point bottomRight = grid.GridToWorld(strip.Col + strip.Width - 1, row - 1);
-                    for (int x = topLeft.X; x < bottomRight.X + DungeonGrid.CellTileWidth; x++)
+                    for (int x = topLeft.X + VoidStripWallThickness; x < bottomRight.X + DungeonGrid.CellTileWidth - VoidStripWallThickness; x++)
                     {
                         for (int y = topLeft.Y; y < bottomRight.Y + DungeonGrid.CellTileHeight; y++)
                         {
