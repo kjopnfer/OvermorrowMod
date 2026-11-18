@@ -305,7 +305,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     }
 
     /// <summary>
-    /// Context passed to <see cref="GridRoom.Build"/>: world origin, the active dungeon palette, and fill/lining tiles.
+    /// Context passed to <see cref="GridRoom.Build"/>: world origin, the active dungeon palette, fill/lining tiles, and grid position.
     /// </summary>
     public readonly struct BuildContext
     {
@@ -313,13 +313,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public readonly DungeonPalette Palette;
         public readonly int FillTileType;
         public readonly int LiningTileType;
+        public readonly DungeonGrid Grid;
+        public readonly int Col;
+        public readonly int Row;
 
-        public BuildContext(Point origin, DungeonPalette palette, int fillTileType, int liningTileType)
+        public BuildContext(Point origin, DungeonPalette palette, int fillTileType, int liningTileType, DungeonGrid grid, int col, int row)
         {
             Origin = origin;
             Palette = palette;
             FillTileType = fillTileType;
             LiningTileType = liningTileType;
+            Grid = grid;
+            Col = col;
+            Row = row;
         }
     }
 

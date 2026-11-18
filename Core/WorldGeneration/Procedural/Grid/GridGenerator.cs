@@ -553,7 +553,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
                     Point cellOrigin = grid.GridToWorld(col, row);
-                    slot.Room.Build(new BuildContext(cellOrigin, palette, fillTileType, liningTileType));
+                    slot.Room.Build(new BuildContext(cellOrigin, palette, fillTileType, liningTileType, grid, col, row));
                 }
             }
 

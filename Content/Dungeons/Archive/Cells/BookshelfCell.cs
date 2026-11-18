@@ -30,6 +30,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             new FireplaceRoom(),
             new LoungeRoom(),
             new WritingRoom(),
+            new BridgeCell(),
         };
 
         private static readonly GridRoom[] VerticalNeighbors = { new ShaftCell() };
