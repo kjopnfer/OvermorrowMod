@@ -11,7 +11,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 {
     /// <summary>
     /// A locked door the layout pairs with a treasure room outside the dungeon. Sits at a dead end
-    /// with its unused side capped, or inline on a path with both sides open.
+    /// or inline on a path.
     /// </summary>
     public class TreasureDoorRoom : GridRoom
     {
@@ -36,6 +36,13 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 
         public override bool IsOpenSide(int subCol, int subRow, Direction side) =>
             side == Direction.Left || side == Direction.Right;
+
+        /// <summary>
+        /// The sheet's room spans both side padding strips, so it paints them last and they are never capped.
+        /// </summary>
+        public override bool OwnsPadding => true;
+
+        public override int PaddingPriority => 10;
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "DoorRoom.aseprite";
 
