@@ -19,10 +19,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
             if (!Main.LocalPlayer.HasItem(ModContent.ItemType<ArchiveKey>())) return;
 
             Texture2D icon = ModContent.Request<Texture2D>(ModContent.GetInstance<ArchiveKey>().Texture).Value;
+            float pulse = 1.4f + 0.2f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4f);
             foreach (var te in TileEntity.ByID.Values)
             {
                 if (te is not ArchiveDoor_TE door || !door.IsLocked || !door.Seen) continue;
-                context.Draw(icon, door.TileArea.Center.ToVector2(), Color.White, new SpriteFrame(1, 1), 0.5f, 0.6f, Alignment.Center);
+                context.Draw(icon, door.TileArea.Center.ToVector2(), Color.White, new SpriteFrame(1, 1), pulse, pulse + 0.4f, Alignment.Center);
             }
         }
     }
