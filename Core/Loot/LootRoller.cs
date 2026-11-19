@@ -83,6 +83,22 @@ namespace OvermorrowMod.Core.Loot
             return pick.Value;
         }
 
+        /// <summary>
+        /// Gives <paramref name="player"/> a reward picked from an offer: a collectible is applied directly, any other item is
+        /// spawned with its companion ammo.
+        /// </summary>
+        public static void GiveReward(Player player, IEntitySource source, int itemId)
+        {
+            if (itemId <= 0) return;
+            if (ContentSamples.ItemsByType[itemId].ModItem is Items.Collectibles.CollectibleItem collectible)
+            {
+                collectible.Apply(player, 1);
+                return;
+            }
+            player.QuickSpawnItem(source, itemId);
+            GiveCompanionAmmo(source, player.Center, itemId);
+        }
+
         public static void GiveCompanionAmmo(IEntitySource source, Vector2 position, int itemId)
         {
             if (itemId <= 0) return;

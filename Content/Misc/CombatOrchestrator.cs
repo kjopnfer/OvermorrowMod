@@ -6,7 +6,6 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Particles;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
@@ -21,7 +20,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Misc
 {
-    public class CombatOrchestrator : ModNPC
+    public class CombatOrchestrator : ModNPC, IRewardSource
     {
         public enum Phase { Setup, Combat, End }
 
@@ -115,21 +114,20 @@ namespace OvermorrowMod.Content.Misc
         }
 
         public override bool CheckActive() => false;
+
+        public Vector2 RewardAnchor => NPC.Center;
+
+        public bool RewardSourceActive => NPC.active;
+
         public void ClaimReward(int itemId)
         {
             if (isCleaningUp) return;
-            if (itemId > 0 && ContentSamples.ItemsByType[itemId].ModItem is CollectibleItem collectible)
-            {
-                collectible.Apply(Main.LocalPlayer, 1);
-            }
-            else if (itemId > 0)
-            {
-                Main.LocalPlayer.QuickSpawnItem(NPC.GetSource_Loot(), itemId);
-                LootRoller.GiveCompanionAmmo(NPC.GetSource_Loot(), Main.LocalPlayer.Center, itemId);
-            }
+            LootRoller.GiveReward(Main.LocalPlayer, NPC.GetSource_Loot(), itemId);
             isCleaningUp = true;
             cleanupTimer = 0;
         }
+
+        public void DeclineReward() => isOpen = false;
 
         public override void AI()
         {
@@ -208,7 +206,7 @@ namespace OvermorrowMod.Content.Misc
             {
                 offeredRewards ??= RollCombatReward();
                 if (offeredRewards.Length > 0)
-                    RewardSelectionManager.ShowFor(NPC, offeredRewards);
+                    RewardSelectionManager.ShowFor(this, offeredRewards);
             }
             else if (!isOpen && wasOpen)
             {

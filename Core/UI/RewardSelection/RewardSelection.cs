@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
-using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.UI.RunStats;
 using Terraria;
@@ -15,7 +14,7 @@ using Terraria.UI.Chat;
 namespace OvermorrowMod.Core.UI
 {
     /// <summary>
-    /// Three-slot reward picker that pops up above an opened reward chest.
+    /// Three-slot reward picker that pops up above an opened <see cref="IRewardSource"/>.
     /// </summary>
     public class RewardSelection : UIState
     {
@@ -26,7 +25,7 @@ namespace OvermorrowMod.Core.UI
         /// </summary>
         public static bool IsInteractive { get; private set; }
 
-        public NPC chestNPC;
+        public IRewardSource source;
         public int[] itemIds;
         public int selectedIndex = -1;
         public int drawCounter = 0;
@@ -102,9 +101,9 @@ namespace OvermorrowMod.Core.UI
             Append(denyButton);
         }
 
-        public void Show(NPC chest, int[] items)
+        public void Show(IRewardSource rewardSource, int[] items)
         {
-            chestNPC = chest;
+            source = rewardSource;
             itemIds = items;
             selectedIndex = -1;
             drawCounter = FadeTicks;
@@ -140,7 +139,7 @@ namespace OvermorrowMod.Core.UI
         {
             IsInteractive = false;
             visible = false;
-            chestNPC = null;
+            source = null;
             isClosing = false;
             selectedIndex = -1;
             hasLastAnchor = false;
@@ -158,7 +157,7 @@ namespace OvermorrowMod.Core.UI
 
         public void HandleAction(RewardButtonType kind)
         {
-            if (chestNPC?.ModNPC is CombatOrchestrator orch)
+            if (source != null)
             {
                 if (kind == RewardButtonType.Confirm)
                 {
@@ -166,11 +165,11 @@ namespace OvermorrowMod.Core.UI
                     int itemId = (itemIds != null && selectedIndex < itemIds.Length) ? itemIds[selectedIndex] : 0;
                     if (itemId > 0 && ContentSamples.ItemsByType[itemId].ModItem is CollectibleItem)
                         StartFlight(itemId);
-                    orch.ClaimReward(itemId);
+                    source.ClaimReward(itemId);
                 }
                 else // Deny
                 {
-                    orch.isOpen = false;
+                    source.DeclineReward();
                 }
             }
 
@@ -207,9 +206,9 @@ namespace OvermorrowMod.Core.UI
             if (!visible) return;
 
             // Cache chest world position
-            if (chestNPC != null && chestNPC.active)
+            if (source != null && source.RewardSourceActive)
             {
-                lastWorldAnchor = chestNPC.Center;
+                lastWorldAnchor = source.RewardAnchor;
                 hasLastAnchor = true;
             }
             else if (!isClosing)
