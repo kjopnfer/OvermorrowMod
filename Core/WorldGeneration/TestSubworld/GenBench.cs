@@ -127,6 +127,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine($"combat branch in final layout: {Share(plans.Count(p => p.Stats.BranchPlaced), n)}");
             sb.AppendLine($"aux branches placed: {Share(plans.Sum(p => p.Stats.AuxPlaced), plans.Sum(p => p.Stats.AuxAttempts))}");
             sb.AppendLine($"forks: {plans.Sum(p => p.Stats.Forks)}, short stubs: {plans.Sum(p => p.Stats.ForkStubs)}, unplaced: {plans.Sum(p => p.Stats.ForkFailures)}");
+            int treasureDoors = plans.Sum(p => p.Stats.TreasureDoors);
+            sb.AppendLine($"treasure doors: {treasureDoors} ({(double)treasureDoors / n:0.00} per dungeon), none in {plans.Count(p => p.Stats.TreasureDoors == 0)} of {n} dungeons");
             var unreachable = plans.Select(UnreachableRooms).ToList();
             sb.AppendLine($"rooms unreachable from the spawn: {unreachable.Sum()} in {unreachable.Count(u => u > 0)} of {n} dungeons");
         }

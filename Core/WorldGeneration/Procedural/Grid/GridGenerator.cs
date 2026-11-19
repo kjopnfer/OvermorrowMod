@@ -4,6 +4,7 @@ using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -77,6 +78,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private readonly bool _validateReachability;
         private readonly PlanStats _stats = new();
         private GridAStar _search;
+        private int _treasureDoors;
 
         private GridGenerator(DungeonContent content, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options)
         {
@@ -476,6 +478,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     LogWarn($"OvermorrowDungeon: could not place {dir} fork door; connection unpaired.");
                 }
             }
+
+            PlaceInlineTreasureDoors(grid, spawnAnchor, rand);
+            _stats.TreasureDoors = grid.CountPlacements(RoomType.TreasureDoor);
 
             stopwatch.Stop();
             _stats.ElapsedMs = stopwatch.ElapsedMilliseconds;
@@ -1101,7 +1106,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     var (dx, dy) = dirs[(dirStart + di) % 4];
                     int depth = MinDeadEndDepth + rand.Next(MaxDeadEndDepth - MinDeadEndDepth + 1);
-                    var branch = TryDeadEndTo(grid, parent, nodeA, new Point(nodeA.Anchor.X + dx * depth, nodeA.Anchor.Y + dy * depth), newId, costFn, gridCols, gridRows);
+                    var branch = TryDeadEndTo(grid, parent, nodeA, new Point(nodeA.Anchor.X + dx * depth, nodeA.Anchor.Y + dy * depth), newId, costFn, gridCols, gridRows, rand);
                     if (branch != null) return branch;
                 }
             }
@@ -1109,10 +1114,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>
-        /// Places a chest room at <paramref name="target"/> and routes a dead end to it from <paramref name="nodeA"/>.
-        /// Leaves the grid unchanged and returns null on failure.
+        /// Places a chest room at <paramref name="target"/> and routes a dead end to it from <paramref name="nodeA"/>,
+        /// then rolls whether the chest room becomes a treasure door. Leaves the grid unchanged and returns null on failure.
         /// </summary>
-        private DungeonPath TryDeadEndTo(DungeonGrid grid, DungeonPath parent, PathStep nodeA, Point target, int newId, EdgeCost costFn, int gridCols, int gridRows)
+        private DungeonPath TryDeadEndTo(DungeonGrid grid, DungeonPath parent, PathStep nodeA, Point target, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             if (target.X < EdgeBorder + 1 || target.X >= gridCols - EdgeBorder - 1) return null;
             if (target.Y < EdgeBorder || target.Y >= gridRows - EdgeBorder) return null;
@@ -1134,8 +1139,78 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var s in legSteps)
                 grid.Place(s.Cell, s.Anchor.X, s.Anchor.Y, grid.NextGroupId());
 
+            double lengthBonus = TreasureDoorChancePerCell * Math.Max(0, legSteps.Count - MinDeadEndDepth);
+            if (rand.NextDouble() < TreasureDoorChance(Math.Min(TreasureDoorMaxChance, TreasureDoorBaseChance + lengthBonus)))
+            {
+                grid.Place(_content.CreateTreasureDoor(true), target.X, target.Y, grid.NextGroupId());
+                _treasureDoors++;
+            }
+
             return new DungeonPath(id: newId, role: PathRole.DeadEndBranch, parent: parent, steps: legSteps, combatAnchor: null, placeholderAnchor: target);
         }
+
+        private const double TreasureDoorBaseChance = 0.15;
+        private const double TreasureDoorChancePerCell = 0.05;
+        private const double TreasureDoorMaxChance = 0.6;
+        private const double TreasureDoorFalloff = 0.5;
+        private const double InlineTreasureDoorChance = 0.02;
+
+        /// <summary>
+        /// Cells kept between an inline treasure door and the dungeon's edge doors or spawn room.
+        /// </summary>
+        private const int InlineTreasureDoorClearance = 3;
+
+        /// <summary>
+        /// <paramref name="chance"/> reduced by <see cref="TreasureDoorFalloff"/> for every treasure door already in this dungeon.
+        /// </summary>
+        private double TreasureDoorChance(double chance) => chance * Math.Pow(TreasureDoorFalloff, _treasureDoors);
+
+        /// <summary>
+        /// Rolls each eligible path cell into a treasure door: a 1x1 bookshelf or corridor joined only to its left and
+        /// right neighbors, both of which the treasure door accepts, away from the edge doors and the spawn room.
+        /// </summary>
+        private void PlaceInlineTreasureDoors(DungeonGrid grid, Point spawnAnchor, Random rand)
+        {
+            var proto = _content.CreateTreasureDoor(true);
+            var acceptLeft = proto.GetAcceptedNeighbors(0, 0, Direction.Left);
+            var acceptRight = proto.GetAcceptedNeighbors(0, 0, Direction.Right);
+
+            var candidates = new List<Point>();
+            for (int col = 0; col < grid.Cols; col++)
+            {
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot.IsEmpty || slot.Room.IsFeature) continue;
+                    if (slot.Room.CellWidth != 1 || slot.Room.CellHeight != 1) continue;
+                    if (slot.Room.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
+                    if (!IsEmptyOrOffGrid(grid, col, row - 1) || !IsEmptyOrOffGrid(grid, col, row + 1)) continue;
+
+                    var left = grid.GetSlot(col - 1, row);
+                    var right = grid.GetSlot(col + 1, row);
+                    if (left == null || left.IsEmpty || right == null || right.IsEmpty) continue;
+                    if (!GridRoom.Connects(slot, Direction.Left, left) || !GridRoom.Connects(slot, Direction.Right, right)) continue;
+                    if (!acceptLeft.Contains(left.Room.GetType()) || !acceptRight.Contains(right.Room.GetType())) continue;
+
+                    var cell = new Point(col, row);
+                    if (ChebyshevDistance(cell, spawnAnchor) < InlineTreasureDoorClearance) continue;
+                    if (grid.DoorAnchors.Any(door => ChebyshevDistance(cell, door) < InlineTreasureDoorClearance)) continue;
+                    candidates.Add(cell);
+                }
+            }
+            ShuffleInPlace(candidates, rand);
+
+            foreach (var cell in candidates)
+            {
+                if (rand.NextDouble() >= TreasureDoorChance(InlineTreasureDoorChance)) continue;
+                grid.Place(_content.CreateTreasureDoor(true), cell.X, cell.Y, grid.NextGroupId());
+                _treasureDoors++;
+            }
+        }
+
+        private static bool IsEmptyOrOffGrid(DungeonGrid grid, int x, int y) => grid.GetSlot(x, y)?.IsEmpty ?? true;
+
+        private static int ChebyshevDistance(Point a, Point b) => Math.Max(Math.Abs(a.X - b.X), Math.Abs(a.Y - b.Y));
 
         private const int JunctionRewardTargetsPerOpening = 8;
         private const int JunctionRewardReach = 5;
@@ -1201,7 +1276,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     int side = rand.Next(JunctionRewardReach);
                     if (ahead + side < MinDeadEndDepth) continue;
                     var target = new Point(outside.X + along.X * ahead + perp.X * away * side, outside.Y + along.Y * ahead + perp.Y * away * side);
-                    var branch = TryDeadEndTo(grid, parent, room, target, newId, costFn, gridCols, gridRows);
+                    var branch = TryDeadEndTo(grid, parent, room, target, newId, costFn, gridCols, gridRows, rand);
                     if (branch != null) return branch;
                 }
             }

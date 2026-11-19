@@ -80,6 +80,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public int Forks;
         public int ForkStubs;
         public int ForkFailures;
+        public int TreasureDoors;
         public long ElapsedMs;
     }
 }
