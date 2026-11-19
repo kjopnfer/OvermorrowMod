@@ -49,6 +49,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         public override GridRoom CreateChest(bool isFeature) => new ChestRoom { IsFeature = isFeature };
         public override GridRoom CreateDoor(bool isFeature) => new DoorRoom { IsFeature = isFeature };
         public override GridRoom CreateTreasureDoor(bool isFeature) => new TreasureDoorRoom { IsFeature = isFeature };
+        public override TreasureRoom CreateTreasureRoom() => new ArchiveTreasureRoom();
         public override GridRoom CreateFiller(bool isFeature) => new BookshelfCell { IsFeature = isFeature };
         public override GridRoom CreateVerticalConnector(bool isFeature) => new ShaftCell { IsFeature = isFeature };
 

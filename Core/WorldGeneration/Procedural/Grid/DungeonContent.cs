@@ -66,6 +66,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract GridRoom CreateTreasureDoor(bool isFeature);
 
         /// <summary>
+        /// The room a treasure door leads to, painted outside the dungeon.
+        /// </summary>
+        public abstract TreasureRoom CreateTreasureRoom();
+
+        /// <summary>
         /// The dungeon's basic walkable room. Used to cap a spine endpoint that
         /// has no door and as a safe room for the player to spawn in.
         /// </summary>
