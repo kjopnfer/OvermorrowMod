@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         public override int Rows => 30;
 
         public override int MinVoidStrips => 1;
-        public override int MaxVoidStrips => 2;
+        public override int MaxVoidStrips => 3;
 
         public override int FillTile => ModContent.TileType<CastleBrick>();
         public override int LiningTile => ModContent.TileType<ArchiveWood>();
