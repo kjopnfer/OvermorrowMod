@@ -61,6 +61,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract GridRoom CreateDoor(bool isFeature);
 
         /// <summary>
+        /// A 1x1 locked door cell open left and right, with the same neighbors as the chest room.
+        /// </summary>
+        public abstract GridRoom CreateTreasureDoor(bool isFeature);
+
+        /// <summary>
         /// The dungeon's basic walkable room. Used to cap a spine endpoint that
         /// has no door and as a safe room for the player to spawn in.
         /// </summary>

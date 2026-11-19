@@ -47,7 +47,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         HorizontalConnector,
         DiagonalConnector,
         Start,
-        Bridge
+        Bridge,
+        TreasureDoor
     }
 
     /// <summary>
