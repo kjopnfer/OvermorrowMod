@@ -158,7 +158,7 @@ namespace OvermorrowMod.Core.UI
 
         public void HandleAction(RewardButtonType kind)
         {
-            if (chestNPC?.ModNPC is CombatOrchestrator orch)
+            if (chestNPC?.ModNPC is RewardChest orch)
             {
                 if (kind == RewardButtonType.Confirm)
                 {
