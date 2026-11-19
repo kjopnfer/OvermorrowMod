@@ -1140,7 +1140,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 grid.Place(s.Cell, s.Anchor.X, s.Anchor.Y, grid.NextGroupId());
 
             double lengthBonus = TreasureDoorChancePerCell * Math.Max(0, legSteps.Count - MinDeadEndDepth);
-            if (rand.NextDouble() < TreasureDoorChance(Math.Min(TreasureDoorMaxChance, TreasureDoorBaseChance + lengthBonus)))
+            if (!NearTreasureDoor(grid, target) && rand.NextDouble() < TreasureDoorChance(Math.Min(TreasureDoorMaxChance, TreasureDoorBaseChance + lengthBonus)))
             {
                 grid.Place(_content.CreateTreasureDoor(true), target.X, target.Y, grid.NextGroupId());
                 _treasureDoors++;
@@ -1159,6 +1159,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Cells kept between an inline treasure door and the dungeon's edge doors or spawn room.
         /// </summary>
         private const int InlineTreasureDoorClearance = 3;
+
+        /// <summary>
+        /// Minimum cells between any two treasure doors in one dungeon.
+        /// </summary>
+        private const int TreasureDoorSpacing = 6;
+
+        private bool NearTreasureDoor(DungeonGrid grid, Point cell)
+        {
+            var doorType = _content.CreateTreasureDoor(true).GetType();
+            return grid.AnchorsOf(doorType).Any(door => ChebyshevDistance(cell, door) < TreasureDoorSpacing);
+        }
 
         /// <summary>
         /// <paramref name="chance"/> reduced by <see cref="TreasureDoorFalloff"/> for every treasure door already in this dungeon.
@@ -1202,7 +1213,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             foreach (var cell in candidates)
             {
-                if (rand.NextDouble() >= TreasureDoorChance(InlineTreasureDoorChance)) continue;
+                if (NearTreasureDoor(grid, cell) || rand.NextDouble() >= TreasureDoorChance(InlineTreasureDoorChance)) continue;
                 grid.Place(_content.CreateTreasureDoor(true), cell.X, cell.Y, grid.NextGroupId());
                 _treasureDoors++;
             }
