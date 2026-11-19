@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -167,6 +168,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
 
+            var treasureDoors = BuildTreasureRooms(plans, rand);
+
             // 4. Assign unique door ids, then pair each edge reciprocally.
             int nextDoorId = 9001;
             foreach (var node in _nodes)
@@ -191,6 +194,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: connection {edge.From} -{edge.Dir}-> {edge.To} has no door pair; left unpaired.");
                 }
+            }
+
+            foreach (var (entrance, exit) in treasureDoors)
+            {
+                entrance.DoorID = nextDoorId++;
+                entrance.PairedDoor = -1;
+                if (exit == null) continue;
+                exit.DoorID = nextDoorId++;
+                exit.PairedDoor = entrance.DoorID;
+                entrance.PairedDoor = exit.DoorID;
             }
 
             var root = _nodes[_rootId];
@@ -239,6 +252,76 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: dungeon {n.Id} is not connected to the root; placed at the origin.");
         }
 
+        private const int DungeonGapX = 2 * DungeonGrid.HorizontalSpacing;
+        private const int DungeonGapY = 2 * DungeonGrid.VerticalSpacing;
+
+        /// <summary>
+        /// Tiles kept clear of the world's edges when placing treasure rooms.
+        /// </summary>
+        private const int WorldEdgeMargin = 50;
+
+        /// <summary>
+        /// Paints one treasure room per treasure door, left to right in a strip <see cref="DungeonGapY"/> below the lowest
+        /// dungeon. Rooms shorter than the strip have the stone below them filled.
+        /// </summary>
+        /// <returns>
+        /// Each treasure door with its room's exit door, or with null when the room has no exit door or did not fit in the world.
+        /// </returns>
+        private List<(IDungeonDoor Entrance, IDungeonDoor Exit)> BuildTreasureRooms(DungeonPlan[] plans, Random rand)
+        {
+            var rooms = new List<(IDungeonDoor Entrance, TreasureRoom Room, DungeonContent Content)>();
+            int stripX = int.MaxValue;
+            int stripY = int.MinValue;
+            for (int i = 0; i < _nodes.Count; i++)
+            {
+                stripX = Math.Min(stripX, _nodes[i].WorldOrigin.X);
+                stripY = Math.Max(stripY, _nodes[i].WorldOrigin.Y + plans[i].FootprintHeight);
+
+                var grid = plans[i].Grid;
+                for (int col = 0; col < grid.Cols; col++)
+                {
+                    for (int row = 0; row < grid.Rows; row++)
+                    {
+                        var slot = grid.GetSlot(col, row);
+                        if (slot.IsEmpty || slot.SubCol != 0 || slot.SubRow != 0 || slot.Room.Type != RoomType.TreasureDoor) continue;
+                        Point cell = grid.GridToWorld(col, row);
+                        var entrance = FindNearestDoor(new Point(cell.X + DungeonGrid.CellTileWidth / 2, cell.Y + DungeonGrid.CellTileHeight / 2));
+                        rooms.Add((entrance, _nodes[i].Content.CreateTreasureRoom(), _nodes[i].Content));
+                    }
+                }
+            }
+            stripY += DungeonGapY;
+
+            int stripHeight = 0;
+            foreach (var (_, room, _) in rooms)
+                stripHeight = Math.Max(stripHeight, room.Size.Height);
+
+            var pairs = new List<(IDungeonDoor Entrance, IDungeonDoor Exit)>();
+            int x = stripX;
+            foreach (var (entrance, room, content) in rooms)
+            {
+                var (width, height) = room.Size;
+                if (x + width > Main.maxTilesX - WorldEdgeMargin || stripY + stripHeight > Main.maxTilesY - WorldEdgeMargin)
+                {
+                    Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: treasure room at ({x},{stripY}) does not fit in the world; its door is left unpaired.");
+                    pairs.Add((entrance, null));
+                    continue;
+                }
+
+                var exit = room.Generate(new Point(x, stripY), content.Palette, rand);
+                if (exit == null) Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: treasure room at ({x},{stripY}) has no exit door; its door is left unpaired.");
+                pairs.Add((entrance, exit));
+
+                ushort fill = (ushort)content.FillTile;
+                for (int fx = x; fx < x + width; fx++)
+                    for (int fy = stripY + height; fy < stripY + stripHeight; fy++)
+                        WorldGenUtils.PlaceTile(fx, fy, fill);
+
+                x += width;
+            }
+            return pairs;
+        }
+
         /// <summary>Converts coarse cells to centered world origins, spaced by the largest measured footprint plus a gap.</summary>
         private void AssignWorldOrigins(Point worldCenter, DungeonPlan[] plans)
         {
@@ -257,11 +340,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (h > maxHeight) maxHeight = h;
             }
 
-            // Dungeon margin
-            int gapX = 2 * (DungeonGrid.CellTileWidth + DungeonGrid.HorizontalPadding);
-            int gapY = 2 * (DungeonGrid.CellTileHeight + DungeonGrid.VerticalPadding);
-            int pitchX = maxWidth + gapX;
-            int pitchY = maxHeight + gapY;
+            int pitchX = maxWidth + DungeonGapX;
+            int pitchY = maxHeight + DungeonGapY;
             float bboxCenterX = (minX + maxX) / 2f;
             float bboxCenterY = (minY + maxY) / 2f;
 
