@@ -6,6 +6,7 @@ using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.UI;
 using System;
 using System.Linq;
 using Terraria;
@@ -199,7 +200,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         }
     }
 
-    public class BigChest_TE : ModTileEntity
+    public class BigChest_TE : ModTileEntity, IRewardSource
     {
         public int ChestItem;
 
@@ -214,18 +215,33 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public bool WaitingForItemPickup = false;
         public bool ItemSpawned = false;
 
-        // Loot-system roll parameters. Set by the placer (e.g. ChestRoom). Not persisted;
-        // they're placement config, not save state. If ChestItem == 0 at first Interact(),
-        // these are used to roll the contents; once rolled, ChestItem holds the result.
+        // Loot-system roll parameters, set by the placer (e.g. ChestRoom) and used to roll the
+        // contents at the first Interact(). Once rolled, ChestItem or Offers holds the result.
         public RarityModifier ContentsModifier = new(rare: 10);
         public ItemKind ContentsKinds = ItemKind.Consumable;
         public ItemKind ContentsFavored = ItemKind.None;
+
+        /// <summary>
+        /// Above 1, the chest rolls this many offers and opens the reward picker instead of dropping one item.
+        /// </summary>
+        public int OfferCount = 1;
+        public int[] Offers;
+
+        private bool OffersPick => OfferCount > 1;
+        private bool awaitingPick;
+
+        private const float PickRangeTiles = 12f;
 
         public override void SaveData(TagCompound tag)
         {
             tag["ChestItem"] = ChestItem;
             tag["HasOpened"] = HasOpened;
             tag["ItemPickedUp"] = ItemPickedUp;
+            tag["Modifier"] = new[] { ContentsModifier.Common, ContentsModifier.Rare, ContentsModifier.Epic, ContentsModifier.Legendary };
+            tag["Kinds"] = (int)ContentsKinds;
+            tag["Favored"] = (int)ContentsFavored;
+            tag["OfferCount"] = OfferCount;
+            if (Offers != null) tag["Offers"] = Offers;
         }
 
         public override void LoadData(TagCompound tag)
@@ -233,19 +249,43 @@ namespace OvermorrowMod.Content.Tiles.Archives
             HasOpened = tag.Get<bool>("HasOpened");
             ChestItem = tag.Get<int>("ChestItem");
             ItemPickedUp = tag.Get<bool>("ItemPickedUp");
+            if (tag.ContainsKey("Modifier"))
+            {
+                int[] m = tag.GetIntArray("Modifier");
+                ContentsModifier = new RarityModifier(m[0], m[1], m[2], m[3]);
+                ContentsKinds = (ItemKind)tag.GetInt("Kinds");
+                ContentsFavored = (ItemKind)tag.GetInt("Favored");
+            }
+            if (tag.ContainsKey("OfferCount")) OfferCount = tag.GetInt("OfferCount");
+            if (tag.ContainsKey("Offers")) Offers = tag.GetIntArray("Offers");
         }
 
         private void RollLoot()
         {
-            if (ChestItem != 0) return;
+            if (OffersPick ? Offers != null : ChestItem != 0) return;
 
             var pool = LootPoolRegistry.GetActive();
             if (pool == null) return;
 
-            int[] rolled = LootRoller.RollOffers(pool, ContentsModifier, ContentsKinds, 1, Main.LocalPlayer, ContentsFavored);
-            if (rolled.Length > 0)
+            int[] rolled = LootRoller.RollOffers(pool, ContentsModifier, ContentsKinds, OfferCount, Main.LocalPlayer, ContentsFavored);
+            if (OffersPick)
+                Offers = rolled;
+            else if (rolled.Length > 0)
                 ChestItem = rolled[0];
         }
+
+        public Vector2 RewardAnchor => Position.ToWorldCoordinates(32, -8);
+
+        public bool RewardSourceActive => ByID.ContainsKey(ID) && !ItemPickedUp;
+
+        public void ClaimReward(int itemId)
+        {
+            LootRoller.GiveReward(Main.LocalPlayer, new EntitySource_TileEntity(this), itemId);
+            ItemPickedUp = true;
+            awaitingPick = false;
+        }
+
+        public void DeclineReward() => awaitingPick = false;
 
         public void Interact()
         {
@@ -255,7 +295,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             if (!HasOpened && !AnimationStarted)
             {
                 RollLoot();
-                if (ChestItem == 0)
+                if (OffersPick ? Offers == null || Offers.Length == 0 : ChestItem == 0)
                     return;
 
                 AnimationStarted = true;
@@ -286,7 +326,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 else if (AnimationCounter <= phase3End)
                 {
                     // Phase 3: Lift lid and spawn item
-                    if (!ItemSpawned)
+                    if (!ItemSpawned && OffersPick)
+                    {
+                        RewardSelectionManager.ShowFor(this, Offers);
+                        awaitingPick = true;
+                        ItemSpawned = true;
+                        WaitingForItemPickup = true;
+                    }
+                    else if (!ItemSpawned)
                     {
                         Vector2 spawnPos = Position.ToWorldCoordinates() + new Vector2(22, -24);
                         int projID = Projectile.NewProjectile(null, spawnPos, Vector2.Zero, ModContent.ProjectileType<Content.Misc.DisplayItem>(), 0, 0f, Main.myPlayer, ChestItem);
@@ -311,7 +358,21 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     {
                         bool projectileExists = false;
 
-                        if (SpawnedProjectileID >= 0 && SpawnedProjectileID < Main.projectile.Length)
+                        if (OffersPick)
+                        {
+                            if (awaitingPick && Vector2.Distance(Main.LocalPlayer.Center, RewardAnchor) > PickRangeTiles * 16f)
+                            {
+                                DeclineReward();
+                                RewardSelectionManager.Hide();
+                            }
+                            projectileExists = awaitingPick;
+                            if (projectileExists)
+                            {
+                                HoverCounter++;
+                                AnimationCounter = phase4End;
+                            }
+                        }
+                        else if (SpawnedProjectileID >= 0 && SpawnedProjectileID < Main.projectile.Length)
                         {
                             Projectile spawnedProj = Main.projectile[SpawnedProjectileID];
                             if (spawnedProj.active && spawnedProj.type == ModContent.ProjectileType<DisplayItem>())

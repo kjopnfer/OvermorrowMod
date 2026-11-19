@@ -11,7 +11,8 @@ using System.Collections.Generic;
 namespace OvermorrowMod.Content.Dungeons.Archive
 {
     /// <summary>
-    /// Places the exit door at its marker and a big chest of Rare or better gear at one marked spot picked at random.
+    /// Places the exit door at its marker and, at one marked spot picked at random, a big chest offering a pick of three
+    /// Rare or better gear.
     /// </summary>
     public class ArchiveTreasureRoom : TreasureRoom
     {
@@ -41,6 +42,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive
                     chest.ContentsModifier = ChestModifier;
                     chest.ContentsKinds = ItemKind.Weapon | ItemKind.Accessory | ItemKind.Armor;
                     chest.ContentsFavored = ItemKind.Weapon | ItemKind.Armor;
+                    chest.OfferCount = 3;
                 }
             }
 
