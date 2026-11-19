@@ -57,7 +57,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract List<Func<GridRoom>> RequiredRooms { get; }
 
         public abstract GridRoom CreateCombat(bool isFeature);
-        public abstract GridRoom CreateTreasure(bool isFeature);
+        public abstract GridRoom CreateChest(bool isFeature);
         public abstract GridRoom CreateDoor(bool isFeature);
 
         /// <summary>

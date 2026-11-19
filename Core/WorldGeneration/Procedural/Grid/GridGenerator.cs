@@ -1109,7 +1109,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>
-        /// Places a treasure room at <paramref name="target"/> and routes a dead end to it from <paramref name="nodeA"/>.
+        /// Places a chest room at <paramref name="target"/> and routes a dead end to it from <paramref name="nodeA"/>.
         /// Leaves the grid unchanged and returns null on failure.
         /// </summary>
         private DungeonPath TryDeadEndTo(DungeonGrid grid, DungeonPath parent, PathStep nodeA, Point target, int newId, EdgeCost costFn, int gridCols, int gridRows)
@@ -1117,11 +1117,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             if (target.X < EdgeBorder + 1 || target.X >= gridCols - EdgeBorder - 1) return null;
             if (target.Y < EdgeBorder || target.Y >= gridRows - EdgeBorder) return null;
 
-            var chestProto = _content.CreateTreasure(true);
+            var chestProto = _content.CreateChest(true);
             if (!FootprintAndNeighborsClear(grid, chestProto, target)) return null;
             if (!chestProto.IsValidPlacement(grid, target)) return null;
 
-            var chest = _content.CreateTreasure(true);
+            var chest = _content.CreateChest(true);
             grid.Place(chest, target.X, target.Y, grid.NextGroupId());
 
             var legSteps = _search.FindPath(nodeA.Anchor, target, nodeA.Cell, costFn);

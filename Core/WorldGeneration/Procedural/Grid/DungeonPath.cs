@@ -24,7 +24,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         /// <summary>
         /// A branch that attaches to its parent at one point and ends in
-        /// a placeholder cell (treasure, chest, NPC slot). Cannot create
+        /// a placeholder cell (chest, NPC slot). Cannot create
         /// a bypass because there's no second connection back to the
         /// parent.
         /// </summary>
@@ -63,8 +63,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public Point? CombatAnchor { get; }
 
         /// <summary>
-        /// Anchor of this path's terminal placeholder cell (treasure,
-        /// chest, etc.), or null. Set on dead-end branches.
+        /// Anchor of this path's terminal placeholder cell (chest,
+        /// treasure door, etc.), or null. Set on dead-end branches.
         /// </summary>
         public Point? PlaceholderAnchor { get; }
 

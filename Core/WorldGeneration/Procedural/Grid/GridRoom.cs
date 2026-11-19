@@ -41,7 +41,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         None,
         Filler,
         Combat,
-        Treasure,
+        Chest,
         Door,
         VerticalConnector,
         HorizontalConnector,

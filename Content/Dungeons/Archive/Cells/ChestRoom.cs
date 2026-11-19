@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         public override int CellWidth => 1;
         public override int CellHeight => 1;
 
-        public override RoomType Type => RoomType.Treasure;
+        public override RoomType Type => RoomType.Chest;
 
         private static readonly GridRoom[] HorizontalNeighbors =
         {
