@@ -23,17 +23,11 @@ using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
-    public class Fireplace : ModTile, IWaypointTile
+    public class Fireplace : ModTile
     {
         private const float UnlitIconScale = 0.75f;
 
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
-
-        public Waypoint_TE GetOrCreateWaypoint(int i, int j)
-        {
-            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            return Fireplace_TE.GetOrCreate(bl.X, bl.Y);
-        }
 
         public override bool CanExplode(int i, int j) => false;
 
@@ -41,7 +35,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override bool RightClick(int i, int j)
         {
-            if (SubworldTimer.IsExpired || GetOrCreateWaypoint(i, j) is not Fireplace_TE te) return base.RightClick(i, j);
+            if (SubworldTimer.IsExpired) return base.RightClick(i, j);
+
+            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            var te = Fireplace_TE.GetOrCreate(bl.X, bl.Y);
+            if (te == null) return base.RightClick(i, j);
 
             Player player = Main.LocalPlayer;
             if (te.TryLight(player))

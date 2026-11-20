@@ -31,12 +31,6 @@ namespace OvermorrowMod.Common.Waypoints
                 bool hovered = context.Draw(icon, position, Color.White, frame, 1f, isTarget ? 1.25f : 1f, Alignment.Bottom).IsMouseOver;
                 if (!hovered || !isTarget || !Main.mapFullscreen) continue;
 
-                if (WaypointTravel.IsCombatLocked())
-                {
-                    text = "Can't travel during combat";
-                    continue;
-                }
-
                 text = "Travel";
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                 {

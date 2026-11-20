@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.RoomManager;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.WorldGeneration;
 using Terraria;
@@ -15,7 +14,7 @@ namespace OvermorrowMod.Common.Waypoints
         private const float MaxSourceDistance = 12 * 16;
 
         /// <summary>
-        /// The waypoint the full map was opened from. Lit waypoints linked to it are travel targets while it is set.
+        /// The waypoint the full map was opened from. While set, every other lit waypoint is a travel target.
         /// </summary>
         public static Waypoint_TE Source { get; private set; }
 
@@ -32,15 +31,7 @@ namespace OvermorrowMod.Common.Waypoints
             Main.resetMapFull = true;
         }
 
-        public static bool IsTarget(Waypoint_TE waypoint) => Source != null && waypoint != Source && waypoint.IsLit && waypoint.DungeonIndex == Source.DungeonIndex;
-
-        public static bool IsCombatLocked()
-        {
-            foreach (var te in TileEntity.ByID.Values)
-                if (te is CombatDoor_TE door && door.IsLocked) return true;
-
-            return false;
-        }
+        public static bool IsTarget(Waypoint_TE waypoint) => Source != null && waypoint != Source && waypoint.IsLit;
 
         public static void TravelTo(Waypoint_TE target)
         {

@@ -1,11 +1,9 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.Waypoints;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using System.Threading.Tasks;
 using Terraria.DataStructures;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 {
@@ -167,9 +165,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     var te = FindNearestDoor(kv.Value.DoorTile);
                     if (te != null) _nodes[i].Doors[kv.Key] = te;
                 }
-
-                var footprint = new Rectangle(_nodes[i].WorldOrigin.X, _nodes[i].WorldOrigin.Y, plans[i].FootprintWidth, plans[i].FootprintHeight);
-                PlaceWaypoints(footprint, i);
             }
 
             // 4. Assign unique door ids, then pair each edge reciprocally.
@@ -299,24 +294,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var (node, factory) in _extraRooms)
                 if (node == nodeId) rooms.Add(factory);
             return rooms;
-        }
-
-        private static void PlaceWaypoints(Rectangle footprint, int dungeonIndex)
-        {
-            for (int x = footprint.Left; x < footprint.Right; x++)
-            {
-                for (int y = footprint.Top; y < footprint.Bottom; y++)
-                {
-                    if (!WorldGen.InWorld(x, y)) continue;
-
-                    Tile tile = Main.tile[x, y];
-                    if (!tile.HasTile || tile.TileFrameX != 0 || tile.TileFrameY != 0) continue;
-                    if (TileLoader.GetTile(tile.TileType) is not IWaypointTile waypointTile) continue;
-
-                    var waypoint = waypointTile.GetOrCreateWaypoint(x, y);
-                    if (waypoint != null) waypoint.DungeonIndex = dungeonIndex;
-                }
-            }
         }
 
         private static IDungeonDoor FindNearestDoor(Point tile)
