@@ -38,23 +38,36 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override bool RightClick(int i, int j)
         {
-            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            var te = Fireplace_TE.GetOrCreate(bl.X, bl.Y);
-            if (te != null && te.TryLight(Main.LocalPlayer))
+            if (SubworldTimer.IsExpired || GetOrCreateWaypoint(i, j) is not Fireplace_TE te) return base.RightClick(i, j);
+
+            Player player = Main.LocalPlayer;
+            if (te.TryLight(player))
             {
-                Player player = Main.LocalPlayer;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<RestLight>(), 0, 0f, player.whoAmI);
                 if (SubworldTimer.RemainingTicks > 0) SubworldTimer.AddTime(15);
+
+                ArchiveLights.SetRegion(te.TileArea, 0f, 0, instant: true);
+                ArchiveLights.SetRegion(te.TileArea, 1f, 45);
+                SoundEngine.PlaySound(SoundID.Item20, te.WorldCenter);
+                Main.NewText("Waypoint lit", new Color(255, 170, 60));
                 return true;
             }
 
-            return base.RightClick(i, j);
+            WaypointTravel.OpenMap(te);
+            return true;
+        }
+
+        private static bool IsBurning(int i, int j)
+        {
+            if (SubworldTimer.IsExpired) return false;
+
+            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            return Fireplace_TE.IsLitAt(bl.X, bl.Y);
         }
 
         public override void MouseOver(int i, int j)
         {
-            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (Fireplace_TE.IsLitAt(bl.X, bl.Y)) return;
+            if (SubworldTimer.IsExpired) return;
 
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
@@ -154,7 +167,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             Tile tile = Main.tile[i, j];
-            if (tile.TileFrameY < 36)
+            if (tile.TileFrameY < 36 && IsBurning(i, j))
             {
                 float pulse = Main.rand.Next(28, 42) * 0.005f;
                 pulse += (270 - Main.mouseTextColor) / 700f;
@@ -199,7 +212,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             // The flame is manually drawn separate from the tile texture so that it can be drawn at full brightness.
             Color flameColor = Color.White * ArchiveLights.GetBrightness(i, j);
-            spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, flameColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            if (IsBurning(i, j)) spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, flameColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
             if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
@@ -209,8 +222,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         private static void DrawRestPrompt(int i, int j, SpriteBatch spriteBatch, Vector2 zero)
         {
-            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (Fireplace_TE.IsLitAt(bl.X, bl.Y)) return;
+            if (SubworldTimer.IsExpired) return;
 
             const float OuterRadius = 200f;
             const float InnerRadius = 120f;

@@ -20,6 +20,8 @@ namespace OvermorrowMod.Common.Waypoints
 
         public abstract Rectangle TileArea { get; }
 
+        public Vector2 WorldCenter => TileArea.Center.ToVector2() * 16f;
+
         /// <summary>
         /// The player's top-left position when standing centered on the floor below <see cref="TileArea"/>.
         /// </summary>
