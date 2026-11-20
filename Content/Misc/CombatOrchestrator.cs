@@ -29,6 +29,7 @@ namespace OvermorrowMod.Content.Misc
         public int RightDoorTEID = -1;
 
         private Phase phase = Phase.Setup;
+        private int entrySide;
         private readonly List<int> spawnedNPCs = new();
 
         private const int TotalWaves = 2;
@@ -288,11 +289,31 @@ namespace OvermorrowMod.Content.Misc
 
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)
         {
+            Rectangle room = RoomInterior(left, right);
+            Vector2 playerCenter = Main.LocalPlayer.Center;
+            bool playerInside = room.Contains(playerCenter.ToPoint());
+            int playerSide = playerCenter.X < room.Center.X ? -1 : 1;
+
+            if (entrySide == 0) entrySide = playerSide;
+            if (playerInside && playerSide != entrySide)
+            {
+                left.CloseNow();
+                right.CloseNow();
+            }
+
             bool bothClosed = left.State == CombatDoor_TE.DoorState.Closed &&
                 right.State == CombatDoor_TE.DoorState.Closed;
 
             if (!bothClosed)
                 return;
+
+            if (!playerInside)
+            {
+                left.HasBeenInteracted = false;
+                right.HasBeenInteracted = false;
+                NPC.active = false;
+                return;
+            }
 
             left.IsLocked = true;
             right.IsLocked = true;
@@ -300,6 +321,15 @@ namespace OvermorrowMod.Content.Misc
             SpawnWave();
             IgniteRoomLights(left, right);
             phase = Phase.Combat;
+        }
+
+        /// <summary>
+        /// The world-space area strictly between the two door columns, from the ceiling to the floor.
+        /// </summary>
+        private static Rectangle RoomInterior(CombatDoor_TE left, CombatDoor_TE right)
+        {
+            int top = left.Position.Y - ArchiveLights.CombatRoomHeight;
+            return new Rectangle((left.Position.X + 1) * 16, top * 16, (right.Position.X - left.Position.X - 1) * 16, (ArchiveLights.CombatRoomHeight + 1) * 16);
         }
 
         private static void IgniteRoomLights(CombatDoor_TE left, CombatDoor_TE right)
