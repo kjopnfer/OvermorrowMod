@@ -11,7 +11,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
     /// One-time rest charge for a single Fireplace. Anchored at the multitile's
     /// bottom-left so it coexists with the ArchiveLight_TE at the top-left.
     /// </summary>
-    public class FireplaceRest_TE : ModTileEntity
+    public class Fireplace_TE : ModTileEntity
     {
         public const float HealthFraction = 0.35f;
 
@@ -51,20 +51,20 @@ namespace OvermorrowMod.Content.Tiles.Archives
             return true;
         }
 
-        public static FireplaceRest_TE GetOrCreate(int x, int y)
+        public static Fireplace_TE GetOrCreate(int x, int y)
         {
-            if (TileUtils.TryFindModTileEntity<FireplaceRest_TE>(x, y, out var existing))
+            if (TileUtils.TryFindModTileEntity<Fireplace_TE>(x, y, out var existing))
                 return existing;
 
             if (Main.netMode == NetmodeID.MultiplayerClient) return null;
 
-            int id = ModContent.GetInstance<FireplaceRest_TE>().Place(x, y);
-            return TileEntity.ByID.TryGetValue(id, out var placed) ? placed as FireplaceRest_TE : null;
+            int id = ModContent.GetInstance<Fireplace_TE>().Place(x, y);
+            return TileEntity.ByID.TryGetValue(id, out var placed) ? placed as Fireplace_TE : null;
         }
 
         public static bool IsRested(int anchorX, int anchorY)
         {
-            return TileUtils.TryFindModTileEntity<FireplaceRest_TE>(anchorX, anchorY, out var te) && te.HasRested;
+            return TileUtils.TryFindModTileEntity<Fireplace_TE>(anchorX, anchorY, out var te) && te.HasRested;
         }
 
         public override void SaveData(TagCompound tag)

@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override bool RightClick(int i, int j)
         {
             Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            var te = FireplaceRest_TE.GetOrCreate(bl.X, bl.Y);
+            var te = Fireplace_TE.GetOrCreate(bl.X, bl.Y);
             if (te != null && te.TryRest(Main.LocalPlayer))
             {
                 Player player = Main.LocalPlayer;
@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void MouseOver(int i, int j)
         {
             Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (FireplaceRest_TE.IsRested(bl.X, bl.Y)) return;
+            if (Fireplace_TE.IsRested(bl.X, bl.Y)) return;
 
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
@@ -203,7 +203,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         private static void DrawRestPrompt(int i, int j, SpriteBatch spriteBatch, Vector2 zero)
         {
             Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (FireplaceRest_TE.IsRested(bl.X, bl.Y)) return;
+            if (Fireplace_TE.IsRested(bl.X, bl.Y)) return;
 
             const float OuterRadius = 200f;
             const float InnerRadius = 120f;
