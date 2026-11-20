@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Interaction;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Common.Waypoints;
 using OvermorrowMod.Content.Projectiles.Archives;
 using OvermorrowMod.Core.WorldGeneration;
 using System;
@@ -23,6 +25,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
 {
     public class Fireplace : ModTile
     {
+        private const float UnlitIconScale = 0.75f;
+
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
 
         public override bool CanExplode(int i, int j) => false;
@@ -31,28 +35,43 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override bool RightClick(int i, int j)
         {
+            if (SubworldTimer.IsExpired) return base.RightClick(i, j);
+
             Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            var te = FireplaceRest_TE.GetOrCreate(bl.X, bl.Y);
-            if (te != null && te.TryRest(Main.LocalPlayer))
+            var te = Fireplace_TE.GetOrCreate(bl.X, bl.Y);
+            if (te == null) return base.RightClick(i, j);
+
+            Player player = Main.LocalPlayer;
+            if (te.TryLight(player))
             {
-                Player player = Main.LocalPlayer;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<RestLight>(), 0, 0f, player.whoAmI);
                 if (SubworldTimer.RemainingTicks > 0) SubworldTimer.AddTime(15);
+
+                ArchiveLights.SetRegion(te.TileArea, 0f, 0, instant: true);
+                ArchiveLights.SetRegion(te.TileArea, 1f, 45);
+                SoundEngine.PlaySound(SoundID.Item20, te.WorldCenter);
+                Main.NewText("Waypoint lit", new Color(255, 170, 60));
                 return true;
             }
 
-            return base.RightClick(i, j);
+            WaypointTravel.OpenMap(te);
+            return true;
+        }
+
+        private static bool IsBurning(int i, int j)
+        {
+            if (SubworldTimer.IsExpired) return false;
+
+            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            return Fireplace_TE.IsLitAt(bl.X, bl.Y);
         }
 
         public override void MouseOver(int i, int j)
         {
-            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (FireplaceRest_TE.IsRested(bl.X, bl.Y)) return;
+            if (SubworldTimer.IsExpired) return;
 
-            Player player = Main.LocalPlayer;
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ItemID.LesserHealingPotion;
+            if (IsBurning(i, j)) InteractPrompt.SetCursor(InteractPrompt.WaypointIcon);
+            else InteractPrompt.SetCursor(InteractPrompt.InteractIcon, UnlitIconScale);
         }
 
         public override void SetStaticDefaults()
@@ -147,7 +166,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             Tile tile = Main.tile[i, j];
-            if (tile.TileFrameY < 36)
+            if (tile.TileFrameY < 36 && IsBurning(i, j))
             {
                 float pulse = Main.rand.Next(28, 42) * 0.005f;
                 pulse += (270 - Main.mouseTextColor) / 700f;
@@ -158,6 +177,20 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 b = 0; // Keep blue at 0 for a pure orange hue
             }
 
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            if (IsBurning(i, j)) return true;
+
+            Tile tile = Main.tile[i, j];
+            if (!TileDrawing.IsVisible(tile)) return false;
+
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 position = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero;
+            Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
+            spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Unlit").Value, position, frame, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            return false;
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -192,35 +225,13 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             // The flame is manually drawn separate from the tile texture so that it can be drawn at full brightness.
             Color flameColor = Color.White * ArchiveLights.GetBrightness(i, j);
-            spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, flameColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            if (IsBurning(i, j)) spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, flameColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !SubworldTimer.IsExpired)
             {
-                DrawRestPrompt(i, j, spriteBatch, zero);
+                bool lit = IsBurning(i, j);
+                InteractPrompt.DrawFloating(spriteBatch, lit ? InteractPrompt.WaypointIcon : InteractPrompt.InteractIcon, new Vector2(i * 16 + 48, j * 16 - 14), zero, lit ? 1f : UnlitIconScale);
             }
-        }
-
-        private static void DrawRestPrompt(int i, int j, SpriteBatch spriteBatch, Vector2 zero)
-        {
-            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (FireplaceRest_TE.IsRested(bl.X, bl.Y)) return;
-
-            const float OuterRadius = 200f;
-            const float InnerRadius = 120f;
-
-            Vector2 fireplaceCenter = new Vector2(i * 16 + 48, j * 16 + 24);
-            float dist = Vector2.Distance(Main.LocalPlayer.Center, fireplaceCenter);
-            float proximity = MathHelper.Clamp((OuterRadius - dist) / (OuterRadius - InnerRadius), 0f, 1f);
-            if (proximity <= 0f) return;
-
-            Texture2D icon = TextureAssets.Item[ItemID.LesserHealingPotion].Value;
-            float bob = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 4f;
-            float pulse = 0.85f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.15f;
-            float alpha = proximity * pulse;
-
-            Vector2 drawPos = new Vector2(i * 16 + 48, j * 16 - 14 + bob);
-            Vector2 screenPos = drawPos - Main.screenPosition + zero;
-            spriteBatch.Draw(icon, screenPos, null, Color.White * alpha, 0f, icon.Size() / 2f, 1f, SpriteEffects.None, 0f);
         }
     }
 }

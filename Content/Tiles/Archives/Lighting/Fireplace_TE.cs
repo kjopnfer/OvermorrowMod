@@ -1,21 +1,21 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Common.Waypoints;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
     /// <summary>
-    /// One-time rest charge for a single Fireplace. Anchored at the multitile's
-    /// bottom-left so it coexists with the ArchiveLight_TE at the top-left.
+    /// Anchored at the multitile's bottom-left so it coexists with the ArchiveLight_TE at the top-left.
     /// </summary>
-    public class FireplaceRest_TE : ModTileEntity
+    public class Fireplace_TE : Waypoint_TE
     {
         public const float HealthFraction = 0.35f;
 
-        public bool HasRested;
+        public override Rectangle TileArea => new Rectangle(Position.X, Position.Y - 2, 6, 3);
 
         public override bool IsTileValidForEntity(int x, int y)
         {
@@ -23,9 +23,9 @@ namespace OvermorrowMod.Content.Tiles.Archives
             return tile.HasTile && tile.TileType == ModContent.TileType<Fireplace>();
         }
 
-        public bool TryRest(Player player)
+        public bool TryLight(Player player)
         {
-            if (HasRested) return false;
+            if (IsLit) return false;
 
             int hp = (int)(player.statLifeMax2 * HealthFraction);
             if (hp > 0) player.Heal(hp);
@@ -47,34 +47,24 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 }
             }
 
-            HasRested = true;
+            IsLit = true;
             return true;
         }
 
-        public static FireplaceRest_TE GetOrCreate(int x, int y)
+        public static Fireplace_TE GetOrCreate(int x, int y)
         {
-            if (TileUtils.TryFindModTileEntity<FireplaceRest_TE>(x, y, out var existing))
+            if (TileUtils.TryFindModTileEntity<Fireplace_TE>(x, y, out var existing))
                 return existing;
 
             if (Main.netMode == NetmodeID.MultiplayerClient) return null;
 
-            int id = ModContent.GetInstance<FireplaceRest_TE>().Place(x, y);
-            return TileEntity.ByID.TryGetValue(id, out var placed) ? placed as FireplaceRest_TE : null;
+            int id = ModContent.GetInstance<Fireplace_TE>().Place(x, y);
+            return TileEntity.ByID.TryGetValue(id, out var placed) ? placed as Fireplace_TE : null;
         }
 
-        public static bool IsRested(int anchorX, int anchorY)
+        public static bool IsLitAt(int anchorX, int anchorY)
         {
-            return TileUtils.TryFindModTileEntity<FireplaceRest_TE>(anchorX, anchorY, out var te) && te.HasRested;
-        }
-
-        public override void SaveData(TagCompound tag)
-        {
-            tag["HasRested"] = HasRested;
-        }
-
-        public override void LoadData(TagCompound tag)
-        {
-            HasRested = tag.GetBool("HasRested");
+            return TileUtils.TryFindModTileEntity<Fireplace_TE>(anchorX, anchorY, out var te) && te.IsLit;
         }
     }
 }

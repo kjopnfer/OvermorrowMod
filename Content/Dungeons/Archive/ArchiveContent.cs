@@ -75,7 +75,6 @@ namespace OvermorrowMod.Content.Dungeons.Archive
             [typeof(BookshelfCell)] = 2
         };
 
-        private const double FireplaceFromLoungeChance = 0.85;
         private const double FireplaceChanceFalloff = 0.06;
         private const int MinFireplaceSpacing = 5;
 
@@ -105,28 +104,39 @@ namespace OvermorrowMod.Content.Dungeons.Archive
                 (loungeAnchors[i], loungeAnchors[j]) = (loungeAnchors[j], loungeAnchors[i]);
             }
 
-            int prePlacedFireplaces = fireplaceAnchors.Count;
-
-            foreach (var anchor in loungeAnchors)
+            var spacedFireplaces = new List<Point>();
+            foreach (var anchor in fireplaceAnchors)
             {
-                int addedSoFar = fireplaceAnchors.Count - prePlacedFireplaces;
-                double chance = Math.Min(1.0, FireplaceFromLoungeChance * Math.Pow(FireplaceChanceFalloff, addedSoFar));
-                if (rand.NextDouble() > chance) continue;
-                if (NearAnyFireplace(fireplaceAnchors, anchor)) continue;
+                if (NearAnyFireplace(spacedFireplaces, anchor)) ReplaceGroupRoom(grid, anchor, new LoungeRoom());
+                else spacedFireplaces.Add(anchor);
+            }
+            fireplaceAnchors = spacedFireplaces;
 
+            for (int added = 0; loungeAnchors.Count > 0; added++)
+            {
+                int farthest = 0;
+                for (int k = 1; k < loungeAnchors.Count; k++)
+                    if (DistanceToNearestFireplace(fireplaceAnchors, loungeAnchors[k]) > DistanceToNearestFireplace(fireplaceAnchors, loungeAnchors[farthest])) farthest = k;
+
+                Point anchor = loungeAnchors[farthest];
+                if (NearAnyFireplace(fireplaceAnchors, anchor)) break;
+                if (added > 0 && rand.NextDouble() > Math.Pow(FireplaceChanceFalloff, added)) break;
+
+                loungeAnchors.RemoveAt(farthest);
                 ReplaceGroupRoom(grid, anchor, new FireplaceRoom());
                 fireplaceAnchors.Add(anchor);
             }
         }
 
-        private static bool NearAnyFireplace(List<Point> fireplaceAnchors, Point anchor)
+        private static bool NearAnyFireplace(List<Point> fireplaceAnchors, Point anchor) => DistanceToNearestFireplace(fireplaceAnchors, anchor) < MinFireplaceSpacing;
+
+        private static int DistanceToNearestFireplace(List<Point> fireplaceAnchors, Point anchor)
         {
+            int nearest = int.MaxValue;
             foreach (var fp in fireplaceAnchors)
-            {
-                int dist = Math.Max(Math.Abs(fp.X - anchor.X), Math.Abs(fp.Y - anchor.Y));
-                if (dist < MinFireplaceSpacing) return true;
-            }
-            return false;
+                nearest = Math.Min(nearest, Math.Max(Math.Abs(fp.X - anchor.X), Math.Abs(fp.Y - anchor.Y)));
+
+            return nearest;
         }
 
         private static void ReplaceGroupRoom(DungeonGrid grid, Point anchor, GridRoom newRoom)
