@@ -13,8 +13,10 @@ using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.WorldGeneration;
 using ReLogic.Content;
+using ReLogic.Utilities;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -29,6 +31,7 @@ namespace OvermorrowMod.Content.Misc
         public int RightDoorTEID = -1;
 
         private Phase phase = Phase.Setup;
+        private int entrySide;
         private readonly List<int> spawnedNPCs = new();
 
         private const int TotalWaves = 2;
@@ -60,6 +63,10 @@ namespace OvermorrowMod.Content.Misc
 
         public int openingBuildupTimer = 0;
         private const int OpeningBuildupDuration = 90;
+
+        private static readonly SoundStyle ShakeSound = new SoundStyle("OvermorrowMod/Sounds/TreasureShake") { PitchVariance = 0.6f, MaxInstances = 4 };
+        private int shakeSoundTimer;
+        private readonly List<SlotId> shakeSounds = new();
 
         private bool wasOpen = false;
 
@@ -288,11 +295,31 @@ namespace OvermorrowMod.Content.Misc
 
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)
         {
+            Rectangle room = RoomInterior(left, right);
+            Vector2 playerCenter = Main.LocalPlayer.Center;
+            bool playerInside = room.Contains(playerCenter.ToPoint());
+            int playerSide = playerCenter.X < room.Center.X ? -1 : 1;
+
+            if (entrySide == 0) entrySide = playerSide;
+            if (playerInside && playerSide != entrySide)
+            {
+                left.CloseNow();
+                right.CloseNow();
+            }
+
             bool bothClosed = left.State == CombatDoor_TE.DoorState.Closed &&
                 right.State == CombatDoor_TE.DoorState.Closed;
 
             if (!bothClosed)
                 return;
+
+            if (!playerInside)
+            {
+                left.HasBeenInteracted = false;
+                right.HasBeenInteracted = false;
+                NPC.active = false;
+                return;
+            }
 
             left.IsLocked = true;
             right.IsLocked = true;
@@ -300,6 +327,15 @@ namespace OvermorrowMod.Content.Misc
             SpawnWave();
             IgniteRoomLights(left, right);
             phase = Phase.Combat;
+        }
+
+        /// <summary>
+        /// The world-space area strictly between the two door columns, from the ceiling to the floor.
+        /// </summary>
+        private static Rectangle RoomInterior(CombatDoor_TE left, CombatDoor_TE right)
+        {
+            int top = left.Position.Y - ArchiveLights.CombatRoomHeight;
+            return new Rectangle((left.Position.X + 1) * 16, top * 16, (right.Position.X - left.Position.X - 1) * 16, (ArchiveLights.CombatRoomHeight + 1) * 16);
         }
 
         private static void IgniteRoomLights(CombatDoor_TE left, CombatDoor_TE right)
@@ -371,13 +407,21 @@ namespace OvermorrowMod.Content.Misc
             {
                 isOpen = false;
                 openingBuildupTimer = 0;
+                StopShakeSounds();
                 return;
             }
 
             if (openingBuildupTimer > 0)
             {
                 openingBuildupTimer--;
-                if (openingBuildupTimer == 0) isOpen = true;
+                if (openingBuildupTimer > 0)
+                {
+                    PlayBuildupShake();
+                    return;
+                }
+
+                isOpen = true;
+                StopShakeSounds();
                 return;
             }
 
@@ -388,7 +432,27 @@ namespace OvermorrowMod.Content.Misc
             Main.LocalPlayer.noThrow = 2;
 
             if (Main.mouseRight && Main.mouseRightRelease && !isOpen)
+            {
                 openingBuildupTimer = OpeningBuildupDuration;
+                shakeSoundTimer = 0;
+            }
+        }
+
+        private void PlayBuildupShake()
+        {
+            if (--shakeSoundTimer > 0) return;
+
+            float progress = 1f - openingBuildupTimer / (float)OpeningBuildupDuration;
+            shakeSoundTimer = (int)MathHelper.Lerp(28f, 10f, progress);
+            shakeSounds.Add(SoundEngine.PlaySound(ShakeSound with { Pitch = MathHelper.Lerp(-0.2f, 0.4f, progress) }, NPC.Center));
+        }
+
+        private void StopShakeSounds()
+        {
+            foreach (var slot in shakeSounds)
+                if (SoundEngine.TryGetActiveSound(slot, out var sound)) sound.Stop();
+
+            shakeSounds.Clear();
         }
 
         private void SpawnWave()
@@ -441,6 +505,8 @@ namespace OvermorrowMod.Content.Misc
             Vector2 telegraphCenter = new Vector2(worldX, telegraphY);
 
             Projectile.NewProjectile(NPC.GetSource_FromAI(), telegraphCenter, Vector2.Zero, ModContent.ProjectileType<SpawnTelegraph>(), 0, 0f, Main.myPlayer, spinDirection, TelegraphDuration);
+            SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, telegraphCenter);
+            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy, telegraphCenter);
         }
 
         private static bool SpawnsFlying(int npcType) => ContentSamples.NpcsByNetId[npcType].noGravity;

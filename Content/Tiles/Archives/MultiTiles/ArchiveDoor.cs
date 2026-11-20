@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Interaction;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
@@ -46,10 +47,18 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public override void MouseOver(int i, int j)
         {
-            Player player = Main.player[Main.myPlayer];
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ModContent.ItemType<ArchiveKey>();
+            Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            if (TileUtils.TryFindModTileEntity<ArchiveDoor_TE>(bottomLeft.X, bottomLeft.Y, out var door) && door.IsLocked)
+            {
+                Player player = Main.player[Main.myPlayer];
+                player.noThrow = 2;
+                player.cursorItemIconEnabled = true;
+                player.cursorItemIconID = ModContent.ItemType<ArchiveKey>();
+            }
+            else
+            {
+                InteractPrompt.SetCursor(InteractPrompt.InteractIcon);
+            }
 
             base.MouseOver(i, j);
         }

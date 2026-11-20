@@ -22,6 +22,7 @@ namespace OvermorrowMod.Common.RoomManager
 
         public bool IsLocked = false;
 
+        private bool closeRequested = false;
         private bool lightsInitialized = false;
         private bool expirationHandled = false;
 
@@ -90,6 +91,7 @@ namespace OvermorrowMod.Common.RoomManager
             State = DoorState.Opening;
             StateTimer = 0;
             HasBeenInteracted = true;
+            closeRequested = false;
 
             var sibling = Sibling;
             if (sibling != null && sibling.State == DoorState.Closed)
@@ -97,11 +99,17 @@ namespace OvermorrowMod.Common.RoomManager
                 sibling.State = DoorState.Opening;
                 sibling.StateTimer = 0;
                 sibling.HasBeenInteracted = true;
+                sibling.closeRequested = false;
             }
 
             if (firstInteractionInPair)
                 SpawnOrchestrator();
         }
+
+        /// <summary>
+        /// Closes the door the moment it is fully open, cutting <see cref="OpenDurationTicks"/> short.
+        /// </summary>
+        public void CloseNow() => closeRequested = true;
 
         public void BeginVanish()
         {
@@ -265,15 +273,17 @@ namespace OvermorrowMod.Common.RoomManager
                     break;
                 case DoorState.Open:
                     StateTimer++;
-                    if (StateTimer >= OpenDurationTicks)
+                    if (StateTimer >= OpenDurationTicks || closeRequested)
                     {
                         State = DoorState.Closing;
                         StateTimer = 0;
+                        closeRequested = false;
                         var sibling = Sibling;
                         if (sibling != null && sibling.State == DoorState.Open)
                         {
                             sibling.State = DoorState.Closing;
                             sibling.StateTimer = 0;
+                            sibling.closeRequested = false;
                         }
                     }
                     break;

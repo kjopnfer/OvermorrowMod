@@ -6,6 +6,7 @@ using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.UI.RunStats;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -37,13 +38,21 @@ namespace OvermorrowMod.Core.UI
 
         private int popoutTimer = 0;
 
+        private readonly bool[] launchSoundPlayed = new bool[3];
+
+        private static readonly SoundStyle[] LaunchSounds =
+        {
+            new SoundStyle("OvermorrowMod/Sounds/LootReward") { PitchVariance = 0.2f, MaxInstances = 3 },
+            new SoundStyle("OvermorrowMod/Sounds/LootReward2") { PitchVariance = 0.2f, MaxInstances = 3 },
+        };
+
         public const int FadeTicks = 30;
         public const int SlotSize = 52;
         public const int SlotSpacing = 32;
         public const int VerticalOffsetAboveChest = 120;
 
         public const int PopoutFlightTicks = 30;
-        public const int PopoutStaggerTicks = 18;
+        public const int PopoutStaggerTicks = 28;
         
         public const float PopoutArcHeight = 100f;
 
@@ -76,10 +85,10 @@ namespace OvermorrowMod.Core.UI
         private RewardActionButton denyButton;
 
         // Tick by which the last slot has landed. Buttons start fading in here.
-        private const int ButtonsAppearTick = (3 - 1) * PopoutStaggerTicks + PopoutFlightTicks; // 66
+        private const int ButtonsAppearTick = (3 - 1) * PopoutStaggerTicks + PopoutFlightTicks; // 86
 
         // popoutTimer value once the slots have landed and the buttons have fully faded in.
-        public const int OpenAnimationTicks = ButtonsAppearTick + ButtonFadeInTicks; // 86
+        public const int OpenAnimationTicks = ButtonsAppearTick + ButtonFadeInTicks; // 106
 
         public override void OnInitialize()
         {
@@ -117,9 +126,10 @@ namespace OvermorrowMod.Core.UI
                 slots[i].SetItem(id);
                 slots[i].selected = false;
                 slots[i].animOpacity = 0f;
+                launchSoundPlayed[i] = false;
             }
 
-            if (confirmButton != null) 
+            if (confirmButton != null)
                 confirmButton.animOpacity = 0f;
 
             if (denyButton != null)
@@ -167,6 +177,7 @@ namespace OvermorrowMod.Core.UI
                     if (itemId > 0 && ContentSamples.ItemsByType[itemId].ModItem is CollectibleItem)
                         StartFlight(itemId);
                     orch.ClaimReward(itemId);
+                    SoundEngine.PlaySound(SoundID.Coins);
                 }
                 else // Deny
                 {
@@ -284,6 +295,12 @@ namespace OvermorrowMod.Core.UI
                     // Land
                     slotPos = finalPos;
                     popOpacity = 1f;
+                }
+
+                if (slotAnimTimer >= 0 && !launchSoundPlayed[i] && !isClosing && !slots[i].displayItem.IsAir)
+                {
+                    SoundEngine.PlaySound(Main.rand.Next(LaunchSounds));
+                    launchSoundPlayed[i] = true;
                 }
 
                 slots[i].Left.Set(slotPos.X - SlotSize / 2f, 0);
