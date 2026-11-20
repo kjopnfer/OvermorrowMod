@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
             var te = Fireplace_TE.GetOrCreate(bl.X, bl.Y);
-            if (te != null && te.TryRest(Main.LocalPlayer))
+            if (te != null && te.TryLight(Main.LocalPlayer))
             {
                 Player player = Main.LocalPlayer;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<RestLight>(), 0, 0f, player.whoAmI);
@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public override void MouseOver(int i, int j)
         {
             Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (Fireplace_TE.IsRested(bl.X, bl.Y)) return;
+            if (Fireplace_TE.IsLitAt(bl.X, bl.Y)) return;
 
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
@@ -203,7 +203,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         private static void DrawRestPrompt(int i, int j, SpriteBatch spriteBatch, Vector2 zero)
         {
             Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            if (Fireplace_TE.IsRested(bl.X, bl.Y)) return;
+            if (Fireplace_TE.IsLitAt(bl.X, bl.Y)) return;
 
             const float OuterRadius = 200f;
             const float InnerRadius = 120f;
