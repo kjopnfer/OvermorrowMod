@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Interaction;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Common.Waypoints;
 using OvermorrowMod.Content.Projectiles.Archives;
@@ -24,6 +25,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
 {
     public class Fireplace : ModTile, IWaypointTile
     {
+        private const float UnlitIconScale = 0.75f;
+
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
 
         public Waypoint_TE GetOrCreateWaypoint(int i, int j)
@@ -69,10 +72,8 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             if (SubworldTimer.IsExpired) return;
 
-            Player player = Main.LocalPlayer;
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ItemID.LesserHealingPotion;
+            if (IsBurning(i, j)) InteractPrompt.SetCursor(InteractPrompt.WaypointIcon);
+            else InteractPrompt.SetCursor(InteractPrompt.InteractIcon, UnlitIconScale);
         }
 
         public override void SetStaticDefaults()
@@ -214,32 +215,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
             Color flameColor = Color.White * ArchiveLights.GetBrightness(i, j);
             if (IsBurning(i, j)) spriteBatch.Draw(ModContent.Request<Texture2D>(Texture + "_Flame").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + offsetY) + zero, drawRectangle, flameColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0 && !SubworldTimer.IsExpired)
             {
-                DrawRestPrompt(i, j, spriteBatch, zero);
+                bool lit = IsBurning(i, j);
+                InteractPrompt.DrawFloating(spriteBatch, lit ? InteractPrompt.WaypointIcon : InteractPrompt.InteractIcon, new Vector2(i * 16 + 48, j * 16 - 14), zero, lit ? 1f : UnlitIconScale);
             }
-        }
-
-        private static void DrawRestPrompt(int i, int j, SpriteBatch spriteBatch, Vector2 zero)
-        {
-            if (SubworldTimer.IsExpired) return;
-
-            const float OuterRadius = 200f;
-            const float InnerRadius = 120f;
-
-            Vector2 fireplaceCenter = new Vector2(i * 16 + 48, j * 16 + 24);
-            float dist = Vector2.Distance(Main.LocalPlayer.Center, fireplaceCenter);
-            float proximity = MathHelper.Clamp((OuterRadius - dist) / (OuterRadius - InnerRadius), 0f, 1f);
-            if (proximity <= 0f) return;
-
-            Texture2D icon = TextureAssets.Item[ItemID.LesserHealingPotion].Value;
-            float bob = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 4f;
-            float pulse = 0.85f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.15f;
-            float alpha = proximity * pulse;
-
-            Vector2 drawPos = new Vector2(i * 16 + 48, j * 16 - 14 + bob);
-            Vector2 screenPos = drawPos - Main.screenPosition + zero;
-            spriteBatch.Draw(icon, screenPos, null, Color.White * alpha, 0f, icon.Size() / 2f, 1f, SpriteEffects.None, 0f);
         }
     }
 }
