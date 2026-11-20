@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
+using OvermorrowMod.Common.Waypoints;
 using OvermorrowMod.Content.Projectiles.Archives;
 using OvermorrowMod.Core.WorldGeneration;
 using System;
@@ -21,9 +22,15 @@ using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
-    public class Fireplace : ModTile
+    public class Fireplace : ModTile, IWaypointTile
     {
         public override string Texture => AssetDirectory.ArchiveTiles + Name;
+
+        public Waypoint_TE GetOrCreateWaypoint(int i, int j)
+        {
+            Point bl = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
+            return Fireplace_TE.GetOrCreate(bl.X, bl.Y);
+        }
 
         public override bool CanExplode(int i, int j) => false;
 
