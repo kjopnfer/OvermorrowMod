@@ -505,6 +505,8 @@ namespace OvermorrowMod.Content.Misc
             Vector2 telegraphCenter = new Vector2(worldX, telegraphY);
 
             Projectile.NewProjectile(NPC.GetSource_FromAI(), telegraphCenter, Vector2.Zero, ModContent.ProjectileType<SpawnTelegraph>(), 0, 0f, Main.myPlayer, spinDirection, TelegraphDuration);
+            SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, telegraphCenter);
+            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy, telegraphCenter);
         }
 
         private static bool SpawnsFlying(int npcType) => ContentSamples.NpcsByNetId[npcType].noGravity;
