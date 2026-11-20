@@ -177,6 +177,7 @@ namespace OvermorrowMod.Core.UI
                     if (itemId > 0 && ContentSamples.ItemsByType[itemId].ModItem is CollectibleItem)
                         StartFlight(itemId);
                     orch.ClaimReward(itemId);
+                    SoundEngine.PlaySound(SoundID.Coins);
                 }
                 else // Deny
                 {
