@@ -14,17 +14,41 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         Right
     }
 
+    public static class DirectionExtensions
+    {
+        public static Direction Opposite(this Direction side) => side switch
+        {
+            Direction.Top => Direction.Bottom,
+            Direction.Bottom => Direction.Top,
+            Direction.Left => Direction.Right,
+            _ => Direction.Left,
+        };
+
+        /// <summary>
+        /// The grid offset of the cell across this side.
+        /// </summary>
+        public static Point Step(this Direction side) => side switch
+        {
+            Direction.Top => new Point(0, -1),
+            Direction.Bottom => new Point(0, 1),
+            Direction.Left => new Point(-1, 0),
+            _ => new Point(1, 0),
+        };
+    }
+
     public enum RoomType
     {
         None,
         Filler,
         Combat,
-        Treasure,
+        Chest,
         Door,
         VerticalConnector,
         HorizontalConnector,
         DiagonalConnector,
-        Start
+        Start,
+        Bridge,
+        TreasureDoor
     }
 
     /// <summary>
@@ -45,6 +69,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Whether the planner placed this room directly rather than A* placing it.
         /// </summary>
         public bool IsFeature { get; set; } = false;
+
+        /// <summary>
+        /// Whether the planner sends a reward dead end and a loop out of this room's unused openings.
+        /// The room gets at most one reward branch.
+        /// </summary>
+        public virtual bool IsJunction => false;
 
         /// <summary>
         /// Total tile width of the footprint, including internal padding between sub-cells.
@@ -80,6 +110,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         private HashSet<Type>[] _acceptedBySide;
         private CellExit[] _exits;
+        private RoomOpening[] _openings;
+
+        private static readonly Direction[] OpeningSideOrder = { Direction.Right, Direction.Left, Direction.Bottom, Direction.Top };
 
         /// <summary>
         /// The room types accepted on the given sub-cell edge, or null to reject all.
@@ -150,8 +183,33 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         /// <summary>
         /// Offset from the walker's cursor to this cell's anchor (footprint top-left). Default: zero.
+        /// Only affects rooms the pathfinder places mid-path: it decides which sub-cell the walker steps into.
+        /// Rooms placed directly are connected through their <see cref="Openings"/> whatever this value is.
         /// </summary>
         public virtual Point AnchorOffsetFromCursor => Point.Zero;
+
+        /// <summary>
+        /// Every open sub-cell edge on the outside of the footprint, ordered right, left, bottom, top,
+        /// then by sub-cell along each side.
+        /// </summary>
+        public RoomOpening[] Openings => _openings ??= BuildOpenings();
+
+        private RoomOpening[] BuildOpenings()
+        {
+            var list = new List<RoomOpening>();
+            foreach (var side in OpeningSideOrder)
+            {
+                bool vertical = side is Direction.Left or Direction.Right;
+                int count = vertical ? CellHeight : CellWidth;
+                for (int i = 0; i < count; i++)
+                {
+                    int subCol = side == Direction.Right ? CellWidth - 1 : side == Direction.Left ? 0 : i;
+                    int subRow = side == Direction.Bottom ? CellHeight - 1 : side == Direction.Top ? 0 : i;
+                    if (IsOpenSide(subCol, subRow, side)) list.Add(new RoomOpening(subCol, subRow, side));
+                }
+            }
+            return list.ToArray();
+        }
 
         /// <summary>
         /// Directional exits the walker can take from this cell, built once per instance by <see cref="CreateExits"/>.
@@ -159,22 +217,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public CellExit[] Exits => _exits ??= CreateExits();
 
         /// <summary>
-        /// Default: one cardinal exit per side that has allowed neighbors. Rooms with non-cardinal exits override this.
+        /// Default: one exit per opening whose side has allowed neighbors, moving the cursor to the cell just outside it.
         /// </summary>
         protected virtual CellExit[] CreateExits()
         {
-            var list = new List<CellExit>(4);
-            AddCardinalExit(list, Direction.Right, new Point(CellWidth, 0));
-            AddCardinalExit(list, Direction.Left, new Point(-1, 0));
-            AddCardinalExit(list, Direction.Bottom, new Point(0, CellHeight));
-            AddCardinalExit(list, Direction.Top, new Point(0, -1));
+            var list = new List<CellExit>(Openings.Length);
+            foreach (var opening in Openings)
+            {
+                var neighbors = AllowedNeighbors(opening.Side);
+                if (neighbors == null || neighbors.Length == 0) continue;
+                var outside = opening.OutsideCell;
+                list.Add(new CellExit(new Point(outside.X + AnchorOffsetFromCursor.X, outside.Y + AnchorOffsetFromCursor.Y), opening.Side, neighbors));
+            }
             return list.ToArray();
-        }
-
-        private void AddCardinalExit(List<CellExit> list, Direction side, Point delta)
-        {
-            var n = AllowedNeighbors(side);
-            if (n != null && n.Length > 0) list.Add(new CellExit(delta, n));
         }
 
         /// <summary>
@@ -226,6 +281,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public virtual bool IsOpenSide(int subCol, int subRow, Direction side) => false;
 
         /// <summary>
+        /// Whether the given sub-cell side is a doorway when <paramref name="neighbor"/> sits against it.
+        /// Default: <see cref="IsOpenSide"/>. Rooms whose padding closes a side for some neighbors override this.
+        /// </summary>
+        /// <param name="neighbor">The room across the side, or null for a room of no particular type.</param>
+        public virtual bool OpensToward(int subCol, int subRow, Direction side, GridRoom neighbor) => IsOpenSide(subCol, subRow, side);
+
+        /// <summary>
+        /// True if the two cells share a doorway: each side of the border is open toward the other room.
+        /// </summary>
+        public static bool Connects(GridSlot from, Direction side, GridSlot to) => from.Room.OpensToward(from.SubCol, from.SubRow, side, to.Room) && to.Room.OpensToward(to.SubCol, to.SubRow, side.Opposite(), from.Room);
+
+        /// <summary>
         /// Whether this cell may sit next to an empty neighbor. False for connectors,
         /// whose open sides must connect to another cell.
         /// </summary>
@@ -239,7 +306,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     }
 
     /// <summary>
-    /// Context passed to <see cref="GridRoom.Build"/>: world origin, the active dungeon palette, and fill/lining tiles.
+    /// Context passed to <see cref="GridRoom.Build"/>: world origin, the active dungeon palette, fill/lining tiles, and grid position.
     /// </summary>
     public readonly struct BuildContext
     {
@@ -247,13 +314,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public readonly DungeonPalette Palette;
         public readonly int FillTileType;
         public readonly int LiningTileType;
+        public readonly DungeonGrid Grid;
+        public readonly int Col;
+        public readonly int Row;
 
-        public BuildContext(Point origin, DungeonPalette palette, int fillTileType, int liningTileType)
+        public BuildContext(Point origin, DungeonPalette palette, int fillTileType, int liningTileType, DungeonGrid grid, int col, int row)
         {
             Origin = origin;
             Palette = palette;
             FillTileType = fillTileType;
             LiningTileType = liningTileType;
+            Grid = grid;
+            Col = col;
+            Row = row;
         }
     }
 
@@ -314,17 +387,41 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     }
 
     /// <summary>
-    /// A single exit from a cell: cursor delta plus the cell types legal through it.
+    /// A single exit from a cell: cursor delta, the side of the cell it leaves through, and the cell types legal through it.
     /// </summary>
     public readonly struct CellExit
     {
         public Point CursorDelta { get; }
+        public Direction Side { get; }
         public GridRoom[] AllowedNext { get; }
 
-        public CellExit(Point cursorDelta, GridRoom[] allowedNext)
+        public CellExit(Point cursorDelta, Direction side, GridRoom[] allowedNext)
         {
             CursorDelta = cursorDelta;
+            Side = side;
             AllowedNext = allowedNext;
         }
+    }
+
+    /// <summary>
+    /// An open edge on the outside of a room's footprint.
+    /// </summary>
+    public readonly struct RoomOpening
+    {
+        public int SubCol { get; }
+        public int SubRow { get; }
+        public Direction Side { get; }
+
+        public RoomOpening(int subCol, int subRow, Direction side)
+        {
+            SubCol = subCol;
+            SubRow = subRow;
+            Side = side;
+        }
+
+        /// <summary>
+        /// The cell just outside this opening, relative to the room's anchor.
+        /// </summary>
+        public Point OutsideCell => new Point(SubCol + Side.Step().X, SubRow + Side.Step().Y);
     }
 }

@@ -57,8 +57,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract List<Func<GridRoom>> RequiredRooms { get; }
 
         public abstract GridRoom CreateCombat(bool isFeature);
-        public abstract GridRoom CreateTreasure(bool isFeature);
+        public abstract GridRoom CreateChest(bool isFeature);
         public abstract GridRoom CreateDoor(bool isFeature);
+
+        /// <summary>
+        /// A 1x1 locked door cell open left and right, with the same neighbors as the chest room.
+        /// </summary>
+        public abstract GridRoom CreateTreasureDoor(bool isFeature);
+
+        /// <summary>
+        /// The room a treasure door leads to, painted outside the dungeon.
+        /// </summary>
+        public abstract TreasureRoom CreateTreasureRoom();
 
         /// <summary>
         /// The dungeon's basic walkable room. Used to cap a spine endpoint that
@@ -91,6 +101,22 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Maximum consecutive vertical moves a path may make before it must turn.
         /// </summary>
         public virtual int MaxVerticalRun => 2;
+
+        /// <summary>
+        /// Fewest void strips reserved across the spine before it is planned. Paths cross a strip only
+        /// straight across, through rooms of type <see cref="RoomType.Bridge"/>, which the room kit must list as neighbors.
+        /// </summary>
+        public virtual int MinVoidStrips => 0;
+
+        /// <summary>
+        /// Most void strips reserved across the spine. The count is rolled per dungeon; fewer are placed if they do not fit.
+        /// </summary>
+        public virtual int MaxVoidStrips => 0;
+
+        /// <summary>
+        /// Columns per void strip. A bridge spans two columns, so this is a positive multiple of 2.
+        /// </summary>
+        public virtual int VoidStripWidth => 2;
 
         /// <summary>
         /// Dungeon-specific layout adjustment run after planning but before any cell is rendered.

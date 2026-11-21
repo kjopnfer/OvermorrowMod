@@ -17,6 +17,9 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         public override int Cols => 35;
         public override int Rows => 30;
 
+        public override int MinVoidStrips => 1;
+        public override int MaxVoidStrips => 3;
+
         public override int FillTile => ModContent.TileType<CastleBrick>();
         public override int LiningTile => ModContent.TileType<ArchiveWood>();
 
@@ -43,8 +46,10 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         };
 
         public override GridRoom CreateCombat(bool isFeature) => new CombatRoom { IsFeature = isFeature };
-        public override GridRoom CreateTreasure(bool isFeature) => new ChestRoom { IsFeature = isFeature };
+        public override GridRoom CreateChest(bool isFeature) => new ChestRoom { IsFeature = isFeature };
         public override GridRoom CreateDoor(bool isFeature) => new DoorRoom { IsFeature = isFeature };
+        public override GridRoom CreateTreasureDoor(bool isFeature) => new TreasureDoorRoom { IsFeature = isFeature };
+        public override TreasureRoom CreateTreasureRoom() => new ArchiveTreasureRoom();
         public override GridRoom CreateFiller(bool isFeature) => new BookshelfCell { IsFeature = isFeature };
         public override GridRoom CreateVerticalConnector(bool isFeature) => new ShaftCell { IsFeature = isFeature };
 

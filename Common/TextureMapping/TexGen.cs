@@ -427,6 +427,15 @@ namespace OvermorrowMod.Common.TextureMapping
         private readonly record struct LayerData(Rgba32[] Pixels, int Width, int Height);
         private static readonly Dictionary<(string, string), LayerData> _layerCache = new();
 
+        /// <summary>
+        /// Canvas width and height of an aseprite sheet with a Walls layer.
+        /// </summary>
+        public static (int Width, int Height) GetCanvasSize(string modPath)
+        {
+            LoadLayerPixels(modPath, SheetLayer.Walls.ToString(), out int width, out int height);
+            return (width, height);
+        }
+
         /// <summary>Drops every cached aseprite layer. Call at the end of a worldgen pass.</summary>
         public static void ClearCache() => _layerCache.Clear();
 

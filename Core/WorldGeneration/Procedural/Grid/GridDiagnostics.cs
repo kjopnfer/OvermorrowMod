@@ -146,7 +146,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private static void WriteAsciiLayout(StringBuilder sb, DungeonGrid grid)
         {
             sb.AppendLine("--- Grid layout ---");
-            sb.AppendLine("Each cell shows its type wrapped in brackets. '.' = empty, '#' = out-of-bounds.");
+            sb.AppendLine("Each cell shows its type wrapped in brackets. '.' = empty, '~' = empty void strip, '#' = out-of-bounds.");
             sb.AppendLine($"Note: rows are wide ({grid.Cols} cells x {CellLabelInnerWidth + 2} chars = {grid.Cols * (CellLabelInnerWidth + 2)} chars). Use a wide editor.");
             sb.AppendLine();
 
@@ -180,7 +180,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             var slot = grid.GetSlot(col, row);
             string name;
             if (slot == null)            name = "#";
-            else if (slot.IsEmpty)       name = ".";
+            else if (slot.IsEmpty)       name = grid.IsVoid(col) ? "~" : ".";
             else
             {
                 name = slot.Room.GetType().Name;
@@ -264,8 +264,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         // are intentional and should not be flagged.
                         if (object.ReferenceEquals(slot.Room, neighbor.Room)) continue;
 
-                        bool ourSide = slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side);
-                        bool theirSide = neighbor.Room.IsOpenSide(neighbor.SubCol, neighbor.SubRow, d.opposite);
+                        bool ourSide = slot.Room.OpensToward(slot.SubCol, slot.SubRow, d.side, neighbor.Room);
+                        bool theirSide = neighbor.Room.OpensToward(neighbor.SubCol, neighbor.SubRow, d.opposite, slot.Room);
 
                         if (ourSide != theirSide)
                         {
@@ -355,8 +355,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     // Different pieces: traverse only if both sides agree the
                     // shared border is open.
-                    bool ourSide = slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side);
-                    bool theirSide = nSlot.Room.IsOpenSide(nSlot.SubCol, nSlot.SubRow, d.opposite);
+                    bool ourSide = slot.Room.OpensToward(slot.SubCol, slot.SubRow, d.side, nSlot.Room);
+                    bool theirSide = nSlot.Room.OpensToward(nSlot.SubCol, nSlot.SubRow, d.opposite, slot.Room);
                     if (!ourSide || !theirSide) continue;
 
                     var nPos2 = new Point(nx, ny);

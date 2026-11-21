@@ -9,8 +9,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
     /// A* over grid cells with project-specific extensions:
     /// multi-cell footprints (stairs span multiple squares and must not collide
     /// with the grid, blocked zones, or earlier placements in the same path)
-    /// and occupied-goal arrival, where the goal already holds a pre-placed cell
-    /// (e.g. a door) and the path must physically dock against its facing exit.
+    /// and room-to-room routing: the path leaves the start room through one of its exits
+    /// and ends against any opening of the placed goal room that accepts the arriving cell.
     /// One instance serves every search on one grid and reuses its buffers between searches.
     /// </summary>
     public sealed class GridAStar
@@ -53,14 +53,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         private readonly bool[] _passable;
         private int _floodId;
 
+        private readonly List<Point> _goalApproaches = new();
+
         private Point _start;
-        private Point _goal;
+        private Point _startAnchor;
         private GridRoom _startCell;
-        private int _startWidth;
-        private int _startHeight;
-        private int _goalWidth;
-        private int _goalHeight;
-        private bool _goalOccupied;
+        private Point _goalAnchor;
+        private GridRoom _goalRoom;
 
         /// <summary>
         /// The generation phase the next searches are counted under.
@@ -87,24 +86,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         }
 
         /// <summary>
-        /// Plans a path from start to goal.
+        /// Plans a path between two rooms already placed on the grid.
         /// </summary>
+        /// <param name="startAnchor">Top-left cell of the room the path leaves from.</param>
+        /// <param name="goalCell">Any cell of the room the path arrives at.</param>
+        /// <param name="startCell">The room at <paramref name="startAnchor"/>.</param>
         /// <returns>The placed steps in order, or null if the goal is unreachable or the expansion budget runs out.</returns>
-        public List<PathStep> FindPath(Point start, Point goal, GridRoom startCell, EdgeCost edgeCost, int maxExpansions = DefaultMaxExpansions)
+        public List<PathStep> FindPath(Point startAnchor, Point goalCell, GridRoom startCell, EdgeCost edgeCost, int maxExpansions = DefaultMaxExpansions)
         {
             long began = Stopwatch.GetTimestamp();
             var phase = _stats.Searches[(int)Phase];
             phase.Calls++;
 
-            _start = start;
-            _goal = goal;
             _startCell = startCell;
-            _startWidth = startCell.CellWidth;
-            _startHeight = startCell.CellHeight;
-            var goalSlot = _grid.GetSlot(goal.X, goal.Y);
-            _goalOccupied = goalSlot != null && !goalSlot.IsEmpty;
-            _goalWidth = _goalOccupied ? goalSlot.Room.CellWidth : 1;
-            _goalHeight = _goalOccupied ? goalSlot.Room.CellHeight : 1;
+            _startAnchor = startAnchor;
+            _start = new Point(startAnchor.X - startCell.AnchorOffsetFromCursor.X, startAnchor.Y - startCell.AnchorOffsetFromCursor.Y);
+            var goalSlot = _grid.GetSlot(goalCell.X, goalCell.Y);
+            _goalRoom = goalSlot.Room;
+            _goalAnchor = new Point(goalCell.X - goalSlot.SubCol, goalCell.Y - goalSlot.SubRow);
+            _goalApproaches.Clear();
+            foreach (var opening in _goalRoom.Openings)
+                _goalApproaches.Add(new Point(_goalAnchor.X + opening.OutsideCell.X, _goalAnchor.Y + opening.OutsideCell.Y));
 
             List<PathStep> path;
             if (!GoalReachable())
@@ -124,7 +126,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 if (path != null)
                 {
                     phase.SuccessExpansions += expansions;
-                    _stats.Successes.Add(new SearchSample(Phase, Math.Abs(start.X - goal.X) + Math.Abs(start.Y - goal.Y), expansions));
+                    _stats.Successes.Add(new SearchSample(Phase, (int)Heuristic(_start), expansions));
                 }
                 else
                 {
@@ -148,7 +150,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
             int startId = AddNode(new Node(_start, _startCell.GetType(), 1, 0));
             _bestCost[startId] = 0.0;
-            _toExplore.Enqueue(startId, Heuristic(_start, _goal));
+            _toExplore.Enqueue(startId, Heuristic(_start));
 
             expansions = 0;
             budgetSpent = false;
@@ -158,25 +160,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 expansions++;
                 int currentId = _toExplore.Dequeue();
                 var current = _nodes[currentId];
-
-                // Goal reached by placing a cell on it (empty goal).
-                if (current.Position == _goal)
-                {
-                    // Cannot end the path on a type that has not satisfied its minimum chain length.
-                    if (_minStreakLimits.TryGetValue(current.PrevType, out int minS) && current.Streak < minS)
-                        continue;
-                    return ReconstructPath(currentId);
-                }
-
                 GridRoom prevCell = currentId == startId ? _startCell : _placedCell[currentId];
 
-                // Arrival at an already-occupied goal (e.g. pre-placed door or required room).
-                // Valid if any of prev's exits steps onto the goal and the goal accepts the arriving type.
+                // A path cannot end on a type that has not satisfied its minimum chain length.
                 foreach (var exit in prevCell.Exits)
                 {
-                    var landing = new Point(current.Position.X + exit.CursorDelta.X, current.Position.Y + exit.CursorDelta.Y);
-                    if (landing != _goal) continue;
-                    if (!TargetAcceptsArrivalFromExit(exit, current.PrevType)) continue;
+                    if (!GoalAcceptsArrival(current.Position, exit, current.PrevType)) continue;
                     if (_minStreakLimits.TryGetValue(current.PrevType, out int minA) && current.Streak < minA) continue;
                     return ReconstructPath(currentId);
                 }
@@ -208,6 +197,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
                         var anchor = new Point(candNext.X + candidate.AnchorOffsetFromCursor.X, candNext.Y + candidate.AnchorOffsetFromCursor.Y);
                         if (!FootprintIsAvailable(candidate, anchor)) continue;
+                        if (!FitsVoidColumns(candidate, anchor)) continue;
 
                         // Committed same-type cells extending left and right of the anchor's row count toward
                         // the streak too, so two paths can't stitch their placements into one long chain.
@@ -246,7 +236,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         _parent[neighborId] = currentId;
                         _placedCell[neighborId] = candidate;
                         _placedAnchor[neighborId] = anchor;
-                        _toExplore.Enqueue(neighborId, newCost + Heuristic(candNext, _goal));
+                        _toExplore.Enqueue(neighborId, newCost + Heuristic(candNext));
                     }
                 }
             }
@@ -267,7 +257,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return id;
         }
 
-        private static double Heuristic(Point from, Point to) => Math.Abs(from.X - to.X) + Math.Abs(from.Y - to.Y);
+        /// <summary>
+        /// Manhattan distance from <paramref name="from"/> to the nearest cell of the goal footprint.
+        /// </summary>
+        private double Heuristic(Point from)
+        {
+            int right = _goalAnchor.X + _goalRoom.CellWidth - 1;
+            int bottom = _goalAnchor.Y + _goalRoom.CellHeight - 1;
+            int dx = from.X < _goalAnchor.X ? _goalAnchor.X - from.X : from.X > right ? from.X - right : 0;
+            int dy = from.Y < _goalAnchor.Y ? _goalAnchor.Y - from.Y : from.Y > bottom ? from.Y - bottom : 0;
+            return dx + dy;
+        }
 
         private int Index(int col, int row) => col * _grid.Rows + row;
 
@@ -303,6 +303,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     if (_pending.Contains(x, y)) return false;
                 }
             }
+            return true;
+        }
+
+        /// <summary>
+        /// True if the footprint is entirely on void strip columns for a bridge, or entirely off them for anything else.
+        /// </summary>
+        private bool FitsVoidColumns(GridRoom candidate, Point anchor)
+        {
+            bool bridge = candidate.Type == RoomType.Bridge;
+            for (int sc = 0; sc < candidate.CellWidth; sc++)
+                if (_grid.IsVoid(anchor.X + sc) != bridge) return false;
             return true;
         }
 
@@ -394,8 +405,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                             neighborSubY = slot.SubRow;
                         }
 
-                        bool ourSide = candidate.IsOpenSide(sc, sr, d.side);
-                        bool theirSide = neighbor.IsOpenSide(neighborSubX, neighborSubY, d.opposite);
+                        bool ourSide = candidate.OpensToward(sc, sr, d.side, neighbor);
+                        bool theirSide = neighbor.OpensToward(neighborSubX, neighborSubY, d.opposite, candidate);
                         if (ourSide != theirSide) return false;
                         if (!ourSide) continue;
 
@@ -421,9 +432,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         }
 
         /// <summary>
-        /// Rejects candidates whose footprint borders a foreign cell: an occupied cell that is not on this path
-        /// and not inside the start or goal footprint. Two paths placed side by side would join through shared
-        /// open sides into a loop. Cardinal neighbors only, since diagonals don't connect through cell borders.
+        /// Rejects candidates that border a foreign cell (an occupied cell that is not on this path and not inside
+        /// the start or goal footprint) where either side of the shared border is open. Two paths joined through an
+        /// open border would form a loop. Borders closed on both sides stay walls, so separate paths may touch there.
+        /// Cardinal neighbors only, since diagonals don't connect through cell borders.
         /// </summary>
         private bool AntiFusionOk(GridRoom candidate, Point anchor)
         {
@@ -449,33 +461,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                         if (nSlot == null || nSlot.IsEmpty) continue;
                         if (_pending.Contains(nx, ny)) continue;
 
-                        return false;
+                        if (candidate.OpensToward(sc, sr, d.side, nSlot.Room)) return false;
+                        if (nSlot.Room.OpensToward(nSlot.SubCol, nSlot.SubRow, d.opposite, candidate)) return false;
                     }
                 }
             }
             return true;
         }
 
-        /// <summary>
-        /// True inside the start footprint (the start cell's size at the start point) or the goal footprint
-        /// (the occupying room's size at the goal point, or 1x1 for an empty goal).
-        /// </summary>
-        private bool InEndpointFootprint(int x, int y)
-        {
-            if (x >= _start.X && x < _start.X + _startWidth && y >= _start.Y && y < _start.Y + _startHeight) return true;
-            return x >= _goal.X && x < _goal.X + _goalWidth && y >= _goal.Y && y < _goal.Y + _goalHeight;
-        }
+        private bool InEndpointFootprint(int x, int y) => InFootprint(_startCell, _startAnchor, x, y) || InFootprint(_goalRoom, _goalAnchor, x, y);
+
+        private static bool InFootprint(GridRoom room, Point anchor, int x, int y) => x >= anchor.X && x < anchor.X + room.CellWidth && y >= anchor.Y && y < anchor.Y + room.CellHeight;
 
         /// <summary>
         /// Flood fill over the cells any path could occupy: in-bounds, empty, not blocked, and with no occupied
-        /// cardinal neighbor outside the start and goal footprints. Every cell of every footprint A* can place
-        /// passes this filter, each footprint contains its cursor, and consecutive footprints touch, so a false
-        /// result means A* cannot reach the goal.
+        /// cardinal neighbor outside the start and goal footprints whose side facing the cell is open. Every cell of every footprint A* can place
+        /// passes this filter, each footprint contains its cursor, consecutive footprints touch, and the last
+        /// footprint covers the cell just outside the goal opening it arrives through, so a false result means
+        /// A* cannot reach the goal.
         /// </summary>
         private bool GoalReachable()
         {
-            if (_start == _goal) return true;
-
             _floodId++;
             int head = 0;
             int tail = 0;
@@ -484,7 +490,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             {
                 int x = _start.X + exit.CursorDelta.X;
                 int y = _start.Y + exit.CursorDelta.Y;
-                if (_goalOccupied && x == _goal.X && y == _goal.Y) return true;
+                if (InFootprint(_goalRoom, _goalAnchor, x, y)) return true;
                 if (!Passable(x, y)) continue;
                 int i = Index(x, y);
                 if (_floodMark[i] == _floodId) continue;
@@ -497,7 +503,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 int i = _floodQueue[head++];
                 int x = i / _grid.Rows;
                 int y = i % _grid.Rows;
-                if (_goalOccupied ? Math.Max(Math.Abs(x - _goal.X), Math.Abs(y - _goal.Y)) <= 1 : x == _goal.X && y == _goal.Y) return true;
+                if (_goalApproaches.Contains(new Point(x, y))) return true;
 
                 foreach (var (dx, dy) in Neighbors8)
                 {
@@ -533,29 +539,24 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 var n = _grid.GetSlot(nx, ny);
                 if (n == null || n.IsEmpty) continue;
                 if (InEndpointFootprint(nx, ny)) continue;
-                return false;
+                if (n.Room.OpensToward(n.SubCol, n.SubRow, d.opposite, null)) return false;
             }
             return true;
         }
 
         /// <summary>
-        /// True if the occupied goal accepts the walker's arriving cell type on its facing exit.
+        /// True if <paramref name="exit"/>, taken from <paramref name="cursor"/>, lands on a goal sub-cell whose side facing
+        /// the walker is open and accepts <paramref name="walkerType"/>.
         /// </summary>
-        private bool TargetAcceptsArrivalFromExit(CellExit walkerExit, Type walkerType)
+        private bool GoalAcceptsArrival(Point cursor, CellExit exit, Type walkerType)
         {
-            if (!_goalOccupied) return false;
-
-            var oppositeDelta = new Point(-walkerExit.CursorDelta.X, -walkerExit.CursorDelta.Y);
-            foreach (var targetExit in _grid.GetSlot(_goal.X, _goal.Y).Room.Exits)
-            {
-                if (targetExit.CursorDelta != oppositeDelta) continue;
-                foreach (var opt in targetExit.AllowedNext)
-                {
-                    if (opt.GetType() == walkerType) return true;
-                }
-                return false;
-            }
-            return false;
+            int subCol = cursor.X + exit.CursorDelta.X - _goalAnchor.X;
+            int subRow = cursor.Y + exit.CursorDelta.Y - _goalAnchor.Y;
+            if (subCol < 0 || subCol >= _goalRoom.CellWidth || subRow < 0 || subRow >= _goalRoom.CellHeight) return false;
+            var facing = exit.Side.Opposite();
+            if (!_goalRoom.IsOpenSide(subCol, subRow, facing)) return false;
+            var accepted = _goalRoom.GetAcceptedNeighbors(subCol, subRow, facing);
+            return accepted != null && accepted.Contains(walkerType);
         }
 
         /// <summary>

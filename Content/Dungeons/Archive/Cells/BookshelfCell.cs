@@ -30,6 +30,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             new FireplaceRoom(),
             new LoungeRoom(),
             new WritingRoom(),
+            new BridgeCell(),
         };
 
         private static readonly GridRoom[] VerticalNeighbors = { new ShaftCell() };
@@ -47,6 +48,11 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         /// separately by AllowedNeighbors.
         /// </summary>
         public override bool IsOpenSide(int subCol, int subRow, Direction side) => true;
+
+        /// <summary>
+        /// The top and bottom paint a floor unless a shaft is on that side.
+        /// </summary>
+        public override bool OpensToward(int subCol, int subRow, Direction side, GridRoom neighbor) => side is Direction.Left or Direction.Right || neighbor is ShaftCell;
 
         public override bool OwnsPadding => true;
 

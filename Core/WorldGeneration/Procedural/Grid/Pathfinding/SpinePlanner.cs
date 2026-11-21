@@ -47,7 +47,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 // in their own AllowedNeighbors.
                 var prototype = factory();
                 prototype.IsFeature = true;
-                var cands = GenerateCandidates(prototype, elevation, gridCols, gridRows, startDoorPos, endDoorPos, blocked, edgeBorder, minDoorDistance, MaxCandidatesPerRoom);
+                var cands = GenerateCandidates(grid, prototype, elevation, gridCols, gridRows, startDoorPos, endDoorPos, blocked, edgeBorder, minDoorDistance, MaxCandidatesPerRoom);
                 rooms.Add(new RoomState
                 {
                     Factory = factory,
@@ -220,27 +220,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
         private static List<Subgoal> BuildSubgoalList(DungeonGrid grid, List<RoomState> rooms, Point startDoorPos, Point endDoorPos, GridRoom startDoorRoom, GridRoom endDoorRoom)
         {
-            var list = new List<Subgoal>
-            {
-                new Subgoal { Pos = startDoorPos, Room = startDoorRoom, IsDoor = true },
-            };
+            // The doors are the spine's ends, so a required room placed beyond a door is visited
+            // as a detour from that door rather than hanging off it as a dead end.
+            var list = new List<Subgoal>();
             foreach (var r in rooms)
             {
                 if (!r.IsPlaced) continue;
                 var slot = grid.GetSlot(r.PlacedAnchor.X, r.PlacedAnchor.Y);
-                // Use the cursor position (anchor minus its offset) as the docking point.
-                var cursor = new Point(r.PlacedAnchor.X - r.Prototype.AnchorOffsetFromCursor.X, r.PlacedAnchor.Y - r.Prototype.AnchorOffsetFromCursor.Y);
-                list.Add(new Subgoal { Pos = cursor, Room = slot.Room, IsDoor = false, Owner = r });
+                list.Add(new Subgoal { Pos = r.PlacedAnchor, Room = slot.Room, IsDoor = false, Owner = r });
             }
-            list.Add(new Subgoal { Pos = endDoorPos, Room = endDoorRoom, IsDoor = true });
             list.Sort((a, b) => a.Pos.X.CompareTo(b.Pos.X));
+            list.Insert(0, new Subgoal { Pos = startDoorPos, Room = startDoorRoom, IsDoor = true });
+            list.Add(new Subgoal { Pos = endDoorPos, Room = endDoorRoom, IsDoor = true });
             return list;
         }
 
         // Returns candidate positions in a vertical band around the elevation
         // curve, sorted by closeness to the curve. Band radius scales with
         // the room's height.
-        private static List<Point> GenerateCandidates(GridRoom prototype, double[] elevation, int gridCols, int gridRows, Point startDoor, Point endDoor, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, int maxCount)
+        private static List<Point> GenerateCandidates(DungeonGrid grid, GridRoom prototype, double[] elevation, int gridCols, int gridRows, Point startDoor, Point endDoor, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, int maxCount)
         {
             int w = prototype.CellWidth;
             int h = prototype.CellHeight;
@@ -254,6 +252,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             var ranked = new List<(Point pos, double dev)>();
             for (int col = playableLeft; col <= playableRight; col++)
             {
+                if (grid.NearVoid(col, w)) continue;
+
                 // Shift the centered anchor row by the room's anchor offset so
                 // the room's CURSOR (where the spine actually docks) lands on
                 // the curve, not the top-left anchor. For default rooms with

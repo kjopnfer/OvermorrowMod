@@ -4,6 +4,7 @@ using OvermorrowMod.Core.NPCs;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -77,6 +78,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private readonly bool _validateReachability;
         private readonly PlanStats _stats = new();
         private GridAStar _search;
+        private int _treasureDoors;
 
         private GridGenerator(DungeonContent content, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options)
         {
@@ -146,6 +148,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             const int MinDoorDistance = 6;
             const int MinSubgoalSpacing = 2;
             const double SpineElevationPenalty = 0.4;
+
+            PlaceVoidStrips(grid, ForkHeadroom + EdgeBorder, gridCols - 1 - EdgeBorder - ForkHeadroom, rand);
 
             var borderBlocked = BuildBorderBlockedSet(gridCols, gridRows);
             _search = new GridAStar(grid, borderBlocked, _streakLimits, _minStreakLimits, _maxVerticalRun, _validateReachability, _stats);
@@ -432,7 +436,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     }
                 }
             }
-            var spinePath = new DungeonPath(id: 1, role: PathRole.Spine, parent: null, steps: spineSteps ?? new List<PathStep>(), combatAnchor: spineCombatAnchor);
+            var spinePath = new DungeonPath(id: 1, role: PathRole.Spine, parent: null, steps: spineSteps ?? new List<PathStep>(), combatAnchor: spineCombatAnchor, rooms: RoomSteps(grid, requiredAnchors));
             paths.Add(spinePath);
 
             _stats.BranchPlaced = bestBranchPlacement.HasValue;
@@ -444,6 +448,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             // Phase 2: aux branches
             _search.Phase = SearchPhase.Aux;
+            TryAddJunctionBranches(grid, paths, start, endTarget, spineCostFn, gridCols, gridRows, rand);
             _stats.AuxAttempts = MaxAuxBranchAttempts;
             _stats.AuxPlaced = TryAddAuxBranches(grid, paths, spineCostFn, gridCols, gridRows, rand);
 
@@ -473,6 +478,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     LogWarn($"OvermorrowDungeon: could not place {dir} fork door; connection unpaired.");
                 }
             }
+
+            PlaceInlineTreasureDoors(grid, spawnAnchor, rand);
+            _stats.TreasureDoors = grid.CountPlacements(RoomType.TreasureDoor);
 
             stopwatch.Stop();
             _stats.ElapsedMs = stopwatch.ElapsedMilliseconds;
@@ -550,11 +558,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (slot.SubCol != 0 || slot.SubRow != 0) continue;
 
                     Point cellOrigin = grid.GridToWorld(col, row);
-                    slot.Room.Build(new BuildContext(cellOrigin, palette, fillTileType, liningTileType));
+                    slot.Room.Build(new BuildContext(cellOrigin, palette, fillTileType, liningTileType, grid, col, row));
                 }
             }
 
             PaddingBuilder.BuildAll(grid, fillTileType, palette);
+            CarveVoidStrips(plan);
             content.Decorate(grid);
             ApplySideCaps(grid, CollectDeadEndSides(grid), fillTileType);
 
@@ -600,6 +609,50 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             doors = new Dictionary<LayoutDirection, DoorPlacement>();
             foreach (var kv in plan.DoorAnchors)
                 doors[kv.Key] = MakeDoorPlacement(grid, kv.Value);
+        }
+
+        /// <summary>
+        /// Stone left standing on each outer edge of a carved void strip run. Rooms beside a strip clear their own side gutter.
+        /// </summary>
+        private const int VoidStripWallThickness = 6;
+
+        /// <summary>
+        /// Clears each void strip's bridgeless rows, top to bottom of the stone footprint, to open air with no wall,
+        /// including the gutters between those cells but not <see cref="VoidStripWallThickness"/> tiles on each outer edge.
+        /// Bridge rows keep their own ceiling and deck.
+        /// </summary>
+        private static void CarveVoidStrips(DungeonPlan plan)
+        {
+            var grid = plan.Grid;
+            int marginRows = DungeonPlan.StoneMarginY / DungeonGrid.VerticalSpacing;
+            int firstRow = plan.BoundsMin.Y - marginRows;
+            int lastRow = plan.BoundsMax.Y + marginRows;
+            foreach (var strip in grid.VoidStrips)
+            {
+                int runStart = -1;
+                for (int row = firstRow; row <= lastRow + 1; row++)
+                {
+                    bool open = row <= lastRow && (grid.GetSlot(strip.Col, row)?.IsEmpty ?? true);
+                    if (open)
+                    {
+                        if (runStart < 0) runStart = row;
+                        continue;
+                    }
+                    if (runStart < 0) continue;
+
+                    Point topLeft = grid.GridToWorld(strip.Col, runStart);
+                    Point bottomRight = grid.GridToWorld(strip.Col + strip.Width - 1, row - 1);
+                    for (int x = topLeft.X + VoidStripWallThickness; x < bottomRight.X + DungeonGrid.CellTileWidth - VoidStripWallThickness; x++)
+                    {
+                        for (int y = topLeft.Y; y < bottomRight.Y + DungeonGrid.CellTileHeight; y++)
+                        {
+                            WorldGenUtils.ClearTile(x, y);
+                            WorldGenUtils.ClearWall(x, y);
+                        }
+                    }
+                    runStart = -1;
+                }
+            }
         }
 
         /// <summary>Tile radius (in cells) around the spawn cleared of enemy spawns.</summary>
@@ -655,6 +708,38 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             if (_diagnostics) Terraria.ModLoader.Logging.PublicLogger.Warn($"[dungeon {_dungeonIndex}] {message}");
         }
 
+        /// <summary>
+        /// Columns kept clear between a spine endpoint and a void strip.
+        /// </summary>
+        private const int StripEndpointMargin = 4;
+
+        /// <summary>
+        /// Minimum columns between two void strips.
+        /// </summary>
+        private const int MinStripGap = 3;
+
+        /// <summary>
+        /// Reserves a rolled number of the content's void strips at random columns strictly between the spine endpoint columns.
+        /// </summary>
+        private void PlaceVoidStrips(DungeonGrid grid, int startCol, int endCol, Random rand)
+        {
+            if (_content.MaxVoidStrips == 0) return;
+            int count = rand.Next(_content.MinVoidStrips, _content.MaxVoidStrips + 1);
+            int width = _content.VoidStripWidth;
+            if (width < 2 || width % 2 != 0) throw new InvalidOperationException($"{_content.GetType().Name}.VoidStripWidth must be a positive multiple of 2, got {width}.");
+
+            var free = new List<int>();
+            for (int c = startCol + StripEndpointMargin; c + width - 1 <= endCol - StripEndpointMargin; c++)
+                free.Add(c);
+
+            for (int i = 0; i < count && free.Count > 0; i++)
+            {
+                int col = free[rand.Next(free.Count)];
+                grid.AddVoidStrip(col, width);
+                free.RemoveAll(c => c > col - width - MinStripGap && c < col + width + MinStripGap);
+            }
+        }
+
         /// <summary>Clamps a row inside the playable area, leaving room for 2-row stair footprints.</summary>
         private static int ClampRow(int row, int gridRows)
         {
@@ -686,11 +771,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (slot == null || slot.IsEmpty) continue;
                 foreach (var d in dirs)
                 {
-                    if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side)) continue;
                     var next = new Point(p.X + d.dx, p.Y + d.dy);
                     if (visited.Contains(next)) continue;
                     var nextSlot = grid.GetSlot(next.X, next.Y);
                     if (nextSlot == null || nextSlot.IsEmpty) continue;
+                    if (nextSlot.GroupId != slot.GroupId && !GridRoom.Connects(slot, d.side, nextSlot)) continue;
                     if (nextSlot.Room.Type == RoomType.Combat) continue;
                     visited.Add(next);
                     queue.Enqueue(next);
@@ -723,10 +808,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (slot == null || slot.IsEmpty) continue;
                 foreach (var d in dirs)
                 {
-                    if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side)) continue;
                     var n = new Point(p.X + d.dx, p.Y + d.dy);
                     var nSlot = grid.GetSlot(n.X, n.Y);
                     if (nSlot == null || nSlot.IsEmpty) continue;
+                    if (!GridRoom.Connects(slot, d.side, nSlot)) continue;
                     if (parent.TryGetValue(n, out var par))
                     {
                         // Visited. Cycle iff it's not the parent we came from.
@@ -757,28 +842,25 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private BranchPlacement? TryPlaceBranchThroughSecondCombat(DungeonGrid grid, List<PathStep> spineSteps, List<Point> requiredAnchors, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             Point spineCombatAnchor = default;
-            bool found = false;
+            GridRoom spineCombat = null;
             foreach (var anchor in requiredAnchors)
             {
                 var slot = grid.GetSlot(anchor.X, anchor.Y);
                 if (slot != null && !slot.IsEmpty && slot.Room.Type == RoomType.Combat)
                 {
                     spineCombatAnchor = anchor;
-                    found = true;
+                    spineCombat = slot.Room;
                     break;
                 }
             }
-            if (!found) return null;
+            if (spineCombat == null) return null;
 
-            int spineCombatRight = spineCombatAnchor.X + 2;  // CombatRoom is 3 wide
+            int spineCombatRight = spineCombatAnchor.X + spineCombat.CellWidth - 1;
 
-            // Partition non-feature bookshelf/corridor spine cells around the combat.
             var beforeNodes = new List<PathStep>();
             var afterNodes = new List<PathStep>();
-            foreach (var step in spineSteps)
+            foreach (var step in BranchNodes(grid, spineSteps, RoomSteps(grid, requiredAnchors)))
             {
-                if (step.Cell.IsFeature) continue;
-                if (step.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
                 int x = step.Anchor.X;
                 if (x < spineCombatAnchor.X - 1) beforeNodes.Add(step);
                 else if (x > spineCombatRight + 1) afterNodes.Add(step);
@@ -917,15 +999,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         private DungeonPath TryAddClosedLoopAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
-            if (parent.Steps.Count < 2) return null;
+            var nodes = BranchNodes(grid, parent.Steps, parent.Rooms);
+            if (nodes.Count < 2) return null;
 
             for (int npa = 0; npa < AuxNodePickAttempts; npa++)
             {
-                var a = parent.Steps[rand.Next(parent.Steps.Count)];
-                var b = parent.Steps[rand.Next(parent.Steps.Count)];
+                var a = nodes[rand.Next(nodes.Count)];
+                var b = nodes[rand.Next(nodes.Count)];
                 if (a.Anchor == b.Anchor) continue;
-                if (a.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
-                if (b.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
 
                 int manhattan = System.Math.Abs(a.Anchor.X - b.Anchor.X) + System.Math.Abs(a.Anchor.Y - b.Anchor.Y);
                 if (manhattan < MinAuxNodeManhattan || manhattan > MaxAuxNodeManhattan) continue;
@@ -1010,48 +1091,255 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>Dead-end aux branch terminating in a ChestRoom.</summary>
         private DungeonPath TryAddDeadEndAux(DungeonGrid grid, DungeonPath parent, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
-            if (parent.Steps.Count == 0) return null;
+            var nodes = BranchNodes(grid, parent.Steps, parent.Rooms);
+            if (nodes.Count == 0) return null;
 
             var dirs = new (int dx, int dy)[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
             for (int npa = 0; npa < AuxNodePickAttempts; npa++)
             {
-                var nodeA = parent.Steps[rand.Next(parent.Steps.Count)];
-                if (nodeA.Cell.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
+                var nodeA = nodes[rand.Next(nodes.Count)];
+                if (nodeA.Cell.IsJunction) continue;
 
                 int dirStart = rand.Next(4);
                 for (int di = 0; di < 4; di++)
                 {
                     var (dx, dy) = dirs[(dirStart + di) % 4];
                     int depth = MinDeadEndDepth + rand.Next(MaxDeadEndDepth - MinDeadEndDepth + 1);
-                    int tx = nodeA.Anchor.X + dx * depth;
-                    int ty = nodeA.Anchor.Y + dy * depth;
-
-                    if (tx < EdgeBorder + 1 || tx >= gridCols - EdgeBorder - 1) continue;
-                    if (ty < EdgeBorder || ty >= gridRows - EdgeBorder) continue;
-
-                    var chestProto = _content.CreateTreasure(true);
-                    var targetPos = new Point(tx, ty);
-                    if (!FootprintAndNeighborsClear(grid, chestProto, targetPos)) continue;
-                    if (!chestProto.IsValidPlacement(grid, targetPos)) continue;
-
-                    var chest = _content.CreateTreasure(true);
-                    grid.Place(chest, tx, ty, grid.NextGroupId());
-
-                    var legSteps = _search.FindPath(nodeA.Anchor, targetPos, nodeA.Cell, costFn);
-                    if (legSteps == null)
-                    {
-                        grid.Clear(chest, targetPos.X, targetPos.Y);
-                        continue;
-                    }
-
-                    foreach (var s in legSteps)
-                        grid.Place(s.Cell, s.Anchor.X, s.Anchor.Y, grid.NextGroupId());
-
-                    return new DungeonPath(id: newId, role: PathRole.DeadEndBranch, parent: parent, steps: legSteps, combatAnchor: null, placeholderAnchor: targetPos);
+                    var branch = TryDeadEndTo(grid, parent, nodeA, new Point(nodeA.Anchor.X + dx * depth, nodeA.Anchor.Y + dy * depth), newId, costFn, gridCols, gridRows, rand);
+                    if (branch != null) return branch;
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Places a chest room at <paramref name="target"/> and routes a dead end to it from <paramref name="nodeA"/>,
+        /// then rolls whether the chest room becomes a treasure door. Leaves the grid unchanged and returns null on failure.
+        /// </summary>
+        private DungeonPath TryDeadEndTo(DungeonGrid grid, DungeonPath parent, PathStep nodeA, Point target, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
+        {
+            if (target.X < EdgeBorder + 1 || target.X >= gridCols - EdgeBorder - 1) return null;
+            if (target.Y < EdgeBorder || target.Y >= gridRows - EdgeBorder) return null;
+
+            var chestProto = _content.CreateChest(true);
+            if (!FootprintAndNeighborsClear(grid, chestProto, target)) return null;
+            if (!chestProto.IsValidPlacement(grid, target)) return null;
+
+            var chest = _content.CreateChest(true);
+            grid.Place(chest, target.X, target.Y, grid.NextGroupId());
+
+            var legSteps = _search.FindPath(nodeA.Anchor, target, nodeA.Cell, costFn);
+            if (legSteps == null)
+            {
+                grid.Clear(chest, target.X, target.Y);
+                return null;
+            }
+
+            foreach (var s in legSteps)
+                grid.Place(s.Cell, s.Anchor.X, s.Anchor.Y, grid.NextGroupId());
+
+            double lengthBonus = TreasureDoorChancePerCell * Math.Max(0, legSteps.Count - MinDeadEndDepth);
+            if (!NearTreasureDoor(grid, target) && rand.NextDouble() < TreasureDoorChance(Math.Min(TreasureDoorMaxChance, TreasureDoorBaseChance + lengthBonus)))
+            {
+                grid.Place(_content.CreateTreasureDoor(true), target.X, target.Y, grid.NextGroupId());
+                _treasureDoors++;
+            }
+
+            return new DungeonPath(id: newId, role: PathRole.DeadEndBranch, parent: parent, steps: legSteps, combatAnchor: null, placeholderAnchor: target);
+        }
+
+        private const double TreasureDoorBaseChance = 0.15;
+        private const double TreasureDoorChancePerCell = 0.05;
+        private const double TreasureDoorMaxChance = 0.6;
+        private const double TreasureDoorFalloff = 0.5;
+        private const double InlineTreasureDoorChance = 0.02;
+
+        /// <summary>
+        /// Cells kept between an inline treasure door and the dungeon's edge doors or spawn room.
+        /// </summary>
+        private const int InlineTreasureDoorClearance = 3;
+
+        /// <summary>
+        /// Minimum cells between any two treasure doors in one dungeon.
+        /// </summary>
+        private const int TreasureDoorSpacing = 6;
+
+        private bool NearTreasureDoor(DungeonGrid grid, Point cell)
+        {
+            var doorType = _content.CreateTreasureDoor(true).GetType();
+            return grid.AnchorsOf(doorType).Any(door => ChebyshevDistance(cell, door) < TreasureDoorSpacing);
+        }
+
+        /// <summary>
+        /// <paramref name="chance"/> reduced by <see cref="TreasureDoorFalloff"/> for every treasure door already in this dungeon.
+        /// </summary>
+        private double TreasureDoorChance(double chance) => chance * Math.Pow(TreasureDoorFalloff, _treasureDoors);
+
+        /// <summary>
+        /// Rolls each eligible path cell into a treasure door: a 1x1 bookshelf or corridor joined only to its left and
+        /// right neighbors, both of which the treasure door accepts, away from the edge doors and the spawn room.
+        /// </summary>
+        private void PlaceInlineTreasureDoors(DungeonGrid grid, Point spawnAnchor, Random rand)
+        {
+            var proto = _content.CreateTreasureDoor(true);
+            var acceptLeft = proto.GetAcceptedNeighbors(0, 0, Direction.Left);
+            var acceptRight = proto.GetAcceptedNeighbors(0, 0, Direction.Right);
+
+            var candidates = new List<Point>();
+            for (int col = 0; col < grid.Cols; col++)
+            {
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot.IsEmpty || slot.Room.IsFeature) continue;
+                    if (slot.Room.CellWidth != 1 || slot.Room.CellHeight != 1) continue;
+                    if (slot.Room.Type is not (RoomType.Filler or RoomType.HorizontalConnector)) continue;
+                    if (!IsEmptyOrOffGrid(grid, col, row - 1) || !IsEmptyOrOffGrid(grid, col, row + 1)) continue;
+
+                    var left = grid.GetSlot(col - 1, row);
+                    var right = grid.GetSlot(col + 1, row);
+                    if (left == null || left.IsEmpty || right == null || right.IsEmpty) continue;
+                    if (!GridRoom.Connects(slot, Direction.Left, left) || !GridRoom.Connects(slot, Direction.Right, right)) continue;
+                    if (!acceptLeft.Contains(left.Room.GetType()) || !acceptRight.Contains(right.Room.GetType())) continue;
+
+                    var cell = new Point(col, row);
+                    if (ChebyshevDistance(cell, spawnAnchor) < InlineTreasureDoorClearance) continue;
+                    if (grid.DoorAnchors.Any(door => ChebyshevDistance(cell, door) < InlineTreasureDoorClearance)) continue;
+                    candidates.Add(cell);
+                }
+            }
+            ShuffleInPlace(candidates, rand);
+
+            foreach (var cell in candidates)
+            {
+                if (NearTreasureDoor(grid, cell) || rand.NextDouble() >= TreasureDoorChance(InlineTreasureDoorChance)) continue;
+                grid.Place(_content.CreateTreasureDoor(true), cell.X, cell.Y, grid.NextGroupId());
+                _treasureDoors++;
+            }
+        }
+
+        private static bool IsEmptyOrOffGrid(DungeonGrid grid, int x, int y) => grid.GetSlot(x, y)?.IsEmpty ?? true;
+
+        private static int ChebyshevDistance(Point a, Point b) => Math.Max(Math.Abs(a.X - b.X), Math.Abs(a.Y - b.Y));
+
+        private const int JunctionRewardTargetsPerOpening = 8;
+        private const int JunctionRewardReach = 5;
+        private const int JunctionLoopTargets = 6;
+
+        /// <summary>
+        /// Sends a reward dead end and a loop out of each junction room's unused openings, in random order per room.
+        /// </summary>
+        private void TryAddJunctionBranches(DungeonGrid grid, List<DungeonPath> paths, Point start, Point end, EdgeCost costFn, int gridCols, int gridRows, Random rand)
+        {
+            var junctions = new List<(PathStep room, DungeonPath path)>();
+            foreach (var path in paths)
+            {
+                foreach (var step in path.Steps)
+                    if (step.Cell.IsJunction) junctions.Add((step, path));
+                foreach (var room in path.Rooms)
+                    if (room.Cell.IsJunction) junctions.Add((room, path));
+            }
+            ShuffleInPlace(junctions, rand);
+
+            bool bypassBefore = HasCombatBypass(grid, start, end);
+            int placed = 0;
+            foreach (var (room, parent) in junctions)
+            {
+                bool rewardFirst = rand.Next(2) == 0;
+                for (int i = 0; i < 2; i++)
+                {
+                    if (!HasFreeOpening(grid, room)) break;
+                    bool reward = (i == 0) == rewardFirst;
+                    var branch = reward
+                        ? TryJunctionReward(grid, parent, room, paths.Count + 1, costFn, gridCols, gridRows, rand)
+                        : TryJunctionLoop(grid, paths, parent, room, paths.Count + 1, start, end, bypassBefore, costFn, rand);
+                    if (branch == null) continue;
+                    paths.Add(branch);
+                    placed++;
+                }
+            }
+
+            Log($"OvermorrowDungeon junction branches placed: {placed} from {junctions.Count} rooms");
+        }
+
+        private DungeonPath TryJunctionReward(DungeonGrid grid, DungeonPath parent, PathStep room, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
+        {
+            var openings = new List<RoomOpening>(room.Cell.Openings);
+            ShuffleInPlace(openings, rand);
+            foreach (var opening in openings)
+            {
+                var outside = new Point(room.Anchor.X + opening.OutsideCell.X, room.Anchor.Y + opening.OutsideCell.Y);
+                if (!IsEmptyCell(grid, outside.X, outside.Y)) continue;
+
+                // Aim out of the opening and away from the room's middle, since the path through the room
+                // usually continues straight out of the openings on the other rows.
+                var along = opening.Side.Step();
+                bool horizontal = along.X != 0;
+                var perp = horizontal ? new Point(0, 1) : new Point(1, 0);
+                int sub = horizontal ? opening.SubRow : opening.SubCol;
+                int size = horizontal ? room.Cell.CellHeight : room.Cell.CellWidth;
+                int away = size > 1 && sub == 0 ? -1 : size > 1 && sub == size - 1 ? 1 : rand.Next(2) * 2 - 1;
+
+                for (int attempt = 0; attempt < JunctionRewardTargetsPerOpening; attempt++)
+                {
+                    int ahead = 1 + rand.Next(JunctionRewardReach);
+                    int side = rand.Next(JunctionRewardReach);
+                    if (ahead + side < MinDeadEndDepth) continue;
+                    var target = new Point(outside.X + along.X * ahead + perp.X * away * side, outside.Y + along.Y * ahead + perp.Y * away * side);
+                    var branch = TryDeadEndTo(grid, parent, room, target, newId, costFn, gridCols, gridRows, rand);
+                    if (branch != null) return branch;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Routes a loop from <paramref name="room"/> back to a nearby branch node on any path. A loop that opens a
+        /// route around every combat room is rolled back.
+        /// </summary>
+        private DungeonPath TryJunctionLoop(DungeonGrid grid, List<DungeonPath> paths, DungeonPath parent, PathStep room, int newId, Point start, Point end, bool bypassBefore, EdgeCost costFn, Random rand)
+        {
+            var targets = new List<PathStep>();
+            foreach (var path in paths)
+            {
+                foreach (var node in BranchNodes(grid, path.Steps, path.Rooms))
+                {
+                    if (node.Anchor == room.Anchor) continue;
+                    int distance = DistanceToFootprint(room, node.Anchor);
+                    if (distance >= MinAuxNodeManhattan && distance <= MaxAuxNodeManhattan) targets.Add(node);
+                }
+            }
+            ShuffleInPlace(targets, rand);
+
+            int tries = System.Math.Min(JunctionLoopTargets, targets.Count);
+            for (int i = 0; i < tries; i++)
+            {
+                var legSteps = _search.FindPath(room.Anchor, targets[i].Anchor, room.Cell, costFn);
+                if (legSteps == null) continue;
+
+                foreach (var s in legSteps)
+                    grid.Place(s.Cell, s.Anchor.X, s.Anchor.Y, grid.NextGroupId());
+
+                if (!bypassBefore && HasCombatBypass(grid, start, end))
+                {
+                    foreach (var s in legSteps)
+                        grid.Clear(s.Cell, s.Anchor.X, s.Anchor.Y);
+                    continue;
+                }
+
+                return new DungeonPath(id: newId, role: PathRole.ClosedLoopBranch, parent: parent, steps: legSteps, combatAnchor: null);
+            }
+            return null;
+        }
+
+        private static int DistanceToFootprint(PathStep room, Point p)
+        {
+            int right = room.Anchor.X + room.Cell.CellWidth - 1;
+            int bottom = room.Anchor.Y + room.Cell.CellHeight - 1;
+            int dx = p.X < room.Anchor.X ? room.Anchor.X - p.X : p.X > right ? p.X - right : 0;
+            int dy = p.Y < room.Anchor.Y ? room.Anchor.Y - p.Y : p.Y > bottom ? p.Y - bottom : 0;
+            return dx + dy;
         }
 
         // Per-candidate retries of the sub-spine before giving up on that attach cell.
@@ -1334,10 +1622,51 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 grid.Clear(placed[i].cell, placed[i].anchor.X, placed[i].anchor.Y);
         }
 
+        private static List<PathStep> RoomSteps(DungeonGrid grid, List<Point> anchors)
+        {
+            var rooms = new List<PathStep>();
+            if (anchors == null) return rooms;
+            foreach (var anchor in anchors)
+                rooms.Add(new PathStep(grid.GetSlot(anchor.X, anchor.Y).Room, anchor));
+            return rooms;
+        }
+
+        /// <summary>
+        /// Where a branch can start or end on a path: its bookshelf and corridor cells, and its junction rooms and
+        /// non-combat rooms with an opening that faces an empty cell.
+        /// </summary>
+        private static List<PathStep> BranchNodes(DungeonGrid grid, IReadOnlyList<PathStep> steps, IReadOnlyList<PathStep> rooms)
+        {
+            var nodes = new List<PathStep>();
+            foreach (var step in steps)
+            {
+                if (step.Cell.IsJunction)
+                {
+                    if (HasFreeOpening(grid, step)) nodes.Add(step);
+                    continue;
+                }
+                if (step.Cell.IsFeature) continue;
+                if (step.Cell.Type is RoomType.Filler or RoomType.HorizontalConnector) nodes.Add(step);
+            }
+            foreach (var room in rooms)
+            {
+                if (room.Cell.Type == RoomType.Combat) continue;
+                if (HasFreeOpening(grid, room)) nodes.Add(room);
+            }
+            return nodes;
+        }
+
+        private static bool HasFreeOpening(DungeonGrid grid, PathStep room)
+        {
+            foreach (var opening in room.Cell.Openings)
+                if (IsEmptyCell(grid, room.Anchor.X + opening.OutsideCell.X, room.Anchor.Y + opening.OutsideCell.Y)) return true;
+            return false;
+        }
+
         private static bool IsEmptyCell(DungeonGrid grid, int x, int y)
         {
             var s = grid.GetSlot(x, y);
-            return s != null && s.IsEmpty;
+            return s != null && s.IsEmpty && !grid.IsVoid(x);
         }
 
         private static bool InVerticalBounds(int gridRows, int row) => row >= EdgeBorder && row <= gridRows - 1 - EdgeBorder;
@@ -1373,6 +1702,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         {
             int w = proto.CellWidth;
             int h = proto.CellHeight;
+            if (grid.NearVoid(anchor.X, w)) return false;
 
             for (int sc = 0; sc < w; sc++)
             {
@@ -1436,7 +1766,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return blocked;
         }
 
-        /// <summary>Every (cell, side) where the cell has an open side facing an empty neighbor.</summary>
+        /// <summary>
+        /// Every (cell, side) where the cell has an open side facing an empty neighbor or a neighbor it does not connect to.
+        /// </summary>
         private static HashSet<(Point cell, Direction side)> CollectDeadEndSides(DungeonGrid grid)
         {
             var sides = new HashSet<(Point, Direction)>();
@@ -1457,7 +1789,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     {
                         if (!slot.Room.IsOpenSide(slot.SubCol, slot.SubRow, d.side)) continue;
                         var n = grid.GetSlot(col + d.dx, row + d.dy);
-                        if (n != null && !n.IsEmpty) continue;
+                        if (n != null && !n.IsEmpty && (n.GroupId == slot.GroupId || GridRoom.Connects(slot, d.side, n))) continue;
                         sides.Add((new Point(col, row), d.side));
                     }
                 }
@@ -1465,7 +1797,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return sides;
         }
 
-        /// <summary>Paints stone over capped sides. Runs after PaddingBuilder.</summary>
+        /// <summary>
+        /// Paints stone over capped sides. Runs after PaddingBuilder.
+        /// A side cap also covers the padding row below the cell, where the connector's floor sits.
+        /// </summary>
         private static void ApplySideCaps(DungeonGrid grid, HashSet<(Point cell, Direction side)> sidesToCap, int fillTileType)
         {
             ushort fill = (ushort)fillTileType;
@@ -1497,14 +1832,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                         x = cellOrigin.X - DungeonGrid.HorizontalPadding;
                         y = cellOrigin.Y;
                         w = DungeonGrid.HorizontalPadding;
-                        h = DungeonGrid.CellTileHeight;
+                        h = DungeonGrid.CellTileHeight + DungeonGrid.VerticalPadding;
                         break;
                     case Direction.Right:
                     default:
                         x = cellOrigin.X + DungeonGrid.CellTileWidth;
                         y = cellOrigin.Y;
                         w = DungeonGrid.HorizontalPadding;
-                        h = DungeonGrid.CellTileHeight;
+                        h = DungeonGrid.CellTileHeight + DungeonGrid.VerticalPadding;
                         break;
                 }
 

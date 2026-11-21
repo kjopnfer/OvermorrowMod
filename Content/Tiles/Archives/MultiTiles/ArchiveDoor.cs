@@ -126,6 +126,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public bool IsLocked = false;
 
+        /// <summary>
+        /// Whether the door has been on the local player's screen while locked.
+        /// </summary>
+        public bool Seen = false;
+
         // NPC reference
         private int lockNPCIndex = -1;
         public NPC LockNPC => lockNPCIndex >= 0 && lockNPCIndex < Main.npc.Length && Main.npc[lockNPCIndex].active ? Main.npc[lockNPCIndex] : null;
@@ -139,6 +144,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
             tag["DoorID"] = DoorID;
             tag["PairedDoor"] = PairedDoor;
             tag["IsLocked"] = IsLocked;
+            tag["Seen"] = Seen;
         }
 
         public override void LoadData(TagCompound tag)
@@ -146,7 +152,13 @@ namespace OvermorrowMod.Content.Tiles.Archives
             DoorID = tag.Get<int>("DoorID");
             PairedDoor = tag.Get<int>("PairedDoor");
             IsLocked = tag.Get<bool>("IsLocked");
+            Seen = tag.GetBool("Seen");
         }
+
+        /// <summary>
+        /// The door's tile area: <see cref="ModTileEntity.Position"/> is its bottom-left tile.
+        /// </summary>
+        public Rectangle TileArea => new Rectangle(Position.X, Position.Y - 14, 12, 15);
 
         public void UnlockDoors()
         {
@@ -327,7 +339,11 @@ namespace OvermorrowMod.Content.Tiles.Archives
         {
             ManageLockNPC();
 
-            if (IsLocked) return;
+            if (IsLocked)
+            {
+                if (!Seen && OnLocalScreen()) Seen = true;
+                return;
+            }
 
             Vector2 playerPosition = Main.LocalPlayer.Center;
             float distance = Vector2.Distance(playerPosition, DoorPosition + new Vector2(75, 0));
@@ -356,6 +372,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     }
                 }
             }
+        }
+
+        private bool OnLocalScreen()
+        {
+            Rectangle area = TileArea;
+            var worldArea = new Rectangle(area.X * 16, area.Y * 16, area.Width * 16, area.Height * 16);
+            var screen = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+            return screen.Intersects(worldArea);
         }
 
         public override bool IsTileValidForEntity(int x, int y)

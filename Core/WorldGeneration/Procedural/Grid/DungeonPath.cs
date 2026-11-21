@@ -24,7 +24,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         /// <summary>
         /// A branch that attaches to its parent at one point and ends in
-        /// a placeholder cell (treasure, chest, NPC slot). Cannot create
+        /// a placeholder cell (chest, NPC slot). Cannot create
         /// a bypass because there's no second connection back to the
         /// parent.
         /// </summary>
@@ -52,21 +52,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public IReadOnlyList<PathStep> Steps { get; }
 
         /// <summary>
+        /// Rooms placed before routing that this path passes through, such as the spine's required rooms.
+        /// </summary>
+        public IReadOnlyList<PathStep> Rooms { get; }
+
+        /// <summary>
         /// Anchor of this path's combat, or null if the path has no
         /// combat (dead-end branches, same-side closed loops).
         /// </summary>
         public Point? CombatAnchor { get; }
 
         /// <summary>
-        /// Anchor of this path's terminal placeholder cell (treasure,
-        /// chest, etc.), or null. Set on dead-end branches.
+        /// Anchor of this path's terminal placeholder cell (chest,
+        /// treasure door, etc.), or null. Set on dead-end branches.
         /// </summary>
         public Point? PlaceholderAnchor { get; }
 
         public DungeonPath(int id, PathRole role, DungeonPath parent,
                            IReadOnlyList<PathStep> steps,
                            Point? combatAnchor,
-                           Point? placeholderAnchor = null)
+                           Point? placeholderAnchor = null,
+                           IReadOnlyList<PathStep> rooms = null)
         {
             Id = id;
             Role = role;
@@ -74,6 +80,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Steps = steps;
             CombatAnchor = combatAnchor;
             PlaceholderAnchor = placeholderAnchor;
+            Rooms = rooms ?? System.Array.Empty<PathStep>();
         }
 
         /// <summary>
