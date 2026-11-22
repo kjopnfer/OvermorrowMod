@@ -128,7 +128,7 @@ namespace OvermorrowMod.Core
             int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
             {
-                AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
+                AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible && !DeathScreen.Visible, "Title Card");
                 AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.Active, "Reward Selection");
                 AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
                 AddInterfaceLayer(layers, RunResumePrompt, mouseTextIndex, RunResumePrompt.visible, "Run Resume");
