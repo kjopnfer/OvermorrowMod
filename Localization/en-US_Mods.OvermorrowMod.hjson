@@ -74,7 +74,7 @@ DeathScreen: {
 	TheRun: The Run
 	ItemsFound: Items Found
 	Kept: Kept
-	LeftBehind: Left Behind
+	Lost: Lost
 	Time: Time
 	Enemies: Enemies
 	Elites: Elites
@@ -92,7 +92,7 @@ DeathScreen: {
 	NoStones: No Monkey Stones this run
 	Banked: "{0} banked"
 	Coins: Coins
-	NothingLeft: Nothing
+	NothingLost: Nothing
 	ClickToSkip: Click to skip
 	Return: Return
 }

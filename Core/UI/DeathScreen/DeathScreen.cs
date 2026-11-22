@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items;
@@ -44,45 +43,44 @@ namespace OvermorrowMod.Core.UI.DeathScreen
         private static readonly SoundStyle CountSound = SoundID.MenuTick with { Volume = 0.35f, MaxInstances = 3 };
         private static readonly SoundStyle SkipSound = SoundID.MenuTick with { Volume = 0.7f };
 
-        private const int PanelWidth = 580;
-        private const int Padding = 32;
+        private const int PanelWidth = 760;
+        private const int Padding = 28;
         private const int ScreenMargin = 30;
-        private const int TitleHeight = 46;
-        private const int MessageLineHeight = 24;
-        private const int BiomeHeight = 22;
-        private const int SectionGap = 24;
-        private const int HeadingHeight = 24;
-        private const int LineHeight = 26;
-        private const int ColumnGap = 36;
-        private const int SlotSize = 36;
-        private const int SlotGap = 4;
-        private const int ButtonWidth = 150;
-        private const int ButtonHeight = 36;
-        private const int BankedWidth = 110;
-        private const float TitleScale = 0.75f;
-        private const float MessageScale = 0.9f;
-        private const float BiomeScale = 0.75f;
-        private const float HeadingScale = 0.7f;
-        private const float LineScale = 0.85f;
-        private const float SmallScale = 0.7f;
-        private const float HeadingSpacing = 3f;
-        private const float LeftBehindOpacity = 0.55f;
+        private const int TitleHeight = 60;
+        private const int MessageLineHeight = 28;
+        private const int BiomeHeight = 26;
+        private const int SectionGap = 18;
+        private const int HeadingHeight = 26;
+        private const int CellHeight = 34;
+        private const int CellPadding = 10;
+        private const int Gap = 5;
+        private const int ColumnGap = 14;
+        private const int StoneIconSize = 24;
+        private const int SlotSize = 46;
+        private const int ButtonWidth = 180;
+        private const int ButtonHeight = 42;
+        private const float TitleScale = 1f;
+        private const float MessageScale = 1f;
+        private const float BiomeScale = 0.85f;
+        private const float HeadingScale = 0.95f;
+        private const float NameScale = 0.9f;
+        private const float ValueScale = 1f;
+        private const float SmallScale = 0.8f;
+        private const float LostOpacity = 0.8f;
 
         private static readonly Color BackdropColor = Color.Black * 0.7f;
-        private static readonly Color PanelColor = new Color(0x10, 0x11, 0x16) * 0.94f;
-        private static readonly Color BorderColor = new(0x2c, 0x2b, 0x30);
-        private static readonly Color TitleColor = new(0xe6, 0xdc, 0xcb);
-        private static readonly Color MessageColor = new(0xa8, 0x9f, 0x90);
-        private static readonly Color MutedColor = new(0x8a, 0x84, 0x78);
-        private static readonly Color LeaderColor = new(0x3a, 0x38, 0x33);
-        private static readonly Color KeptColor = new(0x7f, 0xa0, 0x7a);
-        private static readonly Color LostColor = new(0xb0, 0x6a, 0x62);
-        private static readonly Color ButtonColor = new(0x6b, 0x64, 0x58);
-        private static readonly Color[] RarityColors = [new(0xc4, 0xbc, 0xae), new(0x7f, 0xa9, 0xd9), new(0xb3, 0x91, 0xd6), new(0xd9, 0xa8, 0x5f)];
+        private static readonly Color PanelColor = new Color(38, 50, 112) * 0.94f;
+        private static readonly Color CellColor = new Color(10, 16, 48) * 0.6f;
+        private static readonly Color HeaderColor = new(245, 221, 133);
+        private static readonly Color NameColor = new(223, 228, 255);
+        private static readonly Color CountColor = new(200, 208, 245);
+        private static readonly Color GainColor = new(138, 240, 110);
+        private static readonly Color LossColor = new(255, 122, 122);
+        private static readonly Color ButtonTextColor = new(255, 224, 150);
 
         private static readonly RasterizerState ClipRasterizer = new() { CullMode = CullMode.None, ScissorTestEnable = true };
 
-        private enum Kind { Header, Ledger, Stone, NoStones, LeftBehind, Button }
+        private enum Kind { Header, Ledger, Stone, NoStones, Lost, Button }
 
         private class Entry
         {
@@ -91,12 +89,12 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             public int Value;
             public bool Counts;
             public Func<int, string> Format = value => value.ToString();
-            public Color ValueColor;
-            public Color DiamondColor;
+            public Color ValueColor = Color.White;
+            public int IconType;
             public string Banked;
             public int Column;
             public string Heading;
-            public Color HeadingColor;
+            public Color HeadingColor = HeaderColor;
             public float Start;
             public float Length;
             public int Y;
@@ -112,18 +110,21 @@ namespace OvermorrowMod.Core.UI.DeathScreen
         private string[] messageLines = [];
         private string biome;
         private readonly List<Entry> entries = new();
-        private readonly List<(Item Item, int Count)> leftBehind = new();
+        private readonly List<(Item Item, int Count)> lost = new();
         private string coins;
         private float elapsed;
         private float timelineEnd;
         private float returnShownAt = -1f;
         private int tickCooldown;
         private float scrollOffset;
-        private GamePadState oldGamePad;
 
         private static float TimelineStart => ShowDelay + BackdropFade;
 
         private static int ContentWidth => PanelWidth - Padding * 2;
+
+        private static int ColumnWidth => (ContentWidth - ColumnGap) / 2;
+
+        private static int SlotColumns => Math.Max(1, (ContentWidth + Gap) / (SlotSize + Gap));
 
         private static string Text(string key, params object[] args) => Language.GetTextValue(LocalizationPath.Localization + "DeathScreen." + key, args);
 
@@ -157,17 +158,16 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             entries.Clear();
             entries.Add(new Entry { Kind = Kind.Header });
 
-            string theRun = Text("TheRun");
-            entries.Add(Ledger(Text("Time"), record.RunTicks, 0, theRun, MutedColor, FormatTime));
+            entries.Add(Ledger(Text("Time"), record.RunTicks, 0, Text("TheRun"), FormatTime));
             string[] killKeys = ["Enemies", "Elites", "Minibosses", "Bosses"];
             for (int i = 0; i < killKeys.Length; i++)
-                entries.Add(Ledger(Text(killKeys[i]), record.KillsByTier[i], 0, null, MutedColor));
-            entries.Add(Ledger(Text("RoomsCleared"), record.RoomsCleared, 0, null, MutedColor));
+                entries.Add(Ledger(Text(killKeys[i]), record.KillsByTier[i], 0, null));
+            entries.Add(Ledger(Text("RoomsCleared"), record.RoomsCleared, 0, null));
 
             foreach (Rarity rarity in Enum.GetValues<Rarity>())
             {
-                Entry line = Ledger(Text("Rarity." + rarity), record.ItemsByRarity[(int)rarity], 1, rarity == Rarity.Common ? Text("ItemsFound") : null, MutedColor);
-                line.ValueColor = RarityColors[(int)rarity];
+                Entry line = Ledger(Text("Rarity." + rarity), record.ItemsByRarity[(int)rarity], 1, rarity == Rarity.Common ? Text("ItemsFound") : null);
+                line.ValueColor = RarityColors.For(rarity);
                 entries.Add(line);
             }
 
@@ -184,28 +184,28 @@ namespace OvermorrowMod.Core.UI.DeathScreen
                     Value = gained,
                     Counts = true,
                     Format = value => "+" + value,
-                    ValueColor = KeptColor,
-                    DiamondColor = StoneColor(tier),
+                    ValueColor = GainColor,
+                    IconType = MonkeyStoneDisplay.StoneType(tier),
                     Banked = Text("Banked", stones.Get(tier)),
                     Heading = entries.Any(entry => entry.Heading == kept) ? null : kept,
-                    HeadingColor = KeptColor,
+                    HeadingColor = GainColor,
                 });
             }
             if (!entries.Any(entry => entry.Heading == kept))
-                entries.Add(new Entry { Kind = Kind.NoStones, Label = Text("NoStones"), Heading = kept, HeadingColor = KeptColor });
+                entries.Add(new Entry { Kind = Kind.NoStones, Label = Text("NoStones"), Heading = kept, HeadingColor = GainColor });
 
-            leftBehind.Clear();
+            lost.Clear();
             int lockedType = ModContent.ItemType<LockedSlot>();
             foreach (Item item in gear)
             {
                 if (item == null || item.IsAir || item.IsACoin || item.type == lockedType || RunCountedItem.IsKit(item)) continue;
-                leftBehind.Add((item.Clone(), item.stack));
+                lost.Add((item.Clone(), item.stack));
             }
             foreach (var (type, count) in player.GetModPlayer<CollectiblePlayer>().Collected)
-                leftBehind.Add((ContentSamples.ItemsByType[type].Clone(), count));
+                lost.Add((ContentSamples.ItemsByType[type].Clone(), count));
             long coinValue = Utils.CoinsCount(out _, gear.Where(item => item != null && item.IsACoin).ToArray());
             coins = coinValue > 0 ? Main.ValueToCoins(coinValue) : null;
-            entries.Add(new Entry { Kind = Kind.LeftBehind, Heading = Text("LeftBehind"), HeadingColor = LostColor });
+            entries.Add(new Entry { Kind = Kind.Lost, Heading = Text("Lost"), HeadingColor = LossColor });
 
             entries.Add(new Entry { Kind = Kind.Button });
 
@@ -222,21 +222,18 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             returnShownAt = -1f;
             tickCooldown = 0;
             scrollOffset = 0f;
-            oldGamePad = GamePad.GetState(PlayerIndex.One);
             Visible = true;
         }
 
-        private static Entry Ledger(string label, int value, int column, string heading, Color headingColor, Func<int, string> format = null) => new()
+        private static Entry Ledger(string label, int value, int column, string heading, Func<int, string> format = null) => new()
         {
             Kind = Kind.Ledger,
             Label = label,
             Value = value,
             Counts = true,
             Format = format ?? (number => number.ToString()),
-            ValueColor = TitleColor,
             Column = column,
             Heading = heading,
-            HeadingColor = headingColor,
         };
 
         private static string FormatTime(int ticks)
@@ -244,14 +241,6 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             TimeSpan time = TimeSpan.FromSeconds(ticks / 60);
             return time.TotalHours >= 1 ? $"{(int)time.TotalHours}:{time.Minutes:00}:{time.Seconds:00}" : $"{time.Minutes}:{time.Seconds:00}";
         }
-
-        private static Color StoneColor(MonkeyStoneTier tier) => tier switch
-        {
-            MonkeyStoneTier.Green => new Color(0x7f, 0xb0, 0x7a),
-            MonkeyStoneTier.Blue => new Color(0x7f, 0xa9, 0xd9),
-            MonkeyStoneTier.Orange => new Color(0xd9, 0xa8, 0x5f),
-            _ => new Color(0xb3, 0x91, 0xd6),
-        };
 
         private bool Finished => elapsed >= timelineEnd;
 
@@ -262,7 +251,7 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             Main.LocalPlayer.mouseInterface = true;
             elapsed++;
 
-            if (!Finished && elapsed > TimelineStart && SkipPressed())
+            if (!Finished && elapsed > TimelineStart && Main.mouseLeft && Main.mouseLeftRelease)
             {
                 elapsed = timelineEnd + FadeDuration;
                 Main.mouseLeftRelease = false;
@@ -273,21 +262,6 @@ namespace OvermorrowMod.Core.UI.DeathScreen
                 returnShownAt = elapsed;
 
             PlayCountTicks();
-            oldGamePad = GamePad.GetState(PlayerIndex.One);
-        }
-
-        private bool SkipPressed()
-        {
-            if (Main.mouseLeft && Main.mouseLeftRelease) return true;
-            if (Main.keyState.GetPressedKeys().Any(key => !Main.oldKeyState.IsKeyDown(key))) return true;
-            if (!PlayerInput.UsingGamepad) return false;
-
-            GamePadState pad = GamePad.GetState(PlayerIndex.One);
-            foreach (Buttons button in Enum.GetValues<Buttons>())
-            {
-                if (pad.IsButtonDown(button) && !oldGamePad.IsButtonDown(button)) return true;
-            }
-            return false;
         }
 
         private void PlayCountTicks()
@@ -309,9 +283,7 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             }
         }
 
-        private float Appear(Entry entry) => EaseOutCubic(MathHelper.Clamp((elapsed - entry.Start) / FadeDuration, 0f, 1f));
-
-        private float Appear(Entry entry, float delay) => EaseOutCubic(MathHelper.Clamp((elapsed - entry.Start - delay) / FadeDuration, 0f, 1f));
+        private float Appear(Entry entry, float delay = 0f) => EaseOutCubic(MathHelper.Clamp((elapsed - entry.Start - delay) / FadeDuration, 0f, 1f));
 
         private int Shown(Entry entry)
         {
@@ -344,9 +316,9 @@ namespace OvermorrowMod.Core.UI.DeathScreen
                     case Kind.Ledger:
                         entry.HeadingY = sectionTop;
                         entry.Y = columnY[entry.Column];
-                        entry.Height = LineHeight;
-                        columnY[entry.Column] += LineHeight;
-                        y = Math.Max(columnY[0], columnY[1]);
+                        entry.Height = CellHeight;
+                        columnY[entry.Column] += CellHeight + Gap;
+                        y = Math.Max(columnY[0], columnY[1]) - Gap;
                         break;
 
                     case Kind.Stone:
@@ -357,25 +329,28 @@ namespace OvermorrowMod.Core.UI.DeathScreen
                             entry.HeadingY = y;
                             y += HeadingHeight;
                         }
+                        else
+                        {
+                            y += Gap;
+                        }
                         entry.Y = y;
-                        entry.Height = LineHeight;
-                        y += LineHeight;
+                        entry.Height = CellHeight;
+                        y += CellHeight;
                         break;
 
-                    case Kind.LeftBehind:
+                    case Kind.Lost:
                         y += SectionGap;
                         entry.HeadingY = y;
                         y += HeadingHeight;
                         entry.Y = y;
-                        int columns = Math.Max(1, (ContentWidth + SlotGap) / (SlotSize + SlotGap));
-                        int rows = (leftBehind.Count + columns - 1) / columns;
-                        entry.Height = rows * (SlotSize + SlotGap) + (coins != null ? LineHeight : 0);
-                        if (leftBehind.Count == 0 && coins == null) entry.Height = LineHeight;
+                        int rows = (lost.Count + SlotColumns - 1) / SlotColumns;
+                        entry.Height = (coins != null ? CellHeight + Gap : 0) + rows * (SlotSize + Gap) - (rows > 0 ? Gap : 0);
+                        if (lost.Count == 0 && coins == null) entry.Height = CellHeight;
                         y += entry.Height;
                         break;
 
                     case Kind.Button:
-                        y += SectionGap;
+                        y += SectionGap + 6;
                         entry.Y = y;
                         entry.Height = ButtonHeight;
                         y += ButtonHeight;
@@ -389,19 +364,17 @@ namespace OvermorrowMod.Core.UI.DeathScreen
         {
             if (!Visible) return;
 
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
             float backdrop = MathHelper.Clamp((elapsed - ShowDelay) / BackdropFade, 0f, 1f);
             if (backdrop <= 0f) return;
 
-            spriteBatch.Draw(pixel, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), BackdropColor * backdrop);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), BackdropColor * backdrop);
 
             int contentHeight = Layout();
             int panelHeight = Math.Min(contentHeight + Padding * 2, Main.screenHeight - ScreenMargin * 2);
             Rectangle panel = new((Main.screenWidth - PanelWidth) / 2, (Main.screenHeight - panelHeight) / 2, PanelWidth, panelHeight);
             Rectangle clip = new(panel.X, panel.Y + Padding, PanelWidth, panelHeight - Padding * 2);
 
-            spriteBatch.Draw(pixel, panel, PanelColor * backdrop);
-            DrawBorder(spriteBatch, panel, BorderColor * backdrop);
+            Utils.DrawInvBG(spriteBatch, panel, PanelColor * backdrop);
 
             UpdateScroll(contentHeight, clip);
 
@@ -419,31 +392,30 @@ namespace OvermorrowMod.Core.UI.DeathScreen
                 if (alpha <= 0f) continue;
 
                 int y = top + entry.Y + (int)(RiseDistance * (1f - alpha));
+                int columnX = x + entry.Column * (ColumnWidth + ColumnGap);
                 if (entry.Heading != null)
-                    DrawHeading(spriteBatch, entry.Heading, x + (entry.Kind == Kind.Ledger ? entry.Column * ColumnWidth() + entry.Column * ColumnGap : 0), top + entry.HeadingY, entry.HeadingColor * alpha);
+                    DrawText(spriteBatch, entry.Heading.ToUpperInvariant(), new Vector2(columnX, top + entry.HeadingY), entry.HeadingColor * alpha, HeadingScale);
 
                 switch (entry.Kind)
                 {
-                    case Kind.Header: DrawHeader(spriteBatch, panel.Center.X, x, y, alpha); break;
-                    case Kind.Ledger: DrawLedger(spriteBatch, entry, x + entry.Column * (ColumnWidth() + ColumnGap), y, ColumnWidth(), alpha); break;
-                    case Kind.Stone: DrawStone(spriteBatch, entry, x, y, alpha); break;
-                    case Kind.NoStones: DrawText(spriteBatch, entry.Label, new Vector2(x, y), MutedColor * alpha, LineScale); break;
-                    case Kind.LeftBehind: DrawLeftBehind(spriteBatch, x, y, alpha * LeftBehindOpacity, clip); break;
+                    case Kind.Header: DrawHeader(spriteBatch, panel.Center.X, y, alpha); break;
+                    case Kind.Ledger: DrawLedger(spriteBatch, entry, new Rectangle(columnX, y, ColumnWidth, CellHeight), alpha); break;
+                    case Kind.Stone: DrawStone(spriteBatch, entry, new Rectangle(x, y, ContentWidth, CellHeight), alpha); break;
+                    case Kind.NoStones: DrawTextCentered(spriteBatch, entry.Label, x, y + CellHeight / 2f, CountColor * alpha, NameScale); break;
+                    case Kind.Lost: DrawLost(spriteBatch, x, y, alpha * LostOpacity, clip); break;
                 }
             }
 
             Entry button = entries[^1];
-            Rectangle buttonRect = new(panel.Center.X - ButtonWidth / 2, top + button.Y, ButtonWidth, ButtonHeight);
+            Rectangle buttonRect = new(panel.Center.X - ButtonWidth / 2, Math.Min(top + button.Y, clip.Bottom - ButtonHeight), ButtonWidth, ButtonHeight);
 
             spriteBatch.End();
             spriteBatch.GraphicsDevice.ScissorRectangle = previousScissor;
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, previousRasterizer, null, Main.UIScaleMatrix);
 
-            if (Finished) DrawReturn(spriteBatch, buttonRect, Appear(button), clip);
-            else if (elapsed > TimelineStart) DrawCentered(spriteBatch, Text("ClickToSkip"), new Vector2(panel.Center.X, Math.Min(buttonRect.Center.Y, clip.Bottom - ButtonHeight / 2)), MutedColor * 0.8f * backdrop, SmallScale);
+            if (Finished) DrawReturn(spriteBatch, buttonRect, Appear(button));
+            else if (elapsed > TimelineStart) DrawCentered(spriteBatch, Text("ClickToSkip"), buttonRect.Center.ToVector2(), CountColor * 0.8f * backdrop, SmallScale);
         }
-
-        private static int ColumnWidth() => (ContentWidth - ColumnGap) / 2;
 
         private void UpdateScroll(int contentHeight, Rectangle clip)
         {
@@ -462,92 +434,84 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             else
             {
                 PlayerInput.LockVanillaMouseScroll("OvermorrowMod/DeathScreen");
-                scrollOffset -= PlayerInput.ScrollWheelDeltaForUI / 120f * LineHeight;
+                scrollOffset -= PlayerInput.ScrollWheelDeltaForUI / 120f * CellHeight;
             }
 
             scrollOffset = MathHelper.Clamp(scrollOffset, 0f, maxScroll);
         }
 
-        private void DrawHeader(SpriteBatch spriteBatch, int centerX, int x, int y, float alpha)
+        private void DrawHeader(SpriteBatch spriteBatch, int centerX, int y, float alpha)
         {
             DynamicSpriteFont titleFont = FontAssets.DeathText.Value;
             Vector2 titleSize = titleFont.MeasureString(title) * TitleScale;
-            int titleY = y + (int)((TitleHeight - titleSize.Y) / 2f);
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, titleFont, title, new Vector2(centerX - titleSize.X / 2f, titleY), TitleColor * alpha, 0f, Vector2.Zero, new Vector2(TitleScale));
-
-            int ruleY = y + TitleHeight / 2;
-            int ruleGap = 18;
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
-            int leftEnd = (int)(centerX - titleSize.X / 2f) - ruleGap;
-            int rightStart = (int)(centerX + titleSize.X / 2f) + ruleGap;
-            spriteBatch.Draw(pixel, new Rectangle(x, ruleY, leftEnd - x, 1), BorderColor * 1.6f * alpha);
-            spriteBatch.Draw(pixel, new Rectangle(rightStart, ruleY, x + ContentWidth - rightStart, 1), BorderColor * 1.6f * alpha);
+            Vector2 titlePosition = new(centerX - titleSize.X / 2f, y + (TitleHeight - titleSize.Y) / 2f);
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, titleFont, title, titlePosition, Color.White * alpha, 0f, Vector2.Zero, new Vector2(TitleScale));
 
             int lineY = y + TitleHeight;
             foreach (string line in messageLines)
             {
-                DrawCentered(spriteBatch, line, new Vector2(centerX, lineY + MessageLineHeight / 2f), MessageColor * alpha, MessageScale);
+                DrawCentered(spriteBatch, line, new Vector2(centerX, lineY + MessageLineHeight / 2f), NameColor * alpha, MessageScale);
                 lineY += MessageLineHeight;
             }
 
             if (biome.Length > 0)
-                DrawCentered(spriteBatch, biome, new Vector2(centerX, lineY + BiomeHeight / 2f), MutedColor * alpha, BiomeScale);
+                DrawCentered(spriteBatch, biome, new Vector2(centerX, lineY + BiomeHeight / 2f), HeaderColor * alpha, BiomeScale);
         }
 
-        private void DrawLedger(SpriteBatch spriteBatch, Entry entry, int x, int y, int width, float alpha)
+        private void DrawLedger(SpriteBatch spriteBatch, Entry entry, Rectangle cell, float alpha)
         {
-            string value = entry.Format(Shown(entry));
-            float valueWidth = TextWidth(value, LineScale);
-            float labelWidth = TextWidth(entry.Label, LineScale);
+            Utils.DrawInvBG(spriteBatch, cell, CellColor * alpha);
+            DrawTextCentered(spriteBatch, entry.Label, cell.X + CellPadding, cell.Center.Y, NameColor * alpha, NameScale);
 
-            DrawText(spriteBatch, entry.Label, new Vector2(x, y), MessageColor * alpha, LineScale);
-            DrawLeader(spriteBatch, x + labelWidth + 6, x + width - valueWidth - 6, y, alpha);
-            DrawText(spriteBatch, value, new Vector2(x + width - valueWidth, y), entry.ValueColor * alpha, LineScale);
+            string value = entry.Format(Shown(entry));
+            DrawTextCentered(spriteBatch, value, cell.Right - CellPadding - TextWidth(value, ValueScale), cell.Center.Y, entry.ValueColor * alpha, ValueScale);
         }
 
-        private void DrawStone(SpriteBatch spriteBatch, Entry entry, int x, int y, float alpha)
+        private void DrawStone(SpriteBatch spriteBatch, Entry entry, Rectangle cell, float alpha)
         {
-            DrawDiamond(spriteBatch, new Vector2(x + 5, y + LineHeight / 2f - 3), 7, entry.DiamondColor * alpha);
-
-            int labelX = x + 18;
-            string value = entry.Format(Shown(entry));
-            int valueRight = x + ContentWidth - BankedWidth;
-            float valueWidth = TextWidth(value, LineScale);
-            float labelWidth = TextWidth(entry.Label, LineScale);
-
-            DrawText(spriteBatch, entry.Label, new Vector2(labelX, y), MessageColor * alpha, LineScale);
-            DrawLeader(spriteBatch, labelX + labelWidth + 6, valueRight - valueWidth - 6, y, alpha);
-            DrawText(spriteBatch, value, new Vector2(valueRight - valueWidth, y), entry.ValueColor * alpha, LineScale);
+            Utils.DrawInvBG(spriteBatch, cell, CellColor * alpha);
+            RunStatsPanel.DrawItemIcon(spriteBatch, entry.IconType, new Vector2(cell.X + CellPadding + StoneIconSize / 2f, cell.Center.Y), StoneIconSize, Color.White * alpha);
+            DrawTextCentered(spriteBatch, entry.Label, cell.X + CellPadding * 2 + StoneIconSize, cell.Center.Y, NameColor * alpha, NameScale);
 
             float bankedAlpha = Appear(entry, entry.Length);
+            float bankedWidth = TextWidth(entry.Banked, SmallScale);
             if (bankedAlpha > 0f)
-            {
-                float bankedWidth = TextWidth(entry.Banked, SmallScale);
-                DrawText(spriteBatch, entry.Banked, new Vector2(x + ContentWidth - bankedWidth, y + 3), MutedColor * bankedAlpha, SmallScale);
-            }
+                DrawTextCentered(spriteBatch, entry.Banked, cell.Right - CellPadding - bankedWidth, cell.Center.Y, CountColor * bankedAlpha, SmallScale);
+
+            string value = entry.Format(Shown(entry));
+            float valueRight = cell.Right - CellPadding * 3 - bankedWidth;
+            DrawTextCentered(spriteBatch, value, valueRight - TextWidth(value, ValueScale), cell.Center.Y, entry.ValueColor * alpha, ValueScale);
         }
 
-        private void DrawLeftBehind(SpriteBatch spriteBatch, int x, int y, float alpha, Rectangle clip)
+        private void DrawLost(SpriteBatch spriteBatch, int x, int y, float alpha, Rectangle clip)
         {
-            if (leftBehind.Count == 0 && coins == null)
+            if (lost.Count == 0 && coins == null)
             {
-                DrawText(spriteBatch, Text("NothingLeft"), new Vector2(x, y), MutedColor * alpha, LineScale);
+                DrawTextCentered(spriteBatch, Text("NothingLost"), x, y + CellHeight / 2f, CountColor * alpha, NameScale);
                 return;
             }
 
-            int columns = Math.Max(1, (ContentWidth + SlotGap) / (SlotSize + SlotGap));
-            bool canHover = Finished && clip.Contains(Main.MouseScreen.ToPoint());
-            for (int i = 0; i < leftBehind.Count; i++)
+            if (coins != null)
             {
-                var (item, count) = leftBehind[i];
-                Rectangle slot = new(x + i % columns * (SlotSize + SlotGap), y + i / columns * (SlotSize + SlotGap), SlotSize, SlotSize);
-                DrawBorder(spriteBatch, slot, MutedColor * alpha);
-                RunStatsPanel.DrawItemIcon(spriteBatch, item.type, slot.Center.ToVector2(), SlotSize - 10, Color.White * alpha);
+                Rectangle cell = new(x, y, ContentWidth, CellHeight);
+                Utils.DrawInvBG(spriteBatch, cell, CellColor * alpha);
+                DrawTextCentered(spriteBatch, Text("Coins"), cell.X + CellPadding, cell.Center.Y, NameColor * alpha, NameScale);
+                DrawTextCentered(spriteBatch, coins, cell.Right - CellPadding - TextWidth(coins, ValueScale), cell.Center.Y, Color.White * alpha, ValueScale);
+                y += CellHeight + Gap;
+            }
+
+            bool canHover = Finished && clip.Contains(Main.MouseScreen.ToPoint());
+            for (int i = 0; i < lost.Count; i++)
+            {
+                var (item, count) = lost[i];
+                Rectangle slot = new(x + i % SlotColumns * (SlotSize + Gap), y + i / SlotColumns * (SlotSize + Gap), SlotSize, SlotSize);
+                spriteBatch.Draw(TextureAssets.InventoryBack.Value, slot, Color.White * 0.9f * alpha);
+                RunStatsPanel.DrawItemIcon(spriteBatch, item.type, slot.Center.ToVector2(), 32, Color.White * alpha);
 
                 if (count > 1)
                 {
                     string amount = count.ToString();
-                    DrawText(spriteBatch, amount, new Vector2(slot.Right - 3 - TextWidth(amount, SmallScale), slot.Bottom - 16), TitleColor * alpha, SmallScale);
+                    DrawText(spriteBatch, amount, new Vector2(slot.Right - 4 - TextWidth(amount, SmallScale), slot.Bottom - 20), Color.White * alpha, SmallScale);
                 }
 
                 if (canHover && slot.Contains(Main.MouseScreen.ToPoint()))
@@ -556,26 +520,13 @@ namespace OvermorrowMod.Core.UI.DeathScreen
                     Main.hoverItemName = item.Name;
                 }
             }
-
-            if (coins != null)
-            {
-                int rows = (leftBehind.Count + columns - 1) / columns;
-                int coinY = y + rows * (SlotSize + SlotGap);
-                string label = Text("Coins");
-                float labelWidth = TextWidth(label, LineScale);
-                float valueWidth = TextWidth(coins, LineScale);
-                DrawText(spriteBatch, label, new Vector2(x, coinY), MessageColor * alpha, LineScale);
-                DrawLeader(spriteBatch, x + labelWidth + 6, x + ContentWidth - valueWidth - 6, coinY, alpha);
-                DrawText(spriteBatch, coins, new Vector2(x + ContentWidth - valueWidth, coinY), TitleColor * alpha, LineScale);
-            }
         }
 
-        private void DrawReturn(SpriteBatch spriteBatch, Rectangle bounds, float alpha, Rectangle clip)
+        private void DrawReturn(SpriteBatch spriteBatch, Rectangle bounds, float alpha)
         {
-            bounds.Y = Math.Min(bounds.Y, clip.Bottom - bounds.Height);
             bool hovered = bounds.Contains(Main.MouseScreen.ToPoint());
-            DrawBorder(spriteBatch, bounds, (hovered ? TitleColor : ButtonColor) * alpha);
-            DrawCentered(spriteBatch, Text("Return"), bounds.Center.ToVector2(), (hovered ? TitleColor : MessageColor) * alpha, LineScale);
+            Utils.DrawInvBG(spriteBatch, bounds, (hovered ? Color.Lerp(CellColor, PanelColor, 0.5f) : CellColor) * alpha);
+            DrawCentered(spriteBatch, Text("Return"), bounds.Center.ToVector2(), (hovered ? Color.White : ButtonTextColor) * alpha, ValueScale);
 
             if (hovered && elapsed - returnShownAt >= ReturnClickDelay && Main.mouseLeft && Main.mouseLeftRelease)
             {
@@ -599,50 +550,23 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             }
         }
 
-        private static void DrawHeading(SpriteBatch spriteBatch, string text, int x, int y, Color color)
-        {
-            float cursor = x;
-            foreach (char character in text.ToUpperInvariant())
-            {
-                string glyph = character.ToString();
-                DrawText(spriteBatch, glyph, new Vector2(cursor, y), color, HeadingScale);
-                cursor += TextWidth(glyph, HeadingScale) + HeadingSpacing;
-            }
-        }
-
-        private static void DrawLeader(SpriteBatch spriteBatch, float from, float to, int y, float alpha)
-        {
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
-            int dotY = y + (int)(LineHeight * 0.55f);
-            for (float dotX = from; dotX <= to - 2; dotX += 5f)
-                spriteBatch.Draw(pixel, new Rectangle((int)dotX, dotY, 2, 2), LeaderColor * alpha);
-        }
-
-        private static void DrawDiamond(SpriteBatch spriteBatch, Vector2 center, int size, Color color)
-        {
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
-            spriteBatch.Draw(pixel, new Rectangle((int)center.X, (int)center.Y, size, size), new Rectangle(0, 0, 1, 1), color, MathHelper.PiOver4, new Vector2(0.5f), SpriteEffects.None, 0f);
-        }
-
-        private static void DrawBorder(SpriteBatch spriteBatch, Rectangle rect, Color color)
-        {
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, rect.Width, 1), color);
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Bottom - 1, rect.Width, 1), color);
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, 1, rect.Height), color);
-            spriteBatch.Draw(pixel, new Rectangle(rect.Right - 1, rect.Y, 1, rect.Height), color);
-        }
-
         private static float TextWidth(string text, float scale) => FontAssets.MouseText.Value.MeasureString(text).X * scale;
 
         private static void DrawText(SpriteBatch spriteBatch, string text, Vector2 position, Color color, float scale)
         {
-            Utils.DrawBorderString(spriteBatch, text, position, color, scale);
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, text, position, color, 0f, Vector2.Zero, new Vector2(scale));
+        }
+
+        private static void DrawTextCentered(SpriteBatch spriteBatch, string text, float x, float centerY, Color color, float scale)
+        {
+            float height = FontAssets.MouseText.Value.MeasureString(text).Y * scale;
+            DrawText(spriteBatch, text, new Vector2(x, centerY - height / 2f + 3f * scale), color, scale);
         }
 
         private static void DrawCentered(SpriteBatch spriteBatch, string text, Vector2 center, Color color, float scale)
         {
-            Utils.DrawBorderString(spriteBatch, text, center, color, scale, 0.5f, 0.4f);
+            Vector2 size = FontAssets.MouseText.Value.MeasureString(text) * scale;
+            DrawText(spriteBatch, text, new Vector2(center.X - size.X / 2f, center.Y - size.Y / 2f + 3f * scale), color, scale);
         }
     }
 }
