@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.Text;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using System;
-using System.Reflection;
 
 namespace OvermorrowMod.Common.Utilities
 {
@@ -110,40 +109,17 @@ namespace OvermorrowMod.Common.Utilities
 
         /// <summary>
         /// Places a <typeparamref name="Tile"/> at the specified coordinates and associates a <typeparamref name="TEntity"/>.
-        /// The tile entity is created and placed dynamically, and the method returns the placed tile entity instance.
         /// </summary>
-        /// <typeparam name="Tile">The type of the tile to place, which must inherit from <see cref="ModTile"/>.</typeparam>
-        /// <typeparam name="TEntity">The type of the tile entity associated with the tile, which must inherit from <see cref="TileEntity"/>.</typeparam>
+        /// <typeparam name="Tile">The type of the tile to place.</typeparam>
+        /// <typeparam name="TEntity">The tile entity placed with the tile.</typeparam>
         /// <param name="x">The x-coordinate where the tile will be placed.</param>
         /// <param name="y">The y-coordinate where the tile will be placed.</param>
-        /// <returns>
-        /// Returns an instance of <typeparamref name="TEntity"/> that was placed at the specified coordinates, or <c>null</c> if the place operation fails.
-        /// </returns>
-        /// <remarks>
-        /// This method uses reflection to invoke the <see cref="TileEntity.Place"/> method dynamically, if it exists, to place the tile entity. 
-        /// If the <see cref="Place"/> method is not found or the tile entity cannot be placed, it returns <c>null</c>.
-        /// </remarks>
-        public static TEntity PlaceTileWithEntity<Tile, TEntity>(int x, int y) where Tile : ModTile where TEntity : TileEntity, new()
+        /// <returns>The placed tile entity.</returns>
+        public static TEntity PlaceTileWithEntity<Tile, TEntity>(int x, int y) where Tile : ModTile where TEntity : ModTileEntity
         {
             WorldGen.PlaceObject(x, y, ModContent.TileType<Tile>());
-
-            // Create an instance of the tile entity
-            TEntity entity = new TEntity();
-
-            // Use reflection to invoke the Place method if it exists
-            MethodInfo placeMethod = typeof(TEntity).GetMethod("Place", BindingFlags.Public | BindingFlags.Instance);
-
-            if (placeMethod != null)
-            {
-                // Call the Place method dynamically
-                int id = (int)placeMethod.Invoke(entity, new object[] { x, y });
-
-                // Return the placed entity
-                return TileEntity.ByID[id] as TEntity;
-            }
-
-            // Return null if the Place method is not found
-            return null;
+            int id = ModContent.GetInstance<TEntity>().Place(x, y);
+            return TileEntity.ByID[id] as TEntity;
         }
 
         /// <summary>
