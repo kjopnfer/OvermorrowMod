@@ -37,6 +37,15 @@ namespace OvermorrowMod.Core.WorldGeneration
             Running = true;
         }
 
+        public static void Restore(int remainingTicks, bool running, int bonusCount)
+        {
+            RemainingTicks = remainingTicks;
+            displayTicks = remainingTicks;
+            scrolling = false;
+            BonusCount = bonusCount;
+            Running = running;
+        }
+
         public static void AddTime(int seconds)
         {
             if (!Running) return;

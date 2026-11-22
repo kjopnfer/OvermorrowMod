@@ -170,7 +170,7 @@ namespace OvermorrowMod.Core.UI
 
                 spriteBatch.DrawString(FontAssets.DeathText.Value, timerText, timerPosition, timerColor * timerAlpha, 0f, Vector2.Zero, timerScale, SpriteEffects.None, 0f);
 
-                if (SubworldTimer.BonusCount != seenBonusCount)
+                if (timerStarted && SubworldTimer.BonusCount != seenBonusCount)
                 {
                     seenBonusCount = SubworldTimer.BonusCount;
                     bonusPopupSeconds = SubworldTimer.LastBonusSeconds;
@@ -227,7 +227,8 @@ namespace OvermorrowMod.Core.UI
                 {
                     if (!timerStarted && timer >= SwapEnd)
                     {
-                        SubworldTimer.Start();
+                        if (!SubworldTimer.Running) SubworldTimer.Start();
+                        seenBonusCount = SubworldTimer.BonusCount;
                         timerStarted = true;
                     }
                 }

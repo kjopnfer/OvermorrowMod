@@ -36,20 +36,20 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
         }
 
-        private bool ghostSpawned;
+        public static bool GhostSpawned;
 
         public override void Update()
         {
             SubworldTimer.Tick();
 
-            if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !ghostSpawned && Main.netMode != NetmodeID.MultiplayerClient)
+            if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !GhostSpawned && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Player player = Main.player[Main.myPlayer];
                 int cellPx = 18 * 16;
                 int dir = player.Center.X < Width * 8f ? 1 : -1;
                 float spawnX = MathHelper.Clamp(player.Center.X + dir * 10 * cellPx, 80 * 16, (Width - 80) * 16);
                 NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnX, (int)player.Center.Y, ModContent.NPCType<GhostCrawler>());
-                ghostSpawned = true;
+                GhostSpawned = true;
             }
 
             // Snapshot because a TileEntity's Update may place new tile entities (e.g. combat lights).
@@ -87,7 +87,6 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override void OnEnter()
         {
-            ghostSpawned = false;
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
             TitleCardManager.ShowTitleWithTimer(TitleCardText);
             base.OnEnter();
@@ -96,7 +95,6 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         public override void OnExit()
         {
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
-            SubworldTimer.Reset();
             TitleCardManager.Hide();
             base.OnExit();
         }
