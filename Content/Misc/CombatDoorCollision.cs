@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Misc
     /// <summary>Visible collision NPC spawned by CombatDoor_TE.</summary>
     public class CombatDoorCollision : TileCollisionNPC
     {
-        public override string Texture => AssetDirectory.Misc + "CombatDoor";
+        public override string Texture => AssetDirectory.Misc + "ArchiveCombatDoor";
 
         public int ParentDoorTEID { get => (int)NPC.ai[0]; set => NPC.ai[0] = value; }
         public float ClosedY { get => NPC.ai[1]; set => NPC.ai[1] = value; }
@@ -67,7 +67,13 @@ namespace OvermorrowMod.Content.Misc
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D tex = ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value;
-            spriteBatch.Draw(tex, NPC.Center - screenPos, null, Color.White, 0f, tex.Size() / 2f, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(tex, NPC.Center - screenPos, null, drawColor, 0f, tex.Size() / 2f, 1f, SpriteEffects.None, 0);
+
+            if (DoorInstance?.IsLocked ?? false)
+            {
+                Texture2D glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.ImmediateLoad).Value;
+                spriteBatch.Draw(glow, NPC.Center - screenPos, null, Color.White, 0f, glow.Size() / 2f, 1f, SpriteEffects.None, 0);
+            }
             return false;
         }
     }
