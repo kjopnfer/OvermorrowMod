@@ -84,9 +84,11 @@ namespace OvermorrowMod.Core.WorldGeneration
             BonusCount = 0;
         }
 
-        public static string Display()
+        public static string Display() => Format((int)displayTicks);
+
+        public static string Format(int ticks)
         {
-            int totalSeconds = ((int)displayTicks + 59) / 60;
+            int totalSeconds = (ticks + 59) / 60;
             return $"{totalSeconds / 60}:{totalSeconds % 60:00}";
         }
     }

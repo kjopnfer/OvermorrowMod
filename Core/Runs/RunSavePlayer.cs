@@ -1,3 +1,4 @@
+using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.UI.ClassSelection;
 using OvermorrowMod.Core.WorldGeneration;
 using OvermorrowMod.Core.WorldGeneration.TestSubworld;
@@ -15,6 +16,7 @@ namespace OvermorrowMod.Core.Runs
         public string ActiveSubworld;
         public Guid MainWorldId;
         public string BiomeName;
+        public int TimerTicks = -1;
 
         public bool PendingReset;
         public CharacterClass? PendingNewRun;
@@ -26,6 +28,7 @@ namespace OvermorrowMod.Core.Runs
             ActiveSubworld = null;
             MainWorldId = Guid.Empty;
             BiomeName = null;
+            TimerTicks = -1;
         }
 
         public override void OnEnterWorld()
@@ -58,9 +61,13 @@ namespace OvermorrowMod.Core.Runs
         {
             if (ActiveSubworld == null) return;
 
+            if (Player.GetModPlayer<SubworldPlayer>().inSubworldNow)
+                TimerTicks = SubworldTimer.Running ? SubworldTimer.RemainingTicks : -1;
+
             tag["ActiveSubworld"] = ActiveSubworld;
             tag["MainWorldId"] = MainWorldId.ToString();
             tag["BiomeName"] = BiomeName ?? "";
+            tag["TimerTicks"] = TimerTicks;
         }
 
         public override void LoadData(TagCompound tag)
@@ -69,6 +76,7 @@ namespace OvermorrowMod.Core.Runs
             ActiveSubworld = active == "" ? null : active;
             Guid.TryParse(tag.GetString("MainWorldId"), out MainWorldId);
             BiomeName = tag.GetString("BiomeName");
+            TimerTicks = tag.ContainsKey("TimerTicks") ? tag.GetInt("TimerTicks") : -1;
         }
     }
 }
