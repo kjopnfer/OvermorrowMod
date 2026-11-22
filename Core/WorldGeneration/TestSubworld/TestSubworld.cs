@@ -26,10 +26,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         public override int Width => 4800;
         public override int Height => 4200;
 
-        // Regen on every entry. Without this, SubworldLibrary saves the
-        // generated world and re-enter just reloads it, so the Regenerate
-        // button has no effect.
-        public override bool ShouldSave => false;
+        public override bool ShouldSave => true;
 
         public override List<GenPass> Tasks => [CreateGenPass()];
 

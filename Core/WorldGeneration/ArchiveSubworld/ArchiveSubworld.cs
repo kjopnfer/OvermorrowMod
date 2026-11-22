@@ -24,6 +24,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
         public static int GetWidth() => new ArchiveSubworld().Width;
         public static int GetHeight() => new ArchiveSubworld().Height;
 
+        public override bool ShouldSave => true;
 
         public override List<GenPass> Tasks =>
         [
