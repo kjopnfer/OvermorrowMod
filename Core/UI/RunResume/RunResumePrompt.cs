@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.UI.ClassSelection;
+using OvermorrowMod.Core.UI.DeathScreen;
 using OvermorrowMod.Core.WorldGeneration;
 using ReLogic.Graphics;
 using SubworldLibrary;
@@ -70,8 +71,7 @@ namespace OvermorrowMod.Core.UI.RunResume
             }
 
             Hide();
-            RunReset.Reset(Main.LocalPlayer);
-            ClassSelectionManager.Show();
+            DeathScreenManager.ShowAbandoned(Main.LocalPlayer);
         }
 
         private static Rectangle PanelRect => new Rectangle((Main.screenWidth - PanelWidth) / 2, (Main.screenHeight - PanelHeight) / 2, PanelWidth, PanelHeight);
