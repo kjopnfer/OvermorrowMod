@@ -122,6 +122,15 @@ namespace OvermorrowMod.Content.Misc
 
         public override bool CheckActive() => false;
 
+        public static bool AnyFightRunning()
+        {
+            foreach (NPC npc in Main.ActiveNPCs)
+            {
+                if (npc.ModNPC is CombatOrchestrator orchestrator && orchestrator.phase != Phase.End) return true;
+            }
+            return false;
+        }
+
         public Vector2 RewardAnchor => NPC.Center;
 
         public bool RewardSourceActive => NPC.active;
