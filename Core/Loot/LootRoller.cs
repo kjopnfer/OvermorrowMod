@@ -72,6 +72,17 @@ namespace OvermorrowMod.Core.Loot
             return pick.Value;
         }
 
+        public static Rarity LowestRarity(IEnumerable<int> itemIds)
+        {
+            Rarity lowest = Rarity.Legendary;
+            foreach (int id in itemIds)
+            {
+                if (LootMetadata.TryGetAny(id, out var meta) && meta.Rarity < lowest)
+                    lowest = meta.Rarity;
+            }
+            return lowest;
+        }
+
         /// <summary>
         /// Gives <paramref name="player"/> a reward picked from an offer: a collectible is applied directly, any other item is
         /// spawned with its companion ammo.

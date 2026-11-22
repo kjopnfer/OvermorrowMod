@@ -20,5 +20,11 @@ namespace OvermorrowMod.Core.UI
         void ClaimReward(int itemId);
 
         void DeclineReward();
+
+        /// <summary>
+        /// Replaces the current offers with a new roll that excludes them and stays at or above their lowest rarity.
+        /// </summary>
+        /// <returns>The new offers, or null when nothing could be rolled.</returns>
+        int[] RerollOffers();
     }
 }

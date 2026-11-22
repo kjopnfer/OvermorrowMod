@@ -136,6 +136,17 @@ namespace OvermorrowMod.Content.Misc
 
         public void DeclineReward() => isOpen = false;
 
+        public int[] RerollOffers()
+        {
+            if (offeredRewards == null) return null;
+
+            int[] rerolled = RollCombatReward(offeredRewards, LootRoller.LowestRarity(offeredRewards));
+            if (rerolled.Length == 0) return null;
+
+            offeredRewards = rerolled;
+            return rerolled;
+        }
+
         public override void AI()
         {
             NPC.ShowNameOnHover = false;
@@ -234,18 +245,18 @@ namespace OvermorrowMod.Content.Misc
             }
         }
 
-        private int[] RollCombatReward()
+        private int[] RollCombatReward(IEnumerable<int> exclude = null, Rarity minRarity = Rarity.Common)
         {
             var gear = LootPoolRegistry.GetActive();
             if (gear == null) return System.Array.Empty<int>();
             var collectibles = LootPoolRegistry.Get<CollectiblesPool>();
 
             var offers = new List<int>(RewardOfferCount);
-            var used = new HashSet<int>();
+            var used = exclude == null ? new HashSet<int>() : new HashSet<int>(exclude);
 
             for (int slot = 0; slot < RewardOfferCount; slot++)
             {
-                int id = RollRewardSlot(gear, collectibles, used);
+                int id = RollRewardSlot(gear, collectibles, used, minRarity);
                 if (id == 0) continue;
                 offers.Add(id);
                 used.Add(id);
@@ -254,27 +265,27 @@ namespace OvermorrowMod.Content.Misc
             return offers.ToArray();
         }
 
-        private int RollRewardSlot(LootPool gear, LootPool collectibles, HashSet<int> used)
+        private int RollRewardSlot(LootPool gear, LootPool collectibles, HashSet<int> used, Rarity minRarity)
         {
             ItemKind primary = PickRewardCategory();
-            int id = RollCategory(primary, gear, collectibles, used);
+            int id = RollCategory(primary, gear, collectibles, used, minRarity);
             if (id != 0) return id;
 
             foreach (var category in RewardCategories)
             {
                 if (category.Kind == primary) continue;
-                id = RollCategory(category.Kind, gear, collectibles, used);
+                id = RollCategory(category.Kind, gear, collectibles, used, minRarity);
                 if (id != 0) return id;
             }
             return 0;
         }
 
-        private int RollCategory(ItemKind kind, LootPool gear, LootPool collectibles, HashSet<int> used)
+        private int RollCategory(ItemKind kind, LootPool gear, LootPool collectibles, HashSet<int> used, Rarity minRarity)
         {
             if (kind == ItemKind.Consumable)
-                return LootRoller.RollOne(collectibles, ItemKind.Consumable, default, Main.LocalPlayer, used);
+                return LootRoller.RollOne(collectibles, ItemKind.Consumable, default, Main.LocalPlayer, used, minRarity);
 
-            return LootRoller.RollOne(gear, kind, RewardModifier, Main.LocalPlayer, used);
+            return LootRoller.RollOne(gear, kind, RewardModifier, Main.LocalPlayer, used, minRarity);
         }
 
         private static ItemKind PickRewardCategory()
