@@ -1,7 +1,6 @@
 using OvermorrowMod.Content.Misc;
 using Terraria;
 using Terraria.ID;
-using Terraria.IO;
 
 namespace OvermorrowMod.Core.Runs
 {
@@ -15,8 +14,8 @@ namespace OvermorrowMod.Core.Runs
             if (!RunWorldSystem.RunWorldLoaded || Main.netMode != NetmodeID.SinglePlayer || CombatOrchestrator.AnyFightRunning()) return;
 
             Main.LocalPlayer.GetModPlayer<RunSavePlayer>().PrepareCheckpoint();
-            WorldFile.SaveWorld();
-            Player.SavePlayer(Main.ActivePlayerFileData);
+            WorldGen.saveAndPlay();
+            WorldGen.saveToonWhilePlaying();
         }
     }
 }
