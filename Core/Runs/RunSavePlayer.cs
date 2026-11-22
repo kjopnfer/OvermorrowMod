@@ -64,6 +64,11 @@ namespace OvermorrowMod.Core.Runs
                 LastPosition[ActiveSubworld] = position;
         }
 
+        public void PrepareCheckpoint()
+        {
+            if (IsSafeStanding()) lastSafePosition = Player.position;
+        }
+
         public override void OnEnterWorld()
         {
             if (RunState.InRun)

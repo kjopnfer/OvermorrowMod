@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Interaction;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Common.Waypoints;
 using OvermorrowMod.Content.Projectiles.Archives;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.WorldGeneration;
 using System;
 using System.Linq;
@@ -51,6 +52,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 ArchiveLights.SetRegion(te.TileArea, 1f, 45);
                 SoundEngine.PlaySound(SoundID.Item20, te.WorldCenter);
                 Main.NewText("Waypoint lit", new Color(255, 170, 60));
+                RunSave.Checkpoint();
                 return true;
             }
 

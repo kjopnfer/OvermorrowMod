@@ -9,6 +9,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.WorldGeneration;
 using ReLogic.Content;
@@ -240,6 +241,7 @@ namespace OvermorrowMod.Content.Misc
             {
                 SpawnImpactParticles();
                 hasImpacted = true;
+                RunSave.Checkpoint();
             }
 
             EmitRays();
