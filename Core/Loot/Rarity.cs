@@ -38,6 +38,11 @@ namespace OvermorrowMod.Core.Loot
             return Rarity.Legendary;
         }
 
+        public RarityWeights AtLeast(Rarity floor)
+        {
+            return new RarityWeights(floor > Rarity.Common ? 0 : Common, floor > Rarity.Rare ? 0 : Rare, floor > Rarity.Epic ? 0 : Epic, Legendary);
+        }
+
         public RarityWeights Clamped()
         {
             return new RarityWeights(Math.Max(0, Common), Math.Max(0, Rare), Math.Max(0, Epic), Math.Max(0, Legendary));

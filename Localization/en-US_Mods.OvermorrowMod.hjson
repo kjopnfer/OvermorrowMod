@@ -6,7 +6,12 @@ Keybinds: {
 
 UI: {
 	ReloadBindHint: Reload key unbound: bind one in Controls
-	RewardSelection.Title: Choose One
+
+	RewardSelection: {
+		Title: Choose One
+		Reroll: Reroll ({0} left)
+	}
+
 	MonkeyStones.Label: Stones
 
 	RunStats: {

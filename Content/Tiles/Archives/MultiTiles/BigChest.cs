@@ -287,6 +287,20 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
         public void DeclineReward() => awaitingPick = false;
 
+        public int[] RerollOffers()
+        {
+            if (Offers == null) return null;
+
+            var pool = LootPoolRegistry.GetActive();
+            if (pool == null) return null;
+
+            int[] rerolled = LootRoller.RollOffers(pool, ContentsModifier, ContentsKinds, OfferCount, Main.LocalPlayer, ContentsFavored, Offers, LootRoller.LowestRarity(Offers));
+            if (rerolled.Length == 0) return null;
+
+            Offers = rerolled;
+            return rerolled;
+        }
+
         public void Interact()
         {
             if (ItemPickedUp)
