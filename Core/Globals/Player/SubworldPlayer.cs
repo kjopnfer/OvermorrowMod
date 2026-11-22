@@ -136,6 +136,14 @@ namespace OvermorrowMod.Core.Globals
             pendingClassItems = null;
         }
 
+        public void ClearRunInventory()
+        {
+            subInventory = null;
+            subArmor = null;
+            subMisc = null;
+            subMiscDyes = null;
+        }
+
         /// <summary>
         /// Empties the run inventory and equipment for a new run.
         /// </summary>

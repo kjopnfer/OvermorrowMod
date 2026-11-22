@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.WorldGeneration.TestSubworld;
 using ReLogic.Graphics;
 using SubworldLibrary;
@@ -72,7 +73,7 @@ namespace OvermorrowMod.Core.UI.ClassSelection
         public void Show()
         {
             visible = true;
-            actionButton.kind = SubworldSystem.IsActive<TestSubworld>() ? ClassButtonKind.Regenerate : ClassButtonKind.Enter;
+            actionButton.kind = SubworldSystem.AnyActive() ? ClassButtonKind.Regenerate : ClassButtonKind.Enter;
             SelectClass(selectedClass);
         }
 
@@ -87,9 +88,29 @@ namespace OvermorrowMod.Core.UI.ClassSelection
 
         private void OnActionClicked()
         {
-            var sp = Main.LocalPlayer.GetModPlayer<SubworldPlayer>();
+            Hide();
+
+            if (SubworldSystem.AnyActive())
+            {
+                Main.LocalPlayer.GetModPlayer<RunSavePlayer>().PendingNewRun = selectedClass;
+                SubworldSystem.Exit();
+                return;
+            }
+
+            BeginRun(Main.LocalPlayer, selectedClass);
+        }
+
+        /// <summary>
+        /// Must be called from the main world.
+        /// </summary>
+        /// <returns>False when SubworldLibrary isn't ready to enter yet.</returns>
+        public static bool BeginRun(Player player, CharacterClass characterClass)
+        {
+            RunReset.Reset(player);
+
+            var sp = player.GetModPlayer<SubworldPlayer>();
             sp.pendingClassItems = new List<Item>();
-            foreach (var (type, stack) in Loadouts[selectedClass])
+            foreach (var (type, stack) in Loadouts[characterClass])
             {
                 var item = new Item();
                 item.SetDefaults(type);
@@ -97,19 +118,7 @@ namespace OvermorrowMod.Core.UI.ClassSelection
                 sp.pendingClassItems.Add(item);
             }
 
-            bool regenerating = SubworldSystem.IsActive<TestSubworld>();
-            if (regenerating)
-            {
-                for (int i = 0; i < Main.LocalPlayer.inventory.Length; i++) Main.LocalPlayer.inventory[i] = new Item();
-                for (int i = 0; i < Main.LocalPlayer.armor.Length; i++) Main.LocalPlayer.armor[i] = new Item();
-                // Enter<T>() while already inside T no-ops in SubworldLibrary.
-                // Exiting first queues a transition back through the main
-                // world so the second Enter takes effect.
-                SubworldSystem.Exit();
-            }
-
-            Hide();
-            SubworldSystem.Enter<TestSubworld>();
+            return SubworldSystem.Enter<TestSubworld>();
         }
 
         public override void Update(GameTime gameTime)

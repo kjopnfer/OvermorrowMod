@@ -83,7 +83,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             Main.spriteBatch.DrawString(font, currentTip.Text, textPos, Color.White, 0f, new Vector2(textSize.X / 2f, 0f), 0.5f, SpriteEffects.None, 1f);
         }
 
-        protected virtual string TitleCardText => "Grand Archives";
+        public virtual string TitleCardText => "Grand Archives";
 
         public override void OnEnter()
         {
@@ -104,7 +104,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
     public class TestSubworld2 : TestSubworld
     {
-        protected override string TitleCardText => "Grand Archives 2";
+        public override string TitleCardText => "Grand Archives 2";
 
         public override List<GenPass> Tasks =>
         [
