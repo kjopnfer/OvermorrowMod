@@ -71,7 +71,7 @@ UI: {
 DeathScreen: {
 	RunOver: Run Over
 	RunAbandoned: Run Abandoned
-	TheRun: The Run
+	Summary: Summary
 	ItemsFound: Items Found
 	Kept: Kept
 	Lost: Lost
