@@ -638,6 +638,7 @@ namespace OvermorrowMod.Content.Misc
             endTriggered = true;
 
             Main.NewText("Room cleared!", Color.Gold);
+            Main.LocalPlayer.GetModPlayer<RunRecordPlayer>().RoomsCleared++;
             SubworldTimer.AddTime(30);
 
             Texture2D circleTex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;

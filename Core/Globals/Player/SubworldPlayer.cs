@@ -1,5 +1,6 @@
 using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using System.Collections.Generic;
@@ -128,8 +129,10 @@ namespace OvermorrowMod.Core.Globals
                     {
                         if (item == null || item.IsAir) continue;
 
-                        if (item.ammo != AmmoID.None) Player.inventory[ammoSlot++] = item.Clone();
-                        else Player.inventory[slot++] = item.Clone();
+                        Item kitItem = item.Clone();
+                        RunCountedItem.Mark(kitItem);
+                        if (kitItem.ammo != AmmoID.None) Player.inventory[ammoSlot++] = kitItem;
+                        else Player.inventory[slot++] = kitItem;
                     }
                 }
             }
