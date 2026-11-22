@@ -38,6 +38,7 @@ namespace OvermorrowMod.Core.Runs
             player.GetModPlayer<CollectiblePlayer>().Reset();
             player.GetModPlayer<RerollPlayer>().Reset();
             player.GetModPlayer<RunSavePlayer>().ClearRun();
+            player.GetModPlayer<MonkeyStonePlayer>().ClearRun();
         }
     }
 }

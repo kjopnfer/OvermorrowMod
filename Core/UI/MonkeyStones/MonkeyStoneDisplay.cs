@@ -41,10 +41,11 @@ namespace OvermorrowMod.Core.UI.MonkeyStones
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            var wallet = Main.LocalPlayer.GetModPlayer<MonkeyStonePlayer>();
+            if (!RunState.InRun) return;
 
+            var wallet = Main.LocalPlayer.GetModPlayer<MonkeyStonePlayer>();
             if (Main.playerInventory) DrawColumn(spriteBatch, wallet);
-            else if (RunState.InRun) DrawRow(spriteBatch, wallet);
+            else DrawRow(spriteBatch, wallet);
         }
 
         private static void DrawColumn(SpriteBatch spriteBatch, MonkeyStonePlayer wallet)
@@ -70,7 +71,7 @@ namespace OvermorrowMod.Core.UI.MonkeyStones
         private static void DrawRow(SpriteBatch spriteBatch, MonkeyStonePlayer wallet)
         {
             float x = HotbarRight() + EntryGap;
-            float[] widths = Tiers.Select(tier => EntryWidth(wallet.Get(tier))).ToArray();
+            float[] widths = Tiers.Select(tier => EntryWidth(wallet.GetGainedThisRun(tier))).ToArray();
             bool stacked = x + widths.Sum() + EntryGap * (Tiers.Length - 1) > Main.screenWidth / 2f - TimerClearance;
             int columns = stacked ? 2 : Tiers.Length;
             int rows = Tiers.Length / columns;
@@ -82,7 +83,7 @@ namespace OvermorrowMod.Core.UI.MonkeyStones
                 {
                     int index = row * columns + column;
                     float centerY = HotbarCenterY + (row - (rows - 1) / 2f) * StackedRowHeight;
-                    DrawEntry(spriteBatch, Tiers[index], wallet.Get(Tiers[index]), x, centerY, widths[index]);
+                    DrawEntry(spriteBatch, Tiers[index], wallet.GetGainedThisRun(Tiers[index]), x, centerY, widths[index]);
                     columnWidth = Math.Max(columnWidth, widths[index]);
                 }
                 x += columnWidth + EntryGap;
