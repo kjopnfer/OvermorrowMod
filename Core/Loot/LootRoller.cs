@@ -11,19 +11,14 @@ namespace OvermorrowMod.Core.Loot
 {
     public static class LootRoller
     {
-        public static int[] RollOffers(LootPool pool, RarityModifier modifier, ItemKind allowedKinds, int count, Player player, ItemKind favoredKinds = ItemKind.None)
+        public static int[] RollOffers(LootPool pool, RarityModifier modifier, ItemKind allowedKinds, int count, Player player, ItemKind favoredKinds = ItemKind.None, ICollection<int> exclude = null, Rarity minRarity = Rarity.Common)
         {
             if (pool == null || count <= 0) return Array.Empty<int>();
 
             ItemKind chosenKind = PickOneKind(allowedKinds, favoredKinds);
             if (chosenKind == ItemKind.None) return Array.Empty<int>();
 
-            var candidates = new List<(int Type, LootMetadataEntry Meta)>();
-            foreach (var pair in LootMetadata.EntriesInPool(pool.GetType()))
-            {
-                if (pair.Value.Kind != chosenKind) continue;
-                candidates.Add((pair.Key, pair.Value));
-            }
+            var candidates = Candidates(pool, chosenKind, exclude, minRarity);
             if (candidates.Count == 0) return Array.Empty<int>();
 
             ItemType activeClasses = ComputeActiveClasses(player);
@@ -34,7 +29,7 @@ namespace OvermorrowMod.Core.Loot
 
             for (int i = 0; i < count; i++)
             {
-                Rarity rolledRarity = effectiveWeights.Sample(Main.rand);
+                Rarity rolledRarity = SampleRarity(effectiveWeights, minRarity);
                 var bucket = SelectBucket(candidates, rolledRarity);
                 if (bucket.Count == 0) break;
 
@@ -53,26 +48,20 @@ namespace OvermorrowMod.Core.Loot
 
         /// <summary>
         /// Rolls a single item of the given kind from the pool, excluding any ids in
-        /// <paramref name="exclude"/>. Returns 0 when no eligible item exists.
+        /// <paramref name="exclude"/> and any item below <paramref name="minRarity"/>. Returns 0 when no eligible item exists.
         /// </summary>
-        public static int RollOne(LootPool pool, ItemKind kind, RarityModifier modifier, Player player, ICollection<int> exclude)
+        public static int RollOne(LootPool pool, ItemKind kind, RarityModifier modifier, Player player, ICollection<int> exclude, Rarity minRarity = Rarity.Common)
         {
             if (pool == null) return 0;
 
-            var candidates = new List<(int Type, LootMetadataEntry Meta)>();
-            foreach (var pair in LootMetadata.EntriesInPool(pool.GetType()))
-            {
-                if (pair.Value.Kind != kind) continue;
-                if (exclude != null && exclude.Contains(pair.Key)) continue;
-                candidates.Add((pair.Key, pair.Value));
-            }
+            var candidates = Candidates(pool, kind, exclude, minRarity);
             if (candidates.Count == 0) return 0;
 
             ItemType activeClasses = ComputeActiveClasses(player);
             RarityWeights effectiveWeights = pool.BaseWeights + modifier;
             var bagPlayer = player.GetModPlayer<LootPlayer>();
 
-            Rarity rolledRarity = effectiveWeights.Sample(Main.rand);
+            Rarity rolledRarity = SampleRarity(effectiveWeights, minRarity);
             var bucket = SelectBucket(candidates, rolledRarity);
             if (bucket.Count == 0) return 0;
 
@@ -156,6 +145,25 @@ namespace OvermorrowMod.Core.Loot
         private static double KindWeight(ItemKind kind, ItemKind favoredKinds)
         {
             return (favoredKinds & kind) != 0 ? 1.4 : 1.0;
+        }
+
+        private static List<(int Type, LootMetadataEntry Meta)> Candidates(LootPool pool, ItemKind kind, ICollection<int> exclude, Rarity minRarity)
+        {
+            var candidates = new List<(int Type, LootMetadataEntry Meta)>();
+            foreach (var pair in LootMetadata.EntriesInPool(pool.GetType()))
+            {
+                if (pair.Value.Kind != kind) continue;
+                if (pair.Value.Rarity < minRarity) continue;
+                if (exclude != null && exclude.Contains(pair.Key)) continue;
+                candidates.Add((pair.Key, pair.Value));
+            }
+            return candidates;
+        }
+
+        private static Rarity SampleRarity(RarityWeights weights, Rarity minRarity)
+        {
+            RarityWeights floored = weights.AtLeast(minRarity);
+            return floored.Sum > 0 ? floored.Sample(Main.rand) : minRarity;
         }
 
         private static List<(int Type, LootMetadataEntry Meta)> SelectBucket(List<(int Type, LootMetadataEntry Meta)> candidates, Rarity rolledRarity)
