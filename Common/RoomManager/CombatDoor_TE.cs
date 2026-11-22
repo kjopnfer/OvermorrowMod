@@ -30,6 +30,10 @@ namespace OvermorrowMod.Common.RoomManager
         public bool IsDisabled = false;
         public bool DisableAfterOpen = false;
 
+        public bool RewardPending;
+        public int[] RewardOffers = [];
+        private bool rewardRestored;
+
         public const int OpenAnimationTicks = 90;
         public const int OpenDurationTicks = 60 * 2;
         public const int CloseAnimationTicks = 60;
@@ -103,7 +107,13 @@ namespace OvermorrowMod.Common.RoomManager
             }
 
             if (firstInteractionInPair)
-                SpawnOrchestrator();
+                SpawnOrchestrator(OrchestratorTilesAboveFloor);
+        }
+
+        public void MarkRewardPending()
+        {
+            RewardPending = true;
+            rewardRestored = true;
         }
 
         /// <summary>
@@ -122,10 +132,13 @@ namespace OvermorrowMod.Common.RoomManager
             }
         }
 
-        private void SpawnOrchestrator()
+        // Gives the chest fall distance when it's revealed.
+        private const int OrchestratorTilesAboveFloor = 6;
+
+        private CombatOrchestrator SpawnOrchestrator(int tilesAboveFloor)
         {
             var sibling = Sibling;
-            if (sibling == null) return;
+            if (sibling == null) return null;
 
             int leftDoorX = System.Math.Min(Position.X, sibling.Position.X);
             int rightDoorX = System.Math.Max(Position.X, sibling.Position.X);
@@ -135,10 +148,8 @@ namespace OvermorrowMod.Common.RoomManager
             int midTileX = (leftDoorX + rightDoorX) / 2;
             int floorRow = Position.Y;
 
-            // 6 tiles above the floor surface so the chest has fall distance.
-            const int OrchestratorTilesAboveFloor = 6;
             int worldX = midTileX * 16 + 8;
-            int worldY = (floorRow + 1) * 16 - OrchestratorTilesAboveFloor * 16;
+            int worldY = (floorRow + 1) * 16 - tilesAboveFloor * 16;
 
             int npcType = ModContent.NPCType<CombatOrchestrator>();
             int idx = NPC.NewNPC(new EntitySource_WorldEvent(), worldX, worldY, npcType);
@@ -148,24 +159,39 @@ namespace OvermorrowMod.Common.RoomManager
             {
                 orch.LeftDoorTEID = leftDoorID;
                 orch.RightDoorTEID = rightDoorID;
+                return orch;
             }
+            return null;
+        }
+
+        private void RestoreReward()
+        {
+            if (!RewardPending || rewardRestored) return;
+
+            rewardRestored = true;
+            SpawnOrchestrator(0)?.RestoreEnded(RewardOffers);
         }
 
         public override void SaveData(TagCompound tag)
         {
             tag["Sibling"] = SiblingTEID;
-            tag["Disabled"] = IsDisabled;
+            tag["Disabled"] = IsDisabled || DisableAfterOpen;
+            tag["RewardPending"] = RewardPending;
+            tag["RewardOffers"] = RewardOffers;
         }
 
         public override void LoadData(TagCompound tag)
         {
             SiblingTEID = tag.Get<int>("Sibling");
             IsDisabled = tag.Get<bool>("Disabled");
+            RewardPending = tag.GetBool("RewardPending");
+            RewardOffers = tag.GetIntArray("RewardOffers");
         }
 
         public override void Update()
         {
             InitializeRoomLighting();
+            RestoreReward();
             HandleTimeExpiration();
             ManageDoorNPC();
             AdvanceStateMachine();

@@ -122,6 +122,18 @@ namespace OvermorrowMod.Content.Misc
 
         public override bool CheckActive() => false;
 
+        public void RestoreEnded(int[] offers)
+        {
+            phase = Phase.End;
+            endTriggered = true;
+            capturedAnchor = true;
+            isRevealed = true;
+            hasImpacted = true;
+            NPC.noGravity = false;
+            NPC.noTileCollide = false;
+            if (offers.Length > 0) offeredRewards = offers;
+        }
+
         public static bool AnyFightRunning()
         {
             foreach (NPC npc in Main.ActiveNPCs)
@@ -139,6 +151,7 @@ namespace OvermorrowMod.Content.Misc
         {
             if (isCleaningUp) return;
             LootRoller.GiveReward(Main.LocalPlayer, NPC.GetSource_Loot(), itemId);
+            if (LeftDoor is CombatDoor_TE door) door.RewardPending = false;
             isCleaningUp = true;
             cleanupTimer = 0;
         }
@@ -153,6 +166,7 @@ namespace OvermorrowMod.Content.Misc
             if (rerolled.Length == 0) return null;
 
             offeredRewards = rerolled;
+            if (LeftDoor is CombatDoor_TE door) door.RewardOffers = rerolled;
             return rerolled;
         }
 
@@ -231,7 +245,11 @@ namespace OvermorrowMod.Content.Misc
             EmitRays();
             if (isOpen && !wasOpen)
             {
-                offeredRewards ??= RollCombatReward();
+                if (offeredRewards == null)
+                {
+                    offeredRewards = RollCombatReward();
+                    LeftDoor.RewardOffers = offeredRewards;
+                }
                 if (offeredRewards.Length > 0)
                     RewardSelectionManager.ShowFor(this, offeredRewards);
             }
@@ -651,6 +669,7 @@ namespace OvermorrowMod.Content.Misc
             }
 
             LeftDoor?.BeginVanish();
+            LeftDoor?.MarkRewardPending();
             RightDoor?.BeginVanish();
 
             // Reveal the chest and allow for gravity
