@@ -38,7 +38,7 @@ namespace OvermorrowMod.Core.Runs
         {
             if (!RunState.InRun) return true;
 
-            Player.statLife = 1;
+            Player.statLife = 0;
             if (RunDead || Player.whoAmI != Main.myPlayer) return false;
 
             RunDead = true;
@@ -125,7 +125,7 @@ namespace OvermorrowMod.Core.Runs
                 Player.immuneNoBlink = true;
                 Player.immuneTime = 2;
                 Player.breath = Player.breathMax;
-                Player.statLife = 1;
+                Player.statLife = 0;
                 Main.playerInventory = false;
                 for (int i = 0; i < Player.MaxBuffs; i++)
                 {
@@ -134,7 +134,11 @@ namespace OvermorrowMod.Core.Runs
                 }
             }
 
-            if (RunOver && !SubworldSystem.AnyActive()) RunReset.Reset(Player);
+            if (RunOver && !SubworldSystem.AnyActive())
+            {
+                RunReset.Reset(Player);
+                Player.statLife = Player.statLifeMax2;
+            }
         }
 
         private void Pin()

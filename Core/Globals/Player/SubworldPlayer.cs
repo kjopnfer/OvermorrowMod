@@ -122,6 +122,7 @@ namespace OvermorrowMod.Core.Globals
                     ClearRunItems();
                     Player.GetModPlayer<CollectiblePlayer>().Reset();
                     Player.GetModPlayer<RerollPlayer>().Reset();
+                    Player.statLife = Player.statLifeMax2;
 
                     int slot = 0;
                     int ammoSlot = Main.InventoryAmmoSlotsStart;
