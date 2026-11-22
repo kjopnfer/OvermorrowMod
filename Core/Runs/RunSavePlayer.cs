@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.UI.ClassSelection;
@@ -25,6 +26,9 @@ namespace OvermorrowMod.Core.Runs
 
         private Vector2? lastSafePosition;
         private bool restorePending;
+
+        private static readonly int BackupInterval = ModUtils.SecondsToTicks(300);
+        private int backupTimer;
 
         public bool PendingReset;
         public CharacterClass? PendingNewRun;
@@ -67,6 +71,7 @@ namespace OvermorrowMod.Core.Runs
         public void PrepareCheckpoint()
         {
             if (IsSafeStanding()) lastSafePosition = Player.position;
+            backupTimer = 0;
         }
 
         public override void OnEnterWorld()
@@ -78,6 +83,7 @@ namespace OvermorrowMod.Core.Runs
                 MainWorldId = Guid.Parse(Path.GetFileName(Path.GetDirectoryName(SubworldSystem.CurrentPath)));
                 BiomeName = current is TestSubworld test ? test.TitleCardText : current.DisplayName.Value;
                 lastSafePosition = null;
+                backupTimer = 0;
                 restorePending = LastPosition.ContainsKey(ActiveSubworld);
                 return;
             }
@@ -106,8 +112,11 @@ namespace OvermorrowMod.Core.Runs
         {
             if (Player.whoAmI != Main.myPlayer) return;
 
-            if (RunState.InRun && IsSafeStanding())
-                lastSafePosition = Player.position;
+            if (RunState.InRun)
+            {
+                if (IsSafeStanding()) lastSafePosition = Player.position;
+                if (++backupTimer >= BackupInterval) RunSave.Checkpoint();
+            }
 
             if (PendingNewRun is CharacterClass characterClass && !SubworldSystem.AnyActive() && ClassSelection.BeginRun(Player, characterClass))
                 PendingNewRun = null;
