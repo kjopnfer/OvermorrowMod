@@ -123,7 +123,7 @@ namespace OvermorrowMod.Core.UI.MonkeyStones
 
         private static string FormatCount(int count) => count < 10000 ? count.ToString() : (count / 1000f).ToString("0.#") + "k";
 
-        private static int StoneType(MonkeyStoneTier tier) => tier switch
+        internal static int StoneType(MonkeyStoneTier tier) => tier switch
         {
             MonkeyStoneTier.Blue => ModContent.ItemType<MonkeyStoneBlue>(),
             MonkeyStoneTier.Green => ModContent.ItemType<MonkeyStoneGreen>(),

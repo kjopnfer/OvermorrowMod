@@ -346,7 +346,7 @@ namespace OvermorrowMod.Core.UI.RunStats
         /// <summary>
         /// Converts a rectangle in UI coordinates to screen pixels for the scissor test, clamped to the viewport.
         /// </summary>
-        private static Rectangle ToScreenRectangle(Rectangle uiRectangle, Rectangle viewport)
+        internal static Rectangle ToScreenRectangle(Rectangle uiRectangle, Rectangle viewport)
         {
             Vector2 topLeft = Vector2.Transform(new Vector2(uiRectangle.X, uiRectangle.Y), Main.UIScaleMatrix);
             Vector2 bottomRight = Vector2.Transform(new Vector2(uiRectangle.Right, uiRectangle.Bottom), Main.UIScaleMatrix);

@@ -130,7 +130,7 @@ namespace OvermorrowMod.Core.Globals
                         if (item == null || item.IsAir) continue;
 
                         Item kitItem = item.Clone();
-                        RunCountedItem.Mark(kitItem);
+                        RunCountedItem.MarkKit(kitItem);
                         if (kitItem.ammo != AmmoID.None) Player.inventory[ammoSlot++] = kitItem;
                         else Player.inventory[slot++] = kitItem;
                     }

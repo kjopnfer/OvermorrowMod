@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.UI.ClassSelection;
+using OvermorrowMod.Core.UI.DeathScreen;
 using OvermorrowMod.Core.UI.MonkeyStones;
 using OvermorrowMod.Core.UI.RunResume;
 using OvermorrowMod.Core.UI.RunStats;
@@ -38,6 +39,9 @@ namespace OvermorrowMod.Core
         public RunStatsPanel RunStatsPanel;
 
         public MonkeyStoneDisplay MonkeyStoneDisplay;
+
+        internal UserInterface DeathInterface;
+        public DeathScreen DeathScreen;
 
         public override void Load()
         {
@@ -74,6 +78,12 @@ namespace OvermorrowMod.Core
                 RunStatsPanel = new RunStatsPanel();
 
                 MonkeyStoneDisplay = new MonkeyStoneDisplay();
+
+                DeathInterface = new UserInterface();
+                DeathScreen = new DeathScreen();
+                DeathInterface.SetState(DeathScreen);
+
+                DeathScreenManager.Initialize(DeathScreen);
             }
         }
 
@@ -95,6 +105,8 @@ namespace OvermorrowMod.Core
             }
         }
 
+        public override void OnWorldUnload() => DeathScreenManager.Hide();
+
         public override void PostUpdateEverything()
         {
             PrimitiveManager.UpdateTrails();
@@ -108,6 +120,7 @@ namespace OvermorrowMod.Core
             if (RunResumePrompt != null && RunResumePrompt.visible) RunResumeInterface?.Update(gameTime);
             if (ShopDialogue.IsActive) ShopInterface?.Update(gameTime);
             else ShopDialogue?.NotifyClosed();
+            if (DeathScreen.Visible) DeathInterface?.Update(gameTime);
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -122,6 +135,7 @@ namespace OvermorrowMod.Core
                 AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
                 AddInterfaceLayer(layers, RunStatsPanel, mouseTextIndex, RunStatsPanel.PopupVisible || RunStatsPanel.TabVisible, "Stats");
                 AddInterfaceLayer(layers, MonkeyStoneDisplay, mouseTextIndex, true, "Monkey Stones");
+                AddInterfaceLayer(layers, DeathScreen, mouseTextIndex, DeathScreen.Visible, "Death Screen");
             }
         }
 

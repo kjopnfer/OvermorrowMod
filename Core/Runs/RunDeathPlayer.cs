@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Core.UI;
+using OvermorrowMod.Core.UI.DeathScreen;
 using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using Terraria;
@@ -60,6 +61,7 @@ namespace OvermorrowMod.Core.Runs
                 Dust.NewDust(Player.position, Player.width, Player.height, DustID.Blood, 2 * hitDirection, -2f);
 
             Main.NewText(DeathText, 225, 25, 25);
+            DeathScreenManager.ShowDeath(Player);
             Player.SavePlayer(Main.ActivePlayerFileData);
             return false;
         }
@@ -74,6 +76,8 @@ namespace OvermorrowMod.Core.Runs
             if (Main.inFancyUI) IngameFancyUI.Close();
             RewardSelectionManager.Hide();
         }
+
+        public override void OnEnterWorld() => RunDead = false;
 
         public override void SetControls()
         {
