@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.CustomCollision;
 using OvermorrowMod.Common.RoomManager;
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Runs;
 using ReLogic.Content;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,6 +18,11 @@ namespace OvermorrowMod.Content.Misc
     public class CombatDoorCollision : TileCollisionNPC
     {
         public override string Texture => AssetDirectory.Misc + "ArchiveCombatDoor";
+
+        private const float GlowPulseSeconds = 1.2f;
+        private const float GlowFadeSeconds = 0.4f;
+
+        private float glowFade;
 
         public int ParentDoorTEID { get => (int)NPC.ai[0]; set => NPC.ai[0] = value; }
         public float ClosedY { get => NPC.ai[1]; set => NPC.ai[1] = value; }
@@ -48,6 +55,9 @@ namespace OvermorrowMod.Content.Misc
 
         public override void AI()
         {
+            float fadeStep = 1f / (GlowFadeSeconds * 60f);
+            glowFade = MathHelper.Clamp(glowFade + ((DoorInstance?.IsLocked ?? false) ? fadeStep : -fadeStep), 0f, 1f);
+
             const float InteractRangeTiles = 7f;
             float interactRange = InteractRangeTiles * 16f;
             bool playerInRange = Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) <= interactRange;
@@ -69,10 +79,11 @@ namespace OvermorrowMod.Content.Misc
             Texture2D tex = ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value;
             spriteBatch.Draw(tex, NPC.Center - screenPos, null, drawColor, 0f, tex.Size() / 2f, 1f, SpriteEffects.None, 0);
 
-            if (DoorInstance?.IsLocked ?? false)
+            if (glowFade > 0f)
             {
                 Texture2D glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.ImmediateLoad).Value;
-                spriteBatch.Draw(glow, NPC.Center - screenPos, null, Color.White, 0f, glow.Size() / 2f, 1f, SpriteEffects.None, 0);
+                float pulse = 0.75f + 0.25f * MathF.Sin(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi / GlowPulseSeconds);
+                spriteBatch.Draw(glow, NPC.Center - screenPos, null, Color.White * pulse * EasingUtils.EaseOutQuad(glowFade), 0f, glow.Size() / 2f, 1f, SpriteEffects.None, 0);
             }
             return false;
         }
