@@ -96,6 +96,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override void OnExit()
         {
+            RunSave.WaitForPendingSave();
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
             TitleCardManager.Hide();
             base.OnExit();

@@ -19,7 +19,11 @@ namespace OvermorrowMod.Core.Runs
             TestSubworld.GhostSpawned = false;
         }
 
-        public override void OnWorldUnload() => RunWorldLoaded = false;
+        public override void OnWorldUnload()
+        {
+            RunSave.WaitForPendingSave();
+            RunWorldLoaded = false;
+        }
 
         public override void SaveWorldData(TagCompound tag)
         {

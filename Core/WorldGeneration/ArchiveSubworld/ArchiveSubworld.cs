@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.LoadingScreen;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.UI;
 using ReLogic.Content;
 using ReLogic.Graphics;
@@ -91,6 +92,7 @@ namespace OvermorrowMod.Core.WorldGeneration.ArchiveSubworld
 
         public override void OnExit()
         {
+            RunSave.WaitForPendingSave();
             LoadingScreenTooltips.Reset();
 
             base.OnExit();
