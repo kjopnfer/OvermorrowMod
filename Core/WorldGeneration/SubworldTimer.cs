@@ -19,6 +19,8 @@ namespace OvermorrowMod.Core.WorldGeneration
 
         public static bool IsExpired => Running && RemainingTicks <= 0;
 
+        private static bool endSoundPlayed;
+
         private static float displayTicks = Duration;
         private static float scrollFrom;
         private static int scrollElapsed;
@@ -34,6 +36,7 @@ namespace OvermorrowMod.Core.WorldGeneration
             displayTicks = Duration;
             scrolling = false;
             BonusCount = 0;
+            endSoundPlayed = false;
             Running = true;
         }
 
@@ -43,6 +46,7 @@ namespace OvermorrowMod.Core.WorldGeneration
             displayTicks = remainingTicks;
             scrolling = false;
             BonusCount = bonusCount;
+            endSoundPlayed = false;
             Running = running;
         }
 
@@ -69,7 +73,7 @@ namespace OvermorrowMod.Core.WorldGeneration
             if (RemainingTicks == WarnThreshold)
                 SoundEngine.PlaySound(WarnSound);
             else if (RemainingTicks == EndSoundLead)
-                SoundEngine.PlaySound(EndSound);
+                PlayEndSound();
 
             if (scrolling)
             {
@@ -84,9 +88,18 @@ namespace OvermorrowMod.Core.WorldGeneration
             }
         }
 
+        public static void PlayEndSound()
+        {
+            if (endSoundPlayed) return;
+
+            SoundEngine.PlaySound(EndSound);
+            endSoundPlayed = true;
+        }
+
         public static void Reset()
         {
             Running = false;
+            endSoundPlayed = false;
             RemainingTicks = Duration;
             displayTicks = Duration;
             scrolling = false;

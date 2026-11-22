@@ -51,6 +51,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 float spawnX = MathHelper.Clamp(player.Center.X + dir * 10 * cellPx, 80 * 16, (Width - 80) * 16);
                 NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnX, (int)player.Center.Y, ModContent.NPCType<GhostCrawler>());
                 GhostSpawned = true;
+                SubworldTimer.PlayEndSound();
             }
 
             // Snapshot because a TileEntity's Update may place new tile entities (e.g. combat lights).
