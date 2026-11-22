@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Items.Collectibles;
+using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.UI.RunStats;
 using Terraria;
 using Terraria.Audio;
@@ -36,6 +37,9 @@ namespace OvermorrowMod.Core.UI
         private bool hasLastAnchor = false;
 
         private int popoutTimer = 0;
+        private int slotTimer = 0;
+        private int rerollFadeTimer = 0;
+        private int[] pendingItemIds;
 
         private readonly bool[] launchSoundPlayed = new bool[3];
 
@@ -60,6 +64,7 @@ namespace OvermorrowMod.Core.UI
         public const int ButtonRowGap = 24;
         public const int ButtonFadeInTicks = 20;
         public const int TitleGap = 18;
+        public const int RerollFadeTicks = 15;
 
         public const int FlightTicks = 20;
         public const float FlightStartSize = 32f;
@@ -82,12 +87,18 @@ namespace OvermorrowMod.Core.UI
         private RewardSlot[] slots = new RewardSlot[3];
         private RewardActionButton confirmButton;
         private RewardActionButton denyButton;
+        private RewardActionButton rerollButton;
 
         // Tick by which the last slot has landed. Buttons start fading in here.
         private const int ButtonsAppearTick = (3 - 1) * PopoutStaggerTicks + PopoutFlightTicks; // 86
 
         // popoutTimer value once the slots have landed and the buttons have fully faded in.
         public const int OpenAnimationTicks = ButtonsAppearTick + ButtonFadeInTicks; // 106
+
+        /// <summary>
+        /// False while slots are flying out or fading for a reroll. The title and buttons stay visible through a reroll.
+        /// </summary>
+        public bool AcceptsInput => !isClosing && rerollFadeTimer == 0 && slotTimer >= ButtonsAppearTick;
 
         public override void OnInitialize()
         {
@@ -108,6 +119,11 @@ namespace OvermorrowMod.Core.UI
             denyButton.Width.Set(ButtonSize, 0);
             denyButton.Height.Set(ButtonSize, 0);
             Append(denyButton);
+
+            rerollButton = new RewardActionButton { type = RewardButtonType.Reroll };
+            rerollButton.Width.Set(ButtonSize, 0);
+            rerollButton.Height.Set(ButtonSize, 0);
+            Append(rerollButton);
         }
 
         public void Show(IRewardSource rewardSource, int[] items)
@@ -117,6 +133,9 @@ namespace OvermorrowMod.Core.UI
             selectedIndex = -1;
             drawCounter = FadeTicks;
             popoutTimer = 0;
+            slotTimer = 0;
+            rerollFadeTimer = 0;
+            pendingItemIds = null;
             isClosing = false;
 
             for (int i = 0; i < slots.Length; i++)
@@ -133,6 +152,9 @@ namespace OvermorrowMod.Core.UI
 
             if (denyButton != null)
                 denyButton.animOpacity = 0f;
+
+            if (rerollButton != null)
+                rerollButton.animOpacity = 0f;
 
             IsInteractive = false;
             visible = true;
@@ -163,10 +185,19 @@ namespace OvermorrowMod.Core.UI
             }
             if (confirmButton != null) confirmButton.animOpacity = 0f;
             if (denyButton != null) denyButton.animOpacity = 0f;
+            if (rerollButton != null) rerollButton.animOpacity = 0f;
+            rerollFadeTimer = 0;
+            pendingItemIds = null;
         }
 
         public void HandleAction(RewardButtonType kind)
         {
+            if (kind == RewardButtonType.Reroll)
+            {
+                StartReroll();
+                return;
+            }
+
             if (source != null)
             {
                 if (kind == RewardButtonType.Confirm)
@@ -185,6 +216,35 @@ namespace OvermorrowMod.Core.UI
             }
 
             Hide();
+        }
+
+        private void StartReroll()
+        {
+            var rerolls = Main.LocalPlayer.GetModPlayer<RerollPlayer>();
+            if (source == null || !rerolls.TrySpend()) return;
+
+            int[] rerolled = source.RerollOffers();
+            if (rerolled == null)
+            {
+                rerolls.Rerolls++;
+                return;
+            }
+
+            pendingItemIds = rerolled;
+            rerollFadeTimer = RerollFadeTicks;
+            SelectSlot(-1);
+        }
+
+        private void SwapInRerolledItems()
+        {
+            itemIds = pendingItemIds;
+            pendingItemIds = null;
+            slotTimer = 0;
+            for (int i = 0; i < slots.Length; i++)
+            {
+                slots[i].SetItem(i < itemIds.Length ? itemIds[i] : 0);
+                launchSoundPlayed[i] = false;
+            }
         }
 
         public void SelectSlot(int idx)
@@ -247,6 +307,15 @@ namespace OvermorrowMod.Core.UI
             else
             {
                 popoutTimer++;
+                if (rerollFadeTimer > 0)
+                {
+                    if (--rerollFadeTimer == 0)
+                        SwapInRerolledItems();
+                }
+                else
+                {
+                    slotTimer++;
+                }
             }
 
             IsInteractive = !isClosing && popoutTimer >= OpenAnimationTicks;
@@ -269,7 +338,7 @@ namespace OvermorrowMod.Core.UI
 
                 // Translate slot index to launch order
                 int popOrderIdx = System.Array.IndexOf(PopOrder, i);
-                int slotAnimTimer = popoutTimer - popOrderIdx * PopoutStaggerTicks;
+                int slotAnimTimer = slotTimer - popOrderIdx * PopoutStaggerTicks;
 
                 Vector2 slotPos;
                 float popOpacity;
@@ -296,6 +365,9 @@ namespace OvermorrowMod.Core.UI
                     popOpacity = 1f;
                 }
 
+                if (rerollFadeTimer > 0)
+                    popOpacity *= rerollFadeTimer / (float)RerollFadeTicks;
+
                 if (slotAnimTimer >= 0 && !launchSoundPlayed[i] && !isClosing && !slots[i].displayItem.IsAir)
                 {
                     SoundEngine.PlaySound(Main.rand.Next(LaunchSounds));
@@ -307,22 +379,22 @@ namespace OvermorrowMod.Core.UI
                 slots[i].animOpacity = popOpacity * fadeOutMul;
             }
 
-            // Confirm/deny row, centered under the slot row.
-            float buttonOpacity = MathHelper.Clamp((popoutTimer - ButtonsAppearTick) / (float)ButtonFadeInTicks, 0f, 1f);
+            // Confirm, reroll, deny row, centered under the slot row.
+            float buttonOpacity = MathHelper.Clamp((popoutTimer - ButtonsAppearTick) / (float)ButtonFadeInTicks, 0f, 1f) * fadeOutMul;
             float buttonRowY = rowCenterUI.Y + SlotSize / 2f + ButtonRowGap + ButtonSize / 2f;
-            float confirmCenterX = rowCenterUI.X - (ButtonSize + ButtonGap) / 2f;
-            float denyCenterX    = rowCenterUI.X + (ButtonSize + ButtonGap) / 2f;
-
-            confirmButton.Left.Set(confirmCenterX - ButtonSize / 2f, 0);
-            confirmButton.Top.Set(buttonRowY - ButtonSize / 2f, 0);
-            confirmButton.animOpacity = buttonOpacity * fadeOutMul;
-
-            denyButton.Left.Set(denyCenterX - ButtonSize / 2f, 0);
-            denyButton.Top.Set(buttonRowY - ButtonSize / 2f, 0);
-            denyButton.animOpacity = buttonOpacity * fadeOutMul;
+            PlaceButton(confirmButton, rowCenterUI.X - (ButtonSize + ButtonGap), buttonRowY, buttonOpacity);
+            PlaceButton(rerollButton, rowCenterUI.X, buttonRowY, buttonOpacity);
+            PlaceButton(denyButton, rowCenterUI.X + (ButtonSize + ButtonGap), buttonRowY, buttonOpacity);
 
             Recalculate();
             base.Update(gameTime);
+        }
+
+        private static void PlaceButton(RewardActionButton button, float centerX, float centerY, float opacity)
+        {
+            button.Left.Set(centerX - ButtonSize / 2f, 0);
+            button.Top.Set(centerY - ButtonSize / 2f, 0);
+            button.animOpacity = opacity;
         }
 
         /// <summary>
