@@ -25,7 +25,7 @@ namespace OvermorrowMod.Core.Runs
         public readonly Dictionary<string, Vector2> LastPosition = new();
 
         private Vector2? lastSafePosition;
-        private bool restorePending;
+        public bool RestorePending { get; private set; }
 
         private static readonly int BackupInterval = ModUtils.SecondsToTicks(300);
         private int backupTimer;
@@ -84,15 +84,15 @@ namespace OvermorrowMod.Core.Runs
                 BiomeName = current is TestSubworld test ? test.TitleCardText : current.DisplayName.Value;
                 lastSafePosition = null;
                 backupTimer = 0;
-                restorePending = LastPosition.ContainsKey(ActiveSubworld);
+                RestorePending = LastPosition.ContainsKey(ActiveSubworld);
             }
         }
 
         public override void PreUpdate()
         {
-            if (Player.whoAmI != Main.myPlayer || !restorePending) return;
+            if (Player.whoAmI != Main.myPlayer || !RestorePending) return;
 
-            restorePending = false;
+            RestorePending = false;
             Vector2 position = LastPosition[ActiveSubworld];
             if (Collision.SolidCollision(position, Player.width, Player.height) || !HasSolidGround(position, Player.width, Player.height)) return;
 

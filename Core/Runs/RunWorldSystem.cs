@@ -28,7 +28,6 @@ namespace OvermorrowMod.Core.Runs
             tag["TimerTicks"] = SubworldTimer.RemainingTicks;
             tag["TimerRunning"] = SubworldTimer.Running;
             tag["TimerBonusCount"] = SubworldTimer.BonusCount;
-            tag["GhostSpawned"] = TestSubworld.GhostSpawned;
         }
 
         public override void LoadWorldData(TagCompound tag)
@@ -36,7 +35,6 @@ namespace OvermorrowMod.Core.Runs
             if (!tag.ContainsKey("TimerTicks")) return;
 
             SubworldTimer.Restore(tag.GetInt("TimerTicks"), tag.GetBool("TimerRunning"), tag.GetInt("TimerBonusCount"));
-            TestSubworld.GhostSpawned = tag.GetBool("GhostSpawned");
         }
     }
 }

@@ -6,6 +6,7 @@ using OvermorrowMod.Content.Dungeons.Archive;
 using OvermorrowMod.Content.Dungeons.Archive.Cells;
 using OvermorrowMod.Content.Dungeons.Inkwell.Cells;
 using OvermorrowMod.Core.LoadingScreen;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.UI;
 using ReLogic.Content;
 using ReLogic.Graphics;
@@ -42,7 +43,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
             SubworldTimer.Tick();
 
-            if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !GhostSpawned && Main.netMode != NetmodeID.MultiplayerClient)
+            if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !GhostSpawned && !Main.LocalPlayer.GetModPlayer<RunSavePlayer>().RestorePending && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Player player = Main.player[Main.myPlayer];
                 int cellPx = 18 * 16;
