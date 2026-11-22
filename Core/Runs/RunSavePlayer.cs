@@ -85,13 +85,6 @@ namespace OvermorrowMod.Core.Runs
                 lastSafePosition = null;
                 backupTimer = 0;
                 restorePending = LastPosition.ContainsKey(ActiveSubworld);
-                return;
-            }
-
-            if (PendingReset && !SubworldSystem.AnyActive())
-            {
-                PendingReset = false;
-                RunReset.Reset(Player);
             }
         }
 
@@ -116,6 +109,12 @@ namespace OvermorrowMod.Core.Runs
             {
                 if (IsSafeStanding()) lastSafePosition = Player.position;
                 if (++backupTimer >= BackupInterval) RunSave.Checkpoint();
+            }
+
+            if (PendingReset && !SubworldSystem.AnyActive())
+            {
+                PendingReset = false;
+                RunReset.Reset(Player);
             }
 
             if (PendingNewRun is CharacterClass characterClass && !SubworldSystem.AnyActive() && ClassSelection.BeginRun(Player, characterClass))
