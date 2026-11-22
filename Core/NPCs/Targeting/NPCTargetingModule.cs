@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.Runs;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -186,7 +187,7 @@ namespace OvermorrowMod.Core.NPCs
         /// <returns></returns>
         public bool HasTarget()
         {
-            return Target != null && Target.active;
+            return Target != null && Target.active && (Target is not Player player || RunDeathPlayer.IsTargetable(player));
         }
 
         private void FindTarget(bool ignoreLineOfSight = false)
@@ -276,7 +277,7 @@ namespace OvermorrowMod.Core.NPCs
 
             foreach (var entity in entities)
             {
-                if (entity == null || !entity.active) continue;
+                if (entity == null || !entity.active || entity is Player candidate && !RunDeathPlayer.IsTargetable(candidate)) continue;
 
                 if (entity is NPC possibleNPC && (possibleNPC == npc || !possibleNPC.friendly || possibleNPC.townNPC || possibleNPC.dontTakeDamage)) continue;
 
@@ -337,7 +338,7 @@ namespace OvermorrowMod.Core.NPCs
 
             foreach (var entity in Main.player)
             {
-                if (entity == null || !entity.active || entity.dead)
+                if (entity == null || !RunDeathPlayer.IsTargetable(entity))
                     continue;
 
                 bool inTargetRange = IsEntityInAggroRange(entity);

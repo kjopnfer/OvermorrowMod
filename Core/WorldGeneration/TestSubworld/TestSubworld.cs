@@ -41,7 +41,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override void Update()
         {
-            SubworldTimer.Tick();
+            if (!RunDeathPlayer.LocalDead) SubworldTimer.Tick();
 
             if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !GhostSpawned && !Main.LocalPlayer.GetModPlayer<RunSavePlayer>().RestorePending && Main.netMode != NetmodeID.MultiplayerClient)
             {

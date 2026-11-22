@@ -15,7 +15,7 @@ namespace OvermorrowMod.Core.Runs
         /// </summary>
         public static void Checkpoint()
         {
-            if (!RunWorldSystem.RunWorldLoaded || Main.netMode != NetmodeID.SinglePlayer || CombatOrchestrator.AnyFightRunning()) return;
+            if (!RunWorldSystem.RunWorldLoaded || Main.netMode != NetmodeID.SinglePlayer || RunDeathPlayer.LocalDead || CombatOrchestrator.AnyFightRunning()) return;
 
             Main.LocalPlayer.GetModPlayer<RunSavePlayer>().PrepareCheckpoint();
             pendingSave = pendingSave.ContinueWith(_ =>

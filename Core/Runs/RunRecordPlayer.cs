@@ -43,7 +43,7 @@ namespace OvermorrowMod.Core.Runs
         {
             if (Player.whoAmI != Main.myPlayer || !RunState.InRun) return;
 
-            RunTicks++;
+            if (!Player.GetModPlayer<RunDeathPlayer>().RunDead) RunTicks++;
 
             foreach (Item[] slots in new[] { Player.inventory, Player.armor, Player.miscEquips })
             {

@@ -40,6 +40,7 @@ namespace OvermorrowMod.Core.Runs
             player.GetModPlayer<RunSavePlayer>().ClearRun();
             player.GetModPlayer<MonkeyStonePlayer>().ClearRun();
             player.GetModPlayer<RunRecordPlayer>().Clear();
+            player.GetModPlayer<RunDeathPlayer>().Clear();
         }
     }
 }

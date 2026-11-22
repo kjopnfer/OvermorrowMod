@@ -439,7 +439,7 @@ namespace OvermorrowMod.Content.Misc
 
             const float InteractRangeTiles = 7f;
             float interactRange = InteractRangeTiles * 16f;
-            bool playerInRange = Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) <= interactRange;
+            bool playerInRange = Main.LocalPlayer.active && !RunDeathPlayer.LocalDead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) <= interactRange;
 
             if (!playerInRange)
             {
@@ -596,7 +596,7 @@ namespace OvermorrowMod.Content.Misc
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 Player player = Main.player[i];
-                if (!player.active || player.dead) continue;
+                if (!RunDeathPlayer.IsTargetable(player)) continue;
 
                 float distance = Vector2.DistanceSquared(player.Center, NPC.Center);
                 if (distance < nearestDistance)

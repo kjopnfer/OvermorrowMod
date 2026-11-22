@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.CustomCollision;
 using OvermorrowMod.Common.RoomManager;
+using OvermorrowMod.Core.Runs;
 using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
@@ -51,7 +52,7 @@ namespace OvermorrowMod.Content.Misc
             float interactRange = InteractRangeTiles * 16f;
             bool playerInRange = Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) <= interactRange;
 
-            if (playerInRange && NPC.Hitbox.Contains((int)Main.MouseWorld.X, (int)Main.MouseWorld.Y))
+            if (playerInRange && !RunDeathPlayer.LocalDead && NPC.Hitbox.Contains((int)Main.MouseWorld.X, (int)Main.MouseWorld.Y))
             {
                 Main.LocalPlayer.cursorItemIconEnabled = true;
                 Main.LocalPlayer.cursorItemIconID = ItemID.WoodenDoor;
