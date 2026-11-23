@@ -1023,9 +1023,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>
-        /// Places a second CombatRoom off the spine and routes two legs back
-        /// to spine nodes on either side of the spine's combat. Rolls back
-        /// fully and returns null on failure.
+        /// Places a second CombatRoom a few rows off the spine and routes two short legs back to the nearest spine
+        /// nodes on either side of the spine's combat. Rolls back fully and returns null on failure.
         /// </summary>
         private BranchPlacement? TryPlaceBranchThroughSecondCombat(DungeonGrid grid, List<PathStep> spineSteps, List<Point> requiredAnchors, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
@@ -1058,8 +1057,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             var branchCombatProto = _content.CreateCombat(true);
             int bw = branchCombatProto.CellWidth;
             int bh = branchCombatProto.CellHeight;
-            const int BranchDepthMin = 4;
-            const int BranchDepthMax = 6;
+            const int BranchDepthMin = 3;
+            const int BranchDepthMax = 4;
+            const int MaxColumnJitter = 4;
+            const int MaxLegRooms = 7;
+            const int LegMaxExpansions = 800;
             const int MaxPositionAttempts = 20;
             int beforeCap = System.Math.Min(8, beforeNodes.Count);
             int afterCap = System.Math.Min(8, afterNodes.Count);
@@ -1074,7 +1076,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (row < EdgeBorder) continue;
                 if (row + bh - 1 >= gridRows - EdgeBorder) continue;
 
-                int colJitter = rand.Next(-6, 7);
+                int colJitter = rand.Next(-MaxColumnJitter, MaxColumnJitter + 1);
                 int col = spineCombatAnchor.X + colJitter;
                 if (col < EdgeBorder + 1) continue;
                 if (col + bw > gridCols - EdgeBorder - 1) continue;
@@ -1086,15 +1088,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 var branchCombat = _content.CreateCombat(true);
                 grid.Place(branchCombat, posCandidate.X, posCandidate.Y, grid.NextGroupId());
 
-                ShuffleInPlace(beforeNodes, rand);
-                ShuffleInPlace(afterNodes, rand);
+                int Distance(PathStep s) => System.Math.Abs(s.Anchor.X - posCandidate.X) + System.Math.Abs(s.Anchor.Y - posCandidate.Y);
+                beforeNodes.Sort((a, b) => Distance(a).CompareTo(Distance(b)));
+                afterNodes.Sort((a, b) => Distance(a).CompareTo(Distance(b)));
 
                 BranchPlacement? success = null;
                 for (int aIdx = 0; aIdx < beforeCap && !success.HasValue; aIdx++)
                 {
                     var nodeA = beforeNodes[aIdx];
-                    var leg1 = _search.FindPath(nodeA.Anchor, posCandidate, nodeA.Cell, costFn);
-                    if (leg1 == null) continue;
+                    var leg1 = _search.FindPath(nodeA.Anchor, posCandidate, nodeA.Cell, costFn, LegMaxExpansions);
+                    if (leg1 == null || leg1.Count > MaxLegRooms) continue;
 
                     foreach (var step in leg1)
                         grid.Place(step.Cell, step.Anchor.X, step.Anchor.Y, grid.NextGroupId());
@@ -1103,8 +1106,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     for (int bIdx = 0; bIdx < afterCap; bIdx++)
                     {
                         var nodeB = afterNodes[bIdx];
-                        leg2 = _search.FindPath(posCandidate, nodeB.Anchor, branchCombat, costFn);
-                        if (leg2 != null) break;
+                        leg2 = _search.FindPath(posCandidate, nodeB.Anchor, branchCombat, costFn, LegMaxExpansions);
+                        if (leg2 != null && leg2.Count <= MaxLegRooms) break;
+                        leg2 = null;
                     }
 
                     if (leg2 != null)
