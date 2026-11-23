@@ -30,6 +30,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
             var pass = TestSubworld.CreateGenPass();
             var plans = new List<DungeonPlan>();
+            var layouts = new List<DungeonPlan[]>();
             var layoutLines = new StringBuilder();
             long totalMs = 0;
             long worstMs = 0;
@@ -53,6 +54,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 for (int d = 0; d < layoutPlans.Length; d++)
                     layoutLines.AppendLine($"  dungeon {d}: {layoutPlans[d].Stats.ElapsedMs} ms, fingerprint {fingerprints[d]}");
                 plans.AddRange(layoutPlans);
+                layouts.Add(layoutPlans);
             }
 
             var sb = new StringBuilder();
@@ -68,6 +70,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             AppendSearches(sb, plans);
             sb.AppendLine();
             AppendOutcomes(sb, plans);
+            sb.AppendLine();
+            AppendMonotoneRoutes(sb, layouts);
             sb.AppendLine();
             AppendRoomCounts(sb, plans);
             sb.AppendLine();
@@ -132,6 +136,27 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine($"treasure doors: {treasureDoors} ({(double)treasureDoors / n:0.00} per dungeon), none in {plans.Count(p => p.Stats.TreasureDoors == 0)} of {n} dungeons");
             var unreachable = plans.Select(UnreachableRooms).ToList();
             sb.AppendLine($"rooms unreachable from the spawn: {unreachable.Sum()} in {unreachable.Count(u => u > 0)} of {n} dungeons");
+        }
+
+        /// <summary>
+        /// Rooms without a route to each door that never steps against the door's direction, per dungeon index and door direction.
+        /// </summary>
+        private static void AppendMonotoneRoutes(StringBuilder sb, List<DungeonPlan[]> layouts)
+        {
+            var totals = new SortedDictionary<string, (int Missing, int Rooms, int Doors)>();
+            foreach (var layout in layouts)
+                for (int d = 0; d < layout.Length; d++)
+                    foreach (var (door, missing, rooms) in layout[d].Stats.MonotoneRoutes)
+                    {
+                        string key = $"dungeon {d} {door} door";
+                        var t = totals.GetValueOrDefault(key);
+                        totals[key] = (t.Missing + missing, t.Rooms + rooms, t.Doors + 1);
+                    }
+            int allMissing = totals.Values.Sum(t => t.Missing);
+            int allRooms = totals.Values.Sum(t => t.Rooms);
+            sb.AppendLine($"rooms without a monotone route to a door: {Share(allMissing, allRooms)}");
+            foreach (var kv in totals)
+                sb.AppendLine($"  {kv.Key,-26} {Share(kv.Value.Missing, kv.Value.Rooms)} over {kv.Value.Doors} doors");
         }
 
         private static readonly Direction[] Sides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };

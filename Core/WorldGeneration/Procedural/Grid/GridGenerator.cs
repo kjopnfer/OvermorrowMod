@@ -555,6 +555,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 LogWarn($"OvermorrowDungeon: exit door at row {exitAnchor.Value.Y} is in the back half (middle row {middleRow}).");
             }
 
+            var meaningfulDoors = doorAnchors.Select(kv => (kv.Key, kv.Value)).ToList();
+            if (exitAnchor.HasValue) meaningfulDoors.Add((exitFork.Value.Dir, exitAnchor.Value));
+            foreach (var (dir, anchor) in meaningfulDoors)
+            {
+                var (missing, rooms) = CountRoomsWithoutMonotoneRoute(grid, anchor, dir);
+                _stats.MonotoneRoutes.Add((dir, missing, rooms));
+                if (missing > 0) Log($"OvermorrowDungeon: {missing} of {rooms} rooms have no route to the {dir} door that never steps against {dir}.");
+            }
+
             return new DungeonPlan
             {
                 Grid = grid,
@@ -833,6 +842,55 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return false;
         }
 
+        /// <summary>
+        /// Counts the rooms with no walkable route to the door at <paramref name="door"/> whose steps between rooms never
+        /// move against <paramref name="dir"/>. Steps inside one room are free.
+        /// </summary>
+        /// <returns>
+        /// The rooms without such a route, and the number of rooms in the dungeon.
+        /// </returns>
+        private static (int Missing, int Rooms) CountRoomsWithoutMonotoneRoute(DungeonGrid grid, Point door, LayoutDirection dir)
+        {
+            Point forward = dir.Delta();
+            var visited = new HashSet<Point> { door };
+            var reachedGroups = new HashSet<int>();
+            var queue = new Queue<Point>();
+            queue.Enqueue(door);
+            while (queue.Count > 0)
+            {
+                var p = queue.Dequeue();
+                var slot = grid.GetSlot(p.X, p.Y);
+                if (slot == null || slot.IsEmpty) continue;
+                reachedGroups.Add(slot.GroupId);
+                foreach (var side in CardinalSides)
+                {
+                    Point step = side.Step();
+                    var q = new Point(p.X + step.X, p.Y + step.Y);
+                    if (visited.Contains(q)) continue;
+                    var qSlot = grid.GetSlot(q.X, q.Y);
+                    if (qSlot == null || qSlot.IsEmpty) continue;
+                    if (qSlot.GroupId != slot.GroupId)
+                    {
+                        if (!GridRoom.Connects(slot, side, qSlot)) continue;
+                        // The player walks from q to p, a step of -step.
+                        if (-step.X * forward.X < 0 || -step.Y * forward.Y < 0) continue;
+                    }
+                    visited.Add(q);
+                    queue.Enqueue(q);
+                }
+            }
+
+            var allGroups = new HashSet<int>();
+            for (int c = 0; c < grid.Cols; c++)
+                for (int r = 0; r < grid.Rows; r++)
+                {
+                    var s = grid.GetSlot(c, r);
+                    if (!s.IsEmpty) allGroups.Add(s.GroupId);
+                }
+            return (allGroups.Count - reachedGroups.Count, allGroups.Count);
+        }
+
+        private static readonly Direction[] CardinalSides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };
 
         /// <summary>True if the cell graph reachable from <paramref name="seed"/> has no cycles.</summary>
         private static bool IsTreeShaped(DungeonGrid grid, Point seed)

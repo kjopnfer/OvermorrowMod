@@ -95,6 +95,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// The biome exit fork's door sits short of the dungeon's middle row in the biome's onward direction.
         /// </summary>
         public bool ExitInBackHalf;
+
+        /// <summary>
+        /// Per door: the rooms with no route to it that never steps against the door's direction, out of all rooms.
+        /// </summary>
+        public readonly List<(LayoutDirection Door, int Missing, int Rooms)> MonotoneRoutes = new();
         public int TreasureDoors;
         public long ElapsedMs;
     }
