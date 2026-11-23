@@ -476,12 +476,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 paths.Add(new DungeonPath(id: 2, role: PathRole.ClosedLoopBranch, parent: spinePath, steps: bp.Steps, combatAnchor: bp.CombatAnchor));
             }
 
-            // Phase 2: aux branches
-            _search.Phase = SearchPhase.Aux;
-            TryAddJunctionBranches(grid, paths, start, endTarget, spineCostFn, gridCols, gridRows, rand);
-            _stats.AuxAttempts = MaxAuxBranchAttempts;
-            _stats.AuxPlaced = TryAddAuxBranches(grid, paths, spineCostFn, gridCols, gridRows, rand);
-
+            // Phase 2: fork doors, placed before the aux branches so the headroom beside the spine is still open.
             // Doors keyed by direction (anchors only). Endpoint doors are the spine
             // start/end; every other direction is a fork branch toward it.
             var doorAnchors = new Dictionary<LayoutDirection, Point>();
@@ -514,6 +509,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 LogWarn($"OvermorrowDungeon: could not place the {exitFork.Value.Dir} exit fork; planning again with the exit on the spine.");
                 return null;
             }
+
+            // Phase 3: aux branches
+            _search.Phase = SearchPhase.Aux;
+            TryAddJunctionBranches(grid, paths, start, endTarget, spineCostFn, gridCols, gridRows, rand);
+            _stats.AuxAttempts = MaxAuxBranchAttempts;
+            _stats.AuxPlaced = TryAddAuxBranches(grid, paths, spineCostFn, gridCols, gridRows, rand);
 
             PlaceInlineTreasureDoors(grid, spawnAnchor, rand);
             _stats.TreasureDoors = grid.CountPlacements(RoomType.TreasureDoor);
