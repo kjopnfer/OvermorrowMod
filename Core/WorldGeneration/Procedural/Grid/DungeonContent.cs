@@ -119,6 +119,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public virtual int VoidStripWidth => 2;
 
         /// <summary>
+        /// The direction the biome leads onward, toward its exit dungeon and the next biome. Only North and South are supported.
+        /// </summary>
+        public virtual LayoutDirection OnwardDirection => LayoutDirection.South;
+
+        /// <summary>
         /// Dungeon-specific layout adjustment run after planning but before any cell is rendered.
         /// The dungeon may swap room instances in the grid (footprint and connectivity must match).
         /// </summary>
