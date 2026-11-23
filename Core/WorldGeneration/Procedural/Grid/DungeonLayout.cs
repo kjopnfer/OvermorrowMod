@@ -176,6 +176,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             if (_nodes.Count == 0) return;
             if (_rootId < 0) _rootId = 0;
             WarnOnSpineEndConflicts();
+            WarnOnBackwardEdges();
 
             // 1. Plan each tile placement without placing tiles.
             var plans = Plan(rand, new PlanOptions { Diagnostics = true });
@@ -499,6 +500,54 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var (node, factory) in _extraRooms)
                 if (node == nodeId) rooms.Add(factory);
             return rooms;
+        }
+
+        /// <summary>
+        /// Warns about edges that break "the onward direction always leads onward": an edge leading away from the root against
+        /// the onward direction, or one leading onward out of the exit dungeon. Edges between dungeons equally far from the root are skipped.
+        /// </summary>
+        private void WarnOnBackwardEdges()
+        {
+            int onwardY = _nodes[_rootId].Content.OnwardDirection.Delta().Y;
+            int[] depth = DepthsFromRoot();
+            foreach (var edge in _edges)
+            {
+                int dirY = edge.Dir.Delta().Y;
+                int fromDepth = depth[edge.From], toDepth = depth[edge.To];
+                if (fromDepth != toDepth && fromDepth != int.MaxValue && toDepth != int.MaxValue)
+                {
+                    int awayY = fromDepth < toDepth ? dirY : -dirY;
+                    if (awayY == -onwardY)
+                        Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: connection {edge.From} -{edge.Dir}-> {edge.To} leads away from the root against the onward direction.");
+                }
+
+                if (_exit.HasValue && ((edge.From == _exit.Value.Node && dirY == onwardY) || (edge.To == _exit.Value.Node && -dirY == onwardY)))
+                    Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: connection {edge.From} -{edge.Dir}-> {edge.To} leads onward out of the exit dungeon.");
+            }
+        }
+
+        /// <summary>
+        /// Edge count from the root to each dungeon, ignoring edge direction; int.MaxValue for a dungeon not connected to the root.
+        /// </summary>
+        private int[] DepthsFromRoot()
+        {
+            var depth = new int[_nodes.Count];
+            Array.Fill(depth, int.MaxValue);
+            depth[_rootId] = 0;
+            var queue = new Queue<int>();
+            queue.Enqueue(_rootId);
+            while (queue.Count > 0)
+            {
+                int cur = queue.Dequeue();
+                foreach (var edge in _edges)
+                {
+                    int other = edge.From == cur ? edge.To : edge.To == cur ? edge.From : -1;
+                    if (other < 0 || depth[other] != int.MaxValue) continue;
+                    depth[other] = depth[cur] + 1;
+                    queue.Enqueue(other);
+                }
+            }
+            return depth;
         }
 
         private (LayoutDirection Dir, Func<GridRoom> Factory)? ExitFor(int nodeId)
