@@ -6,6 +6,32 @@ using System.Diagnostics;
 namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 {
     /// <summary>
+    /// Directions of movement between rooms, combinable.
+    /// </summary>
+    [Flags]
+    public enum MoveMask
+    {
+        None = 0,
+        Left = 1,
+        Right = 2,
+        Up = 4,
+        Down = 8,
+    }
+
+    public static class MoveMasks
+    {
+        /// <summary>
+        /// The moves along each nonzero component of <paramref name="direction"/>.
+        /// </summary>
+        public static MoveMask Toward(Point direction) => (direction.X < 0 ? MoveMask.Left : direction.X > 0 ? MoveMask.Right : MoveMask.None) | (direction.Y < 0 ? MoveMask.Up : direction.Y > 0 ? MoveMask.Down : MoveMask.None);
+
+        /// <summary>
+        /// True if <paramref name="delta"/> has a component in a direction of <paramref name="mask"/>.
+        /// </summary>
+        public static bool Includes(this MoveMask mask, Point delta) => (mask & Toward(delta)) != 0;
+    }
+
+    /// <summary>
     /// A* over grid cells with project-specific extensions:
     /// multi-cell footprints (stairs span multiple squares and must not collide
     /// with the grid, blocked zones, or earlier placements in the same path)
@@ -91,8 +117,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         /// <param name="startAnchor">Top-left cell of the room the path leaves from.</param>
         /// <param name="goalCell">Any cell of the room the path arrives at.</param>
         /// <param name="startCell">The room at <paramref name="startAnchor"/>.</param>
+        /// <param name="forbidden">Moves between rooms the path may not make.</param>
         /// <returns>The placed steps in order, or null if the goal is unreachable or the expansion budget runs out.</returns>
-        public List<PathStep> FindPath(Point startAnchor, Point goalCell, GridRoom startCell, EdgeCost edgeCost, int maxExpansions = DefaultMaxExpansions)
+        public List<PathStep> FindPath(Point startAnchor, Point goalCell, GridRoom startCell, EdgeCost edgeCost, int maxExpansions = DefaultMaxExpansions, MoveMask forbidden = MoveMask.None)
         {
             long began = Stopwatch.GetTimestamp();
             var phase = _stats.Searches[(int)Phase];
@@ -115,13 +142,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 path = null;
                 if (_validateReachability)
                 {
-                    path = Search(edgeCost, maxExpansions, out _, out _);
+                    path = Search(edgeCost, maxExpansions, forbidden, out _, out _);
                     if (path != null) phase.RejectedSolvable++;
                 }
             }
             else
             {
-                path = Search(edgeCost, maxExpansions, out int expansions, out bool budgetSpent);
+                path = Search(edgeCost, maxExpansions, forbidden, out int expansions, out bool budgetSpent);
                 phase.Expansions += expansions;
                 if (path != null)
                 {
@@ -138,7 +165,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return path;
         }
 
-        private List<PathStep> Search(EdgeCost edgeCost, int maxExpansions, out int expansions, out bool budgetSpent)
+        private List<PathStep> Search(EdgeCost edgeCost, int maxExpansions, MoveMask forbidden, out int expansions, out bool budgetSpent)
         {
             _nodeIds.Clear();
             _nodes.Clear();
@@ -154,6 +181,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
 
             expansions = 0;
             budgetSpent = false;
+            bool filterMoves = forbidden != MoveMask.None;
             int budget = 0;
             while (_toExplore.Count > 0 && budget++ < maxExpansions)
             {
@@ -165,6 +193,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 // A path cannot end on a type that has not satisfied its minimum chain length.
                 foreach (var exit in prevCell.Exits)
                 {
+                    if (filterMoves && forbidden.Includes(exit.CursorDelta)) continue;
                     if (!GoalAcceptsArrival(current.Position, exit, current.PrevType)) continue;
                     if (_minStreakLimits.TryGetValue(current.PrevType, out int minA) && current.Streak < minA) continue;
                     return ReconstructPath(currentId);
@@ -177,6 +206,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 // Every check below is a pure filter, ordered cheapest first.
                 foreach (var exit in prevCell.Exits)
                 {
+                    if (filterMoves && forbidden.Includes(exit.CursorDelta)) continue;
+
                     // Vertical run: counts consecutive vertical moves; horizontal resets to 0.
                     int newVerticalRun = (exit.CursorDelta.Y != 0 && exit.CursorDelta.X == 0) ? current.VerticalRun + 1 : 0;
                     if (newVerticalRun > _maxVerticalRun) continue;

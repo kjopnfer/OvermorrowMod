@@ -163,6 +163,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             bool doorAtStart = startDoorFactory != null;
             bool doorAtEnd = endDoorFactory != null;
             var doorDeltas = doorDirections.Concat(exits.Select(e => e.Dir)).Select(dir => dir.Delta()).ToList();
+            int forkDriftX = doorDeltas.Any(d => d.Y == 0 && d.X > 0) ? -1 : 1;
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -507,7 +508,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var dir in forkDirs)
             {
                 _stats.Forks++;
-                Point? forkAnchor = TryAddForkDoor(grid, paths, dir, start, () => _content.CreateDoor(true), forkCostFn, gridCols, gridRows, rand);
+                Point? forkAnchor = TryAddForkDoor(grid, paths, dir, start, () => _content.CreateDoor(true), forkDriftX, forkCostFn, gridCols, gridRows, rand);
                 if (forkAnchor.HasValue)
                 {
                     doorAnchors[dir] = forkAnchor.Value;
@@ -521,7 +522,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             foreach (var exit in forkExits)
             {
-                Point? exitAnchor = TryAddForkDoor(grid, paths, exit.Dir, start, exit.Factory, forkCostFn, gridCols, gridRows, rand, attachInForkHalf: true);
+                Point? exitAnchor = TryAddForkDoor(grid, paths, exit.Dir, start, exit.Factory, forkDriftX, forkCostFn, gridCols, gridRows, rand, attachInForkHalf: true);
                 if (!exitAnchor.HasValue)
                 {
                     LogWarn($"OvermorrowDungeon: could not place the {exit.Dir} exit fork; planning again with the exit on the spine.");
@@ -1499,10 +1500,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// one does a short fallback door place, so the connection is never lost. Attaches away from
         /// the spine start so the door tends toward the middle/end. Returns the door anchor, or null.
         /// </summary>
+        /// <param name="driftX">
+        /// The column direction a straight North or South fork drifts in.
+        /// </param>
         /// <param name="attachInForkHalf">
         /// Only attach to cells in the half of the spine's row range on the fork's vertical side.
         /// </param>
-        private Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, bool attachInForkHalf = false)
+        private Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, Func<GridRoom> doorFactory, int driftX, EdgeCost costFn, int gridCols, int gridRows, Random rand, bool attachInForkHalf = false)
         {
             int parentLimit = System.Math.Min(2, paths.Count);
             if (parentLimit == 0) return null;
@@ -1510,7 +1514,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Point delta = dir.Delta();
             int dy = System.Math.Sign(delta.Y);
             if (dy == 0) return null;  // forks always carry a vertical component
-            int dx = delta.X == 0 ? 1 : System.Math.Sign(delta.X);
+            int dx = delta.X == 0 ? driftX : System.Math.Sign(delta.X);
+            MoveMask backward = MoveMasks.Toward(new Point(0, -dy));
 
             // Intercardinal forks (a horizontal component in the direction) read as side branches and
             // lean horizontal; only a true North/South fork leans into the vertical headroom.
@@ -1555,7 +1560,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 for (int attempt = 0; attempt < ForkSpineAttempts; attempt++)
                 {
-                    Point? doorAnchor = TryHeadroomSpine(grid, b0, landing, dx, dy, favorHorizontal, doorFactory, costFn, gridCols, gridRows, rand, prefix, paths);
+                    Point? doorAnchor = TryHeadroomSpine(grid, b0, landing, dx, dy, favorHorizontal, backward, doorFactory, costFn, gridCols, gridRows, rand, prefix, paths);
                     if (doorAnchor.HasValue) return doorAnchor;
                 }
 
@@ -1616,9 +1621,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// door past the last room. An intercardinal fork leans horizontal, a vertical fork leans into
         /// the headroom (<see cref="ForkReach"/>). Rejects (and rolls back) a chain that does not reach
         /// <see cref="MinForkSpan"/> so the result is never a stubby exit. Returns the door anchor, or
-        /// null if nothing routed.
+        /// null if nothing routed. No leg moves in a <paramref name="forbidden"/> direction.
         /// </summary>
-        private Point? TryHeadroomSpine(DungeonGrid grid, Point b0, GridRoom startCell, int dx, int dy, bool favorHorizontal, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<PathStep> prefix, List<DungeonPath> paths)
+        private Point? TryHeadroomSpine(DungeonGrid grid, Point b0, GridRoom startCell, int dx, int dy, bool favorHorizontal, MoveMask forbidden, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<PathStep> prefix, List<DungeonPath> paths)
         {
             var factories = new List<Func<GridRoom>>(_requiredRooms);
             ShuffleInPlace(factories, rand);
@@ -1631,14 +1636,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             for (int f = 0; f < featureCount; f++)
             {
-                if (!TryLinkForkNode(grid, factories[f], dx, dy, favorHorizontal, costFn, gridCols, gridRows, rand, placed, steps, ref prevAnchor, ref prevCell))
+                if (!TryLinkForkNode(grid, factories[f], dx, dy, favorHorizontal, forbidden, costFn, gridCols, gridRows, rand, placed, steps, ref prevAnchor, ref prevCell))
                 {
                     RollbackChain(grid, placed);
                     return null;
                 }
             }
 
-            Point? doorAnchor = TryLinkForkDoor(grid, prevAnchor, prevCell, dx, dy, favorHorizontal, doorFactory, costFn, gridCols, gridRows, rand, placed, steps);
+            Point? doorAnchor = TryLinkForkDoor(grid, prevAnchor, prevCell, dx, dy, favorHorizontal, forbidden, doorFactory, costFn, gridCols, gridRows, rand, placed, steps);
             if (!doorAnchor.HasValue)
             {
                 RollbackChain(grid, placed);
@@ -1663,7 +1668,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// room and corridor are committed, appended to <paramref name="placed"/>/<paramref name="steps"/>,
         /// and the chain end advances. Returns false (grid left clean for this node) if nothing fit.
         /// </summary>
-        private bool TryLinkForkNode(DungeonGrid grid, Func<GridRoom> factory, int dx, int dy, bool favorHorizontal, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps, ref Point prevAnchor, ref GridRoom prevCell)
+        private bool TryLinkForkNode(DungeonGrid grid, Func<GridRoom> factory, int dx, int dy, bool favorHorizontal, MoveMask forbidden, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps, ref Point prevAnchor, ref GridRoom prevCell)
         {
             var proto = factory();
             proto.IsFeature = true;
@@ -1687,7 +1692,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 node.IsFeature = true;
                 grid.Place(node, pos.X, pos.Y, grid.NextGroupId());
 
-                var leg = _search.FindPath(prevAnchor, pos, prevCell, costFn, maxExpansions: ForkLegMaxExpansions);
+                var leg = _search.FindPath(prevAnchor, pos, prevCell, costFn, ForkLegMaxExpansions, forbidden);
                 if (leg == null)
                 {
                     grid.Clear(node, pos.X, pos.Y);
@@ -1713,7 +1718,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// final corridor to it. Committed cells are appended to <paramref name="placed"/>/<paramref name="steps"/>.
         /// Returns the door anchor, or null (grid left clean for this attempt) if nothing fit.
         /// </summary>
-        private Point? TryLinkForkDoor(DungeonGrid grid, Point prevAnchor, GridRoom prevCell, int dx, int dy, bool favorHorizontal, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps)
+        private Point? TryLinkForkDoor(DungeonGrid grid, Point prevAnchor, GridRoom prevCell, int dx, int dy, bool favorHorizontal, MoveMask forbidden, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, List<(GridRoom cell, Point anchor)> placed, List<PathStep> steps)
         {
             var (colMin, colSpan, _, _) = ForkReach(favorHorizontal);
 
@@ -1735,7 +1740,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 var door = doorFactory();
                 grid.Place(door, pos.X, pos.Y, grid.NextGroupId());
 
-                var leg = _search.FindPath(prevAnchor, pos, prevCell, costFn, maxExpansions: ForkLegMaxExpansions);
+                var leg = _search.FindPath(prevAnchor, pos, prevCell, costFn, ForkLegMaxExpansions, forbidden);
                 if (leg == null)
                 {
                     grid.Clear(door, pos.X, pos.Y);
