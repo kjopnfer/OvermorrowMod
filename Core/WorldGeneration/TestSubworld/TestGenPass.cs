@@ -10,37 +10,34 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 {
     public class TestGenPass : GenPass
     {
-        private readonly Func<GridRoom> _sidePortal;
-        private readonly Func<GridRoom> _exitPortal;
+        private readonly Func<GridRoom> _sideExit;
+        private readonly Func<GridRoom> _downExit;
         private readonly Func<DungeonContent> _contentFactory;
 
-        public TestGenPass(string name, double loadWeight, Func<GridRoom> sidePortal, Func<GridRoom> exitPortal, Func<DungeonContent> contentFactory) : base(name, loadWeight)
+        public TestGenPass(string name, double loadWeight, Func<GridRoom> sideExit, Func<GridRoom> downExit, Func<DungeonContent> contentFactory) : base(name, loadWeight)
         {
-            _sidePortal = sidePortal;
-            _exitPortal = exitPortal;
+            _sideExit = sideExit;
+            _downExit = downExit;
             _contentFactory = contentFactory;
         }
 
         /// <summary>
-        /// Declares this subworld's dungeons: the root, the exit dungeon one step in the biome's onward direction,
-        /// and a side dungeon east or west of the root with a diagonal door onward into the exit dungeon.
+        /// Declares this subworld's dungeons: the root, a dungeon below it with an exit at its bottom, and a dungeon east or
+        /// west of the root with an exit at its far end.
         /// </summary>
         public DungeonLayout CreateLayout(Random rand)
         {
             var layout = new DungeonLayout();
-            var rootContent = _contentFactory();
-            LayoutDirection onward = rootContent.OnwardDirection;
             LayoutDirection side = rand.Next(2) == 0 ? LayoutDirection.East : LayoutDirection.West;
 
-            int root = layout.Add(rootContent);
-            int exit = layout.Add(_contentFactory());
-            int sideDungeon = layout.Add(_contentFactory());
-            layout.Connect(root, onward, exit);
-            layout.Connect(root, side, sideDungeon);
-            layout.Connect(sideDungeon, LayoutDirections.FromDelta(side.Opposite().Delta() + onward.Delta()), exit, toAtSpineEnd: true);
+            int root = layout.Add(_contentFactory());
+            int below = layout.Add(_contentFactory());
+            int beside = layout.Add(_contentFactory());
+            layout.Connect(root, LayoutDirection.South, below);
+            layout.Connect(root, side, beside);
 
-            if (_exitPortal != null) layout.SetExit(exit, _exitPortal);
-            if (_sidePortal != null) layout.AddRoom(sideDungeon, _sidePortal);
+            if (_downExit != null) layout.AddExit(below, LayoutDirection.South, _downExit);
+            if (_sideExit != null) layout.AddExit(beside, side, _sideExit);
             layout.AddRoom(root, () => new StartingRoom());
             layout.AddRoom(root, () => new ShopRoom());
             layout.SetRoot(root);

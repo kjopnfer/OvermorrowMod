@@ -131,7 +131,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine($"combat branch in final layout: {Share(plans.Count(p => p.Stats.BranchPlaced), n)}");
             sb.AppendLine($"aux branches placed: {Share(plans.Sum(p => p.Stats.AuxPlaced), plans.Sum(p => p.Stats.AuxAttempts))}");
             sb.AppendLine($"forks: {plans.Sum(p => p.Stats.Forks)}, short stubs: {plans.Sum(p => p.Stats.ForkStubs)}, unplaced: {plans.Sum(p => p.Stats.ForkFailures)}, exit fork fallbacks: {plans.Sum(p => p.Stats.ExitForkFallbacks)}");
-            sb.AppendLine($"spawn in the onward half: {plans.Count(p => p.Stats.SpawnInOnwardHalf)}, exit in the back half: {plans.Count(p => p.Stats.ExitInBackHalf)}");
+            sb.AppendLine($"spawn past the middle toward a door: {plans.Count(p => p.Stats.SpawnTowardDoor)}, fork exit in the back half: {plans.Count(p => p.Stats.ExitInBackHalf)}");
             int treasureDoors = plans.Sum(p => p.Stats.TreasureDoors);
             sb.AppendLine($"treasure doors: {treasureDoors} ({(double)treasureDoors / n:0.00} per dungeon), none in {plans.Count(p => p.Stats.TreasureDoors == 0)} of {n} dungeons");
             var unreachable = plans.Select(UnreachableRooms).ToList();

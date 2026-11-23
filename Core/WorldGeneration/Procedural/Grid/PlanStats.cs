@@ -82,17 +82,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public int ForkFailures;
 
         /// <summary>
-        /// Times the biome exit fork didn't fit and the dungeon was planned again with the exit on the spine.
+        /// Times a fork exit didn't fit and the dungeon was planned again with its fork exits on the spine.
         /// </summary>
         public int ExitForkFallbacks;
 
         /// <summary>
-        /// The spawn room sits past the dungeon's middle row in the biome's onward direction.
+        /// The spawn room sits past the middle of the dungeon's occupied cells toward one of its doors.
         /// </summary>
-        public bool SpawnInOnwardHalf;
+        public bool SpawnTowardDoor;
 
         /// <summary>
-        /// The biome exit fork's door sits short of the dungeon's middle row in the biome's onward direction.
+        /// A fork exit's door sits short of the dungeon's middle row in the exit's direction.
         /// </summary>
         public bool ExitInBackHalf;
 

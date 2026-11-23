@@ -105,8 +105,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         /// <param name="doorDirections">
         /// The layout directions this dungeon needs a door for. East/West become the spine's
-        /// end/start endpoints, as does a diagonal marked AtSpineEnd (on its horizontal side);
-        /// every other direction becomes a fork branch toward it.
+        /// end/start endpoints; every other direction becomes a fork branch toward it.
         /// </param>
         /// <param name="extraRequiredRooms">
         /// Per-dungeon feature rooms the generator must also place (e.g. a subworld portal door),
@@ -115,41 +114,55 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <param name="dungeonIndex">
         /// The dungeon's index in its layout, used to label log lines and the dump file.
         /// </param>
-        /// <param name="exitFork">
-        /// The biome exit door, built as a fork toward its direction. If no fork fits, the dungeon is planned again with
-        /// the exit as a required spine room.
+        /// <param name="exits">
+        /// The biome exit doors. An East or West exit is a spine end, built by its factory. Any other exit is a fork toward
+        /// its direction; if a fork doesn't fit, the dungeon is planned again with that exit as a required spine room.
         /// </param>
-        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<(LayoutDirection Dir, bool AtSpineEnd)> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
+        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options, IReadOnlyList<(LayoutDirection Dir, Func<GridRoom> Factory)> exits)
         {
-            var plan = new GridGenerator(content, extraRequiredRooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, exitFork);
-            if (plan != null) return plan;
-
             var rooms = new List<Func<GridRoom>>();
             if (extraRequiredRooms != null) rooms.AddRange(extraRequiredRooms);
-            rooms.Add(exitFork.Value.Factory);
-            plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, null);
+            var plannedExits = new List<(LayoutDirection Dir, Func<GridRoom> Factory)>();
+            foreach (var exit in exits)
+            {
+                int end = exit.Dir.SpineEnd();
+                bool endTaken = end != 0 && doorDirections.Concat(plannedExits.Select(e => e.Dir)).Any(dir => dir.SpineEnd() == end);
+                if (endTaken) rooms.Add(exit.Factory);
+                else plannedExits.Add(exit);
+            }
+
+            var plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, plannedExits);
+            if (plan != null) return plan;
+
+            rooms.AddRange(plannedExits.Where(e => e.Dir.SpineEnd() == 0).Select(e => e.Factory));
+            plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, plannedExits.Where(e => e.Dir.SpineEnd() != 0).ToList());
             plan.Stats.ExitForkFallbacks++;
             return plan;
         }
 
         /// <returns>
-        /// The plan, or null when <paramref name="exitFork"/> is set and no fork fits it.
+        /// The plan, or null when a fork exit in <paramref name="exits"/> doesn't fit.
         /// </returns>
-        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<(LayoutDirection Dir, bool AtSpineEnd)> doorDirections, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
+        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IReadOnlyList<(LayoutDirection Dir, Func<GridRoom> Factory)> exits)
         {
             LayoutDirection? startDir = null, endDir = null;
             var forkDirs = new List<LayoutDirection>();
-            foreach (var (dir, atSpineEnd) in doorDirections)
+            foreach (var dir in doorDirections)
             {
-                int end = dir.SpineEnd(atSpineEnd);
+                int end = dir.SpineEnd();
                 if (end < 0 && startDir == null) startDir = dir;
                 else if (end > 0 && endDir == null) endDir = dir;
                 else if (!forkDirs.Contains(dir)) forkDirs.Add(dir);
             }
-            bool doorAtStart = startDir.HasValue;
-            bool doorAtEnd = endDir.HasValue;
             var content = _content;
-            int onwardY = content.OnwardDirection.Delta().Y;
+            var startExit = exits.FirstOrDefault(e => e.Dir.SpineEnd() < 0);
+            var endExit = exits.FirstOrDefault(e => e.Dir.SpineEnd() > 0);
+            var forkExits = exits.Where(e => e.Dir.SpineEnd() == 0).ToList();
+            Func<GridRoom> startDoorFactory = startExit.Factory != null ? SpineEndDoor(startExit.Factory) : startDir.HasValue ? () => content.CreateDoor(true) : null;
+            Func<GridRoom> endDoorFactory = endExit.Factory != null ? SpineEndDoor(endExit.Factory) : endDir.HasValue ? () => content.CreateDoor(true) : null;
+            bool doorAtStart = startDoorFactory != null;
+            bool doorAtEnd = endDoorFactory != null;
+            var doorDeltas = doorDirections.Concat(exits.Select(e => e.Dir)).Select(dir => dir.Delta()).ToList();
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -204,7 +217,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             int bestStartRow = 0, bestEndRow = 0;
             BranchPlacement? bestBranchPlacement = null;
 
-            bool SpawnInBackHalf(GridRoom room, Point anchor) => !room.IsSpawnRoom || (anchor.Y - baseRow) * onwardY <= 0;
+            bool SpawnAwayFromDoors(GridRoom room, Point anchor) => !room.IsSpawnRoom || doorDeltas.All(d => (anchor.Y - baseRow) * d.Y <= 0 && (2 * anchor.X - start.X - endTarget.X) * d.X <= 0);
 
             for (int buildAttempt = 0; buildAttempt < MaxBuildRetries && !buildAccepted; buildAttempt++)
             {
@@ -224,9 +237,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 endTarget = new Point(gridCols - 1 - EdgeBorder - ForkHeadroom, endRow);
 
                 // Each endpoint is a door or a plain filler room.
-                startDoor = doorAtStart ? content.CreateDoor(true) : content.CreateFiller(true);
+                startDoor = doorAtStart ? startDoorFactory() : content.CreateFiller(true);
                 grid.Place(startDoor, start.X, start.Y, grid.NextGroupId());
-                var endDoor = doorAtEnd ? content.CreateDoor(true) : content.CreateFiller(true);
+                var endDoor = doorAtEnd ? endDoorFactory() : content.CreateFiller(true);
                 grid.Place(endDoor, endTarget.X, endTarget.Y, grid.NextGroupId());
 
                 for (int spineAttempt = 0; spineAttempt < MaxSpinePlanAttempts; spineAttempt++)
@@ -297,7 +310,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
 
-                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, endDoor, _spineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, EdgeBorder, MinDoorDistance, MinSubgoalSpacing, SpawnInBackHalf, _diagnostics ? Log : null);
+                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, endDoor, _spineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, EdgeBorder, MinDoorDistance, MinSubgoalSpacing, SpawnAwayFromDoors, _diagnostics ? Log : null);
                     _stats.SpineAttempts++;
 
                     spineSteps = plan.Steps;
@@ -480,8 +493,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Doors keyed by direction (anchors only). Endpoint doors are the spine
             // start/end; every other direction is a fork branch toward it.
             var doorAnchors = new Dictionary<LayoutDirection, Point>();
-            if (doorAtStart) doorAnchors[startDir.Value] = start;
-            if (doorAtEnd) doorAnchors[endDir.Value] = endTarget;
+            if (startDir.HasValue) doorAnchors[startDir.Value] = start;
+            if (endDir.HasValue) doorAnchors[endDir.Value] = endTarget;
+            var exitAnchors = new List<(LayoutDirection Dir, Point Anchor)>();
+            if (startExit.Factory != null) exitAnchors.Add((startExit.Dir, start));
+            if (endExit.Factory != null) exitAnchors.Add((endExit.Dir, endTarget));
 
             // Fork legs route on plain noise with no elevation term, so a branch is free to leave the
             // spine's row rather than being pulled back toward it.
@@ -503,11 +519,15 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
 
-            Point? exitAnchor = exitFork.HasValue ? TryAddForkDoor(grid, paths, exitFork.Value.Dir, start, exitFork.Value.Factory, forkCostFn, gridCols, gridRows, rand, attachInForkHalf: true) : null;
-            if (exitFork.HasValue && !exitAnchor.HasValue)
+            foreach (var exit in forkExits)
             {
-                LogWarn($"OvermorrowDungeon: could not place the {exitFork.Value.Dir} exit fork; planning again with the exit on the spine.");
-                return null;
+                Point? exitAnchor = TryAddForkDoor(grid, paths, exit.Dir, start, exit.Factory, forkCostFn, gridCols, gridRows, rand, attachInForkHalf: true);
+                if (!exitAnchor.HasValue)
+                {
+                    LogWarn($"OvermorrowDungeon: could not place the {exit.Dir} exit fork; planning again with the exit on the spine.");
+                    return null;
+                }
+                exitAnchors.Add((exit.Dir, exitAnchor.Value));
             }
 
             // Phase 3: aux branches
@@ -544,19 +564,20 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             if (minCol > maxCol) { minCol = maxCol = EdgeBorder; minRow = maxRow = gridRows / 2; }
 
             float middleRow = (minRow + maxRow) / 2f;
-            if (spawnRoomAnchor.HasValue && (spawnAnchor.Y - middleRow) * onwardY > 0)
+            float middleCol = (minCol + maxCol) / 2f;
+            if (spawnRoomAnchor.HasValue && doorDeltas.Any(d => (spawnAnchor.Y - middleRow) * d.Y > 0 || (spawnAnchor.X - middleCol) * d.X > 0))
             {
-                _stats.SpawnInOnwardHalf = true;
-                LogWarn($"OvermorrowDungeon: spawn room at row {spawnAnchor.Y} is in the onward half (middle row {middleRow}).");
+                _stats.SpawnTowardDoor = true;
+                LogWarn($"OvermorrowDungeon: spawn room at ({spawnAnchor.X},{spawnAnchor.Y}) is past the middle ({middleCol},{middleRow}) toward a door.");
             }
-            if (exitAnchor.HasValue && (exitAnchor.Value.Y - middleRow) * onwardY < 0)
+            foreach (var (dir, anchor) in exitAnchors)
             {
+                if (dir.SpineEnd() != 0 || (anchor.Y - middleRow) * dir.Delta().Y >= 0) continue;
                 _stats.ExitInBackHalf = true;
-                LogWarn($"OvermorrowDungeon: exit door at row {exitAnchor.Value.Y} is in the back half (middle row {middleRow}).");
+                LogWarn($"OvermorrowDungeon: {dir} exit door at row {anchor.Y} is in the back half (middle row {middleRow}).");
             }
 
-            var meaningfulDoors = doorAnchors.Select(kv => (kv.Key, kv.Value)).ToList();
-            if (exitAnchor.HasValue) meaningfulDoors.Add((exitFork.Value.Dir, exitAnchor.Value));
+            var meaningfulDoors = doorAnchors.Select(kv => (kv.Key, kv.Value)).Concat(exitAnchors).ToList();
             foreach (var (dir, anchor) in meaningfulDoors)
             {
                 var (missing, rooms) = CountRoomsWithoutMonotoneRoute(grid, anchor, dir);
@@ -727,6 +748,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             return null;
         }
+
+        private static Func<GridRoom> SpineEndDoor(Func<GridRoom> factory) => () =>
+        {
+            var door = factory();
+            door.IsFeature = true;
+            return door;
+        };
 
         /// <summary>Writes the diagnostic grid dump; failures are logged, not thrown.</summary>
         private static void DumpGrid(DungeonGrid grid, int dungeonIndex, int baseRow, Point start, Point endTarget, List<Point> requiredAnchors, double[] elevation, long elapsedMs)
