@@ -333,6 +333,12 @@ namespace OvermorrowMod.Content.Misc
 
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)
         {
+            if (SubworldTimer.IsExpired)
+            {
+                NPC.active = false;
+                return;
+            }
+
             Rectangle room = RoomInterior(left, right);
             Vector2 playerCenter = Main.LocalPlayer.Center;
             bool playerInside = room.Contains(playerCenter.ToPoint());

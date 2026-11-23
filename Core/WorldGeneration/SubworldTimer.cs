@@ -52,7 +52,7 @@ namespace OvermorrowMod.Core.WorldGeneration
 
         public static void AddTime(int seconds)
         {
-            if (!Running) return;
+            if (!Running || RemainingTicks <= 0) return;
 
             scrollFrom = displayTicks;
             RemainingTicks += ModUtils.SecondsToTicks(seconds);

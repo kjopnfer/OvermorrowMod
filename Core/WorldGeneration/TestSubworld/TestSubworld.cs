@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Dungeons.Archive;
 using OvermorrowMod.Content.Dungeons.Archive.Cells;
@@ -43,7 +44,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
             if (!RunDeathPlayer.LocalDead) SubworldTimer.Tick();
 
-            if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !GhostSpawned && !Main.LocalPlayer.GetModPlayer<RunSavePlayer>().RestorePending && Main.netMode != NetmodeID.MultiplayerClient)
+            if (SubworldTimer.IsExpired && !GhostSpawned && !CombatOrchestrator.AnyFightRunning() && !Main.LocalPlayer.GetModPlayer<RunSavePlayer>().RestorePending && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Player player = Main.player[Main.myPlayer];
                 int cellPx = 18 * 16;
