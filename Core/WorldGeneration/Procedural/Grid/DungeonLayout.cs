@@ -52,6 +52,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             LayoutDirection.SouthWest => LayoutDirection.NorthEast,
             _ => dir,
         };
+
+        /// <summary>
+        /// Which spine end a door in this direction uses: -1 for the start (west), 1 for the end (east), 0 for a fork.
+        /// East and West always use an end; a diagonal uses the end on its horizontal side only when <paramref name="atSpineEnd"/> is set.
+        /// </summary>
+        public static int SpineEnd(this LayoutDirection dir, bool atSpineEnd)
+        {
+            Point delta = dir.Delta();
+            if (delta.Y == 0 || (atSpineEnd && delta.X != 0)) return delta.X;
+            return 0;
+        }
     }
 
     /// <summary>
@@ -78,12 +89,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             public readonly int From;
             public readonly LayoutDirection Dir;
             public readonly int To;
+            public readonly bool ToAtSpineEnd;
 
-            public Edge(int from, LayoutDirection dir, int to)
+            public Edge(int from, LayoutDirection dir, int to, bool toAtSpineEnd)
             {
                 From = from;
                 Dir = dir;
                 To = to;
+                ToAtSpineEnd = toAtSpineEnd;
             }
         }
 
@@ -104,7 +117,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Connects two dungeons given  <paramref name="from"/> and <paramref name="to"/>.
         /// </summary>
-        public void Connect(int from, LayoutDirection dir, int to) => _edges.Add(new Edge(from, dir, to));
+        /// <param name="toAtSpineEnd">
+        /// Puts <paramref name="to"/>'s door at the spine end on its horizontal side instead of a fork. Only valid for diagonals.
+        /// </param>
+        public void Connect(int from, LayoutDirection dir, int to, bool toAtSpineEnd = false) => _edges.Add(new Edge(from, dir, to, toAtSpineEnd));
 
         /// <summary>
         /// Adds a feature room the generator must place in <paramref name="node"/>'s dungeon, such as
@@ -153,6 +169,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         {
             if (_nodes.Count == 0) return;
             if (_rootId < 0) _rootId = 0;
+            WarnOnSpineEndConflicts();
 
             // 1. Plan each tile placement without placing tiles.
             var plans = Plan(rand, new PlanOptions { Diagnostics = true });
@@ -439,15 +456,34 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>The door directions this dungeon needs: one per incident edge, from this dungeon's perspective.</summary>
-        private List<LayoutDirection> DoorDirectionsFor(int nodeId)
+        private List<(LayoutDirection Dir, bool AtSpineEnd)> DoorDirectionsFor(int nodeId)
         {
-            var dirs = new List<LayoutDirection>();
+            var dirs = new List<(LayoutDirection Dir, bool AtSpineEnd)>();
             foreach (var edge in _edges)
             {
-                if (edge.From == nodeId) dirs.Add(edge.Dir);
-                else if (edge.To == nodeId) dirs.Add(edge.Dir.Opposite());
+                if (edge.From == nodeId) dirs.Add((edge.Dir, false));
+                else if (edge.To == nodeId) dirs.Add((edge.Dir.Opposite(), edge.ToAtSpineEnd));
             }
             return dirs;
+        }
+
+        private void WarnOnSpineEndConflicts()
+        {
+            for (int i = 0; i < _nodes.Count; i++)
+            {
+                int starts = 0, ends = 0;
+                foreach (var (dir, atSpineEnd) in DoorDirectionsFor(i))
+                {
+                    if (atSpineEnd && dir.Delta().X == 0)
+                        Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: dungeon {i}'s {dir} door asks for a spine end, but only diagonal doors can; it becomes a fork.");
+
+                    int end = dir.SpineEnd(atSpineEnd);
+                    if (end < 0) starts++;
+                    else if (end > 0) ends++;
+                }
+                if (starts > 1 || ends > 1)
+                    Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: dungeon {i} has more than one door at the same spine end; the extras become forks.");
+            }
         }
 
         /// <summary>The extra feature rooms assigned to a dungeon.</summary>

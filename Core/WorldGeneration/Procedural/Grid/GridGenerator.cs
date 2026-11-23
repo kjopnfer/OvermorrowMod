@@ -105,7 +105,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         /// <param name="doorDirections">
         /// The layout directions this dungeon needs a door for. East/West become the spine's
-        /// end/start endpoints; every other direction becomes a fork branch toward it.
+        /// end/start endpoints, as does a diagonal marked AtSpineEnd (on its horizontal side);
+        /// every other direction becomes a fork branch toward it.
         /// </param>
         /// <param name="extraRequiredRooms">
         /// Per-dungeon feature rooms the generator must also place (e.g. a subworld portal door),
@@ -118,7 +119,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// The biome exit door, built as a fork toward its direction. If no fork fits, the dungeon is planned again with
         /// the exit as a required spine room.
         /// </param>
-        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
+        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<(LayoutDirection Dir, bool AtSpineEnd)> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
         {
             var plan = new GridGenerator(content, extraRequiredRooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, exitFork);
             if (plan != null) return plan;
@@ -134,11 +135,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <returns>
         /// The plan, or null when <paramref name="exitFork"/> is set and no fork fits it.
         /// </returns>
-        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
+        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<(LayoutDirection Dir, bool AtSpineEnd)> doorDirections, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
         {
-            var dirSet = new HashSet<LayoutDirection>(doorDirections);
-            bool doorAtStart = dirSet.Contains(LayoutDirection.West);
-            bool doorAtEnd = dirSet.Contains(LayoutDirection.East);
+            LayoutDirection? startDir = null, endDir = null;
+            var forkDirs = new List<LayoutDirection>();
+            foreach (var (dir, atSpineEnd) in doorDirections)
+            {
+                int end = dir.SpineEnd(atSpineEnd);
+                if (end < 0 && startDir == null) startDir = dir;
+                else if (end > 0 && endDir == null) endDir = dir;
+                else if (!forkDirs.Contains(dir)) forkDirs.Add(dir);
+            }
+            bool doorAtStart = startDir.HasValue;
+            bool doorAtEnd = endDir.HasValue;
             var content = _content;
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -473,17 +482,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Doors keyed by direction (anchors only). Endpoint doors are the spine
             // start/end; every other direction is a fork branch toward it.
             var doorAnchors = new Dictionary<LayoutDirection, Point>();
-            if (doorAtStart) doorAnchors[LayoutDirection.West] = start;
-            if (doorAtEnd) doorAnchors[LayoutDirection.East] = endTarget;
+            if (doorAtStart) doorAnchors[startDir.Value] = start;
+            if (doorAtEnd) doorAnchors[endDir.Value] = endTarget;
 
             // Fork legs route on plain noise with no elevation term, so a branch is free to leave the
             // spine's row rather than being pulled back toward it.
             EdgeCost forkCostFn = PathfindingCost.FromNoise(noiseField, _typeWeights);
 
             _search.Phase = SearchPhase.Fork;
-            foreach (var dir in dirSet)
+            foreach (var dir in forkDirs)
             {
-                if (dir == LayoutDirection.East || dir == LayoutDirection.West) continue;
                 _stats.Forks++;
                 Point? forkAnchor = TryAddForkDoor(grid, paths, dir, start, () => _content.CreateDoor(true), forkCostFn, gridCols, gridRows, rand);
                 if (forkAnchor.HasValue)
