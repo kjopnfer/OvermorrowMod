@@ -467,7 +467,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             {
                 if (dir == LayoutDirection.East || dir == LayoutDirection.West) continue;
                 _stats.Forks++;
-                Point? forkAnchor = TryAddForkDoor(grid, paths, dir, start, forkCostFn, gridCols, gridRows, rand);
+                Point? forkAnchor = TryAddForkDoor(grid, paths, dir, start, () => _content.CreateDoor(true), forkCostFn, gridCols, gridRows, rand);
                 if (forkAnchor.HasValue)
                 {
                     doorAnchors[dir] = forkAnchor.Value;
@@ -1364,7 +1364,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// one does a short fallback door place, so the connection is never lost. Attaches away from
         /// the spine start so the door tends toward the middle/end. Returns the door anchor, or null.
         /// </summary>
-        private Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, EdgeCost costFn, int gridCols, int gridRows, Random rand)
+        private Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
             int parentLimit = System.Math.Min(2, paths.Count);
             if (parentLimit == 0) return null;
@@ -1377,8 +1377,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Intercardinal forks (a horizontal component in the direction) read as side branches and
             // lean horizontal; only a true North/South fork leans into the vertical headroom.
             bool favorHorizontal = delta.X != 0;
-
-            GridRoom DoorCell() => _content.CreateDoor(true);
 
             const int ForkStartMargin = 6;   // keep misc doors away from the entrance
 
@@ -1417,7 +1415,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 for (int attempt = 0; attempt < ForkSpineAttempts; attempt++)
                 {
-                    Point? doorAnchor = TryHeadroomSpine(grid, b0, landing, dx, dy, favorHorizontal, DoorCell, costFn, gridCols, gridRows, rand, prefix, paths);
+                    Point? doorAnchor = TryHeadroomSpine(grid, b0, landing, dx, dy, favorHorizontal, doorFactory, costFn, gridCols, gridRows, rand, prefix, paths);
                     if (doorAnchor.HasValue) return doorAnchor;
                 }
 
@@ -1444,7 +1442,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                 var shaft = _content.CreateVerticalConnector(false);
                 var landing = _content.CreateFiller(false);
-                var fbDoor = DoorCell();
+                var fbDoor = doorFactory();
                 grid.Place(shaft, shaftPos.X, shaftPos.Y, grid.NextGroupId());
                 grid.Place(landing, b0.X, b0.Y, grid.NextGroupId());
                 grid.Place(fbDoor, fb.X, fb.Y, grid.NextGroupId());
