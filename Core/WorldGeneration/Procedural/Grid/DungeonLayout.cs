@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using System.Threading.Tasks;
 using Terraria.DataStructures;
@@ -39,6 +40,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             LayoutDirection.SouthWest => new Point(-1, 1),
             _ => Point.Zero,
         };
+
+        /// <summary>
+        /// The direction whose <see cref="Delta"/> is <paramref name="delta"/>. Each axis must be in {-1, 0, 1}, not both 0.
+        /// </summary>
+        public static LayoutDirection FromDelta(Point delta) => Enum.GetValues<LayoutDirection>().First(dir => dir.Delta() == delta);
 
         public static LayoutDirection Opposite(this LayoutDirection dir) => dir switch
         {
