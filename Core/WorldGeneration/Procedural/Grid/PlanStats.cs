@@ -103,6 +103,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// Per door: the rooms with no route to it that never steps against the door's direction, out of all rooms.
         /// </summary>
         public readonly List<(LayoutDirection Door, int Missing, int Rooms)> MonotoneRoutes = new();
+
+        /// <summary>
+        /// Per door: the shortest walk in tiles from the spawn room, or from the first connection door when the dungeon has
+        /// no spawn room.
+        /// </summary>
+        public readonly List<(LayoutDirection Door, int Tiles)> Walks = new();
         public int TreasureDoors;
         public long ElapsedMs;
     }

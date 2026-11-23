@@ -73,6 +73,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine();
             AppendMonotoneRoutes(sb, layouts);
             sb.AppendLine();
+            AppendWalks(sb, layouts);
+            sb.AppendLine();
             AppendRoomCounts(sb, plans);
             sb.AppendLine();
             sb.AppendLine($"GC collections: gen0 {GC.CollectionCount(0) - gen0}, gen1 {GC.CollectionCount(1) - gen1}, gen2 {GC.CollectionCount(2) - gen2}");
@@ -158,6 +160,39 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine($"rooms without a monotone route to a door: {Share(allMissing, allRooms)}");
             foreach (var kv in totals)
                 sb.AppendLine($"  {kv.Key,-26} {Share(kv.Value.Missing, kv.Value.Rooms)} over {kv.Value.Doors} doors");
+        }
+
+        /// <summary>
+        /// Shortest walks to each door per dungeon index, and the footprint size of each dungeon index.
+        /// </summary>
+        private static void AppendWalks(StringBuilder sb, List<DungeonPlan[]> layouts)
+        {
+            const double RunTilesPerSecond = 11.25;
+            var walks = new SortedDictionary<string, List<int>>();
+            var footprints = new SortedDictionary<int, List<(int W, int H)>>();
+            foreach (var layout in layouts)
+                for (int d = 0; d < layout.Length; d++)
+                {
+                    string from = d == 0 ? "spawn" : "entry";
+                    foreach (var (door, tiles) in layout[d].Stats.Walks)
+                    {
+                        string key = $"dungeon {d} {from} to {door}";
+                        if (!walks.TryGetValue(key, out var list)) walks[key] = list = new List<int>();
+                        list.Add(tiles);
+                    }
+                    if (!footprints.TryGetValue(d, out var sizes)) footprints[d] = sizes = new List<(int, int)>();
+                    sizes.Add((layout[d].FootprintWidth - 2 * DungeonPlan.StoneMarginX, layout[d].FootprintHeight - 2 * DungeonPlan.StoneMarginY));
+                }
+            sb.AppendLine("shortest walks in tiles       average    p90    max   run s");
+            foreach (var kv in walks)
+            {
+                var sorted = kv.Value.OrderBy(t => t).Select(t => (double)t).ToList();
+                double average = sorted.Average();
+                sb.AppendLine($"  {kv.Key,-26} {average,7:0} {Percentile(sorted, 0.9),6:0} {sorted[^1],6:0} {average / RunTilesPerSecond,7:0.0}");
+            }
+            sb.AppendLine("footprint in tiles (no stone margin)   average w x h");
+            foreach (var kv in footprints)
+                sb.AppendLine($"  dungeon {kv.Key}                          {kv.Value.Average(s => s.W):0} x {kv.Value.Average(s => s.H):0}");
         }
 
         private static readonly Direction[] Sides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };

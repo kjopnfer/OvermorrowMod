@@ -600,6 +600,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (missing > 0) Log($"OvermorrowDungeon: {missing} of {rooms} rooms have no route to the {dir} door that never steps against {dir}.");
             }
 
+            Point? walkOrigin = spawnRoomAnchor ?? (doorAnchors.Count > 0 ? doorAnchors.First().Value : null);
+            if (walkOrigin.HasValue)
+            {
+                var walkTiles = WalkTiles(grid, walkOrigin.Value);
+                foreach (var (dir, anchor) in meaningfulDoors)
+                    if (anchor != walkOrigin.Value && walkTiles.TryGetValue(anchor, out int tiles)) _stats.Walks.Add((dir, tiles));
+            }
+
             return new DungeonPlan
             {
                 Grid = grid,
@@ -934,6 +942,36 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         private static readonly Direction[] CardinalSides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };
+
+        /// <summary>
+        /// The shortest walk in tiles from <paramref name="origin"/> to every reachable cell, counting cell-center to
+        /// cell-center distances.
+        /// </summary>
+        private static Dictionary<Point, int> WalkTiles(DungeonGrid grid, Point origin)
+        {
+            var dist = new Dictionary<Point, int> { [origin] = 0 };
+            var queue = new PriorityQueue<Point, int>();
+            queue.Enqueue(origin, 0);
+            while (queue.TryDequeue(out var p, out int d))
+            {
+                if (d > dist[p]) continue;
+                var slot = grid.GetSlot(p.X, p.Y);
+                if (slot == null || slot.IsEmpty) continue;
+                foreach (var side in CardinalSides)
+                {
+                    Point step = side.Step();
+                    var q = new Point(p.X + step.X, p.Y + step.Y);
+                    var qSlot = grid.GetSlot(q.X, q.Y);
+                    if (qSlot == null || qSlot.IsEmpty) continue;
+                    if (qSlot.GroupId != slot.GroupId && !GridRoom.Connects(slot, side, qSlot)) continue;
+                    int nd = d + (step.X != 0 ? DungeonGrid.HorizontalSpacing : DungeonGrid.VerticalSpacing);
+                    if (dist.TryGetValue(q, out int old) && old <= nd) continue;
+                    dist[q] = nd;
+                    queue.Enqueue(q, nd);
+                }
+            }
+            return dist;
+        }
 
         /// <summary>True if the cell graph reachable from <paramref name="seed"/> has no cycles.</summary>
         private static bool IsTreeShaped(DungeonGrid grid, Point seed)
