@@ -149,6 +149,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             bool doorAtStart = startDir.HasValue;
             bool doorAtEnd = endDir.HasValue;
             var content = _content;
+            int onwardY = content.OnwardDirection.Delta().Y;
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -202,6 +203,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Point bestStart = default, bestEndTarget = default;
             int bestStartRow = 0, bestEndRow = 0;
             BranchPlacement? bestBranchPlacement = null;
+
+            bool SpawnInBackHalf(GridRoom room, Point anchor) => !room.IsSpawnRoom || (anchor.Y - baseRow) * onwardY <= 0;
 
             for (int buildAttempt = 0; buildAttempt < MaxBuildRetries && !buildAccepted; buildAttempt++)
             {
@@ -294,7 +297,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
 
-                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, endDoor, _spineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, EdgeBorder, MinDoorDistance, MinSubgoalSpacing, _diagnostics ? Log : null);
+                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, endDoor, _spineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, EdgeBorder, MinDoorDistance, MinSubgoalSpacing, SpawnInBackHalf, _diagnostics ? Log : null);
                     _stats.SpineAttempts++;
 
                     spineSteps = plan.Steps;
@@ -505,7 +508,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
 
-            if (exitFork.HasValue && !TryAddForkDoor(grid, paths, exitFork.Value.Dir, start, exitFork.Value.Factory, forkCostFn, gridCols, gridRows, rand).HasValue)
+            Point? exitAnchor = exitFork.HasValue ? TryAddForkDoor(grid, paths, exitFork.Value.Dir, start, exitFork.Value.Factory, forkCostFn, gridCols, gridRows, rand, attachInForkHalf: true) : null;
+            if (exitFork.HasValue && !exitAnchor.HasValue)
             {
                 LogWarn($"OvermorrowDungeon: could not place the {exitFork.Value.Dir} exit fork; planning again with the exit on the spine.");
                 return null;
@@ -537,6 +541,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 }
             }
             if (minCol > maxCol) { minCol = maxCol = EdgeBorder; minRow = maxRow = gridRows / 2; }
+
+            float middleRow = (minRow + maxRow) / 2f;
+            if (spawnRoomAnchor.HasValue && (spawnAnchor.Y - middleRow) * onwardY > 0)
+            {
+                _stats.SpawnInOnwardHalf = true;
+                LogWarn($"OvermorrowDungeon: spawn room at row {spawnAnchor.Y} is in the onward half (middle row {middleRow}).");
+            }
+            if (exitAnchor.HasValue && (exitAnchor.Value.Y - middleRow) * onwardY < 0)
+            {
+                _stats.ExitInBackHalf = true;
+                LogWarn($"OvermorrowDungeon: exit door at row {exitAnchor.Value.Y} is in the back half (middle row {middleRow}).");
+            }
 
             return new DungeonPlan
             {
@@ -1396,7 +1412,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// one does a short fallback door place, so the connection is never lost. Attaches away from
         /// the spine start so the door tends toward the middle/end. Returns the door anchor, or null.
         /// </summary>
-        private Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand)
+        /// <param name="attachInForkHalf">
+        /// Only attach to cells in the half of the spine's row range on the fork's vertical side.
+        /// </param>
+        private Point? TryAddForkDoor(DungeonGrid grid, List<DungeonPath> paths, LayoutDirection dir, Point spineStart, Func<GridRoom> doorFactory, EdgeCost costFn, int gridCols, int gridRows, Random rand, bool attachInForkHalf = false)
         {
             int parentLimit = System.Math.Min(2, paths.Count);
             if (parentLimit == 0) return null;
@@ -1415,6 +1434,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             // Exposed spine fillers at the band's edge: the column is open for three cells in the
             // fork's direction, so a one-pair punch lands in clear headroom. Away from the start so
             // the door tends toward the middle/end rather than the beginning.
+            float spineMiddleRow = paths[0].Steps.Count > 0 ? (paths[0].Steps.Min(s => s.Anchor.Y) + paths[0].Steps.Max(s => s.Anchor.Y)) / 2f : spineStart.Y;
             var candidates = new List<PathStep>();
             for (int p = 0; p < parentLimit; p++)
                 foreach (var step in paths[p].Steps)
@@ -1422,6 +1442,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (step.Cell.Type != RoomType.Filler) continue;
                     if (System.Math.Abs(step.Anchor.X - spineStart.X) < ForkStartMargin) continue;
                     int x = step.Anchor.X, y = step.Anchor.Y;
+                    if (attachInForkHalf && (y - spineMiddleRow) * dy < 0) continue;
                     if (!IsEmptyCell(grid, x, y + dy)) continue;
                     if (!IsEmptyCell(grid, x, y + 2 * dy)) continue;
                     if (!IsEmptyCell(grid, x, y + 3 * dy)) continue;

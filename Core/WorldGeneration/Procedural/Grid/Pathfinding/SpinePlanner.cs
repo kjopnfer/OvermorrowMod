@@ -34,7 +34,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         /// On failure, every placement made by this call is rolled back,
         /// leaving only the doors.
         /// </summary>
-        public static PlanResult TryPlanSpine(DungeonGrid grid, GridAStar search, Point startDoorPos, Point endDoorPos, GridRoom startDoorRoom, GridRoom endDoorRoom, IReadOnlyList<Func<GridRoom>> requiredRoomFactories, double[] elevation, int gridCols, int gridRows, EdgeCost costFn, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, int minSubgoalSpacing, Action<string> log)
+        /// <param name="allowAnchor">
+        /// Optional filter on a required room's candidate anchors, given the room's prototype.
+        /// </param>
+        public static PlanResult TryPlanSpine(DungeonGrid grid, GridAStar search, Point startDoorPos, Point endDoorPos, GridRoom startDoorRoom, GridRoom endDoorRoom, IReadOnlyList<Func<GridRoom>> requiredRoomFactories, double[] elevation, int gridCols, int gridRows, EdgeCost costFn, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, int minSubgoalSpacing, Func<GridRoom, Point, bool> allowAnchor, Action<string> log)
         {
             const int MaxCandidatesPerRoom = 8;
             const int MaxOuterAttempts = 10;
@@ -47,7 +50,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                 // in their own AllowedNeighbors.
                 var prototype = factory();
                 prototype.IsFeature = true;
-                var cands = GenerateCandidates(grid, prototype, elevation, gridCols, gridRows, startDoorPos, endDoorPos, blocked, edgeBorder, minDoorDistance, MaxCandidatesPerRoom);
+                var cands = GenerateCandidates(grid, prototype, elevation, gridCols, gridRows, startDoorPos, endDoorPos, blocked, edgeBorder, minDoorDistance, allowAnchor, MaxCandidatesPerRoom);
                 rooms.Add(new RoomState
                 {
                     Factory = factory,
@@ -238,7 +241,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
         // Returns candidate positions in a vertical band around the elevation
         // curve, sorted by closeness to the curve. Band radius scales with
         // the room's height.
-        private static List<Point> GenerateCandidates(DungeonGrid grid, GridRoom prototype, double[] elevation, int gridCols, int gridRows, Point startDoor, Point endDoor, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, int maxCount)
+        private static List<Point> GenerateCandidates(DungeonGrid grid, GridRoom prototype, double[] elevation, int gridCols, int gridRows, Point startDoor, Point endDoor, HashSet<Point> blocked, int edgeBorder, int minDoorDistance, Func<GridRoom, Point, bool> allowAnchor, int maxCount)
         {
             int w = prototype.CellWidth;
             int h = prototype.CellHeight;
@@ -265,6 +268,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
                     int row = centerRow + dy;
                     if (row < edgeBorder) continue;
                     if (row + h - 1 >= gridRows - edgeBorder) continue;
+                    if (allowAnchor != null && !allowAnchor(prototype, new Point(col, row))) continue;
 
                     bool tooCloseToDoor = false;
                     for (int sc = 0; sc < w && !tooCloseToDoor; sc++)
