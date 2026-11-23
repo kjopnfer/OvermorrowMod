@@ -80,6 +80,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private GridAStar _search;
         private int _treasureDoors;
 
+        /// <summary>
+        /// The moves toward this dungeon's doors. A dead end never ends farther along one of them than it starts.
+        /// </summary>
+        private MoveMask _doorMoves;
+
         private GridGenerator(DungeonContent content, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options)
         {
             _content = content;
@@ -164,6 +169,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             bool doorAtEnd = endDoorFactory != null;
             var doorDeltas = doorDirections.Concat(exits.Select(e => e.Dir)).Select(dir => dir.Delta()).ToList();
             int forkDriftX = doorDeltas.Any(d => d.Y == 0 && d.X > 0) ? -1 : 1;
+            _doorMoves = doorDeltas.Aggregate(MoveMask.None, (mask, d) => mask | MoveMasks.Toward(d));
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int margin = DungeonGrid.HorizontalPadding;
@@ -1260,9 +1266,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <summary>
         /// Places a chest room at <paramref name="target"/> and routes a dead end to it from <paramref name="nodeA"/>,
         /// then rolls whether the chest room becomes a treasure door. Leaves the grid unchanged and returns null on failure.
+        /// A target farther than <paramref name="nodeA"/> toward one of the dungeon's doors is rejected.
         /// </summary>
         private DungeonPath TryDeadEndTo(DungeonGrid grid, DungeonPath parent, PathStep nodeA, Point target, int newId, EdgeCost costFn, int gridCols, int gridRows, Random rand)
         {
+            if (_doorMoves.Includes(new Point(target.X - nodeA.Anchor.X, target.Y - nodeA.Anchor.Y))) return null;
             if (target.X < EdgeBorder + 1 || target.X >= gridCols - EdgeBorder - 1) return null;
             if (target.Y < EdgeBorder || target.Y >= gridRows - EdgeBorder) return null;
 
