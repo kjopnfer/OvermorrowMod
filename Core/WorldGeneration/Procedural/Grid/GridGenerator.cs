@@ -114,9 +114,27 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <param name="dungeonIndex">
         /// The dungeon's index in its layout, used to label log lines and the dump file.
         /// </param>
-        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options) => new GridGenerator(content, extraRequiredRooms, dungeonIndex, options).PlanDungeon(rand, doorDirections);
+        /// <param name="exitFork">
+        /// The biome exit door, built as a fork toward its direction. If no fork fits, the dungeon is planned again with
+        /// the exit as a required spine room.
+        /// </param>
+        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
+        {
+            var plan = new GridGenerator(content, extraRequiredRooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, exitFork);
+            if (plan != null) return plan;
 
-        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<LayoutDirection> doorDirections)
+            var rooms = new List<Func<GridRoom>>();
+            if (extraRequiredRooms != null) rooms.AddRange(extraRequiredRooms);
+            rooms.Add(exitFork.Value.Factory);
+            plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, null);
+            plan.Stats.ExitForkFallbacks++;
+            return plan;
+        }
+
+        /// <returns>
+        /// The plan, or null when <paramref name="exitFork"/> is set and no fork fits it.
+        /// </returns>
+        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, (LayoutDirection Dir, Func<GridRoom> Factory)? exitFork)
         {
             var dirSet = new HashSet<LayoutDirection>(doorDirections);
             bool doorAtStart = dirSet.Contains(LayoutDirection.West);
@@ -477,6 +495,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     _stats.ForkFailures++;
                     LogWarn($"OvermorrowDungeon: could not place {dir} fork door; connection unpaired.");
                 }
+            }
+
+            if (exitFork.HasValue && !TryAddForkDoor(grid, paths, exitFork.Value.Dir, start, exitFork.Value.Factory, forkCostFn, gridCols, gridRows, rand).HasValue)
+            {
+                LogWarn($"OvermorrowDungeon: could not place the {exitFork.Value.Dir} exit fork; planning again with the exit on the spine.");
+                return null;
             }
 
             PlaceInlineTreasureDoors(grid, spawnAnchor, rand);

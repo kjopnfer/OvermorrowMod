@@ -90,6 +90,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private readonly List<Node> _nodes = new();
         private readonly List<Edge> _edges = new();
         private readonly List<(int Node, Func<GridRoom> Factory)> _extraRooms = new();
+        private (int Node, Func<GridRoom> Factory)? _exit;
         private int _rootId = -1;
 
         /// <summary>Adds a dungeon and returns its handle.</summary>
@@ -111,6 +112,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         public void AddRoom(int node, Func<GridRoom> factory) => _extraRooms.Add((node, factory));
 
+        /// <summary>
+        /// Places the door to the next biome in <paramref name="node"/>'s dungeon, as a fork in its content's
+        /// <see cref="DungeonContent.OnwardDirection"/>.
+        /// </summary>
+        public void SetExit(int node, Func<GridRoom> factory) => _exit = (node, factory);
+
         /// <summary>Sets the dungeon the player spawns in.</summary>
         public void SetRoot(int node) => _rootId = node;
 
@@ -125,7 +132,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 seeds[i] = rand.Next();
 
             var plans = new DungeonPlan[_nodes.Count];
-            void PlanDungeon(int i) => plans[i] = GridGenerator.Plan(_nodes[i].Content, new Random(seeds[i]), DoorDirectionsFor(i), ExtraRoomsFor(i), i, options);
+            void PlanDungeon(int i) => plans[i] = GridGenerator.Plan(_nodes[i].Content, new Random(seeds[i]), DoorDirectionsFor(i), ExtraRoomsFor(i), i, options, ExitFor(i));
 
             if (options.Sequential)
             {
@@ -450,6 +457,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             foreach (var (node, factory) in _extraRooms)
                 if (node == nodeId) rooms.Add(factory);
             return rooms;
+        }
+
+        private (LayoutDirection Dir, Func<GridRoom> Factory)? ExitFor(int nodeId)
+        {
+            if (_exit?.Node != nodeId) return null;
+            return (_nodes[nodeId].Content.OnwardDirection, _exit.Value.Factory);
         }
 
         private static IDungeonDoor FindNearestDoor(Point tile)

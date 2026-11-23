@@ -80,6 +80,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public int Forks;
         public int ForkStubs;
         public int ForkFailures;
+
+        /// <summary>
+        /// Times the biome exit fork didn't fit and the dungeon was planned again with the exit on the spine.
+        /// </summary>
+        public int ExitForkFallbacks;
         public int TreasureDoors;
         public long ElapsedMs;
     }
