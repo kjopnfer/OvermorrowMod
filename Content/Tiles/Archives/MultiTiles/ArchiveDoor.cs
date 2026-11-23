@@ -7,6 +7,7 @@ using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.WorldGeneration.Procedural.Grid;
+using ReLogic.Utilities;
 using System.Linq;
 using Terraria;
 using Terraria.Audio;
@@ -135,9 +136,15 @@ namespace OvermorrowMod.Content.Tiles.Archives
         private int lockNPCIndex = -1;
         public NPC LockNPC => lockNPCIndex >= 0 && lockNPCIndex < Main.npc.Length && Main.npc[lockNPCIndex].active ? Main.npc[lockNPCIndex] : null;
 
+        private static readonly SoundStyle OpenSound = new($"{nameof(OvermorrowMod)}/Sounds/WoodDoorOpen") { PitchVariance = 0.2f };
+        private static readonly SoundStyle CloseSound = new($"{nameof(OvermorrowMod)}/Sounds/WoodDoorClose") { PitchVariance = 0.2f };
+
         private int FrameCounter = 0;
         public int DoorFrame = 1; // Goes from frame 0 to 6
         public Vector2 DoorPosition => Position.ToWorldCoordinates(16, 16);
+
+        private int swingDirection;
+        private SlotId swingSound;
 
         public override void SaveData(TagCompound tag)
         {
@@ -245,6 +252,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
                 player.oldPosition = destination;
                 GlobalPlayer.RequestTeleport(destination);
                 matchingDoor.DoorFrame = 6;
+                matchingDoor.swingDirection = 1;
             }
         }
 
@@ -347,8 +355,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
 
             Vector2 playerPosition = Main.LocalPlayer.Center;
             float distance = Vector2.Distance(playerPosition, DoorPosition + new Vector2(75, 0));
+            bool near = distance <= ModUtils.TilesToPixels(6);
 
-            if (distance <= ModUtils.TilesToPixels(6))
+            int direction = near ? (DoorFrame < 7 ? 1 : 0) : (DoorFrame > 1 ? -1 : 0);
+            if (direction != 0 && direction != swingDirection)
+                PlaySwingSound(direction > 0 ? OpenSound : CloseSound);
+            swingDirection = direction;
+
+            if (near)
             {
                 if (DoorFrame < 7)
                 {
@@ -372,6 +386,14 @@ namespace OvermorrowMod.Content.Tiles.Archives
                     }
                 }
             }
+        }
+
+        private void PlaySwingSound(SoundStyle style)
+        {
+            if (SoundEngine.TryGetActiveSound(swingSound, out ActiveSound active))
+                active.Stop();
+
+            swingSound = SoundEngine.PlaySound(style, DoorPosition + new Vector2(75, 0));
         }
 
         private bool OnLocalScreen()
