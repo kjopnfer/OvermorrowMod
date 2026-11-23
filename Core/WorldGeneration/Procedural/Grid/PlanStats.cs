@@ -7,7 +7,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         Spine,
         Branch,
         Aux,
-        Fork
+        Fork,
+        Tributary
     }
 
     /// <summary>
@@ -61,7 +62,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     /// </summary>
     public sealed class PlanStats
     {
-        public readonly SearchStats[] Searches = { new(), new(), new(), new() };
+        public readonly SearchStats[] Searches = { new(), new(), new(), new(), new() };
 
         /// <summary>
         /// Distance and expansion count of every successful search.
@@ -80,6 +81,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public int Forks;
         public int ForkStubs;
         public int ForkFailures;
+        public int TributaryTries;
+        public int TributariesPlaced;
 
         /// <summary>
         /// Times a fork exit didn't fit and the dungeon was planned again with its fork exits on the spine.

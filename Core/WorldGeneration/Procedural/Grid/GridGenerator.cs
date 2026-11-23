@@ -505,6 +505,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             EdgeCost forkCostFn = PathfindingCost.FromNoise(noiseField, _typeWeights);
 
             _search.Phase = SearchPhase.Fork;
+            var trunks = new List<(DungeonPath Path, int Dy)>();
             foreach (var dir in forkDirs)
             {
                 _stats.Forks++;
@@ -512,6 +513,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (forkAnchor.HasValue)
                 {
                     doorAnchors[dir] = forkAnchor.Value;
+                    trunks.Add((paths[^1], Math.Sign(dir.Delta().Y)));
                 }
                 else
                 {
@@ -529,7 +531,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     return null;
                 }
                 exitAnchors.Add((exit.Dir, exitAnchor.Value));
+                trunks.Add((paths[^1], Math.Sign(exit.Dir.Delta().Y)));
             }
+
+            var keyPoints = doorAnchors.Values.Concat(exitAnchors.Select(e => e.Anchor)).ToList();
+            if (spawnRoomAnchor.HasValue) keyPoints.Add(spawnRoomAnchor.Value);
+            _search.Phase = SearchPhase.Tributary;
+            TryAddTributaries(grid, paths, trunks, keyPoints, forkCostFn, rand);
 
             // Phase 3: aux branches
             _search.Phase = SearchPhase.Aux;
@@ -1597,6 +1605,90 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 LogWarn($"OvermorrowDungeon: {dir} fork fell back to a short exit (no sub-spine fit).");
                 return fb;
             }
+            return null;
+        }
+
+        // Spine attach cells and join targets tried per tributary before its band is skipped.
+        private const int TributaryAttachTries = 3;
+        private const int TributaryTargetTries = 3;
+        private const int TributaryExpansionsPerCell = 80;
+
+        /// <summary>
+        /// Links the spine into each trunk with one-way paths: one try per void strip band the trunk doesn't start in,
+        /// nearest band first. Each tributary drops (or climbs) from a spine cell in its band and joins the trunk or a
+        /// tributary already placed, never moving against the trunk's direction. One that opens a route around every
+        /// combat room between two of <paramref name="keyPoints"/> is rolled back.
+        /// </summary>
+        private void TryAddTributaries(DungeonGrid grid, List<DungeonPath> paths, List<(DungeonPath Path, int Dy)> trunks, List<Point> keyPoints, EdgeCost costFn, Random rand)
+        {
+            var gatedPairs = new List<(Point, Point)>();
+            for (int i = 0; i < keyPoints.Count; i++)
+                for (int j = i + 1; j < keyPoints.Count; j++)
+                    if (!HasCombatBypass(grid, keyPoints[i], keyPoints[j])) gatedPairs.Add((keyPoints[i], keyPoints[j]));
+
+            int Band(int col) => grid.VoidStrips.Count(strip => strip.Col + strip.Width <= col);
+            var spineFillers = paths[0].Steps.Where(s => s.Cell.Type == RoomType.Filler).ToList();
+            var noRooms = new List<PathStep>();
+
+            foreach (var (trunk, dy) in trunks)
+            {
+                MoveMask backward = MoveMasks.Toward(new Point(0, -dy));
+                var joinable = new List<PathStep>(trunk.Steps);
+                int trunkBand = Band(trunk.Steps[0].Anchor.X);
+                var bands = spineFillers.Select(s => Band(s.Anchor.X)).Distinct().Where(b => b != trunkBand).OrderBy(b => Math.Abs(b - trunkBand)).ToList();
+                foreach (int band in bands)
+                {
+                    _stats.TributaryTries++;
+                    var attaches = spineFillers.Where(s => Band(s.Anchor.X) == band && IsEmptyCell(grid, s.Anchor.X, s.Anchor.Y + dy) && IsEmptyCell(grid, s.Anchor.X, s.Anchor.Y + 2 * dy) && IsEmptyCell(grid, s.Anchor.X, s.Anchor.Y + 3 * dy)).ToList();
+                    ShuffleInPlace(attaches, rand);
+                    List<PathStep> tributary = null;
+                    foreach (var attach in attaches.Take(TributaryAttachTries))
+                        if ((tributary = TryTributaryFrom(grid, attach, dy, backward, joinable, gatedPairs, noRooms, costFn)) != null) break;
+                    if (tributary == null) continue;
+
+                    paths.Add(new DungeonPath(id: paths.Count + 1, role: PathRole.ClosedLoopBranch, parent: trunk, steps: tributary, combatAnchor: null));
+                    joinable.AddRange(tributary);
+                    _stats.TributariesPlaced++;
+                }
+            }
+        }
+
+        /// <returns>
+        /// The tributary's steps, already placed, or null with the grid left unchanged.
+        /// </returns>
+        private List<PathStep> TryTributaryFrom(DungeonGrid grid, PathStep attach, int dy, MoveMask backward, List<PathStep> joinable, List<(Point, Point)> gatedPairs, List<PathStep> noRooms, EdgeCost costFn)
+        {
+            var shaftPos = new Point(attach.Anchor.X, attach.Anchor.Y + dy);
+            var landingPos = new Point(attach.Anchor.X, attach.Anchor.Y + 2 * dy);
+            var shaft = _content.CreateVerticalConnector(false);
+            var landing = _content.CreateFiller(false);
+            grid.Place(shaft, shaftPos.X, shaftPos.Y, grid.NextGroupId());
+            grid.Place(landing, landingPos.X, landingPos.Y, grid.NextGroupId());
+
+            int Distance(PathStep s) => Math.Abs(s.Anchor.X - landingPos.X) + Math.Abs(s.Anchor.Y - landingPos.Y);
+            var targets = BranchNodes(grid, joinable, noRooms).Where(s => (s.Anchor.Y - landingPos.Y) * dy >= 0).OrderBy(Distance).Take(TributaryTargetTries).ToList();
+            foreach (var target in targets)
+            {
+                int budget = Math.Max(ForkLegMaxExpansions, TributaryExpansionsPerCell * Distance(target));
+                var leg = _search.FindPath(landingPos, target.Anchor, landing, costFn, budget, backward);
+                if (leg == null) continue;
+
+                foreach (var s in leg)
+                    grid.Place(s.Cell, s.Anchor.X, s.Anchor.Y, grid.NextGroupId());
+                if (gatedPairs.Any(pair => HasCombatBypass(grid, pair.Item1, pair.Item2)))
+                {
+                    foreach (var s in leg)
+                        grid.Clear(s.Cell, s.Anchor.X, s.Anchor.Y);
+                    continue;
+                }
+
+                var steps = new List<PathStep> { new PathStep(shaft, shaftPos), new PathStep(landing, landingPos) };
+                steps.AddRange(leg);
+                return steps;
+            }
+
+            grid.Clear(landing, landingPos.X, landingPos.Y);
+            grid.Clear(shaft, shaftPos.X, shaftPos.Y);
             return null;
         }
 
