@@ -193,8 +193,6 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             const int MinSpineSpan = 5;
             const int MaxSpinePlanAttempts = 8;
             const int MaxBuildRetries = 5;
-            const int MinDoorDistance = 6;
-            const int MinSubgoalSpacing = 2;
             const double SpineElevationPenalty = 0.4;
 
             PlaceVoidStrips(grid, ForkHeadroom + EdgeBorder, gridCols - 1 - EdgeBorder - ForkHeadroom, rand);
@@ -317,7 +315,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
 
-                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, endDoor, _spineRequiredRooms, elevation, gridCols, gridRows, spineCostFn, borderBlocked, EdgeBorder, MinDoorDistance, MinSubgoalSpacing, SpawnAwayFromDoors, _diagnostics ? Log : null);
+                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, _spineRequiredRooms, elevation, gridRows, spineCostFn, borderBlocked, EdgeBorder, SpawnAwayFromDoors, isFinalSpineAttempt ? MoveMask.None : MoveMask.Left, isFinalSpineAttempt, rand, _diagnostics ? Log : null);
                     _stats.SpineAttempts++;
 
                     spineSteps = plan.Steps;
