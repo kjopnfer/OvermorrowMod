@@ -3,7 +3,9 @@ using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.WorldGeneration;
+using ReLogic.Utilities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,6 +40,12 @@ namespace OvermorrowMod.Common.RoomManager
         public const int OpenDurationTicks = 60 * 2;
         public const int CloseAnimationTicks = 60;
         public const int OpenOffsetPixels = 9 * 16;
+
+        private static readonly SoundStyle OpenSound = new($"{nameof(OvermorrowMod)}/Sounds/CombatDoorOpen") { MaxInstances = 0 };
+        private static readonly SoundStyle CloseSound = new($"{nameof(OvermorrowMod)}/Sounds/CombatDoorClose") { MaxInstances = 0 };
+
+        private DoorState soundState = DoorState.Closed;
+        private SlotId moveSound;
 
         private int doorNPCIndex = -1;
         public NPC DoorNPC => doorNPCIndex >= 0 && doorNPCIndex < Main.npc.Length && Main.npc[doorNPCIndex].active
@@ -195,7 +203,21 @@ namespace OvermorrowMod.Common.RoomManager
             HandleTimeExpiration();
             ManageDoorNPC();
             AdvanceStateMachine();
+            PlayMoveSound();
             SyncBarrier();
+        }
+
+        private void PlayMoveSound()
+        {
+            if (State == soundState) return;
+            soundState = State;
+            if (State != DoorState.Opening && State != DoorState.Closing) return;
+
+            if (SoundEngine.TryGetActiveSound(moveSound, out ActiveSound active))
+                active.Stop();
+
+            Vector2 position = DoorNPC?.Center ?? Position.ToWorldCoordinates();
+            moveSound = SoundEngine.PlaySound(State == DoorState.Opening ? OpenSound : CloseSound, position);
         }
 
         /// <summary>
@@ -298,6 +320,7 @@ namespace OvermorrowMod.Common.RoomManager
                     }
                     break;
                 case DoorState.Open:
+                    if (IsDisabled) break;
                     StateTimer++;
                     if (StateTimer >= OpenDurationTicks || closeRequested)
                     {
