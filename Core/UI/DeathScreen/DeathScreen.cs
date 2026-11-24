@@ -250,13 +250,6 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             Main.LocalPlayer.mouseInterface = true;
             elapsed++;
 
-            if (!Finished && elapsed > TimelineStart && Main.mouseLeft && Main.mouseLeftRelease)
-            {
-                elapsed = timelineEnd + FadeDuration;
-                Main.mouseLeftRelease = false;
-                SoundEngine.PlaySound(SkipSound);
-            }
-
             if (Finished && returnShownAt < 0f)
                 returnShownAt = elapsed;
 
@@ -359,9 +352,23 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             return y;
         }
 
+        /// <summary>
+        /// Runs from Draw: UpdateUI runs before the frame's mouse input is read, so a fresh click never shows there.
+        /// </summary>
+        private void TrySkip()
+        {
+            if (Finished || elapsed <= TimelineStart || !Main.mouseLeft || !Main.mouseLeftRelease) return;
+
+            elapsed = timelineEnd + FadeDuration;
+            Main.mouseLeftRelease = false;
+            SoundEngine.PlaySound(SkipSound);
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (!Visible) return;
+
+            TrySkip();
 
             float backdrop = MathHelper.Clamp((elapsed - ShowDelay) / BackdropFade, 0f, 1f);
             if (backdrop <= 0f) return;
