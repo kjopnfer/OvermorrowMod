@@ -87,6 +87,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         public int DownArmFallbacks;
 
+        /// <summary>
+        /// Side branches rolled back because they left a cell with no forward route to a door ahead.
+        /// </summary>
+        public int TrappingBranches;
+
         public int TributaryTries;
         public int TributariesPlaced;
 

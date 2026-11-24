@@ -134,7 +134,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine($"accepted: {Share(plans.Count(p => p.Stats.Accepted), n)}, the rest restored from the best attempt");
             sb.AppendLine($"combat branch in final layout: {Share(plans.Count(p => p.Stats.BranchPlaced), n)}");
             sb.AppendLine($"aux branches placed: {Share(plans.Sum(p => p.Stats.AuxPlaced), plans.Sum(p => p.Stats.AuxAttempts))}");
-            sb.AppendLine($"forks: {plans.Sum(p => p.Stats.Forks)}, short stubs: {plans.Sum(p => p.Stats.ForkStubs)}, unplaced: {plans.Sum(p => p.Stats.ForkFailures)}, exit fork fallbacks: {plans.Sum(p => p.Stats.ExitForkFallbacks)}, down arm fallbacks: {plans.Sum(p => p.Stats.DownArmFallbacks)}");
+            sb.AppendLine($"forks: {plans.Sum(p => p.Stats.Forks)}, short stubs: {plans.Sum(p => p.Stats.ForkStubs)}, unplaced: {plans.Sum(p => p.Stats.ForkFailures)}, exit fork fallbacks: {plans.Sum(p => p.Stats.ExitForkFallbacks)}, down arm fallbacks: {plans.Sum(p => p.Stats.DownArmFallbacks)}, trapping branches rolled back: {plans.Sum(p => p.Stats.TrappingBranches)}");
             sb.AppendLine($"tributaries placed: {Share(plans.Sum(p => p.Stats.TributariesPlaced), plans.Sum(p => p.Stats.TributaryTries))}");
             sb.AppendLine($"spawn past the middle toward a door: {plans.Count(p => p.Stats.SpawnTowardDoor)}, fork exit in the back half: {plans.Count(p => p.Stats.ExitInBackHalf)}");
             int treasureDoors = plans.Sum(p => p.Stats.TreasureDoors);

@@ -122,6 +122,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         private bool _marchesDown;
 
+        /// <summary>
+        /// Where a walk through this dungeon starts and the doors ahead of it. A side branch that leaves a cell trapped
+        /// (<see cref="CountTrapped"/>) is rolled back. Null until the doors are placed.
+        /// </summary>
+        private Point? _walkOrigin;
+        private List<(LayoutDirection Dir, Point Anchor)> _onwardDoors;
+
         private GridGenerator(DungeonContent content, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options)
         {
             _content = content;
@@ -470,7 +477,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (spineHasOneCombat && combatMandatory)
                     {
                         _search.Phase = SearchPhase.Branch;
-                        branchPlacement = TryPlaceBranchThroughSecondCombat(grid, spineSteps, requiredAnchors, spineCostFn, gridCols, gridRows, rand);
+                        branchPlacement = TryPlaceBranchThroughSecondCombat(grid, spineSteps, requiredAnchors, spineCostFn, gridCols, gridRows, hub, rand);
                         _search.Phase = SearchPhase.Spine;
                     }
                     bool branchPlaced = branchPlacement.HasValue;
@@ -654,6 +661,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             TryAddTributaries(grid, paths, trunks, keyPoints, forkCostFn, hubStart.HasValue ? (doorAtEnd ? 1 : -1) : 0, rand);
 
             // Phase 3: aux branches
+            _walkOrigin = spawnRoomAnchor ?? (doorAnchors.Count > 0 ? doorAnchors.First().Value : null);
+            _onwardDoors = doorAnchors.Select(kv => (kv.Key, kv.Value)).Concat(exitAnchors).Where(d => d.Item2 != _walkOrigin).ToList();
             _search.Phase = SearchPhase.Aux;
             TryAddJunctionBranches(grid, paths, start, endTarget, spineCostFn, gridCols, gridRows, rand);
             _stats.AuxAttempts = MaxAuxBranchAttempts;
@@ -1237,7 +1246,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// columns for a top-to-bottom one) and routes two short legs back to the nearest spine nodes before and after the
         /// spine's combat. Rolls back fully and returns null on failure.
         /// </summary>
-        private BranchPlacement? TryPlaceBranchThroughSecondCombat(DungeonGrid grid, List<PathStep> spineSteps, List<Point> requiredAnchors, EdgeCost costFn, int gridCols, int gridRows, Random rand)
+        /// <param name="above">
+        /// Place the second combat above a west-to-east spine's combat, never below.
+        /// </param>
+        private BranchPlacement? TryPlaceBranchThroughSecondCombat(DungeonGrid grid, List<PathStep> spineSteps, List<Point> requiredAnchors, EdgeCost costFn, int gridCols, int gridRows, bool above, Random rand)
         {
             Point spineCombatAnchor = default;
             GridRoom spineCombat = null;
@@ -1282,7 +1294,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             for (int posAttempt = 0; posAttempt < MaxPositionAttempts; posAttempt++)
             {
                 int depth = BranchDepthMin + rand.Next(BranchDepthMax - BranchDepthMin + 1);
-                bool positive = rand.Next(2) == 0;
+                bool positive = rand.Next(2) == 0 && !above;
                 Point posCandidate;
                 if (_marchesDown)
                 {
@@ -1369,7 +1381,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private const int MinExitDoorSpacing = 8;
 
         // Aux branch tuning
-        private const int MaxAuxBranchAttempts = 4;
+        private const int MaxAuxBranchAttempts = 6;
         private const int MaxAuxNodeManhattan = 10;
         private const int MinAuxNodeManhattan = 3;
         private const int MinDeadEndDepth = 3;
@@ -1377,6 +1389,35 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         // Per-aux-branch internal retries.
         private const int AuxNodePickAttempts = 12;
         private const int AuxCombatPositionAttempts = 8;
+
+        /// <summary>
+        /// Cells reached from <see cref="_walkOrigin"/> without stepping against the direction of one of
+        /// <see cref="_onwardDoors"/> that have no route to any of them that never steps against its direction.
+        /// </summary>
+        private int CountTrapped(DungeonGrid grid)
+        {
+            var monotone = _onwardDoors.Select(d => MonotoneCells(grid, d.Anchor, d.Dir)).ToList();
+            var trapped = new HashSet<Point>();
+            foreach (var door in _onwardDoors)
+                foreach (var cell in ForwardCells(grid, _walkOrigin.Value, door.Dir))
+                    if (!monotone.Any(m => m.Contains(cell))) trapped.Add(cell);
+            return trapped.Count;
+        }
+
+        /// <summary>
+        /// Runs <paramref name="place"/> and rolls its branch back when it adds trapped cells (<see cref="CountTrapped"/>).
+        /// </summary>
+        private DungeonPath UnlessTrapping(DungeonGrid grid, Func<DungeonPath> place)
+        {
+            if (!_walkOrigin.HasValue || _onwardDoors.Count == 0) return place();
+            int before = CountTrapped(grid);
+            var snapshot = grid.CaptureSlots();
+            var branch = place();
+            if (branch == null || CountTrapped(grid) <= before) return branch;
+            grid.RestoreSlots(snapshot);
+            _stats.TrappingBranches++;
+            return null;
+        }
 
         /// <summary>
         /// Best-effort aux branches off the spine or branch 1 only. Each is a
@@ -1394,9 +1435,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 bool closedLoop = rand.Next(2) == 0;
                 int newId = paths.Count + 1;
 
-                DungeonPath result = closedLoop
+                DungeonPath result = UnlessTrapping(grid, () => closedLoop
                     ? TryAddClosedLoopAux(grid, parent, newId, costFn, gridCols, gridRows, rand)
-                    : TryAddDeadEndAux(grid, parent, newId, costFn, gridCols, gridRows, rand);
+                    : TryAddDeadEndAux(grid, parent, newId, costFn, gridCols, gridRows, rand));
 
                 if (result != null)
                 {
@@ -1669,9 +1710,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 {
                     if (!HasFreeOpening(grid, room)) break;
                     bool reward = (i == 0) == rewardFirst;
-                    var branch = reward
+                    var branch = UnlessTrapping(grid, () => reward
                         ? TryJunctionReward(grid, parent, room, paths.Count + 1, costFn, gridCols, gridRows, rand)
-                        : TryJunctionLoop(grid, paths, parent, room, paths.Count + 1, start, end, bypassBefore, costFn, rand);
+                        : TryJunctionLoop(grid, paths, parent, room, paths.Count + 1, start, end, bypassBefore, costFn, rand));
                     if (branch == null) continue;
                     paths.Add(branch);
                     placed++;
