@@ -119,4 +119,103 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid.Pathfinding
             return Best(ranked, prototype, grid);
         }
     }
+
+    /// <summary>
+    /// Marches top to bottom along a zigzag line: sideways runs across a band of columns, alternating direction, that
+    /// drop steadily from the start door at the top of the first run to the end door at the end of the last.
+    /// </summary>
+    public sealed class SwitchbackMarch : SpineMarch
+    {
+        private const int MaxColumnShift = 6;
+        private const int MaxRowShift = 1;
+
+        private readonly int _bandLeft;
+        private readonly int _bandRight;
+        private readonly int _top;
+        private readonly int _depth;
+        private readonly int _runs;
+        private readonly bool _startLeft;
+
+        public SwitchbackMarch(int bandLeft, int bandRight, int top, int depth, int runs, bool startLeft)
+        {
+            _bandLeft = bandLeft;
+            _bandRight = bandRight;
+            _top = top;
+            _depth = depth;
+            _runs = runs;
+            _startLeft = startLeft;
+        }
+
+        private int RunLength => _bandRight - _bandLeft;
+
+        private int Length => _runs * RunLength;
+
+        private bool RunsRight(int run) => _startLeft == (run % 2 == 0);
+
+        public Point Start => PointAt(0);
+
+        public Point End => PointAt(Length);
+
+        /// <summary>
+        /// The cell on the line at <paramref name="along"/> cells from the start door.
+        /// </summary>
+        private Point PointAt(int along)
+        {
+            int run = Math.Min(_runs - 1, along / RunLength);
+            int offset = along - run * RunLength;
+            int col = RunsRight(run) ? _bandLeft + offset : _bandRight - offset;
+            return new Point(col, _top + (int)Math.Round((double)along * _depth / Length));
+        }
+
+        public override int Along(Point cell)
+        {
+            int run = Math.Clamp((cell.Y - _top) * _runs / _depth, 0, _runs - 1);
+            int offset = RunsRight(run) ? cell.X - _bandLeft : _bandRight - cell.X;
+            return run * RunLength + Math.Clamp(offset, 0, RunLength);
+        }
+
+        public override int Extent(GridRoom room) => room.CellWidth;
+
+        public override bool TargetAllowed(DungeonGrid grid, GridRoom prototype, int target, int edgeBorder, Func<GridRoom, Point, bool> allowAnchor)
+        {
+            if (allowAnchor == null) return true;
+            int row = PointAt(target).Y;
+            for (int col = edgeBorder; col < grid.Cols - edgeBorder; col++)
+                if (allowAnchor(prototype, new Point(col, row))) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Anchors near the line's cell at <paramref name="target"/>, no higher than the previous room's bottom row and
+        /// above the end door, nearest first.
+        /// </summary>
+        public override IEnumerable<Point> Candidates(DungeonGrid grid, GridRoom prototype, int index, int target, Point prevAnchor, GridRoom prevRoom, Point endDoor, bool last, HashSet<Point> blocked, int edgeBorder, Func<GridRoom, Point, bool> allowAnchor)
+        {
+            int w = prototype.CellWidth;
+            int h = prototype.CellHeight;
+            var point = PointAt(target);
+            int run = Math.Min(_runs - 1, target / RunLength);
+            int targetCol = RunsRight(run) ? point.X : point.X - w + 1;
+            int targetRow = point.Y + prototype.AnchorOffsetFromCursor.Y;
+            int prevBottom = prevAnchor.Y + prevRoom.CellHeight - 1;
+            var ranked = new List<(Point Pos, int Rank)>();
+            for (int shift = -MaxColumnShift; shift <= MaxColumnShift; shift++)
+            {
+                int col = targetCol + shift;
+                if (col < _bandLeft - 1 || col + w - 1 > _bandRight + 1) continue;
+                if (grid.NearVoid(col, w)) continue;
+                for (int dy = -MaxRowShift; dy <= MaxRowShift; dy++)
+                {
+                    int row = targetRow + dy;
+                    if (row < prevBottom || row + h - 1 > endDoor.Y) continue;
+                    if (row < edgeBorder || row + h - 1 >= grid.Rows - edgeBorder) continue;
+                    var pos = new Point(col, row);
+                    if (allowAnchor != null && !allowAnchor(prototype, pos)) continue;
+                    if (!FootprintIsOpen(grid, prototype, pos, blocked)) continue;
+                    ranked.Add((pos, Math.Abs(shift) + 2 * Math.Abs(dy)));
+                }
+            }
+            return Best(ranked, prototype, grid);
+        }
+    }
 }

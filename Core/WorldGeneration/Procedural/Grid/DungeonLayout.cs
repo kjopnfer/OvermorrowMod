@@ -60,9 +60,21 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         };
 
         /// <summary>
-        /// Which spine end a door in this direction uses: -1 for the start (west), 1 for the end (east), 0 for a fork.
+        /// True if a dungeon with doors toward <paramref name="dirs"/> has its spine march top to bottom: it has a North
+        /// and a South door.
         /// </summary>
-        public static int SpineEnd(this LayoutDirection dir) => dir.Delta().Y == 0 ? dir.Delta().X : 0;
+        public static bool MarchesDown(IEnumerable<LayoutDirection> dirs) => dirs.Contains(LayoutDirection.North) && dirs.Contains(LayoutDirection.South);
+
+        /// <summary>
+        /// Which spine end a door in this direction uses: -1 for the start (west, or north when the spine
+        /// <paramref name="marchesDown"/>), 1 for the end (east, or south), 0 for a fork.
+        /// </summary>
+        public static int SpineEnd(this LayoutDirection dir, bool marchesDown)
+        {
+            Point d = dir.Delta();
+            if (marchesDown) return d.X == 0 ? d.Y : 0;
+            return d.Y == 0 ? d.X : 0;
+        }
     }
 
     /// <summary>
@@ -125,8 +137,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public void AddRoom(int node, Func<GridRoom> factory) => _extraRooms.Add((node, factory));
 
         /// <summary>
-        /// Places a door to the next biome in <paramref name="node"/>'s dungeon toward <paramref name="dir"/>: a spine end for
-        /// East or West, a fork otherwise.
+        /// Places a door to the next biome in <paramref name="node"/>'s dungeon toward <paramref name="dir"/>: a spine end when
+        /// <see cref="LayoutDirections.SpineEnd"/> gives one, a fork otherwise.
         /// </summary>
         public void AddExit(int node, LayoutDirection dir, Func<GridRoom> factory) => _exits.Add((node, dir, factory));
 
@@ -485,7 +497,9 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         {
             for (int i = 0; i < _nodes.Count; i++)
             {
-                var ends = DoorDirectionsFor(i).Concat(ExitsFor(i).Select(e => e.Dir)).Select(dir => dir.SpineEnd()).ToList();
+                var dirs = DoorDirectionsFor(i).Concat(ExitsFor(i).Select(e => e.Dir)).ToList();
+                bool marchesDown = LayoutDirections.MarchesDown(dirs);
+                var ends = dirs.Select(dir => dir.SpineEnd(marchesDown)).ToList();
                 if (ends.Count(e => e < 0) > 1 || ends.Count(e => e > 0) > 1)
                     Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: dungeon {i} has more than one door at the same spine end; the extras become forks or spine rooms.");
             }
