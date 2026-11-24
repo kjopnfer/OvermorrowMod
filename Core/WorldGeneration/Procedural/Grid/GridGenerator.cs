@@ -651,7 +651,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             var keyPoints = doorAnchors.Values.Concat(exitAnchors.Select(e => e.Anchor)).ToList();
             if (spawnRoomAnchor.HasValue) keyPoints.Add(spawnRoomAnchor.Value);
             _search.Phase = SearchPhase.Tributary;
-            TryAddTributaries(grid, paths, trunks, keyPoints, forkCostFn, rand);
+            TryAddTributaries(grid, paths, trunks, keyPoints, forkCostFn, hubStart.HasValue ? (doorAtEnd ? 1 : -1) : 0, rand);
 
             // Phase 3: aux branches
             _search.Phase = SearchPhase.Aux;
@@ -1971,7 +1971,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// tributary already placed, never moving against the trunk's direction. One that opens a route around every
         /// combat room between two of <paramref name="keyPoints"/> is rolled back.
         /// </summary>
-        private void TryAddTributaries(DungeonGrid grid, List<DungeonPath> paths, List<(DungeonPath Path, int Dy)> trunks, List<Point> keyPoints, EdgeCost costFn, Random rand)
+        /// <param name="towardSide">
+        /// A hub's column direction toward its spine-end door, or 0. When set, every band gets a try and no tributary
+        /// moves away from that door.
+        /// </param>
+        private void TryAddTributaries(DungeonGrid grid, List<DungeonPath> paths, List<(DungeonPath Path, int Dy)> trunks, List<Point> keyPoints, EdgeCost costFn, int towardSide, Random rand)
         {
             var gatedPairs = new List<(Point, Point)>();
             for (int i = 0; i < keyPoints.Count; i++)
@@ -1984,10 +1988,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             foreach (var (trunk, dy) in trunks)
             {
-                MoveMask backward = MoveMasks.Toward(new Point(0, -dy));
+                MoveMask backward = MoveMasks.Toward(new Point(0, -dy)) | (towardSide != 0 ? MoveMasks.Toward(new Point(-towardSide, 0)) : MoveMask.None);
                 var joinable = new List<PathStep>(trunk.Steps);
                 int trunkBand = Band(trunk.Steps[0].Anchor.X);
-                var bands = spineFillers.Select(s => Band(s.Anchor.X)).Distinct().Where(b => b != trunkBand).OrderBy(b => Math.Abs(b - trunkBand)).ToList();
+                var bands = spineFillers.Select(s => Band(s.Anchor.X)).Distinct().Where(b => towardSide != 0 || b != trunkBand).OrderBy(b => Math.Abs(b - trunkBand)).ToList();
                 foreach (int band in bands)
                 {
                     _stats.TributaryTries++;
@@ -1995,7 +1999,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     ShuffleInPlace(attaches, rand);
                     List<PathStep> tributary = null;
                     foreach (var attach in attaches.Take(TributaryAttachTries))
-                        if ((tributary = TryTributaryFrom(grid, attach, dy, backward, joinable, gatedPairs, noRooms, costFn)) != null) break;
+                        if ((tributary = TryTributaryFrom(grid, attach, dy, towardSide, backward, joinable, gatedPairs, noRooms, costFn)) != null) break;
                     if (tributary == null) continue;
 
                     paths.Add(new DungeonPath(id: paths.Count + 1, role: PathRole.ClosedLoopBranch, parent: trunk, steps: tributary, combatAnchor: null));
@@ -2008,7 +2012,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <returns>
         /// The tributary's steps, already placed, or null with the grid left unchanged.
         /// </returns>
-        private List<PathStep> TryTributaryFrom(DungeonGrid grid, PathStep attach, int dy, MoveMask backward, List<PathStep> joinable, List<(Point, Point)> gatedPairs, List<PathStep> noRooms, EdgeCost costFn)
+        private List<PathStep> TryTributaryFrom(DungeonGrid grid, PathStep attach, int dy, int towardSide, MoveMask backward, List<PathStep> joinable, List<(Point, Point)> gatedPairs, List<PathStep> noRooms, EdgeCost costFn)
         {
             var shaftPos = new Point(attach.Anchor.X, attach.Anchor.Y + dy);
             var landingPos = new Point(attach.Anchor.X, attach.Anchor.Y + 2 * dy);
@@ -2018,7 +2022,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             grid.Place(landing, landingPos.X, landingPos.Y, grid.NextGroupId());
 
             int Distance(PathStep s) => Math.Abs(s.Anchor.X - landingPos.X) + Math.Abs(s.Anchor.Y - landingPos.Y);
-            var targets = BranchNodes(grid, joinable, noRooms).Where(s => (s.Anchor.Y - landingPos.Y) * dy >= 0).OrderBy(Distance).Take(TributaryTargetTries).ToList();
+            var targets = BranchNodes(grid, joinable, noRooms).Where(s => (s.Anchor.Y - landingPos.Y) * dy >= 0 && (s.Anchor.X - landingPos.X) * towardSide >= 0).OrderBy(Distance).Take(TributaryTargetTries).ToList();
             foreach (var target in targets)
             {
                 int budget = Math.Max(ForkLegMaxExpansions, TributaryExpansionsPerCell * Distance(target));
