@@ -53,6 +53,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
             if (config != null) WriteGenerationConfig(sb, config);
             WriteCellCounts(sb, grid);
+            WriteCompactMaps(sb, grid);
             WriteAsciiLayout(sb, grid);
             WriteDeadEndCorridors(sb, grid);
             WriteAdjacencyMismatches(sb, grid);
@@ -133,6 +134,85 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 sb.AppendLine($"  {kv.Key}: {kv.Value}");
             sb.AppendLine($"  Total anchors:    {totalAnchors}");
             sb.AppendLine($"  Empty slots:      {emptySlots} / {totalSlots}");
+            sb.AppendLine();
+        }
+
+        /// <summary>
+        /// One character per cell over the occupied area: the room kind, then which sides lead on to another cell.
+        /// </summary>
+        private static void WriteCompactMaps(StringBuilder sb, DungeonGrid grid)
+        {
+            sb.AppendLine("--- Compact map ---");
+            sb.AppendLine("S spawn, D door, C combat, c chest, T treasure door, F feature filler, - filler, | vertical connector, = horizontal connector, / diagonal connector (stair), b bridge, ~ void strip.");
+            WriteCharMap(sb, grid, (col, row, slot) => slot.IsEmpty ? (grid.IsVoid(col) ? '~' : ' ') : RoomChar(slot.Room));
+            sb.AppendLine("--- Doorways ---");
+            sb.AppendLine("Hex sum of the sides a cell leads on through, to its own room or a connected one: left 1, right 2, top 4, bottom 8.");
+            WriteCharMap(sb, grid, (col, row, slot) => slot.IsEmpty ? ' ' : "0123456789abcdef"[OpenSides(grid, col, row, slot)]);
+        }
+
+        private static char RoomChar(GridRoom room) => room.IsSpawnRoom ? 'S' : room.Type switch
+        {
+            RoomType.Door => 'D',
+            RoomType.Combat => 'C',
+            RoomType.Chest => 'c',
+            RoomType.TreasureDoor => 'T',
+            RoomType.Filler => room.IsFeature ? 'F' : '-',
+            RoomType.VerticalConnector => '|',
+            RoomType.HorizontalConnector => '=',
+            RoomType.DiagonalConnector => '/',
+            RoomType.Bridge => 'b',
+            _ => '?',
+        };
+
+        private static int OpenSides(DungeonGrid grid, int col, int row, GridSlot slot)
+        {
+            int mask = 0;
+            var sides = new (Direction Side, int Bit)[] { (Direction.Left, 1), (Direction.Right, 2), (Direction.Top, 4), (Direction.Bottom, 8) };
+            foreach (var (side, bit) in sides)
+            {
+                Point step = side.Step();
+                var neighbor = grid.GetSlot(col + step.X, row + step.Y);
+                if (neighbor == null || neighbor.IsEmpty) continue;
+                if (neighbor.GroupId == slot.GroupId || GridRoom.Connects(slot, side, neighbor)) mask |= bit;
+            }
+            return mask;
+        }
+
+        /// <summary>
+        /// Writes <paramref name="cellChar"/> for every cell in the occupied rows and columns, with column and row labels.
+        /// </summary>
+        private static void WriteCharMap(StringBuilder sb, DungeonGrid grid, Func<int, int, GridSlot, char> cellChar)
+        {
+            int minCol = int.MaxValue, maxCol = -1, minRow = int.MaxValue, maxRow = -1;
+            for (int col = 0; col < grid.Cols; col++)
+                for (int row = 0; row < grid.Rows; row++)
+                {
+                    var slot = grid.GetSlot(col, row);
+                    if (slot == null || slot.IsEmpty) continue;
+                    minCol = Math.Min(minCol, col);
+                    maxCol = Math.Max(maxCol, col);
+                    minRow = Math.Min(minRow, row);
+                    maxRow = Math.Max(maxRow, row);
+                }
+            if (maxCol < 0)
+            {
+                sb.AppendLine("  (empty)");
+                sb.AppendLine();
+                return;
+            }
+
+            sb.Append("      ");
+            for (int col = minCol; col <= maxCol; col++) sb.Append(col % 10 == 0 ? (char)('0' + col / 10 % 10) : ' ');
+            sb.AppendLine();
+            sb.Append("      ");
+            for (int col = minCol; col <= maxCol; col++) sb.Append((char)('0' + col % 10));
+            sb.AppendLine();
+            for (int row = minRow; row <= maxRow; row++)
+            {
+                sb.Append($"  {row,3} ");
+                for (int col = minCol; col <= maxCol; col++) sb.Append(cellChar(col, row, grid.GetSlot(col, row)));
+                sb.AppendLine();
+            }
             sb.AppendLine();
         }
 
