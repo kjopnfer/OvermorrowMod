@@ -29,7 +29,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         private readonly Dictionary<int, DungeonPalette> _zonePalettes = new();
 
         /// <summary>
-        /// Zone 1 paints the wood wall's panels blue with blue chairs, zone 2 yellow panels with the default chairs; every
+        /// Zone 1 paints the wood wall's panels red with red chairs, zone 2 yellow panels with the default chairs; every
         /// other zone keeps the default palette.
         /// </summary>
         public override DungeonPalette ZonePalette(int zone)
@@ -39,15 +39,15 @@ namespace OvermorrowMod.Content.Dungeons.Archive
 
             var walls = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>
             {
-                [ArchivePalette.PanelWall] = TexPlaceAction.PlaceWall(zone == 1 ? ModContent.WallType<ArchiveWoodWallBlue>() : ModContent.WallType<ArchiveWoodWallYellow>()),
+                [ArchivePalette.PanelWall] = TexPlaceAction.PlaceWall(zone == 1 ? ModContent.WallType<ArchiveWoodWallRed>() : ModContent.WallType<ArchiveWoodWallYellow>()),
             };
             var objects = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>();
             var objectTypes = new Dictionary<int, int>();
             if (zone == 1)
             {
-                objects[ArchivePalette.CozyChairLeft] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairBlue>());
-                objects[ArchivePalette.CozyChairRight] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairBlue>(), direction: 1);
-                objectTypes[ModContent.TileType<SmallChair>()] = ModContent.TileType<SmallChairBlue>();
+                objects[ArchivePalette.CozyChairLeft] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairRed>());
+                objects[ArchivePalette.CozyChairRight] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairRed>(), direction: 1);
+                objectTypes[ModContent.TileType<SmallChair>()] = ModContent.TileType<SmallChairRed>();
             }
             return _zonePalettes[zone] = Palette.With(walls, objects, objectTypes);
         }
