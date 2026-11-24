@@ -98,6 +98,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public virtual bool IsSpawnRoom => false;
 
         /// <summary>
+        /// A landmark open on every side. In a dungeon with a spawn room, it sits a short walk from the spawn where the
+        /// routes toward the dungeon's doors split.
+        /// </summary>
+        public virtual bool IsHubJunction => false;
+
+        /// <summary>
         /// Paints the padding strip on one outward side; called once per side per room.
         /// </summary>
         public virtual void BuildPadding(PaddingContext ctx) { }

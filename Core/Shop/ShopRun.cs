@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Core.Shop
 {
@@ -21,6 +23,25 @@ namespace OvermorrowMod.Core.Shop
         }
 
         public override void OnWorldLoad() => Reset();
+
+        public override void SaveWorldData(TagCompound tag)
+        {
+            if (stock == null) return;
+
+            tag["ShopTypes"] = stock.Select(entry => entry.type).ToList();
+            tag["ShopPrices"] = stock.Select(entry => entry.price).ToList();
+            tag["ShopPurchased"] = Purchased.ToList();
+        }
+
+        public override void LoadWorldData(TagCompound tag)
+        {
+            if (!tag.ContainsKey("ShopTypes")) return;
+
+            IList<int> types = tag.GetList<int>("ShopTypes");
+            IList<int> prices = tag.GetList<int>("ShopPrices");
+            stock = types.Select((type, i) => (type, prices[i])).ToList();
+            Purchased.UnionWith(tag.GetList<int>("ShopPurchased"));
+        }
 
         public override void ClearWorld() => Reset();
 

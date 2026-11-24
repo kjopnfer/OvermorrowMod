@@ -10,39 +10,39 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 {
     public class TestGenPass : GenPass
     {
-        private readonly Func<GridRoom> _portalB;
-        private readonly Func<GridRoom> _portalC;
+        private readonly Func<GridRoom> _sideExit;
+        private readonly Func<GridRoom> _downExit;
         private readonly Func<DungeonContent> _contentFactory;
 
-        public TestGenPass(string name, double loadWeight, Func<GridRoom> portalB, Func<GridRoom> portalC, Func<DungeonContent> contentFactory) : base(name, loadWeight)
+        public TestGenPass(string name, double loadWeight, Func<GridRoom> sideExit, Func<GridRoom> downExit, Func<DungeonContent> contentFactory) : base(name, loadWeight)
         {
-            _portalB = portalB;
-            _portalC = portalC;
+            _sideExit = sideExit;
+            _downExit = downExit;
             _contentFactory = contentFactory;
         }
 
         /// <summary>
-        /// Declares this subworld's dungeons: a root A with B and C branching off it in two random distinct directions.
+        /// Declares this subworld's dungeons: the root, a dungeon below it with an exit at its bottom, and a dungeon east or
+        /// west of the root with an exit at its far end.
         /// </summary>
         public DungeonLayout CreateLayout(Random rand)
         {
             var layout = new DungeonLayout();
-            int a = layout.Add(_contentFactory());
-            int b = layout.Add(_contentFactory());
-            int c = layout.Add(_contentFactory());
-            // East/West become spine endpoint doors; the other six become vertical forks.
-            var dirs = (LayoutDirection[])Enum.GetValues(typeof(LayoutDirection));
-            int d1 = rand.Next(dirs.Length);
-            int d2 = rand.Next(dirs.Length - 1);
-            if (d2 >= d1) d2++;
-            layout.Connect(a, dirs[d1], b);
-            layout.Connect(a, dirs[d2], c);
-            if (_portalB != null) layout.AddRoom(b, _portalB);
-            if (_portalC != null) layout.AddRoom(c, _portalC);
-            // Only the root dungeon (the one the player spawns in) gets a StartingRoom.
-            layout.AddRoom(a, () => new StartingRoom());
-            layout.AddRoom(a, () => new ShopRoom());
-            layout.SetRoot(a);
+            LayoutDirection side = rand.Next(2) == 0 ? LayoutDirection.East : LayoutDirection.West;
+
+            int root = layout.Add(_contentFactory());
+            int below = layout.Add(_contentFactory());
+            int beside = layout.Add(_contentFactory());
+            layout.Connect(root, LayoutDirection.South, below);
+            layout.Connect(root, side, beside);
+            layout.SetZone(below, 1);
+            layout.SetZone(beside, 2);
+
+            if (_downExit != null) layout.AddExit(below, LayoutDirection.South, _downExit);
+            if (_sideExit != null) layout.AddExit(beside, side, _sideExit);
+            layout.AddRoom(root, () => new StartingRoom());
+            layout.AddRoom(root, () => new ShopRoom());
+            layout.SetRoot(root);
             return layout;
         }
 

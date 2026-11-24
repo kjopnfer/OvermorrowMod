@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using System.Threading.Tasks;
 using Terraria.DataStructures;
@@ -40,6 +41,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             _ => Point.Zero,
         };
 
+        /// <summary>
+        /// The direction whose <see cref="Delta"/> is <paramref name="delta"/>. Each axis must be in {-1, 0, 1}, not both 0.
+        /// </summary>
+        public static LayoutDirection FromDelta(Point delta) => Enum.GetValues<LayoutDirection>().First(dir => dir.Delta() == delta);
+
         public static LayoutDirection Opposite(this LayoutDirection dir) => dir switch
         {
             LayoutDirection.East => LayoutDirection.West,
@@ -52,6 +58,23 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             LayoutDirection.SouthWest => LayoutDirection.NorthEast,
             _ => dir,
         };
+
+        /// <summary>
+        /// True if a dungeon with doors toward <paramref name="dirs"/> has its spine march top to bottom: it has a North
+        /// and a South door.
+        /// </summary>
+        public static bool MarchesDown(IEnumerable<LayoutDirection> dirs) => dirs.Contains(LayoutDirection.North) && dirs.Contains(LayoutDirection.South);
+
+        /// <summary>
+        /// Which spine end a door in this direction uses: -1 for the start (west, or north when the spine
+        /// <paramref name="marchesDown"/>), 1 for the end (east, or south), 0 for a fork.
+        /// </summary>
+        public static int SpineEnd(this LayoutDirection dir, bool marchesDown)
+        {
+            Point d = dir.Delta();
+            if (marchesDown) return d.X == 0 ? d.Y : 0;
+            return d.Y == 0 ? d.X : 0;
+        }
     }
 
     /// <summary>
@@ -70,6 +93,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             public bool Placed;
             public Point WorldOrigin;
             public Point SpawnTile;
+            public int Zone;
             public readonly Dictionary<LayoutDirection, IDungeonDoor> Doors = new();
         }
 
@@ -90,6 +114,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         private readonly List<Node> _nodes = new();
         private readonly List<Edge> _edges = new();
         private readonly List<(int Node, Func<GridRoom> Factory)> _extraRooms = new();
+        private readonly List<(int Node, LayoutDirection Dir, Func<GridRoom> Factory)> _exits = new();
         private int _rootId = -1;
 
         /// <summary>Adds a dungeon and returns its handle.</summary>
@@ -111,6 +136,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         public void AddRoom(int node, Func<GridRoom> factory) => _extraRooms.Add((node, factory));
 
+        /// <summary>
+        /// Places a door to the next biome in <paramref name="node"/>'s dungeon toward <paramref name="dir"/>: a spine end when
+        /// <see cref="LayoutDirections.SpineEnd"/> gives one, a fork otherwise.
+        /// </summary>
+        public void AddExit(int node, LayoutDirection dir, Func<GridRoom> factory) => _exits.Add((node, dir, factory));
+
+        /// <summary>
+        /// Sets the wall zone of <paramref name="node"/>'s dungeon (0 by default). Rooms near a door into a dungeon of
+        /// another zone take that zone.
+        /// </summary>
+        public void SetZone(int node, int zone) => _nodes[node].Zone = zone;
+
         /// <summary>Sets the dungeon the player spawns in.</summary>
         public void SetRoot(int node) => _rootId = node;
 
@@ -125,7 +162,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 seeds[i] = rand.Next();
 
             var plans = new DungeonPlan[_nodes.Count];
-            void PlanDungeon(int i) => plans[i] = GridGenerator.Plan(_nodes[i].Content, new Random(seeds[i]), DoorDirectionsFor(i), ExtraRoomsFor(i), i, options);
+            void PlanDungeon(int i) => plans[i] = GridGenerator.Plan(_nodes[i].Content, new Random(seeds[i]), DoorDirectionsFor(i), ExtraRoomsFor(i), i, options, ExitsFor(i), _nodes[i].Zone, DoorZonesFor(i));
 
             if (options.Sequential)
             {
@@ -146,6 +183,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         {
             if (_nodes.Count == 0) return;
             if (_rootId < 0) _rootId = 0;
+            WarnOnSpineEndConflicts();
+            WarnOnBackwardEdges();
 
             // 1. Plan each tile placement without placing tiles.
             var plans = Plan(rand, new PlanOptions { Diagnostics = true });
@@ -443,6 +482,29 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return dirs;
         }
 
+        private Dictionary<LayoutDirection, int> DoorZonesFor(int nodeId)
+        {
+            var zones = new Dictionary<LayoutDirection, int>();
+            foreach (var edge in _edges)
+            {
+                if (edge.From == nodeId) zones[edge.Dir] = _nodes[edge.To].Zone;
+                else if (edge.To == nodeId) zones[edge.Dir.Opposite()] = _nodes[edge.From].Zone;
+            }
+            return zones;
+        }
+
+        private void WarnOnSpineEndConflicts()
+        {
+            for (int i = 0; i < _nodes.Count; i++)
+            {
+                var dirs = DoorDirectionsFor(i).Concat(ExitsFor(i).Select(e => e.Dir)).ToList();
+                bool marchesDown = LayoutDirections.MarchesDown(dirs);
+                var ends = dirs.Select(dir => dir.SpineEnd(marchesDown)).ToList();
+                if (ends.Count(e => e < 0) > 1 || ends.Count(e => e > 0) > 1)
+                    Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: dungeon {i} has more than one door at the same spine end; the extras become forks or spine rooms.");
+            }
+        }
+
         /// <summary>The extra feature rooms assigned to a dungeon.</summary>
         private List<Func<GridRoom>> ExtraRoomsFor(int nodeId)
         {
@@ -451,6 +513,66 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 if (node == nodeId) rooms.Add(factory);
             return rooms;
         }
+
+        /// <summary>
+        /// Warns about edges that break "an exit's direction always leads toward it": an edge on the way from the root to an
+        /// exit's dungeon that moves against the exit's direction, or an edge leading on out of that dungeon in the exit's direction.
+        /// </summary>
+        private void WarnOnBackwardEdges()
+        {
+            var parentEdge = ParentEdgesFromRoot();
+            foreach (var (node, exitDir, _) in _exits)
+            {
+                Point forward = exitDir.Delta();
+                for (int cur = node; parentEdge[cur] >= 0;)
+                {
+                    var edge = _edges[parentEdge[cur]];
+                    bool towardCur = edge.To == cur;
+                    Point step = towardCur ? edge.Dir.Delta() : edge.Dir.Opposite().Delta();
+                    if (step.X * forward.X < 0 || step.Y * forward.Y < 0)
+                        Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: connection {edge.From} -{edge.Dir}-> {edge.To} leads from the root against the {exitDir} exit of dungeon {node}.");
+                    cur = towardCur ? edge.From : edge.To;
+                }
+
+                foreach (var edge in _edges)
+                {
+                    if (edge.From != node && edge.To != node) continue;
+                    Point outward = edge.From == node ? edge.Dir.Delta() : edge.Dir.Opposite().Delta();
+                    if (outward.X * forward.X > 0 || outward.Y * forward.Y > 0)
+                        Terraria.ModLoader.Logging.PublicLogger.Warn($"OvermorrowDungeon: connection {edge.From} -{edge.Dir}-> {edge.To} leads on out of dungeon {node} toward its {exitDir} exit.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// For each dungeon, the index of the edge it was first reached by in a breadth-first walk from the root, ignoring edge
+        /// direction; -1 for the root and for dungeons not connected to it.
+        /// </summary>
+        private int[] ParentEdgesFromRoot()
+        {
+            var parentEdge = new int[_nodes.Count];
+            Array.Fill(parentEdge, -1);
+            var reached = new bool[_nodes.Count];
+            reached[_rootId] = true;
+            var queue = new Queue<int>();
+            queue.Enqueue(_rootId);
+            while (queue.Count > 0)
+            {
+                int cur = queue.Dequeue();
+                for (int e = 0; e < _edges.Count; e++)
+                {
+                    var edge = _edges[e];
+                    int other = edge.From == cur ? edge.To : edge.To == cur ? edge.From : -1;
+                    if (other < 0 || reached[other]) continue;
+                    reached[other] = true;
+                    parentEdge[other] = e;
+                    queue.Enqueue(other);
+                }
+            }
+            return parentEdge;
+        }
+
+        private List<(LayoutDirection Dir, Func<GridRoom> Factory)> ExitsFor(int nodeId) => _exits.Where(e => e.Node == nodeId).Select(e => (e.Dir, e.Factory)).ToList();
 
         private static IDungeonDoor FindNearestDoor(Point tile)
         {

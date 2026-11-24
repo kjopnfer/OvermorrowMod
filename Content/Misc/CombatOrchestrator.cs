@@ -9,6 +9,7 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Loot;
 using OvermorrowMod.Core.Loot.Pools;
 using OvermorrowMod.Core.Particles;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.WorldGeneration;
 using ReLogic.Content;
@@ -32,6 +33,10 @@ namespace OvermorrowMod.Content.Misc
         private Phase phase = Phase.Setup;
         private int entrySide;
         private readonly List<int> spawnedNPCs = new();
+        private readonly Dictionary<int, int> embeddedTicks = new();
+        private int stallTicks;
+        private int lastEnemyLife = -1;
+        private int lastPlayerLife;
 
         private const int TotalWaves = 2;
         private int currentWave = 0;
@@ -122,6 +127,27 @@ namespace OvermorrowMod.Content.Misc
 
         public override bool CheckActive() => false;
 
+        public void RestoreEnded(int[] offers)
+        {
+            phase = Phase.End;
+            endTriggered = true;
+            capturedAnchor = true;
+            isRevealed = true;
+            hasImpacted = true;
+            NPC.noGravity = false;
+            NPC.noTileCollide = false;
+            if (offers.Length > 0) offeredRewards = offers;
+        }
+
+        public static bool AnyFightRunning()
+        {
+            foreach (NPC npc in Main.ActiveNPCs)
+            {
+                if (npc.ModNPC is CombatOrchestrator orchestrator && orchestrator.phase != Phase.End) return true;
+            }
+            return false;
+        }
+
         public Vector2 RewardAnchor => NPC.Center;
 
         public bool RewardSourceActive => NPC.active;
@@ -130,6 +156,7 @@ namespace OvermorrowMod.Content.Misc
         {
             if (isCleaningUp) return;
             LootRoller.GiveReward(Main.LocalPlayer, NPC.GetSource_Loot(), itemId);
+            if (LeftDoor is CombatDoor_TE door) door.RewardPending = false;
             isCleaningUp = true;
             cleanupTimer = 0;
         }
@@ -144,6 +171,7 @@ namespace OvermorrowMod.Content.Misc
             if (rerolled.Length == 0) return null;
 
             offeredRewards = rerolled;
+            if (LeftDoor is CombatDoor_TE door) door.RewardOffers = rerolled;
             return rerolled;
         }
 
@@ -206,7 +234,7 @@ namespace OvermorrowMod.Content.Misc
                     UpdateSetup(left, right);
                     break;
                 case Phase.Combat:
-                    UpdateCombat();
+                    UpdateCombat(left, right);
                     break;
                 case Phase.End:
                     UpdateEnd();
@@ -217,12 +245,17 @@ namespace OvermorrowMod.Content.Misc
             {
                 SpawnImpactParticles();
                 hasImpacted = true;
+                RunSave.Checkpoint();
             }
 
             EmitRays();
             if (isOpen && !wasOpen)
             {
-                offeredRewards ??= RollCombatReward();
+                if (offeredRewards == null)
+                {
+                    offeredRewards = RollCombatReward();
+                    LeftDoor.RewardOffers = offeredRewards;
+                }
                 if (offeredRewards.Length > 0)
                     RewardSelectionManager.ShowFor(this, offeredRewards);
             }
@@ -304,6 +337,12 @@ namespace OvermorrowMod.Content.Misc
 
         private void UpdateSetup(CombatDoor_TE left, CombatDoor_TE right)
         {
+            if (SubworldTimer.IsExpired)
+            {
+                NPC.active = false;
+                return;
+            }
+
             Rectangle room = RoomInterior(left, right);
             Vector2 playerCenter = Main.LocalPlayer.Center;
             bool playerInside = room.Contains(playerCenter.ToPoint());
@@ -357,7 +396,14 @@ namespace OvermorrowMod.Content.Misc
             ArchiveLights.SetRegion(roomRect, 1f, ModUtils.SecondsToTicks(1.5f));
         }
 
-        private void UpdateCombat()
+        private const int StrayMarginPixels = 32;
+        private static readonly int MaxEmbeddedTicks = ModUtils.SecondsToTicks(2);
+        private static readonly int MaxStallTicks = ModUtils.SecondsToTicks(60);
+
+        /// <summary>
+        /// Counts the wave's living enemies. One that leaves the room or stays inside solid tiles is despawned, and the rest are despawned once the fight stalls, so the fight can always end.
+        /// </summary>
+        private void UpdateCombat(CombatDoor_TE left, CombatDoor_TE right)
         {
             if (pendingSpawns.Count > 0)
             {
@@ -366,7 +412,11 @@ namespace OvermorrowMod.Content.Misc
                 return;
             }
 
-            int aliveCount = 0;
+            Rectangle room = RoomInterior(left, right);
+            room.Inflate(StrayMarginPixels, StrayMarginPixels);
+
+            var alive = new List<NPC>();
+            int enemyLife = 0;
             Player target = null;
             for (int i = 0; i < spawnedNPCs.Count; i++)
             {
@@ -377,7 +427,16 @@ namespace OvermorrowMod.Content.Misc
                 if (!enemy.active) continue;
                 if (enemy.ModNPC is not OvermorrowNPC modNPC || modNPC.CombatOrchestratorWhoAmI != NPC.whoAmI) continue;
 
-                aliveCount++;
+                Point centerTile = enemy.Center.ToTileCoordinates();
+                embeddedTicks[idx] = !enemy.noTileCollide && WorldGen.SolidTile(centerTile.X, centerTile.Y) ? embeddedTicks.GetValueOrDefault(idx) + 1 : 0;
+                if (!room.Contains(enemy.Center.ToPoint()) || embeddedTicks[idx] >= MaxEmbeddedTicks)
+                {
+                    enemy.active = false;
+                    continue;
+                }
+
+                alive.Add(enemy);
+                enemyLife += enemy.life;
 
                 if (!modNPC.TargetingModule.HasTarget())
                 {
@@ -386,9 +445,13 @@ namespace OvermorrowMod.Content.Misc
                 }
             }
 
-            if (aliveCount > 0)
+            if (alive.Count > 0)
             {
                 waveDelayTimer = 0;
+                if (Stalled(enemyLife))
+                {
+                    foreach (NPC enemy in alive) enemy.active = false;
+                }
                 return;
             }
 
@@ -404,13 +467,26 @@ namespace OvermorrowMod.Content.Misc
             phase = Phase.End;
         }
 
+        /// <summary>
+        /// True once <see cref="MaxStallTicks"/> pass with no enemy losing life and the player taking no damage.
+        /// </summary>
+        private bool Stalled(int enemyLife)
+        {
+            int playerLife = Main.LocalPlayer.statLife;
+            bool progress = enemyLife != lastEnemyLife || playerLife < lastPlayerLife;
+            lastEnemyLife = enemyLife;
+            lastPlayerLife = playerLife;
+            stallTicks = progress ? 0 : stallTicks + 1;
+            return stallTicks >= MaxStallTicks;
+        }
+
         private void UpdateEnd()
         {
             if (!hasImpacted) return;
 
             const float InteractRangeTiles = 7f;
             float interactRange = InteractRangeTiles * 16f;
-            bool playerInRange = Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) <= interactRange;
+            bool playerInRange = Main.LocalPlayer.active && !RunDeathPlayer.LocalDead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) <= interactRange;
 
             if (!playerInRange)
             {
@@ -473,6 +549,7 @@ namespace OvermorrowMod.Content.Misc
             currentWave++;
             waveDelayTimer = 0;
             spawnedNPCs.Clear();
+            embeddedTicks.Clear();
             pendingSpawns.Clear();
 
             int leftDoorX = System.Math.Min(left.Position.X, right.Position.X);
@@ -567,7 +644,7 @@ namespace OvermorrowMod.Content.Misc
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 Player player = Main.player[i];
-                if (!player.active || player.dead) continue;
+                if (!RunDeathPlayer.IsTargetable(player)) continue;
 
                 float distance = Vector2.DistanceSquared(player.Center, NPC.Center);
                 if (distance < nearestDistance)
@@ -609,6 +686,7 @@ namespace OvermorrowMod.Content.Misc
             endTriggered = true;
 
             Main.NewText("Room cleared!", Color.Gold);
+            Main.LocalPlayer.GetModPlayer<RunRecordPlayer>().RoomsCleared++;
             SubworldTimer.AddTime(30);
 
             Texture2D circleTex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_01", AssetRequestMode.ImmediateLoad).Value;
@@ -642,6 +720,7 @@ namespace OvermorrowMod.Content.Misc
             }
 
             LeftDoor?.BeginVanish();
+            LeftDoor?.MarkRewardPending();
             RightDoor?.BeginVanish();
 
             // Reveal the chest and allow for gravity

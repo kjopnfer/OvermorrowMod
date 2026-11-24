@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -70,8 +69,6 @@ namespace OvermorrowMod.Core.Items.Collectibles
             collectible.ShowPickup(Player);
             item.TurnToAir();
         }
-
-        public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource) => Reset();
 
         public void Reset()
         {

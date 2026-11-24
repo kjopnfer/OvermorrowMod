@@ -19,6 +19,8 @@ namespace OvermorrowMod.Core.WorldGeneration
 
         public static bool IsExpired => Running && RemainingTicks <= 0;
 
+        private static bool endSoundPlayed;
+
         private static float displayTicks = Duration;
         private static float scrollFrom;
         private static int scrollElapsed;
@@ -34,12 +36,23 @@ namespace OvermorrowMod.Core.WorldGeneration
             displayTicks = Duration;
             scrolling = false;
             BonusCount = 0;
+            endSoundPlayed = false;
             Running = true;
+        }
+
+        public static void Restore(int remainingTicks, bool running, int bonusCount)
+        {
+            RemainingTicks = remainingTicks;
+            displayTicks = remainingTicks;
+            scrolling = false;
+            BonusCount = bonusCount;
+            endSoundPlayed = false;
+            Running = running;
         }
 
         public static void AddTime(int seconds)
         {
-            if (!Running) return;
+            if (!Running || RemainingTicks <= 0) return;
 
             scrollFrom = displayTicks;
             RemainingTicks += ModUtils.SecondsToTicks(seconds);
@@ -60,7 +73,7 @@ namespace OvermorrowMod.Core.WorldGeneration
             if (RemainingTicks == WarnThreshold)
                 SoundEngine.PlaySound(WarnSound);
             else if (RemainingTicks == EndSoundLead)
-                SoundEngine.PlaySound(EndSound);
+                PlayEndSound();
 
             if (scrolling)
             {
@@ -75,18 +88,29 @@ namespace OvermorrowMod.Core.WorldGeneration
             }
         }
 
+        public static void PlayEndSound()
+        {
+            if (endSoundPlayed) return;
+
+            SoundEngine.PlaySound(EndSound);
+            endSoundPlayed = true;
+        }
+
         public static void Reset()
         {
             Running = false;
+            endSoundPlayed = false;
             RemainingTicks = Duration;
             displayTicks = Duration;
             scrolling = false;
             BonusCount = 0;
         }
 
-        public static string Display()
+        public static string Display() => Format((int)displayTicks);
+
+        public static string Format(int ticks)
         {
-            int totalSeconds = ((int)displayTicks + 59) / 60;
+            int totalSeconds = (ticks + 59) / 60;
             return $"{totalSeconds / 60}:{totalSeconds % 60:00}";
         }
     }

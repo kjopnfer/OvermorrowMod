@@ -1,5 +1,7 @@
 using OvermorrowMod.Common;
 using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Runs;
+using OvermorrowMod.Core.WorldGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +56,8 @@ namespace OvermorrowMod.Core.Items.Collectibles
             if (player.whoAmI != Main.myPlayer) return;
 
             var collectible = player.GetModPlayer<CollectiblePlayer>();
+            if (RunState.InRun) player.GetModPlayer<RunRecordPlayer>().ItemsByRarity[(int)Rarity] += count;
+
             for (int i = 0; i < count; i++)
             {
                 int heal = 0;

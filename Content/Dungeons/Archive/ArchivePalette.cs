@@ -11,12 +11,23 @@ namespace OvermorrowMod.Content.Dungeons.Archive
 {
     public class ArchivePalette : DungeonPalette
     {
+        /// <summary>
+        /// The art color of the wood wall's colored panels.
+        /// </summary>
+        public static readonly (byte R, byte G, byte B) PanelWall = (32, 43, 46);
+
+        /// <summary>
+        /// The art colors of the cozy chair, facing left and facing right.
+        /// </summary>
+        public static readonly (byte R, byte G, byte B) CozyChairLeft = (208, 61, 125);
+        public static readonly (byte R, byte G, byte B) CozyChairRight = (237, 86, 227);
+
         public ArchivePalette() : base(BuildWalls(), BuildTiles(), BuildObjects()) { }
 
         private static Dictionary<(byte R, byte G, byte B), TexPlaceFunction> BuildWalls() => new()
         {
             [(101, 66, 14)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWall>()),
-            [(32, 43, 46)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
+            [PanelWall] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveWoodWallBlack>()),
             [(66, 64, 61)] = TexPlaceAction.PlaceWall(ModContent.WallType<CastleWall>()),
             [(54, 36, 11)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWallFrame>()),
             [(118, 66, 138)] = TexPlaceAction.PlaceWall(ModContent.WallType<ArchiveBookWall>()),
@@ -47,8 +58,8 @@ namespace OvermorrowMod.Content.Dungeons.Archive
             [(159, 183, 204)] = TexPlaceAction.PlaceObject(ModContent.TileType<Bismarck>()),
             [(99, 49, 110)] = TexPlaceAction.PlaceObject(ModContent.TileType<FireplacePillar>()),
             [(180, 58, 0)] = TexPlaceAction.PlaceObject(ModContent.TileType<Fireplace>()),
-            [(208, 61, 125)] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>()),
-            [(237, 86, 227)] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>(), direction: 1),
+            [CozyChairLeft] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>()),
+            [CozyChairRight] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChair>(), direction: 1),
             [(153, 229, 80)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxChandelier>()),
             [(237, 157, 102)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxSconceEven>()),
             [(237, 152, 93)] = TexPlaceAction.PlaceObject(ModContent.TileType<WaxSconce>()),

@@ -21,6 +21,8 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 
         public override RoomType Type => RoomType.Filler;
 
+        public override bool IsHubJunction => true;
+
         public static readonly (byte R, byte G, byte B) ShopkeeperMarker = (220, 255, 4);
 
         private static readonly GridRoom[] HorizontalNeighbors =
@@ -29,6 +31,8 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             new CorridorCell(),
             new DescendingStair(),
             new AscendingStair(),
+            new DescendingStair { EntersFromRight = true },
+            new AscendingStair { EntersFromRight = true },
         };
 
         private static readonly GridRoom[] VerticalNeighbors = { new ShaftCell() };

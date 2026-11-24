@@ -68,6 +68,35 @@ UI: {
 	}
 }
 
+DeathScreen: {
+	RunOver: Run Over
+	RunAbandoned: Run Abandoned
+	Summary: Summary
+	ItemsFound: Items Found
+	Kept: Kept
+	Lost: Lost
+	Time: Time
+	Enemies: Enemies
+	Elites: Elites
+	Minibosses: Minibosses
+	Bosses: Bosses
+	RoomsCleared: Rooms Cleared
+
+	Rarity: {
+		Common: Common
+		Rare: Rare
+		Epic: Epic
+		Legendary: Legendary
+	}
+
+	NoStones: No Monkey Stones this run
+	Banked: "{0} banked"
+	Coins: Coins
+	NothingLost: Nothing
+	ClickToSkip: Click to skip
+	Return: Return
+}
+
 Tiles: {
 	ArchiveDoor.MapEntry: Archive Door
 	Lamp.MapEntry: Lamp

@@ -10,7 +10,7 @@ using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Core.UI.ClassSelection
 {
-    public enum ClassButtonKind { Enter, Regenerate, Close }
+    public enum ClassButtonKind { Enter, Regenerate, Close, Resume, Abandon, ConfirmAbandon }
 
     public class ClassSelectionButton : UIElement
     {
@@ -21,10 +21,13 @@ namespace OvermorrowMod.Core.UI.ClassSelection
         {
             ClassButtonKind.Enter => "Enter",
             ClassButtonKind.Regenerate => "Regenerate",
+            ClassButtonKind.Resume => "Resume",
+            ClassButtonKind.Abandon => "Abandon",
+            ClassButtonKind.ConfirmAbandon => "Abandon run?",
             _ => "Close"
         };
 
-        public Color BaseColor => kind == ClassButtonKind.Close ? new Color(180, 60, 60) : new Color(60, 140, 200);
+        public Color BaseColor => kind is ClassButtonKind.Close or ClassButtonKind.Abandon or ClassButtonKind.ConfirmAbandon ? new Color(180, 60, 60) : new Color(60, 140, 200);
 
         public override void LeftClick(UIMouseEvent evt)
         {

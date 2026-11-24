@@ -31,6 +31,8 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             new CorridorCell(),
             new DescendingStair(),
             new AscendingStair(),
+            new DescendingStair { EntersFromRight = true },
+            new AscendingStair { EntersFromRight = true },
         };
 
         protected override GridRoom[] AllowedNeighbors(Direction side) => side switch
@@ -79,13 +81,13 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "WritingRoom.aseprite";
 
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap(DungeonPalette palette) => new()
         {
-            [(134, 42, 104)] = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>()),
-            [(131, 42, 134)] = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>(), direction: -1),
+            [(134, 42, 104)] = TexPlaceAction.PlaceObject(palette.ObjectType(ModContent.TileType<SmallChair>())),
+            [(131, 42, 134)] = TexPlaceAction.PlaceObject(palette.ObjectType(ModContent.TileType<SmallChair>()), direction: -1),
             [(171, 73, 94)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmall>()),
-            [(31, 224, 164)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceTableAndChair(x, y, facingRight: true)),
-            [(98, 224, 31)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceTableAndChair(x, y, facingRight: false)),
+            [(31, 224, 164)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceTableAndChair(x, y, palette.ObjectType(ModContent.TileType<SmallChair>()), facingRight: true)),
+            [(98, 224, 31)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceTableAndChair(x, y, palette.ObjectType(ModContent.TileType<SmallChair>()), facingRight: false)),
             [(180, 179, 163)] = TexPlaceAction.CustomPlaceObject((x, y) =>
             {
                 for (int i = 0; i < 11; i++)
@@ -93,7 +95,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             }),
         };
 
-        private static void PlaceTableAndChair(int x, int y, bool facingRight)
+        private static void PlaceTableAndChair(int x, int y, int chairType, bool facingRight)
         {
             int tableType = ModContent.TileType<ArchiveTablePink>();
             if (Main.rand.NextBool())
@@ -113,8 +115,6 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
                 tableType = Main.rand.Next(specials);
                 specialType = true;
             }
-
-            int chairType = ModContent.TileType<SmallChair>();
 
             if (facingRight)
             {
@@ -213,7 +213,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
             TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, ctx.Palette.Objects);
-            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap());
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap(ctx.Palette));
         }
 
         public override void PlaceSpawns(FurnitureContext ctx, List<SpawnSlot> slots) => HarvestSpawns(ctx, slots, AsepritePath);

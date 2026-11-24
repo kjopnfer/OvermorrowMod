@@ -1,5 +1,6 @@
 using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
 using System.Collections.Generic;
@@ -121,6 +122,7 @@ namespace OvermorrowMod.Core.Globals
                     ClearRunItems();
                     Player.GetModPlayer<CollectiblePlayer>().Reset();
                     Player.GetModPlayer<RerollPlayer>().Reset();
+                    Player.statLife = Player.statLifeMax2;
 
                     int slot = 0;
                     int ammoSlot = Main.InventoryAmmoSlotsStart;
@@ -128,12 +130,22 @@ namespace OvermorrowMod.Core.Globals
                     {
                         if (item == null || item.IsAir) continue;
 
-                        if (item.ammo != AmmoID.None) Player.inventory[ammoSlot++] = item.Clone();
-                        else Player.inventory[slot++] = item.Clone();
+                        Item kitItem = item.Clone();
+                        RunCountedItem.MarkKit(kitItem);
+                        if (kitItem.ammo != AmmoID.None) Player.inventory[ammoSlot++] = kitItem;
+                        else Player.inventory[slot++] = kitItem;
                     }
                 }
             }
             pendingClassItems = null;
+        }
+
+        public void ClearRunInventory()
+        {
+            subInventory = null;
+            subArmor = null;
+            subMisc = null;
+            subMiscDyes = null;
         }
 
         /// <summary>

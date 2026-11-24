@@ -4,7 +4,9 @@ using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.UI.ClassSelection;
+using OvermorrowMod.Core.UI.DeathScreen;
 using OvermorrowMod.Core.UI.MonkeyStones;
+using OvermorrowMod.Core.UI.RunResume;
 using OvermorrowMod.Core.UI.RunStats;
 using OvermorrowMod.Core.UI.Shop;
 using System;
@@ -28,12 +30,18 @@ namespace OvermorrowMod.Core
         internal UserInterface ClassInterface;
         public ClassSelection ClassSelection;
 
+        internal UserInterface RunResumeInterface;
+        public RunResumePrompt RunResumePrompt;
+
         internal UserInterface ShopInterface;
         public ShopDialogue ShopDialogue;
 
         public RunStatsPanel RunStatsPanel;
 
         public MonkeyStoneDisplay MonkeyStoneDisplay;
+
+        internal UserInterface DeathInterface;
+        public DeathScreen DeathScreen;
 
         public override void Load()
         {
@@ -57,6 +65,12 @@ namespace OvermorrowMod.Core
 
                 ClassSelectionManager.Initialize(ClassSelection);
 
+                RunResumeInterface = new UserInterface();
+                RunResumePrompt = new RunResumePrompt();
+                RunResumeInterface.SetState(RunResumePrompt);
+
+                RunResumeManager.Initialize(RunResumePrompt);
+
                 ShopInterface = new UserInterface();
                 ShopDialogue = new ShopDialogue();
                 ShopInterface.SetState(ShopDialogue);
@@ -64,6 +78,12 @@ namespace OvermorrowMod.Core
                 RunStatsPanel = new RunStatsPanel();
 
                 MonkeyStoneDisplay = new MonkeyStoneDisplay();
+
+                DeathInterface = new UserInterface();
+                DeathScreen = new DeathScreen();
+                DeathInterface.SetState(DeathScreen);
+
+                DeathScreenManager.Initialize(DeathScreen);
             }
         }
 
@@ -85,6 +105,8 @@ namespace OvermorrowMod.Core
             }
         }
 
+        public override void OnWorldUnload() => DeathScreenManager.Hide();
+
         public override void PostUpdateEverything()
         {
             PrimitiveManager.UpdateTrails();
@@ -95,8 +117,10 @@ namespace OvermorrowMod.Core
             if (TitleCard != null && TitleCard.visible) TitleInterface?.Update(gameTime);
             if (RewardSelection != null && RewardSelection.Active) RewardInterface?.Update(gameTime);
             if (ClassSelection != null && ClassSelection.visible) ClassInterface?.Update(gameTime);
+            if (RunResumePrompt != null && RunResumePrompt.visible) RunResumeInterface?.Update(gameTime);
             if (ShopDialogue.IsActive) ShopInterface?.Update(gameTime);
             else ShopDialogue?.NotifyClosed();
+            if (DeathScreen.Visible) DeathInterface?.Update(gameTime);
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -104,12 +128,14 @@ namespace OvermorrowMod.Core
             int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
             {
-                AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
+                AddInterfaceLayer(layers, TitleCard, mouseTextIndex, TitleCard.visible && !DeathScreen.Visible, "Title Card");
                 AddInterfaceLayer(layers, RewardSelection, mouseTextIndex, RewardSelection.Active, "Reward Selection");
                 AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
+                AddInterfaceLayer(layers, RunResumePrompt, mouseTextIndex, RunResumePrompt.visible, "Run Resume");
                 AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
                 AddInterfaceLayer(layers, RunStatsPanel, mouseTextIndex, RunStatsPanel.PopupVisible || RunStatsPanel.TabVisible, "Stats");
                 AddInterfaceLayer(layers, MonkeyStoneDisplay, mouseTextIndex, true, "Monkey Stones");
+                AddInterfaceLayer(layers, DeathScreen, mouseTextIndex, DeathScreen.Visible, "Death Screen");
             }
         }
 

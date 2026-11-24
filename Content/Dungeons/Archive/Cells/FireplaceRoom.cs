@@ -45,9 +45,9 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
 
         private const string AsepritePath = AssetDirectory.GrandArchives + "FireplaceRoom.aseprite";
 
-        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap() => new()
+        private static Dictionary<(byte, byte, byte), TexPlaceFunction> BuildObjectMap(DungeonPalette palette) => new()
         {
-            [(134, 42, 104)] = TexPlaceAction.PlaceObject(ModContent.TileType<SmallChair>(), direction: 1),
+            [(134, 42, 104)] = TexPlaceAction.PlaceObject(palette.ObjectType(ModContent.TileType<SmallChair>()), direction: 1),
             [(171, 73, 94)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmall>()),
         };
 
@@ -127,7 +127,7 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             int paintX = ctx.Origin.X - DungeonGrid.HorizontalPadding;
             int paintY = ctx.Origin.Y - DungeonGrid.VerticalPadding;
             TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, ctx.Palette.Objects);
-            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap());
+            TexGen.PaintAsepriteLayer(SheetLayer.Objects, AsepritePath, paintX, paintY, BuildObjectMap(ctx.Palette));
         }
     }
 }

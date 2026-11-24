@@ -30,6 +30,8 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             new CorridorCell(),
             new DescendingStair(),
             new AscendingStair(),
+            new DescendingStair { EntersFromRight = true },
+            new AscendingStair { EntersFromRight = true },
         };
 
         protected override GridRoom[] AllowedNeighbors(Direction side) => side switch

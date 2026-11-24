@@ -7,7 +7,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         Spine,
         Branch,
         Aux,
-        Fork
+        Fork,
+        Tributary
     }
 
     /// <summary>
@@ -61,7 +62,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     /// </summary>
     public sealed class PlanStats
     {
-        public readonly SearchStats[] Searches = { new(), new(), new(), new() };
+        public readonly SearchStats[] Searches = { new(), new(), new(), new(), new() };
 
         /// <summary>
         /// Distance and expansion count of every successful search.
@@ -80,6 +81,47 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public int Forks;
         public int ForkStubs;
         public int ForkFailures;
+
+        /// <summary>
+        /// Times a hub's down arm didn't fit and its door below became a fork.
+        /// </summary>
+        public int DownArmFallbacks;
+
+        /// <summary>
+        /// Side branches rolled back because they left a cell with no forward route to a door ahead.
+        /// </summary>
+        public int TrappingBranches;
+
+        public int TributaryTries;
+        public int TributariesPlaced;
+
+        /// <summary>
+        /// Times a fork exit didn't fit and the dungeon was planned again with its fork exits on the spine.
+        /// </summary>
+        public int ExitForkFallbacks;
+
+        /// <summary>
+        /// The spawn room sits past the middle of the dungeon's occupied cells toward one of its doors.
+        /// </summary>
+        public bool SpawnTowardDoor;
+
+        /// <summary>
+        /// A fork exit's door sits short of the dungeon's middle row in the exit's direction.
+        /// </summary>
+        public bool ExitInBackHalf;
+
+        /// <summary>
+        /// Per door: the rooms with no route to it that never moves against the door's direction (inside rooms too), out of all rooms.
+        /// </summary>
+        public readonly List<(LayoutDirection Door, int Missing, int Rooms)> MonotoneRoutes = new();
+
+        /// <summary>
+        /// Per door, from the spawn room (or the first connection door when the dungeon has no spawn room): the shortest
+        /// walk in tiles; whether a route there never steps against the door's direction; and, of the cells reached
+        /// without stepping against it, the share with no such route on to the door, and the share with no such route to
+        /// any door ahead (every door but the one the walk starts at).
+        /// </summary>
+        public readonly List<(LayoutDirection Door, int Tiles, bool ForwardRoute, double TrapShare, double DeadEndShare)> Approaches = new();
         public int TreasureDoors;
         public long ElapsedMs;
     }

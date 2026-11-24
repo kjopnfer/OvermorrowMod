@@ -1,11 +1,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Content.NPCs.Archives;
 using OvermorrowMod.Content.Dungeons.Archive;
 using OvermorrowMod.Content.Dungeons.Archive.Cells;
 using OvermorrowMod.Content.Dungeons.Inkwell.Cells;
 using OvermorrowMod.Core.LoadingScreen;
+using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.UI;
 using ReLogic.Content;
 using ReLogic.Graphics;
@@ -26,10 +28,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         public override int Width => 4800;
         public override int Height => 4200;
 
-        // Regen on every entry. Without this, SubworldLibrary saves the
-        // generated world and re-enter just reloads it, so the Regenerate
-        // button has no effect.
-        public override bool ShouldSave => false;
+        public override bool ShouldSave => true;
 
         public override List<GenPass> Tasks => [CreateGenPass()];
 
@@ -39,20 +38,21 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
         }
 
-        private bool ghostSpawned;
+        public static bool GhostSpawned;
 
         public override void Update()
         {
-            SubworldTimer.Tick();
+            if (!RunDeathPlayer.LocalDead) SubworldTimer.Tick();
 
-            if (SubworldTimer.Running && SubworldTimer.RemainingTicks == 0 && !ghostSpawned && Main.netMode != NetmodeID.MultiplayerClient)
+            if (SubworldTimer.IsExpired && !GhostSpawned && !CombatOrchestrator.AnyFightRunning() && !Main.LocalPlayer.GetModPlayer<RunSavePlayer>().RestorePending && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Player player = Main.player[Main.myPlayer];
                 int cellPx = 18 * 16;
                 int dir = player.Center.X < Width * 8f ? 1 : -1;
                 float spawnX = MathHelper.Clamp(player.Center.X + dir * 10 * cellPx, 80 * 16, (Width - 80) * 16);
                 NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnX, (int)player.Center.Y, ModContent.NPCType<GhostCrawler>());
-                ghostSpawned = true;
+                GhostSpawned = true;
+                SubworldTimer.PlayEndSound();
             }
 
             // Snapshot because a TileEntity's Update may place new tile entities (e.g. combat lights).
@@ -86,11 +86,10 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             Main.spriteBatch.DrawString(font, currentTip.Text, textPos, Color.White, 0f, new Vector2(textSize.X / 2f, 0f), 0.5f, SpriteEffects.None, 1f);
         }
 
-        protected virtual string TitleCardText => "Grand Archives";
+        public virtual string TitleCardText => "Grand Archives";
 
         public override void OnEnter()
         {
-            ghostSpawned = false;
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
             TitleCardManager.ShowTitleWithTimer(TitleCardText);
             base.OnEnter();
@@ -98,8 +97,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
         public override void OnExit()
         {
+            RunSave.WaitForPendingSave();
             LoadingScreenTooltips.Reset(TipSource.JermaQuotes);
-            SubworldTimer.Reset();
             TitleCardManager.Hide();
             base.OnExit();
         }
@@ -107,7 +106,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
 
     public class TestSubworld2 : TestSubworld
     {
-        protected override string TitleCardText => "Grand Archives 2";
+        public override string TitleCardText => "Grand Archives 2";
 
         public override List<GenPass> Tasks =>
         [

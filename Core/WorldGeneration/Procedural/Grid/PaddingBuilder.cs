@@ -19,7 +19,10 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
     /// </summary>
     public static class PaddingBuilder
     {
-        public static void BuildAll(DungeonGrid grid, int fillTileType, DungeonPalette palette)
+        /// <param name="paletteOf">
+        /// The palette each room paints its padding with.
+        /// </param>
+        public static void BuildAll(DungeonGrid grid, int fillTileType, System.Func<GridSlot, DungeonPalette> paletteOf)
         {
             // Collect every room anchor first so we can sort by
             // PaddingPriority before painting. Rooms with higher priority
@@ -61,6 +64,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 int h = room.FootprintHeight;
                 int hp = DungeonGrid.HorizontalPadding;
                 int vp = DungeonGrid.VerticalPadding;
+                var palette = paletteOf(slot);
 
                 room.BuildPadding(new PaddingContext(
                     Direction.Top,    anchor.X,      anchor.Y - vp, w,  vp, fillTileType, grid, anchorCol, anchorRow, palette));

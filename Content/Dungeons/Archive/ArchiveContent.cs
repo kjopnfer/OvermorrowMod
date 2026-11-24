@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.NPCs;
@@ -14,16 +15,42 @@ namespace OvermorrowMod.Content.Dungeons.Archive
 {
     public class ArchiveContent : DungeonContent
     {
-        public override int Cols => 35;
+        public override int Cols => 44;
         public override int Rows => 30;
 
         public override int MinVoidStrips => 1;
-        public override int MaxVoidStrips => 3;
+        public override int MaxVoidStrips => 2;
 
         public override int FillTile => ModContent.TileType<CastleBrick>();
         public override int LiningTile => ModContent.TileType<ArchiveWood>();
 
         public override DungeonPalette Palette { get; } = new ArchivePalette();
+
+        private readonly Dictionary<int, DungeonPalette> _zonePalettes = new();
+
+        /// <summary>
+        /// Zone 1 paints the wood wall's panels red with red chairs, zone 2 yellow panels with the default chairs; every
+        /// other zone keeps the default palette.
+        /// </summary>
+        public override DungeonPalette ZonePalette(int zone)
+        {
+            if (zone != 1 && zone != 2) return Palette;
+            if (_zonePalettes.TryGetValue(zone, out var palette)) return palette;
+
+            var walls = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>
+            {
+                [ArchivePalette.PanelWall] = TexPlaceAction.PlaceWall(zone == 1 ? ModContent.WallType<ArchiveWoodWallRed>() : ModContent.WallType<ArchiveWoodWallYellow>()),
+            };
+            var objects = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>();
+            var objectTypes = new Dictionary<int, int>();
+            if (zone == 1)
+            {
+                objects[ArchivePalette.CozyChairLeft] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairRed>());
+                objects[ArchivePalette.CozyChairRight] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairRed>(), direction: 1);
+                objectTypes[ModContent.TileType<SmallChair>()] = ModContent.TileType<SmallChairRed>();
+            }
+            return _zonePalettes[zone] = Palette.With(walls, objects, objectTypes);
+        }
 
         public override IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> SpawnBindings
         {

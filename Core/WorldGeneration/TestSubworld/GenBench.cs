@@ -30,6 +30,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         {
             var pass = TestSubworld.CreateGenPass();
             var plans = new List<DungeonPlan>();
+            var layouts = new List<DungeonPlan[]>();
             var layoutLines = new StringBuilder();
             long totalMs = 0;
             long worstMs = 0;
@@ -53,6 +54,7 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
                 for (int d = 0; d < layoutPlans.Length; d++)
                     layoutLines.AppendLine($"  dungeon {d}: {layoutPlans[d].Stats.ElapsedMs} ms, fingerprint {fingerprints[d]}");
                 plans.AddRange(layoutPlans);
+                layouts.Add(layoutPlans);
             }
 
             var sb = new StringBuilder();
@@ -68,6 +70,12 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             AppendSearches(sb, plans);
             sb.AppendLine();
             AppendOutcomes(sb, plans);
+            sb.AppendLine();
+            AppendMonotoneRoutes(sb, layouts);
+            sb.AppendLine();
+            AppendWalks(sb, layouts);
+            sb.AppendLine();
+            AppendZones(sb, layouts);
             sb.AppendLine();
             AppendRoomCounts(sb, plans);
             sb.AppendLine();
@@ -126,11 +134,96 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine($"accepted: {Share(plans.Count(p => p.Stats.Accepted), n)}, the rest restored from the best attempt");
             sb.AppendLine($"combat branch in final layout: {Share(plans.Count(p => p.Stats.BranchPlaced), n)}");
             sb.AppendLine($"aux branches placed: {Share(plans.Sum(p => p.Stats.AuxPlaced), plans.Sum(p => p.Stats.AuxAttempts))}");
-            sb.AppendLine($"forks: {plans.Sum(p => p.Stats.Forks)}, short stubs: {plans.Sum(p => p.Stats.ForkStubs)}, unplaced: {plans.Sum(p => p.Stats.ForkFailures)}");
+            sb.AppendLine($"forks: {plans.Sum(p => p.Stats.Forks)}, short stubs: {plans.Sum(p => p.Stats.ForkStubs)}, unplaced: {plans.Sum(p => p.Stats.ForkFailures)}, exit fork fallbacks: {plans.Sum(p => p.Stats.ExitForkFallbacks)}, down arm fallbacks: {plans.Sum(p => p.Stats.DownArmFallbacks)}, trapping branches rolled back: {plans.Sum(p => p.Stats.TrappingBranches)}");
+            sb.AppendLine($"tributaries placed: {Share(plans.Sum(p => p.Stats.TributariesPlaced), plans.Sum(p => p.Stats.TributaryTries))}");
+            sb.AppendLine($"spawn past the middle toward a door: {plans.Count(p => p.Stats.SpawnTowardDoor)}, fork exit in the back half: {plans.Count(p => p.Stats.ExitInBackHalf)}");
             int treasureDoors = plans.Sum(p => p.Stats.TreasureDoors);
             sb.AppendLine($"treasure doors: {treasureDoors} ({(double)treasureDoors / n:0.00} per dungeon), none in {plans.Count(p => p.Stats.TreasureDoors == 0)} of {n} dungeons");
             var unreachable = plans.Select(UnreachableRooms).ToList();
             sb.AppendLine($"rooms unreachable from the spawn: {unreachable.Sum()} in {unreachable.Count(u => u > 0)} of {n} dungeons");
+        }
+
+        /// <summary>
+        /// Rooms without a route to each door that never steps against the door's direction, per dungeon index and door direction.
+        /// </summary>
+        private static void AppendMonotoneRoutes(StringBuilder sb, List<DungeonPlan[]> layouts)
+        {
+            var totals = new SortedDictionary<string, (int Missing, int Rooms, int Doors)>();
+            foreach (var layout in layouts)
+                for (int d = 0; d < layout.Length; d++)
+                    foreach (var (door, missing, rooms) in layout[d].Stats.MonotoneRoutes)
+                    {
+                        string key = $"dungeon {d} {door} door";
+                        var t = totals.GetValueOrDefault(key);
+                        totals[key] = (t.Missing + missing, t.Rooms + rooms, t.Doors + 1);
+                    }
+            int allMissing = totals.Values.Sum(t => t.Missing);
+            int allRooms = totals.Values.Sum(t => t.Rooms);
+            sb.AppendLine($"rooms without a monotone route to a door: {Share(allMissing, allRooms)}");
+            foreach (var kv in totals)
+                sb.AppendLine($"  {kv.Key,-26} {Share(kv.Value.Missing, kv.Value.Rooms)} over {kv.Value.Doors} doors");
+        }
+
+        /// <summary>
+        /// Per dungeon index and door: the shortest walk, how often the start has a forward route, the trap share, and the share of
+        /// cells that reach no door ahead; then
+        /// the footprint size of each dungeon index.
+        /// </summary>
+        private static void AppendWalks(StringBuilder sb, List<DungeonPlan[]> layouts)
+        {
+            const double RunTilesPerSecond = 11.25;
+            var walks = new SortedDictionary<string, List<(int Tiles, bool ForwardRoute, double TrapShare, double DeadEndShare)>>();
+            var footprints = new SortedDictionary<int, List<(int W, int H)>>();
+            foreach (var layout in layouts)
+                for (int d = 0; d < layout.Length; d++)
+                {
+                    string from = d == 0 ? "spawn" : "entry";
+                    foreach (var (door, tiles, forwardRoute, trapShare, deadEndShare) in layout[d].Stats.Approaches)
+                    {
+                        string key = $"dungeon {d} {from} to {door}";
+                        if (!walks.TryGetValue(key, out var list)) walks[key] = list = new List<(int, bool, double, double)>();
+                        list.Add((tiles, forwardRoute, trapShare, deadEndShare));
+                    }
+                    if (!footprints.TryGetValue(d, out var sizes)) footprints[d] = sizes = new List<(int, int)>();
+                    sizes.Add((layout[d].FootprintWidth - 2 * DungeonPlan.StoneMarginX, layout[d].FootprintHeight - 2 * DungeonPlan.StoneMarginY));
+                }
+            sb.AppendLine("approaches                 walk tiles: average    p90    max   run s | forward route | trap share: average  worst | no exit: average  worst");
+            foreach (var kv in walks)
+            {
+                var sorted = kv.Value.Select(a => (double)a.Tiles).OrderBy(t => t).ToList();
+                double average = sorted.Average();
+                string forward = $"{kv.Value.Count(a => a.ForwardRoute)} of {kv.Value.Count}";
+                sb.AppendLine($"  {kv.Key,-26} {average,7:0} {Percentile(sorted, 0.9),6:0} {sorted[^1],6:0} {average / RunTilesPerSecond,7:0.0} | {forward,13} | {kv.Value.Average(a => a.TrapShare),18:P0} {kv.Value.Max(a => a.TrapShare),6:P0} | {kv.Value.Average(a => a.DeadEndShare),15:P0} {kv.Value.Max(a => a.DeadEndShare),6:P0}");
+            }
+            sb.AppendLine("footprint in tiles (no stone margin)   average w x h");
+            foreach (var kv in footprints)
+                sb.AppendLine($"  dungeon {kv.Key}                          {kv.Value.Average(s => s.W):0} x {kv.Value.Average(s => s.H):0}");
+        }
+
+        /// <summary>
+        /// Average rooms per wall zone for each dungeon index.
+        /// </summary>
+        private static void AppendZones(StringBuilder sb, List<DungeonPlan[]> layouts)
+        {
+            sb.AppendLine("rooms per wall zone (average)");
+            for (int d = 0; d < layouts[0].Length; d++)
+            {
+                var counts = new SortedDictionary<int, int>();
+                foreach (var layout in layouts)
+                {
+                    var plan = layout[d];
+                    var seen = new HashSet<int>();
+                    for (int c = 0; c < plan.Grid.Cols; c++)
+                        for (int r = 0; r < plan.Grid.Rows; r++)
+                        {
+                            var slot = plan.Grid.GetSlot(c, r);
+                            if (slot.IsEmpty || !seen.Add(slot.GroupId)) continue;
+                            int zone = plan.ZoneOf(slot);
+                            counts[zone] = counts.GetValueOrDefault(zone) + 1;
+                        }
+                }
+                sb.AppendLine($"  dungeon {d}: " + string.Join(", ", counts.Select(kv => $"zone {kv.Key} {(double)kv.Value / layouts.Count:0.0}")));
+            }
         }
 
         private static readonly Direction[] Sides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };

@@ -27,6 +27,8 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             new CorridorCell(),
             new DescendingStair(),
             new AscendingStair(),
+            new DescendingStair { EntersFromRight = true },
+            new AscendingStair { EntersFromRight = true },
             new FireplaceRoom(),
             new LoungeRoom(),
             new WritingRoom(),
