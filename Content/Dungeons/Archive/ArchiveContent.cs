@@ -42,12 +42,14 @@ namespace OvermorrowMod.Content.Dungeons.Archive
                 [ArchivePalette.PanelWall] = TexPlaceAction.PlaceWall(zone == 1 ? ModContent.WallType<ArchiveWoodWallBlue>() : ModContent.WallType<ArchiveWoodWallYellow>()),
             };
             var objects = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>();
+            var objectTypes = new Dictionary<int, int>();
             if (zone == 1)
             {
                 objects[ArchivePalette.CozyChairLeft] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairBlue>());
                 objects[ArchivePalette.CozyChairRight] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairBlue>(), direction: 1);
+                objectTypes[ModContent.TileType<SmallChair>()] = ModContent.TileType<SmallChairBlue>();
             }
-            return _zonePalettes[zone] = Palette.With(walls, objects);
+            return _zonePalettes[zone] = Palette.With(walls, objects, objectTypes);
         }
 
         public override IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> SpawnBindings

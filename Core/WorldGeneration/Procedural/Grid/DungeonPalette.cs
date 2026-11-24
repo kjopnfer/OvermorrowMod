@@ -26,25 +26,33 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         public IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> Objects { get; }
 
-        public DungeonPalette(IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> walls, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> tiles, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> objects)
+        /// <summary>
+        /// Object tile types this palette places in place of the keyed types, for objects a cell places by type.
+        /// </summary>
+        public IReadOnlyDictionary<int, int> ObjectTypes { get; }
+
+        public DungeonPalette(IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> walls, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> tiles, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> objects, IReadOnlyDictionary<int, int> objectTypes = null)
         {
             Walls = walls;
             Tiles = tiles;
             Objects = objects;
+            ObjectTypes = objectTypes ?? new Dictionary<int, int>();
         }
+
+        public int ObjectType(int type) => ObjectTypes.TryGetValue(type, out int swapped) ? swapped : type;
 
         /// <summary>
-        /// A copy of this palette with <paramref name="walls"/> and <paramref name="objects"/> replacing the placements of
-        /// the same colors.
+        /// A copy of this palette with <paramref name="walls"/>, <paramref name="objects"/> and
+        /// <paramref name="objectTypes"/> replacing the entries of the same keys.
         /// </summary>
-        public DungeonPalette With(IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> walls, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> objects)
+        public DungeonPalette With(IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> walls, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> objects, IReadOnlyDictionary<int, int> objectTypes)
         {
-            return new DungeonPalette(Merge(Walls, walls), Tiles, Merge(Objects, objects));
+            return new DungeonPalette(Merge(Walls, walls), Tiles, Merge(Objects, objects), Merge(ObjectTypes, objectTypes));
         }
 
-        private static Dictionary<(byte R, byte G, byte B), TexPlaceFunction> Merge(IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> source, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> overrides)
+        private static Dictionary<TKey, TValue> Merge<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> source, IReadOnlyDictionary<TKey, TValue> overrides)
         {
-            var merged = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>(source);
+            var merged = new Dictionary<TKey, TValue>(source);
             foreach (var (color, place) in overrides)
                 merged[color] = place;
             return merged;
