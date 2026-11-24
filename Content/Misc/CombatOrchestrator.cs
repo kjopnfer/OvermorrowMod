@@ -33,6 +33,10 @@ namespace OvermorrowMod.Content.Misc
         private Phase phase = Phase.Setup;
         private int entrySide;
         private readonly List<int> spawnedNPCs = new();
+        private readonly Dictionary<int, int> embeddedTicks = new();
+        private int stallTicks;
+        private int lastEnemyLife = -1;
+        private int lastPlayerLife;
 
         private const int TotalWaves = 2;
         private int currentWave = 0;
@@ -230,7 +234,7 @@ namespace OvermorrowMod.Content.Misc
                     UpdateSetup(left, right);
                     break;
                 case Phase.Combat:
-                    UpdateCombat();
+                    UpdateCombat(left, right);
                     break;
                 case Phase.End:
                     UpdateEnd();
@@ -392,7 +396,14 @@ namespace OvermorrowMod.Content.Misc
             ArchiveLights.SetRegion(roomRect, 1f, ModUtils.SecondsToTicks(1.5f));
         }
 
-        private void UpdateCombat()
+        private const int StrayMarginPixels = 32;
+        private static readonly int MaxEmbeddedTicks = ModUtils.SecondsToTicks(2);
+        private static readonly int MaxStallTicks = ModUtils.SecondsToTicks(60);
+
+        /// <summary>
+        /// Counts the wave's living enemies. One that leaves the room or stays inside solid tiles is despawned, and the rest are despawned once the fight stalls, so the fight can always end.
+        /// </summary>
+        private void UpdateCombat(CombatDoor_TE left, CombatDoor_TE right)
         {
             if (pendingSpawns.Count > 0)
             {
@@ -401,7 +412,11 @@ namespace OvermorrowMod.Content.Misc
                 return;
             }
 
-            int aliveCount = 0;
+            Rectangle room = RoomInterior(left, right);
+            room.Inflate(StrayMarginPixels, StrayMarginPixels);
+
+            var alive = new List<NPC>();
+            int enemyLife = 0;
             Player target = null;
             for (int i = 0; i < spawnedNPCs.Count; i++)
             {
@@ -412,7 +427,16 @@ namespace OvermorrowMod.Content.Misc
                 if (!enemy.active) continue;
                 if (enemy.ModNPC is not OvermorrowNPC modNPC || modNPC.CombatOrchestratorWhoAmI != NPC.whoAmI) continue;
 
-                aliveCount++;
+                Point centerTile = enemy.Center.ToTileCoordinates();
+                embeddedTicks[idx] = !enemy.noTileCollide && WorldGen.SolidTile(centerTile.X, centerTile.Y) ? embeddedTicks.GetValueOrDefault(idx) + 1 : 0;
+                if (!room.Contains(enemy.Center.ToPoint()) || embeddedTicks[idx] >= MaxEmbeddedTicks)
+                {
+                    enemy.active = false;
+                    continue;
+                }
+
+                alive.Add(enemy);
+                enemyLife += enemy.life;
 
                 if (!modNPC.TargetingModule.HasTarget())
                 {
@@ -421,9 +445,13 @@ namespace OvermorrowMod.Content.Misc
                 }
             }
 
-            if (aliveCount > 0)
+            if (alive.Count > 0)
             {
                 waveDelayTimer = 0;
+                if (Stalled(enemyLife))
+                {
+                    foreach (NPC enemy in alive) enemy.active = false;
+                }
                 return;
             }
 
@@ -437,6 +465,19 @@ namespace OvermorrowMod.Content.Misc
 
             EnterEnd();
             phase = Phase.End;
+        }
+
+        /// <summary>
+        /// True once <see cref="MaxStallTicks"/> pass with no enemy losing life and the player taking no damage.
+        /// </summary>
+        private bool Stalled(int enemyLife)
+        {
+            int playerLife = Main.LocalPlayer.statLife;
+            bool progress = enemyLife != lastEnemyLife || playerLife < lastPlayerLife;
+            lastEnemyLife = enemyLife;
+            lastPlayerLife = playerLife;
+            stallTicks = progress ? 0 : stallTicks + 1;
+            return stallTicks >= MaxStallTicks;
         }
 
         private void UpdateEnd()
@@ -508,6 +549,7 @@ namespace OvermorrowMod.Content.Misc
             currentWave++;
             waveDelayTimer = 0;
             spawnedNPCs.Clear();
+            embeddedTicks.Clear();
             pendingSpawns.Clear();
 
             int leftDoorX = System.Math.Min(left.Position.X, right.Position.X);
