@@ -31,6 +31,13 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             _ => Array.Empty<GridRoom>(),
         };
 
+        private static readonly HashSet<Type> AcceptedAbove = new() { typeof(ShaftCell), typeof(BookshelfCell), typeof(ShopRoom) };
+
+        /// <summary>
+        /// A shaft may hang below a shop. The shop is left out of <see cref="VerticalNeighbors"/> so no path places one.
+        /// </summary>
+        public override HashSet<Type> GetAcceptedNeighbors(int subCol, int subRow, Direction side) => side == Direction.Top ? AcceptedAbove : base.GetAcceptedNeighbors(subCol, subRow, side);
+
         public override bool IsOpenSide(int subCol, int subRow, Direction side) =>
             side == Direction.Top || side == Direction.Bottom;
 
