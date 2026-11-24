@@ -20,6 +20,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public List<Point> RequiredRoomAnchors = new();
         public double[] Elevation;
         public long ElapsedMilliseconds = -1;
+        public Func<GridSlot, int> ZoneOf;
     }
 
     /// <summary>
@@ -54,6 +55,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             if (config != null) WriteGenerationConfig(sb, config);
             WriteCellCounts(sb, grid);
             WriteCompactMaps(sb, grid);
+            if (config?.ZoneOf != null) WriteZoneMap(sb, grid, config.ZoneOf);
             WriteAsciiLayout(sb, grid);
             WriteDeadEndCorridors(sb, grid);
             WriteAdjacencyMismatches(sb, grid);
@@ -148,6 +150,13 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             sb.AppendLine("--- Doorways ---");
             sb.AppendLine("Hex sum of the sides a cell leads on through, to its own room or a connected one: left 1, right 2, top 4, bottom 8.");
             WriteCharMap(sb, grid, (col, row, slot) => slot.IsEmpty ? ' ' : "0123456789abcdef"[OpenSides(grid, col, row, slot)]);
+        }
+
+        private static void WriteZoneMap(StringBuilder sb, DungeonGrid grid, Func<GridSlot, int> zoneOf)
+        {
+            sb.AppendLine("--- Wall zones ---");
+            sb.AppendLine("Each room's wall zone number.");
+            WriteCharMap(sb, grid, (col, row, slot) => slot.IsEmpty ? ' ' : (char)('0' + zoneOf(slot) % 10));
         }
 
         private static char RoomChar(GridRoom room) => room.IsSpawnRoom ? 'S' : room.Type switch

@@ -46,6 +46,18 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
         public PlanStats Stats;
 
+        /// <summary>
+        /// The wall zone of every room not in <see cref="BorderZones"/>.
+        /// </summary>
+        public int Zone;
+
+        /// <summary>
+        /// Rooms (by group id) near a door into a dungeon of another zone, which take that zone.
+        /// </summary>
+        public Dictionary<int, int> BorderZones = new();
+
+        public int ZoneOf(GridSlot slot) => BorderZones.TryGetValue(slot.GroupId, out int zone) ? zone : Zone;
+
         public int FootprintWidth => (BoundsMax.X - BoundsMin.X) * DungeonGrid.HorizontalSpacing + DungeonGrid.CellTileWidth + StoneMarginX * 2;
         public int FootprintHeight => (BoundsMax.Y - BoundsMin.Y) * DungeonGrid.VerticalSpacing + DungeonGrid.CellTileHeight + StoneMarginY * 2;
     }
@@ -123,7 +135,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// The biome exit doors. An East or West exit is a spine end, built by its factory. Any other exit is a fork toward
         /// its direction; if a fork doesn't fit, the dungeon is planned again with that exit as a required spine room.
         /// </param>
-        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options, IReadOnlyList<(LayoutDirection Dir, Func<GridRoom> Factory)> exits)
+        public static DungeonPlan Plan(DungeonContent content, Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IEnumerable<Func<GridRoom>> extraRequiredRooms, int dungeonIndex, PlanOptions options, IReadOnlyList<(LayoutDirection Dir, Func<GridRoom> Factory)> exits, int zone, IReadOnlyDictionary<LayoutDirection, int> doorZones)
         {
             var rooms = new List<Func<GridRoom>>();
             if (extraRequiredRooms != null) rooms.AddRange(extraRequiredRooms);
@@ -136,11 +148,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 else plannedExits.Add(exit);
             }
 
-            var plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, plannedExits);
+            var plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, plannedExits, zone, doorZones);
             if (plan != null) return plan;
 
             rooms.AddRange(plannedExits.Where(e => e.Dir.SpineEnd() == 0).Select(e => e.Factory));
-            plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, plannedExits.Where(e => e.Dir.SpineEnd() != 0).ToList());
+            plan = new GridGenerator(content, rooms, dungeonIndex, options).PlanDungeon(rand, doorDirections, plannedExits.Where(e => e.Dir.SpineEnd() != 0).ToList(), zone, doorZones);
             plan.Stats.ExitForkFallbacks++;
             return plan;
         }
@@ -148,7 +160,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// <returns>
         /// The plan, or null when a fork exit in <paramref name="exits"/> doesn't fit.
         /// </returns>
-        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IReadOnlyList<(LayoutDirection Dir, Func<GridRoom> Factory)> exits)
+        private DungeonPlan PlanDungeon(Random rand, IReadOnlyCollection<LayoutDirection> doorDirections, IReadOnlyList<(LayoutDirection Dir, Func<GridRoom> Factory)> exits, int zone, IReadOnlyDictionary<LayoutDirection, int> doorZones)
         {
             LayoutDirection? startDir = null, endDir = null;
             var forkDirs = new List<LayoutDirection>();
@@ -552,12 +564,14 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             PlaceInlineTreasureDoors(grid, spawnAnchor, rand);
             _stats.TreasureDoors = grid.CountPlacements(RoomType.TreasureDoor);
 
+            var borderZones = AssignBorderZones(grid, doorAnchors, spawnRoomAnchor, zone, doorZones);
+
             stopwatch.Stop();
             _stats.ElapsedMs = stopwatch.ElapsedMilliseconds;
             if (_diagnostics)
             {
                 Log($"OvermorrowDungeon final: combats={grid.CountPlacements(RoomType.Combat)} mandatory={!HasCombatBypass(grid, start, endTarget)} tree={IsTreeShaped(grid, start)}");
-                DumpGrid(grid, _dungeonIndex, baseRow, start, endTarget, requiredAnchors, elevation, stopwatch.ElapsedMilliseconds);
+                DumpGrid(grid, _dungeonIndex, baseRow, start, endTarget, requiredAnchors, elevation, stopwatch.ElapsedMilliseconds, slot => borderZones.TryGetValue(slot.GroupId, out int z) ? z : zone);
             }
 
             // Measure the occupied region: the dungeon's real footprint.
@@ -615,6 +629,8 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 SpawnAnchor = spawnAnchor,
                 DoorAnchors = doorAnchors,
                 Stats = _stats,
+                Zone = zone,
+                BorderZones = borderZones,
             };
         }
 
@@ -778,7 +794,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         };
 
         /// <summary>Writes the diagnostic grid dump; failures are logged, not thrown.</summary>
-        private static void DumpGrid(DungeonGrid grid, int dungeonIndex, int baseRow, Point start, Point endTarget, List<Point> requiredAnchors, double[] elevation, long elapsedMs)
+        private static void DumpGrid(DungeonGrid grid, int dungeonIndex, int baseRow, Point start, Point endTarget, List<Point> requiredAnchors, double[] elevation, long elapsedMs, Func<GridSlot, int> zoneOf)
         {
             try
             {
@@ -792,6 +808,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     RequiredRoomAnchors = new List<Point>(anchors),
                     Elevation = elevation,
                     ElapsedMilliseconds = elapsedMs,
+                    ZoneOf = zoneOf,
                 };
                 string dumpFolder = System.IO.Path.Combine(Terraria.Main.SavePath, "OvermorrowDungeonDumps");
                 System.IO.Directory.CreateDirectory(dumpFolder);
@@ -948,13 +965,96 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             return (allGroups.Count - reachedGroups.Count, allGroups.Count);
         }
 
+        /// <summary>
+        /// Share of the walk from the spawn to a door within which rooms take the zone beyond that door.
+        /// </summary>
+        private const double SpawnBorderShare = 0.25;
+
+        /// <summary>
+        /// Rooms' walk from a door within which rooms take the zone beyond it, in a dungeon without a spawn room.
+        /// </summary>
+        private const int BorderRooms = 3;
+
+        /// <summary>
+        /// Gives the rooms near each door into a dungeon of another zone that zone: within <see cref="SpawnBorderShare"/>
+        /// of the spawn's walk to the door, or <see cref="BorderRooms"/> rooms' walk without a spawn room. Distances are
+        /// walks through the dungeon with dead-end branches left out, so a dead end keeps the dungeon's own zone. A room
+        /// near two such doors takes the nearer one's zone.
+        /// </summary>
+        /// <returns>
+        /// The zone of each border room, by group id.
+        /// </returns>
+        private static Dictionary<int, int> AssignBorderZones(DungeonGrid grid, Dictionary<LayoutDirection, Point> doorAnchors, Point? spawnRoomAnchor, int zone, IReadOnlyDictionary<LayoutDirection, int> doorZones)
+        {
+            var nearest = new Dictionary<int, (int Tiles, int Zone)>();
+            if (doorZones == null) return new Dictionary<int, int>();
+
+            var keep = doorAnchors.Values.ToList();
+            if (spawnRoomAnchor.HasValue) keep.Add(spawnRoomAnchor.Value);
+            var routeGroups = RouteGroups(grid, keep);
+            foreach (var (dir, door) in doorAnchors)
+            {
+                if (!doorZones.TryGetValue(dir, out int doorZone) || doorZone == zone) continue;
+                var tiles = WalkTiles(grid, door, routeGroups);
+                int reach = spawnRoomAnchor.HasValue && tiles.TryGetValue(spawnRoomAnchor.Value, out int spawnTiles) ? (int)(spawnTiles * SpawnBorderShare) : BorderRooms * DungeonGrid.HorizontalSpacing;
+                foreach (var (cell, walk) in tiles)
+                {
+                    if (walk > reach) continue;
+                    int group = grid.GetSlot(cell.X, cell.Y).GroupId;
+                    if (!nearest.TryGetValue(group, out var current) || walk < current.Tiles) nearest[group] = (walk, doorZone);
+                }
+            }
+            return nearest.ToDictionary(kv => kv.Key, kv => kv.Value.Zone);
+        }
+
+        /// <summary>
+        /// The rooms (by group id) left after repeatedly removing rooms joined to at most one other room, except the rooms
+        /// at <paramref name="keep"/>: every room on a loop or on a route between kept rooms.
+        /// </summary>
+        private static HashSet<int> RouteGroups(DungeonGrid grid, List<Point> keep)
+        {
+            var neighbors = new Dictionary<int, HashSet<int>>();
+            for (int c = 0; c < grid.Cols; c++)
+                for (int r = 0; r < grid.Rows; r++)
+                {
+                    var slot = grid.GetSlot(c, r);
+                    if (slot.IsEmpty) continue;
+                    if (!neighbors.TryGetValue(slot.GroupId, out var set)) neighbors[slot.GroupId] = set = new HashSet<int>();
+                    foreach (var side in CardinalSides)
+                    {
+                        Point step = side.Step();
+                        var other = grid.GetSlot(c + step.X, r + step.Y);
+                        if (other == null || other.IsEmpty || other.GroupId == slot.GroupId) continue;
+                        if (GridRoom.Connects(slot, side, other)) set.Add(other.GroupId);
+                    }
+                }
+
+            var kept = keep.Select(p => grid.GetSlot(p.X, p.Y).GroupId).ToHashSet();
+            var leaves = new Queue<int>(neighbors.Keys.Where(g => neighbors[g].Count <= 1 && !kept.Contains(g)));
+            var removed = new HashSet<int>();
+            while (leaves.Count > 0)
+            {
+                int leaf = leaves.Dequeue();
+                if (!removed.Add(leaf)) continue;
+                foreach (int other in neighbors[leaf])
+                {
+                    neighbors[other].Remove(leaf);
+                    if (neighbors[other].Count <= 1 && !kept.Contains(other) && !removed.Contains(other)) leaves.Enqueue(other);
+                }
+            }
+            return neighbors.Keys.Where(g => !removed.Contains(g)).ToHashSet();
+        }
+
         private static readonly Direction[] CardinalSides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };
 
         /// <summary>
         /// The shortest walk in tiles from <paramref name="origin"/> to every reachable cell, counting cell-center to
         /// cell-center distances.
         /// </summary>
-        private static Dictionary<Point, int> WalkTiles(DungeonGrid grid, Point origin)
+        /// <param name="groups">
+        /// The rooms the walk may pass through, or null for every room.
+        /// </param>
+        private static Dictionary<Point, int> WalkTiles(DungeonGrid grid, Point origin, HashSet<int> groups = null)
         {
             var dist = new Dictionary<Point, int> { [origin] = 0 };
             var queue = new PriorityQueue<Point, int>();
@@ -971,6 +1071,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     var qSlot = grid.GetSlot(q.X, q.Y);
                     if (qSlot == null || qSlot.IsEmpty) continue;
                     if (qSlot.GroupId != slot.GroupId && !GridRoom.Connects(slot, side, qSlot)) continue;
+                    if (groups != null && !groups.Contains(qSlot.GroupId)) continue;
                     int nd = d + (step.X != 0 ? DungeonGrid.HorizontalSpacing : DungeonGrid.VerticalSpacing);
                     if (dist.TryGetValue(q, out int old) && old <= nd) continue;
                     dist[q] = nd;

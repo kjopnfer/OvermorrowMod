@@ -75,6 +75,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine();
             AppendWalks(sb, layouts);
             sb.AppendLine();
+            AppendZones(sb, layouts);
+            sb.AppendLine();
             AppendRoomCounts(sb, plans);
             sb.AppendLine();
             sb.AppendLine($"GC collections: gen0 {GC.CollectionCount(0) - gen0}, gen1 {GC.CollectionCount(1) - gen1}, gen2 {GC.CollectionCount(2) - gen2}");
@@ -195,6 +197,32 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             sb.AppendLine("footprint in tiles (no stone margin)   average w x h");
             foreach (var kv in footprints)
                 sb.AppendLine($"  dungeon {kv.Key}                          {kv.Value.Average(s => s.W):0} x {kv.Value.Average(s => s.H):0}");
+        }
+
+        /// <summary>
+        /// Average rooms per wall zone for each dungeon index.
+        /// </summary>
+        private static void AppendZones(StringBuilder sb, List<DungeonPlan[]> layouts)
+        {
+            sb.AppendLine("rooms per wall zone (average)");
+            for (int d = 0; d < layouts[0].Length; d++)
+            {
+                var counts = new SortedDictionary<int, int>();
+                foreach (var layout in layouts)
+                {
+                    var plan = layout[d];
+                    var seen = new HashSet<int>();
+                    for (int c = 0; c < plan.Grid.Cols; c++)
+                        for (int r = 0; r < plan.Grid.Rows; r++)
+                        {
+                            var slot = plan.Grid.GetSlot(c, r);
+                            if (slot.IsEmpty || !seen.Add(slot.GroupId)) continue;
+                            int zone = plan.ZoneOf(slot);
+                            counts[zone] = counts.GetValueOrDefault(zone) + 1;
+                        }
+                }
+                sb.AppendLine($"  dungeon {d}: " + string.Join(", ", counts.Select(kv => $"zone {kv.Key} {(double)kv.Value / layouts.Count:0.0}")));
+            }
         }
 
         private static readonly Direction[] Sides = { Direction.Left, Direction.Right, Direction.Top, Direction.Bottom };

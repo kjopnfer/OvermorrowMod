@@ -35,6 +35,8 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
             int beside = layout.Add(_contentFactory());
             layout.Connect(root, LayoutDirection.South, below);
             layout.Connect(root, side, beside);
+            layout.SetZone(below, 1);
+            layout.SetZone(beside, 2);
 
             if (_downExit != null) layout.AddExit(below, LayoutDirection.South, _downExit);
             if (_sideExit != null) layout.AddExit(beside, side, _sideExit);

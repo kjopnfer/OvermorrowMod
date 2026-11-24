@@ -81,6 +81,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             public bool Placed;
             public Point WorldOrigin;
             public Point SpawnTile;
+            public int Zone;
             public readonly Dictionary<LayoutDirection, IDungeonDoor> Doors = new();
         }
 
@@ -129,6 +130,12 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         /// </summary>
         public void AddExit(int node, LayoutDirection dir, Func<GridRoom> factory) => _exits.Add((node, dir, factory));
 
+        /// <summary>
+        /// Sets the wall zone of <paramref name="node"/>'s dungeon (0 by default). Rooms near a door into a dungeon of
+        /// another zone take that zone.
+        /// </summary>
+        public void SetZone(int node, int zone) => _nodes[node].Zone = zone;
+
         /// <summary>Sets the dungeon the player spawns in.</summary>
         public void SetRoot(int node) => _rootId = node;
 
@@ -143,7 +150,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 seeds[i] = rand.Next();
 
             var plans = new DungeonPlan[_nodes.Count];
-            void PlanDungeon(int i) => plans[i] = GridGenerator.Plan(_nodes[i].Content, new Random(seeds[i]), DoorDirectionsFor(i), ExtraRoomsFor(i), i, options, ExitsFor(i));
+            void PlanDungeon(int i) => plans[i] = GridGenerator.Plan(_nodes[i].Content, new Random(seeds[i]), DoorDirectionsFor(i), ExtraRoomsFor(i), i, options, ExitsFor(i), _nodes[i].Zone, DoorZonesFor(i));
 
             if (options.Sequential)
             {
@@ -461,6 +468,17 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                 else if (edge.To == nodeId) dirs.Add(edge.Dir.Opposite());
             }
             return dirs;
+        }
+
+        private Dictionary<LayoutDirection, int> DoorZonesFor(int nodeId)
+        {
+            var zones = new Dictionary<LayoutDirection, int>();
+            foreach (var edge in _edges)
+            {
+                if (edge.From == nodeId) zones[edge.Dir] = _nodes[edge.To].Zone;
+                else if (edge.To == nodeId) zones[edge.Dir.Opposite()] = _nodes[edge.From].Zone;
+            }
+            return zones;
         }
 
         private void WarnOnSpineEndConflicts()
