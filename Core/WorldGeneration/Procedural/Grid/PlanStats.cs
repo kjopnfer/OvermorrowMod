@@ -100,15 +100,16 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public bool ExitInBackHalf;
 
         /// <summary>
-        /// Per door: the rooms with no route to it that never steps against the door's direction, out of all rooms.
+        /// Per door: the rooms with no route to it that never moves against the door's direction (inside rooms too), out of all rooms.
         /// </summary>
         public readonly List<(LayoutDirection Door, int Missing, int Rooms)> MonotoneRoutes = new();
 
         /// <summary>
-        /// Per door: the shortest walk in tiles from the spawn room, or from the first connection door when the dungeon has
-        /// no spawn room.
+        /// Per door, from the spawn room (or the first connection door when the dungeon has no spawn room): the shortest
+        /// walk in tiles; whether a route there never steps against the door's direction; and, of the cells reached
+        /// without stepping against it, the share with no such route on to the door.
         /// </summary>
-        public readonly List<(LayoutDirection Door, int Tiles)> Walks = new();
+        public readonly List<(LayoutDirection Door, int Tiles, bool ForwardRoute, double TrapShare)> Approaches = new();
         public int TreasureDoors;
         public long ElapsedMs;
     }

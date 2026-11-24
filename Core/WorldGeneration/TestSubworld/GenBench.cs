@@ -163,32 +163,34 @@ namespace OvermorrowMod.Core.WorldGeneration.TestSubworld
         }
 
         /// <summary>
-        /// Shortest walks to each door per dungeon index, and the footprint size of each dungeon index.
+        /// Per dungeon index and door: the shortest walk, how often the start has a forward route, and the trap share; then
+        /// the footprint size of each dungeon index.
         /// </summary>
         private static void AppendWalks(StringBuilder sb, List<DungeonPlan[]> layouts)
         {
             const double RunTilesPerSecond = 11.25;
-            var walks = new SortedDictionary<string, List<int>>();
+            var walks = new SortedDictionary<string, List<(int Tiles, bool ForwardRoute, double TrapShare)>>();
             var footprints = new SortedDictionary<int, List<(int W, int H)>>();
             foreach (var layout in layouts)
                 for (int d = 0; d < layout.Length; d++)
                 {
                     string from = d == 0 ? "spawn" : "entry";
-                    foreach (var (door, tiles) in layout[d].Stats.Walks)
+                    foreach (var (door, tiles, forwardRoute, trapShare) in layout[d].Stats.Approaches)
                     {
                         string key = $"dungeon {d} {from} to {door}";
-                        if (!walks.TryGetValue(key, out var list)) walks[key] = list = new List<int>();
-                        list.Add(tiles);
+                        if (!walks.TryGetValue(key, out var list)) walks[key] = list = new List<(int, bool, double)>();
+                        list.Add((tiles, forwardRoute, trapShare));
                     }
                     if (!footprints.TryGetValue(d, out var sizes)) footprints[d] = sizes = new List<(int, int)>();
                     sizes.Add((layout[d].FootprintWidth - 2 * DungeonPlan.StoneMarginX, layout[d].FootprintHeight - 2 * DungeonPlan.StoneMarginY));
                 }
-            sb.AppendLine("shortest walks in tiles       average    p90    max   run s");
+            sb.AppendLine("approaches                 walk tiles: average    p90    max   run s | forward route | trap share: average  worst");
             foreach (var kv in walks)
             {
-                var sorted = kv.Value.OrderBy(t => t).Select(t => (double)t).ToList();
+                var sorted = kv.Value.Select(a => (double)a.Tiles).OrderBy(t => t).ToList();
                 double average = sorted.Average();
-                sb.AppendLine($"  {kv.Key,-26} {average,7:0} {Percentile(sorted, 0.9),6:0} {sorted[^1],6:0} {average / RunTilesPerSecond,7:0.0}");
+                string forward = $"{kv.Value.Count(a => a.ForwardRoute)} of {kv.Value.Count}";
+                sb.AppendLine($"  {kv.Key,-26} {average,7:0} {Percentile(sorted, 0.9),6:0} {sorted[^1],6:0} {average / RunTilesPerSecond,7:0.0} | {forward,13} | {kv.Value.Average(a => a.TrapShare),18:P0} {kv.Value.Max(a => a.TrapShare),6:P0}");
             }
             sb.AppendLine("footprint in tiles (no stone margin)   average w x h");
             foreach (var kv in footprints)

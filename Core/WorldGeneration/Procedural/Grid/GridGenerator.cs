@@ -591,19 +591,19 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             }
 
             var meaningfulDoors = doorAnchors.Select(kv => (kv.Key, kv.Value)).Concat(exitAnchors).ToList();
+            Point? walkOrigin = spawnRoomAnchor ?? (doorAnchors.Count > 0 ? doorAnchors.First().Value : null);
+            var walkTiles = walkOrigin.HasValue ? WalkTiles(grid, walkOrigin.Value) : new Dictionary<Point, int>();
             foreach (var (dir, anchor) in meaningfulDoors)
             {
-                var (missing, rooms) = CountRoomsWithoutMonotoneRoute(grid, anchor, dir);
+                var monotone = MonotoneCells(grid, anchor, dir);
+                var (missing, rooms) = CountRoomsWithoutMonotoneRoute(grid, monotone);
                 _stats.MonotoneRoutes.Add((dir, missing, rooms));
                 if (missing > 0) Log($"OvermorrowDungeon: {missing} of {rooms} rooms have no route to the {dir} door that never steps against {dir}.");
-            }
 
-            Point? walkOrigin = spawnRoomAnchor ?? (doorAnchors.Count > 0 ? doorAnchors.First().Value : null);
-            if (walkOrigin.HasValue)
-            {
-                var walkTiles = WalkTiles(grid, walkOrigin.Value);
-                foreach (var (dir, anchor) in meaningfulDoors)
-                    if (anchor != walkOrigin.Value && walkTiles.TryGetValue(anchor, out int tiles)) _stats.Walks.Add((dir, tiles));
+                if (!walkOrigin.HasValue || anchor == walkOrigin.Value || !walkTiles.TryGetValue(anchor, out int tiles)) continue;
+                var forward = ForwardCells(grid, walkOrigin.Value, dir);
+                double trapShare = forward.Count(p => !monotone.Contains(p)) / (double)forward.Count;
+                _stats.Approaches.Add((dir, tiles, monotone.Contains(walkOrigin.Value), trapShare));
             }
 
             return new DungeonPlan
@@ -892,25 +892,29 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         }
 
         /// <summary>
-        /// Counts the rooms with no walkable route to the door at <paramref name="door"/> whose steps between rooms never
-        /// move against <paramref name="dir"/>. Steps inside one room are free.
+        /// The cells with a walkable route to the door at <paramref name="door"/> that never moves against
+        /// <paramref name="dir"/>, counting moves between the cells of one room (climbing a stair is a move up).
         /// </summary>
-        /// <returns>
-        /// The rooms without such a route, and the number of rooms in the dungeon.
-        /// </returns>
-        private static (int Missing, int Rooms) CountRoomsWithoutMonotoneRoute(DungeonGrid grid, Point door, LayoutDirection dir)
+        private static HashSet<Point> MonotoneCells(DungeonGrid grid, Point door, LayoutDirection dir) => DirectedReach(grid, door, dir.Delta(), towardStart: true);
+
+        /// <summary>
+        /// The cells reached from <paramref name="origin"/> without moving against <paramref name="dir"/>, counting moves
+        /// between the cells of one room.
+        /// </summary>
+        private static HashSet<Point> ForwardCells(DungeonGrid grid, Point origin, LayoutDirection dir) => DirectedReach(grid, origin, dir.Delta(), towardStart: false);
+
+        /// <param name="towardStart">
+        /// Search backward: collect the cells a player can walk from to <paramref name="start"/>, rather than to from it.
+        /// </param>
+        private static HashSet<Point> DirectedReach(DungeonGrid grid, Point start, Point forward, bool towardStart)
         {
-            Point forward = dir.Delta();
-            var visited = new HashSet<Point> { door };
-            var reachedGroups = new HashSet<int>();
+            var visited = new HashSet<Point> { start };
             var queue = new Queue<Point>();
-            queue.Enqueue(door);
+            queue.Enqueue(start);
             while (queue.Count > 0)
             {
                 var p = queue.Dequeue();
                 var slot = grid.GetSlot(p.X, p.Y);
-                if (slot == null || slot.IsEmpty) continue;
-                reachedGroups.Add(slot.GroupId);
                 foreach (var side in CardinalSides)
                 {
                     Point step = side.Step();
@@ -918,17 +922,22 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
                     if (visited.Contains(q)) continue;
                     var qSlot = grid.GetSlot(q.X, q.Y);
                     if (qSlot == null || qSlot.IsEmpty) continue;
-                    if (qSlot.GroupId != slot.GroupId)
-                    {
-                        if (!GridRoom.Connects(slot, side, qSlot)) continue;
-                        // The player walks from q to p, a step of -step.
-                        if (-step.X * forward.X < 0 || -step.Y * forward.Y < 0) continue;
-                    }
+                    if (qSlot.GroupId != slot.GroupId && !GridRoom.Connects(slot, side, qSlot)) continue;
+                    Point walked = towardStart ? new Point(-step.X, -step.Y) : step;
+                    if (walked.X * forward.X < 0 || walked.Y * forward.Y < 0) continue;
                     visited.Add(q);
                     queue.Enqueue(q);
                 }
             }
+            return visited;
+        }
 
+        /// <returns>
+        /// The rooms with no cell in <paramref name="monotone"/>, and the number of rooms in the dungeon.
+        /// </returns>
+        private static (int Missing, int Rooms) CountRoomsWithoutMonotoneRoute(DungeonGrid grid, HashSet<Point> monotone)
+        {
+            var reachedGroups = monotone.Select(p => grid.GetSlot(p.X, p.Y).GroupId).ToHashSet();
             var allGroups = new HashSet<int>();
             for (int c = 0; c < grid.Cols; c++)
                 for (int r = 0; r < grid.Rows; r++)
