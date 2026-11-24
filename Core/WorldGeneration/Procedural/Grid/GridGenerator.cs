@@ -327,7 +327,7 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
 
                     bool isFinalSpineAttempt = (spineAttempt == MaxSpinePlanAttempts - 1);
 
-                    var plan = SpinePlanner.TryPlanSpine(grid, _search, start, endTarget, startDoor, _spineRequiredRooms, elevation, gridRows, spineCostFn, borderBlocked, EdgeBorder, SpawnAwayFromDoors, isFinalSpineAttempt ? MoveMask.None : MoveMask.Left, isFinalSpineAttempt, rand, _diagnostics ? Log : null);
+                    var plan = SpinePlanner.TryPlanSpine(grid, _search, new CurveMarch(elevation), start, endTarget, startDoor, _spineRequiredRooms, spineCostFn, borderBlocked, EdgeBorder, SpawnAwayFromDoors, isFinalSpineAttempt ? MoveMask.None : MoveMask.Left, isFinalSpineAttempt, rand, _diagnostics ? Log : null);
                     _stats.SpineAttempts++;
 
                     spineSteps = plan.Steps;
