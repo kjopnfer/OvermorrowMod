@@ -70,22 +70,30 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
         }
 
         /// <summary>
-        /// Descending: cursor sits at the anchor (top-left of 2x2).
-        /// Ascending:  cursor sits at bottom-left, so the anchor is one row above.
+        /// The walker enters at the right landing and leaves through the left one.
         /// </summary>
-        public override Point AnchorOffsetFromCursor =>
-            _descendLeftToRight ? Point.Zero : new Point(0, -1);
+        public bool EntersFromRight { get; init; }
 
         /// <summary>
-        /// Stairs are inherently directional: one exit only.
-        /// Descending: cursor moves (+2, +1) to the lower-right landing's east neighbor.
-        /// Ascending:  cursor moves (+2, -1) to the upper-right landing's east neighbor.
+        /// The cursor sits on the entry landing: top-left (descending) or bottom-left (ascending), or the right landing
+        /// for <see cref="EntersFromRight"/>.
+        /// </summary>
+        public override Point AnchorOffsetFromCursor => (_descendLeftToRight, EntersFromRight) switch
+        {
+            (true, false) => Point.Zero,
+            (false, false) => new Point(0, -1),
+            (true, true) => new Point(-1, -1),
+            (false, true) => new Point(-1, 0),
+        };
+
+        /// <summary>
+        /// One exit, past the landing opposite the entry. The cursor moves 2 columns and 1 row.
         /// </summary>
         protected override CellExit[] CreateExits() => new[]
         {
             new CellExit(
-                _descendLeftToRight ? new Point(2, 1) : new Point(2, -1),
-                Direction.Right,
+                new Point(EntersFromRight ? -2 : 2, _descendLeftToRight == EntersFromRight ? -1 : 1),
+                EntersFromRight ? Direction.Left : Direction.Right,
                 // CombatRoom intentionally excluded: planner-placed only.
                 new GridRoom[] { new BookshelfCell(), new CorridorCell() })
         };
