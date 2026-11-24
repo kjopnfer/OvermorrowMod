@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.TextureMapping;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Tiles.Archives;
 using OvermorrowMod.Core.NPCs;
@@ -24,6 +25,30 @@ namespace OvermorrowMod.Content.Dungeons.Archive
         public override int LiningTile => ModContent.TileType<ArchiveWood>();
 
         public override DungeonPalette Palette { get; } = new ArchivePalette();
+
+        private readonly Dictionary<int, DungeonPalette> _zonePalettes = new();
+
+        /// <summary>
+        /// Zone 1 paints the wood wall's panels blue with blue chairs, zone 2 yellow panels with the default chairs; every
+        /// other zone keeps the default palette.
+        /// </summary>
+        public override DungeonPalette ZonePalette(int zone)
+        {
+            if (zone != 1 && zone != 2) return Palette;
+            if (_zonePalettes.TryGetValue(zone, out var palette)) return palette;
+
+            var walls = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>
+            {
+                [ArchivePalette.PanelWall] = TexPlaceAction.PlaceWall(zone == 1 ? ModContent.WallType<ArchiveWoodWallBlue>() : ModContent.WallType<ArchiveWoodWallYellow>()),
+            };
+            var objects = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>();
+            if (zone == 1)
+            {
+                objects[ArchivePalette.CozyChairLeft] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairBlue>());
+                objects[ArchivePalette.CozyChairRight] = TexPlaceAction.PlaceObject(ModContent.TileType<CozyChairBlue>(), direction: 1);
+            }
+            return _zonePalettes[zone] = Palette.With(walls, objects);
+        }
 
         public override IReadOnlyDictionary<(byte R, byte G, byte B), SpawnPool> SpawnBindings
         {

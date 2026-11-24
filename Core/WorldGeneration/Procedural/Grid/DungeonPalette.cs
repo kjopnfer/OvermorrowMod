@@ -32,5 +32,22 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
             Tiles = tiles;
             Objects = objects;
         }
+
+        /// <summary>
+        /// A copy of this palette with <paramref name="walls"/> and <paramref name="objects"/> replacing the placements of
+        /// the same colors.
+        /// </summary>
+        public DungeonPalette With(IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> walls, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> objects)
+        {
+            return new DungeonPalette(Merge(Walls, walls), Tiles, Merge(Objects, objects));
+        }
+
+        private static Dictionary<(byte R, byte G, byte B), TexPlaceFunction> Merge(IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> source, IReadOnlyDictionary<(byte R, byte G, byte B), TexPlaceFunction> overrides)
+        {
+            var merged = new Dictionary<(byte R, byte G, byte B), TexPlaceFunction>(source);
+            foreach (var (color, place) in overrides)
+                merged[color] = place;
+            return merged;
+        }
     }
 }

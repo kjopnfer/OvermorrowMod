@@ -37,6 +37,11 @@ namespace OvermorrowMod.Core.WorldGeneration.Procedural.Grid
         public abstract DungeonPalette Palette { get; }
 
         /// <summary>
+        /// The palette rooms of wall zone <paramref name="zone"/> paint with (see <see cref="DungeonLayout.SetZone"/>).
+        /// </summary>
+        public virtual DungeonPalette ZonePalette(int zone) => Palette;
+
+        /// <summary>
         /// Enemies-to-cells ratio passed to the encounter selector.
         /// </summary>
         public virtual float BaseDensity => 1.0f;
