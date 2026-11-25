@@ -123,7 +123,7 @@ namespace OvermorrowMod.Core.UI.Shop
                 cart.FillShop(Main.instance.shop[Main.npcShop].item);
         }
 
-        internal static void DrawButton(SpriteBatch sb, Rectangle r, string label)
+        private static void DrawButton(SpriteBatch sb, Rectangle r, string label)
         {
             bool hover = r.Contains(Main.mouseX, Main.mouseY);
             var font = FontAssets.MouseText.Value;

@@ -72,12 +72,12 @@ namespace OvermorrowMod.Core.UI.DeathScreen
         private const float BandReach = 1.15f;
 
         private static readonly Color BackdropColor = Color.Black * 0.6f;
-        private static readonly Color SilverColor = new(163, 167, 194);
-        private static readonly Color LightSilverColor = new(204, 208, 233);
-        private static readonly Color DarkSilverColor = new(106, 118, 153);
-        private static readonly Color GoldColor = new(214, 182, 84);
-        private static readonly Color GainColor = new(80, 220, 90);
-        private static readonly Color SlotColor = Color.Black * 0.45f;
+        internal static readonly Color SilverColor = new(163, 167, 194);
+        internal static readonly Color LightSilverColor = new(204, 208, 233);
+        internal static readonly Color DarkSilverColor = new(106, 118, 153);
+        internal static readonly Color GoldColor = new(214, 182, 84);
+        internal static readonly Color GainColor = new(80, 220, 90);
+        internal static readonly Color SlotColor = Color.Black * 0.45f;
 
         private static readonly RasterizerState ClipRasterizer = new() { CullMode = CullMode.None, ScissorTestEnable = true };
 
@@ -557,7 +557,7 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             }
         }
 
-        private static void DrawBand(SpriteBatch spriteBatch, Rectangle panel, float alpha)
+        internal static void DrawBand(SpriteBatch spriteBatch, Rectangle panel, float alpha)
         {
             Texture2D pixel = TextureAssets.MagicPixel.Value;
             int reach = (int)(panel.Width / 2f * BandReach);
@@ -569,7 +569,7 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             }
         }
 
-        private static void DrawBanner(SpriteBatch spriteBatch, int centerX, int y, int halfWidth, float alpha)
+        internal static void DrawBanner(SpriteBatch spriteBatch, int centerX, int y, int halfWidth, float alpha)
         {
             Texture2D left = ModContent.Request<Texture2D>(AssetDirectory.UI + "TitleCardLeftSegment").Value;
             Texture2D right = ModContent.Request<Texture2D>(AssetDirectory.UI + "TitleCardRightSegment").Value;
@@ -589,7 +589,7 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             spriteBatch.Draw(middle, new Vector2(centerX, y), null, color, 0f, middle.Size() / 2f, 1f, SpriteEffects.None, 0f);
         }
 
-        private static void DrawBorder(SpriteBatch spriteBatch, Rectangle rect, Color color)
+        internal static void DrawBorder(SpriteBatch spriteBatch, Rectangle rect, Color color)
         {
             Texture2D pixel = TextureAssets.MagicPixel.Value;
             spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, rect.Width, 1), color);
@@ -598,20 +598,20 @@ namespace OvermorrowMod.Core.UI.DeathScreen
             spriteBatch.Draw(pixel, new Rectangle(rect.Right - 1, rect.Y, 1, rect.Height), color);
         }
 
-        private static float TextWidth(string text, float scale) => FontAssets.MouseText.Value.MeasureString(text).X * scale;
+        internal static float TextWidth(string text, float scale) => FontAssets.MouseText.Value.MeasureString(text).X * scale;
 
-        private static void DrawText(SpriteBatch spriteBatch, string text, Vector2 position, Color color, float scale)
+        internal static void DrawText(SpriteBatch spriteBatch, string text, Vector2 position, Color color, float scale)
         {
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, text, position, color, 0f, Vector2.Zero, new Vector2(scale));
         }
 
-        private static void DrawTextCentered(SpriteBatch spriteBatch, string text, float x, float centerY, Color color, float scale)
+        internal static void DrawTextCentered(SpriteBatch spriteBatch, string text, float x, float centerY, Color color, float scale)
         {
             float height = FontAssets.MouseText.Value.MeasureString(text).Y * scale;
             DrawText(spriteBatch, text, new Vector2(x, centerY - height / 2f + 3f * scale), color, scale);
         }
 
-        private static void DrawCentered(SpriteBatch spriteBatch, string text, Vector2 center, Color color, float scale)
+        internal static void DrawCentered(SpriteBatch spriteBatch, string text, Vector2 center, Color color, float scale)
         {
             Vector2 size = FontAssets.MouseText.Value.MeasureString(text) * scale;
             DrawText(spriteBatch, text, new Vector2(center.X - size.X / 2f, center.Y - size.Y / 2f + 3f * scale), color, scale);

@@ -3,7 +3,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
 using OvermorrowMod.Content.Tiles.Archives;
-using OvermorrowMod.Core.UI.Guild;
+using OvermorrowMod.Core.UI.Upgrades;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Tiles.AdventurersGuild
         public override bool RightClick(int i, int j)
         {
             Point bottomLeft = TileUtils.GetCornerOfMultiTile(i, j, TileUtils.CornerType.BottomLeft);
-            GuildStatueDialogue.Open(bottomLeft.ToWorldCoordinates());
+            UpgradeScreen.Open(bottomLeft.ToWorldCoordinates());
             return true;
         }
     }

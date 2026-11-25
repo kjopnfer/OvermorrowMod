@@ -5,11 +5,11 @@ using OvermorrowMod.Core.Particles;
 using OvermorrowMod.Core.UI;
 using OvermorrowMod.Core.UI.ClassSelection;
 using OvermorrowMod.Core.UI.DeathScreen;
-using OvermorrowMod.Core.UI.Guild;
 using OvermorrowMod.Core.UI.MonkeyStones;
 using OvermorrowMod.Core.UI.RunResume;
 using OvermorrowMod.Core.UI.RunStats;
 using OvermorrowMod.Core.UI.Shop;
+using OvermorrowMod.Core.UI.Upgrades;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -37,7 +37,8 @@ namespace OvermorrowMod.Core
         internal UserInterface ShopInterface;
         public ShopDialogue ShopDialogue;
 
-        public GuildStatueDialogue GuildStatueDialogue;
+        internal UserInterface UpgradeInterface;
+        public UpgradeScreen UpgradeScreen;
 
         public RunStatsPanel RunStatsPanel;
 
@@ -78,7 +79,9 @@ namespace OvermorrowMod.Core
                 ShopDialogue = new ShopDialogue();
                 ShopInterface.SetState(ShopDialogue);
 
-                GuildStatueDialogue = new GuildStatueDialogue();
+                UpgradeInterface = new UserInterface();
+                UpgradeScreen = new UpgradeScreen();
+                UpgradeInterface.SetState(UpgradeScreen);
 
                 RunStatsPanel = new RunStatsPanel();
 
@@ -125,7 +128,7 @@ namespace OvermorrowMod.Core
             if (RunResumePrompt != null && RunResumePrompt.visible) RunResumeInterface?.Update(gameTime);
             if (ShopDialogue.IsActive) ShopInterface?.Update(gameTime);
             else ShopDialogue?.NotifyClosed();
-            if (!GuildStatueDialogue.IsActive) GuildStatueDialogue.Close();
+            if (UpgradeScreen.Visible) UpgradeInterface?.Update(gameTime);
             if (DeathScreen.Visible) DeathInterface?.Update(gameTime);
         }
 
@@ -139,7 +142,7 @@ namespace OvermorrowMod.Core
                 AddInterfaceLayer(layers, ClassSelection, mouseTextIndex, ClassSelection.visible, "Class Selection");
                 AddInterfaceLayer(layers, RunResumePrompt, mouseTextIndex, RunResumePrompt.visible, "Run Resume");
                 AddInterfaceLayer(layers, ShopDialogue, mouseTextIndex, ShopDialogue.IsActive, "Shop Dialogue");
-                AddInterfaceLayer(layers, GuildStatueDialogue, mouseTextIndex, GuildStatueDialogue.IsActive, "Guild Statue Dialogue");
+                AddInterfaceLayer(layers, UpgradeScreen, mouseTextIndex, UpgradeScreen.Visible, "Upgrade Screen");
                 AddInterfaceLayer(layers, RunStatsPanel, mouseTextIndex, RunStatsPanel.PopupVisible || RunStatsPanel.TabVisible, "Stats");
                 AddInterfaceLayer(layers, MonkeyStoneDisplay, mouseTextIndex, true, "Monkey Stones");
                 AddInterfaceLayer(layers, DeathScreen, mouseTextIndex, DeathScreen.Visible, "Death Screen");

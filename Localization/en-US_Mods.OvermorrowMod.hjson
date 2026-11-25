@@ -12,6 +12,27 @@ UI: {
 		Reroll: Reroll ({0} left)
 	}
 
+	UpgradeScreen: {
+		VendorName: Upgrade NPC
+		Message: UPGRADE_NPC_DIALOGUE_01
+		Now: Now
+		Next: Next
+		Unlock: Unlock
+		Upgrade: Upgrade
+		NotEnough: Not enough stones.
+		Max: MAX
+		Rank: Rank
+		Unlocked: Unlocked
+		Close: Close
+
+		Groups: {
+			Supplies: Supplies
+			Shops: Shops
+			Luck: Luck
+			Healing: Healing
+		}
+	}
+
 	MonkeyStones.Label: Stones
 
 	RunStats: {
