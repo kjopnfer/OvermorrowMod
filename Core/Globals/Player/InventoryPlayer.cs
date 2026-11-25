@@ -1,4 +1,5 @@
 using OvermorrowMod.Content.Items;
+using OvermorrowMod.Core.MetaUpgrades;
 using OvermorrowMod.Core.WorldGeneration;
 using Terraria;
 using Terraria.GameInput;
@@ -13,12 +14,11 @@ namespace OvermorrowMod.Core.Globals
     public class InventoryPlayer : ModPlayer
     {
         public const int OpenHotbarSlots = 3;
-        public const int OpenInventorySlots = 5;
         public const int HotbarSlots = 10;
 
         private int lastSelectedItem;
 
-        public static bool IsLocked(int slot) => (slot >= OpenHotbarSlots && slot < HotbarSlots) || (slot >= HotbarSlots + OpenInventorySlots && slot < Main.InventoryItemSlotsCount);
+        public static bool IsLocked(Player player, int slot) => (slot >= OpenHotbarSlots && slot < HotbarSlots) || (slot >= HotbarSlots + player.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.ExtraInventory) && slot < Main.InventoryItemSlotsCount);
 
         public override void Load()
         {
@@ -38,9 +38,13 @@ namespace OvermorrowMod.Core.Globals
             int lockedType = ModContent.ItemType<LockedSlot>();
             for (int i = 0; i < Main.InventoryItemSlotsCount; i++)
             {
-                if (!IsLocked(i)) continue;
-
                 Item item = Player.inventory[i];
+                if (!IsLocked(Player, i))
+                {
+                    if (item.type == lockedType) Player.inventory[i] = new Item();
+                    continue;
+                }
+
                 if (item.IsAir)
                 {
                     item = new Item(lockedType);
@@ -58,7 +62,7 @@ namespace OvermorrowMod.Core.Globals
         {
             if (Player.whoAmI != Main.myPlayer || !RunState.InRun) return;
 
-            if (Player.selectedItem < HotbarSlots && IsLocked(Player.selectedItem))
+            if (Player.selectedItem < HotbarSlots && IsLocked(Player, Player.selectedItem))
                 Player.selectedItem = lastSelectedItem == 0 ? OpenHotbarSlots - 1 : 0;
 
             lastSelectedItem = Player.selectedItem;

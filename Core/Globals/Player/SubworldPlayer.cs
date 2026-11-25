@@ -163,7 +163,7 @@ namespace OvermorrowMod.Core.Globals
             int type = upgrades.Rank(MetaUpgrade.PackedPotion) >= 3 ? ItemID.HealingPotion : ItemID.LesserHealingPotion;
             for (int i = 0; i < Main.InventoryItemSlotsCount; i++)
             {
-                if (!Player.inventory[i].IsAir || InventoryPlayer.IsLocked(i)) continue;
+                if (!Player.inventory[i].IsAir || InventoryPlayer.IsLocked(Player, i)) continue;
 
                 Item potions = new(type, count);
                 RunCountedItem.MarkKit(potions);
