@@ -4,7 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Interaction;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
-using SubworldLibrary;
+using OvermorrowMod.Core.WorldGeneration.Guild;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -103,7 +103,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public void Interact()
         {
             if (!string.IsNullOrEmpty(TargetSubworld))
-                SubworldSystem.Enter(TargetSubworld);
+                GuildSubworld.Enter(Main.LocalPlayer, TargetSubworld);
         }
 
         public override void Update()

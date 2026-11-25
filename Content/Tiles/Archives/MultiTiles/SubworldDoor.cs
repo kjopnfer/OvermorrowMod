@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Content.Items.Archives;
-using SubworldLibrary;
+using OvermorrowMod.Core.WorldGeneration.Guild;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -90,7 +90,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
     public class SubworldDoor_TE : ModTileEntity
     {
         /// <summary>
-        /// The subworld this door enters ("ModName/SubworldName"), set by the door room that places it.
+        /// The biome this door leads to through the guild ("ModName/SubworldName"), set by the door room that places it.
         /// </summary>
         public string TargetSubworld = "";
 
@@ -111,7 +111,7 @@ namespace OvermorrowMod.Content.Tiles.Archives
         public void Interact()
         {
             if (!string.IsNullOrEmpty(TargetSubworld))
-                SubworldSystem.Enter(TargetSubworld);
+                GuildSubworld.Enter(Main.LocalPlayer, TargetSubworld);
         }
 
         public override void Update()
