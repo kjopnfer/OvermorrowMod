@@ -138,6 +138,7 @@ namespace OvermorrowMod.Core.Globals
                     }
 
                     GiveStartingCoins();
+                    GivePackedPotions();
                 }
             }
             pendingClassItems = null;
@@ -150,6 +151,24 @@ namespace OvermorrowMod.Core.Globals
             for (int i = 0; i < coins.Length; i++)
             {
                 if (coins[i] > 0) Player.inventory[Main.InventoryCoinSlotsStart + i] = new Item(coinTypes[i], coins[i]);
+            }
+        }
+
+        private void GivePackedPotions()
+        {
+            MetaUpgradePlayer upgrades = Player.GetModPlayer<MetaUpgradePlayer>();
+            int count = upgrades.Value(MetaUpgrade.PackedPotion);
+            if (count == 0) return;
+
+            int type = upgrades.Rank(MetaUpgrade.PackedPotion) >= 3 ? ItemID.HealingPotion : ItemID.LesserHealingPotion;
+            for (int i = 0; i < Main.InventoryItemSlotsCount; i++)
+            {
+                if (!Player.inventory[i].IsAir || InventoryPlayer.IsLocked(i)) continue;
+
+                Item potions = new(type, count);
+                RunCountedItem.MarkKit(potions);
+                Player.inventory[i] = potions;
+                return;
             }
         }
 
