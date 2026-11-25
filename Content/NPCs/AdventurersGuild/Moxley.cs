@@ -1,4 +1,6 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Core.MetaUpgrades;
+using OvermorrowMod.Core.WorldGeneration;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -76,6 +78,9 @@ namespace OvermorrowMod.Content.NPCs.AdventurersGuild
                 if (player.buffTime[i] > 0 && Main.debuff[type] && !BuffID.Sets.NurseCannotRemoveDebuff[type])
                     player.DelBuff(i);
             }
+
+            if (player.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.HeartyMeal) > 0)
+                player.AddBuff(BuffID.WellFed, SubworldTimer.Duration);
 
             SoundEngine.PlaySound(SoundID.Item4, player.Center);
         }
