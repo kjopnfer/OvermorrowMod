@@ -88,12 +88,16 @@ namespace OvermorrowMod.Content.Dungeons.Archive.Cells
             [(171, 73, 94)] = TexPlaceAction.PlaceObject(ModContent.TileType<WoodenArchSmall>()),
             [(31, 224, 164)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceTableAndChair(x, y, palette.ObjectType(ModContent.TileType<SmallChair>()), facingRight: true)),
             [(98, 224, 31)] = TexPlaceAction.CustomPlaceObject((x, y) => PlaceTableAndChair(x, y, palette.ObjectType(ModContent.TileType<SmallChair>()), facingRight: false)),
-            [(180, 179, 163)] = TexPlaceAction.CustomPlaceObject((x, y) =>
-            {
-                for (int i = 0; i < 11; i++)
-                    WorldGen.PlaceObject(x, y - i * 3, ModContent.TileType<WoodenLadder>(), true);
-            }),
+            [LadderMarker] = TexPlaceAction.CustomPlaceObject(PlaceLadder),
         };
+
+        public static readonly (byte R, byte G, byte B) LadderMarker = (180, 179, 163);
+
+        public static void PlaceLadder(int x, int y)
+        {
+            for (int i = 0; i < 11; i++)
+                WorldGen.PlaceObject(x, y - i * 3, ModContent.TileType<WoodenLadder>(), true);
+        }
 
         private static void PlaceTableAndChair(int x, int y, int chairType, bool facingRight)
         {

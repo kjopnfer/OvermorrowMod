@@ -121,6 +121,7 @@ Tiles: {
 	BigChest.MapEntry: Big Chest
 	SubworldDoor.MapEntry: Subworld Door
 	InkwellDoor.MapEntry: Inkwell Door
+	GuildWizardStatue.MapEntry: Wizard Statue
 }
 
 Biomes: {
@@ -1064,6 +1065,7 @@ NPCs: {
 	CartShopkeeper.DisplayName: Cart Shopkeeper
 	GhostCrawler.DisplayName: ???
 	GhostHead.DisplayName: Ghost Head
+	Moxley.DisplayName: Moxley
 }
 
 Dialogue: {
@@ -1075,7 +1077,16 @@ Dialogue: {
 		Line4: Buying, or selling? Sell, I'd advise. Sooner or later it all finds its way to my cart, free of charge. Might as well get paid first, friend.
 		Line5: Who am I? Ha. I'm the fellow who's still here when everyone else isn't. Let's leave it at that.
 	}
+
+	Moxley: {
+		Greeting: MOXLEY_DIALOGUE_01
+		HealButton: Heal
+		Healed: MOXLEY_DIALOGUE_HEAL
+		AlreadyHealed: MOXLEY_DIALOGUE_ALREADY_HEALED
+	}
 }
+
+Subworlds.GuildSubworld.DisplayName: Adventurer's Guild
 
 Bestiary: {
 	ArchiveRat: A sneaky rodent with a knack for disappearing, it reemerges in a blur of speed to catch its target off guard.

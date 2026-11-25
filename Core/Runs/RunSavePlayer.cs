@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Misc;
 using OvermorrowMod.Core.Globals;
 using OvermorrowMod.Core.UI.ClassSelection;
 using OvermorrowMod.Core.WorldGeneration;
+using OvermorrowMod.Core.WorldGeneration.Guild;
 using OvermorrowMod.Core.WorldGeneration.TestSubworld;
 using SubworldLibrary;
 using System;
@@ -22,6 +23,12 @@ namespace OvermorrowMod.Core.Runs
         public Guid MainWorldId;
         public string BiomeName;
         public int TimerTicks = -1;
+
+        /// <summary>
+        /// The biome the guild's portal leads to ("ModName/SubworldName"). Null outside the guild.
+        /// </summary>
+        public string NextBiome;
+
         public readonly Dictionary<string, Vector2> LastPosition = new();
 
         private Vector2? lastSafePosition;
@@ -41,6 +48,7 @@ namespace OvermorrowMod.Core.Runs
             MainWorldId = Guid.Empty;
             BiomeName = null;
             TimerTicks = -1;
+            NextBiome = null;
             LastPosition.Clear();
         }
 
@@ -85,6 +93,7 @@ namespace OvermorrowMod.Core.Runs
                 lastSafePosition = null;
                 backupTimer = 0;
                 RestorePending = LastPosition.ContainsKey(ActiveSubworld);
+                if (current is not GuildSubworld) NextBiome = null;
             }
         }
 
@@ -135,6 +144,7 @@ namespace OvermorrowMod.Core.Runs
             tag["MainWorldId"] = MainWorldId.ToString();
             tag["BiomeName"] = BiomeName ?? "";
             tag["TimerTicks"] = TimerTicks;
+            tag["NextBiome"] = NextBiome ?? "";
             tag["LastPositionKeys"] = LastPosition.Keys.ToList();
             tag["LastPositionValues"] = LastPosition.Values.ToList();
         }
@@ -146,6 +156,8 @@ namespace OvermorrowMod.Core.Runs
             Guid.TryParse(tag.GetString("MainWorldId"), out MainWorldId);
             BiomeName = tag.GetString("BiomeName");
             TimerTicks = tag.ContainsKey("TimerTicks") ? tag.GetInt("TimerTicks") : -1;
+            string nextBiome = tag.GetString("NextBiome");
+            NextBiome = nextBiome == "" ? null : nextBiome;
 
             LastPosition.Clear();
             IList<string> keys = tag.GetList<string>("LastPositionKeys");
