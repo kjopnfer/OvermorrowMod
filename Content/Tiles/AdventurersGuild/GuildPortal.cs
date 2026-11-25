@@ -7,6 +7,7 @@ using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -44,6 +45,14 @@ namespace OvermorrowMod.Content.Tiles.AdventurersGuild
             r = 0.2f;
             g = 0.6f;
             b = 0.1f;
+        }
+
+        public override void MouseOver(int i, int j)
+        {
+            Player player = Main.LocalPlayer;
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = ItemID.MagicMirror;
         }
 
         public override bool RightClick(int i, int j)
