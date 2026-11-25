@@ -17,10 +17,19 @@ namespace OvermorrowMod.Core.Shop
 
         public static readonly HashSet<int> Purchased = new();
 
+        public static bool Restocked { get; private set; }
+
         public static List<(int type, int price)> GetStock(Player player)
         {
             stock ??= ArchiveShopPool.Roll(player, player.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.ExtraShelf));
             return stock;
+        }
+
+        public static void Restock(Player player)
+        {
+            stock = ArchiveShopPool.Roll(player, player.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.ExtraShelf));
+            Purchased.Clear();
+            Restocked = true;
         }
 
         public override void OnWorldLoad() => Reset();
@@ -32,6 +41,7 @@ namespace OvermorrowMod.Core.Shop
             tag["ShopTypes"] = stock.Select(entry => entry.type).ToList();
             tag["ShopPrices"] = stock.Select(entry => entry.price).ToList();
             tag["ShopPurchased"] = Purchased.ToList();
+            tag["ShopRestocked"] = Restocked;
         }
 
         public override void LoadWorldData(TagCompound tag)
@@ -42,6 +52,7 @@ namespace OvermorrowMod.Core.Shop
             IList<int> prices = tag.GetList<int>("ShopPrices");
             stock = types.Select((type, i) => (type, prices[i])).ToList();
             Purchased.UnionWith(tag.GetList<int>("ShopPurchased"));
+            Restocked = tag.GetBool("ShopRestocked");
         }
 
         public override void ClearWorld() => Reset();
@@ -50,6 +61,7 @@ namespace OvermorrowMod.Core.Shop
         {
             stock = null;
             Purchased.Clear();
+            Restocked = false;
         }
     }
 }

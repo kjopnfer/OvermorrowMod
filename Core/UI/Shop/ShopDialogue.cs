@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.NPCs.Archives.Shop;
+using OvermorrowMod.Core.MetaUpgrades;
+using OvermorrowMod.Core.Shop;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -32,6 +34,7 @@ namespace OvermorrowMod.Core.UI.Shop
         }
 
         private Rectangle shopButton;
+        private Rectangle restockButton;
         private Rectangle leaveButton;
         private bool prevMouseLeft;
         private bool openSoundPlayed;
@@ -77,13 +80,16 @@ namespace OvermorrowMod.Core.UI.Shop
             string wrapped = font.CreateWrappedText(greeting, inner.Right - textX - 10);
             Utils.DrawBorderString(spriteBatch, wrapped, new Vector2(textX, inner.Top + 52), Color.White, 0.8f);
 
-            int btnW = 130;
+            bool canRestock = Main.LocalPlayer.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.Restock) > 0 && !ShopRun.Restocked;
+            int btnW = canRestock ? 104 : 130;
             int btnH = 42;
             int btnY = inner.Bottom - btnH - 8;
             shopButton = new Rectangle(textX, btnY, btnW, btnH);
-            leaveButton = new Rectangle(textX + btnW + 14, btnY, btnW, btnH);
+            restockButton = canRestock ? new Rectangle(textX + btnW + 14, btnY, btnW, btnH) : Rectangle.Empty;
+            leaveButton = new Rectangle(textX + (btnW + 14) * (canRestock ? 2 : 1), btnY, btnW, btnH);
 
             DrawButton(spriteBatch, shopButton, "Shop");
+            if (canRestock) DrawButton(spriteBatch, restockButton, "Restock");
             DrawButton(spriteBatch, leaveButton, "Leave");
 
             HandleClicks(npc);
@@ -92,7 +98,7 @@ namespace OvermorrowMod.Core.UI.Shop
         private void HandleClicks(NPC npc)
         {
             Point mouse = new Point(Main.mouseX, Main.mouseY);
-            if (shopButton.Contains(mouse) || leaveButton.Contains(mouse))
+            if (shopButton.Contains(mouse) || restockButton.Contains(mouse) || leaveButton.Contains(mouse))
                 Main.LocalPlayer.mouseInterface = true;
 
             bool click = Main.mouseLeft && !prevMouseLeft;
@@ -101,6 +107,11 @@ namespace OvermorrowMod.Core.UI.Shop
 
             if (shopButton.Contains(mouse))
                 OpenShop(npc);
+            else if (restockButton.Contains(mouse))
+            {
+                SoundEngine.PlaySound(SoundID.Item37);
+                ShopRun.Restock(Main.LocalPlayer);
+            }
             else if (leaveButton.Contains(mouse))
             {
                 SoundEngine.PlaySound(SoundID.MenuClose);
