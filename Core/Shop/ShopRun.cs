@@ -1,3 +1,4 @@
+using OvermorrowMod.Core.MetaUpgrades;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -18,7 +19,7 @@ namespace OvermorrowMod.Core.Shop
 
         public static List<(int type, int price)> GetStock(Player player)
         {
-            stock ??= ArchiveShopPool.Roll(player);
+            stock ??= ArchiveShopPool.Roll(player, player.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.ExtraShelf));
             return stock;
         }
 
