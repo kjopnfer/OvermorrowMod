@@ -1,5 +1,6 @@
 using OvermorrowMod.Core.Items.Collectibles;
 using OvermorrowMod.Core.Loot;
+using OvermorrowMod.Core.MetaUpgrades;
 using OvermorrowMod.Core.Runs;
 using OvermorrowMod.Core.WorldGeneration;
 using SubworldLibrary;
@@ -135,9 +136,21 @@ namespace OvermorrowMod.Core.Globals
                         if (kitItem.ammo != AmmoID.None) Player.inventory[ammoSlot++] = kitItem;
                         else Player.inventory[slot++] = kitItem;
                     }
+
+                    GiveStartingCoins();
                 }
             }
             pendingClassItems = null;
+        }
+
+        private void GiveStartingCoins()
+        {
+            int[] coins = Utils.CoinsSplit(Player.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.StartingPouch));
+            int[] coinTypes = [ItemID.CopperCoin, ItemID.SilverCoin, ItemID.GoldCoin, ItemID.PlatinumCoin];
+            for (int i = 0; i < coins.Length; i++)
+            {
+                if (coins[i] > 0) Player.inventory[Main.InventoryCoinSlotsStart + i] = new Item(coinTypes[i], coins[i]);
+            }
         }
 
         public void ClearRunInventory()
