@@ -111,14 +111,14 @@ namespace OvermorrowMod.Core.Globals
 
             if (inSubworld)
             {
-                for (int i = 0; i < Terraria.Player.MaxBuffs; i++)
-                {
-                    Player.buffType[i] = 0;
-                    Player.buffTime[i] = 0;
-                }
-
                 if (pendingClassItems != null)
                 {
+                    for (int i = 0; i < Terraria.Player.MaxBuffs; i++)
+                    {
+                        Player.buffType[i] = 0;
+                        Player.buffTime[i] = 0;
+                    }
+
                     ClearRunItems();
                     Player.GetModPlayer<CollectiblePlayer>().Reset();
                     Player.GetModPlayer<RerollPlayer>().Reset();
