@@ -1,5 +1,7 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Core.MetaUpgrades;
 using OvermorrowMod.Core.Shop;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -85,13 +87,14 @@ namespace OvermorrowMod.Content.NPCs.Archives.Shop
         public void FillShop(Item[] items)
         {
             var stock = ShopRun.GetStock(Main.LocalPlayer);
+            int discount = Main.LocalPlayer.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.Haggler);
 
             int slot = 0;
             foreach (var (type, price) in stock)
             {
                 if (ShopRun.Purchased.Contains(type)) continue;
                 if (slot >= items.Length) break;
-                items[slot] = new Item(type) { shopCustomPrice = price };
+                items[slot] = new Item(type) { shopCustomPrice = (int)Math.Round(price * (100 - discount) / 100.0) };
                 slot++;
             }
 
