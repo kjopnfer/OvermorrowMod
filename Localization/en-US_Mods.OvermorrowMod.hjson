@@ -97,6 +97,95 @@ DeathScreen: {
 	Return: Return
 }
 
+MetaUpgrades: {
+	StartingPouch: {
+		DisplayName: Starting Pouch
+		Description: Start each run with coins.
+		Rank0: No coins
+		Rank1: 50 silver
+		Rank2: 1 gold
+		Rank3: 2 gold
+		Rank4: 3 gold
+	}
+
+	PackedPotion: {
+		DisplayName: Packed Potion
+		Description: Start each run with healing potions.
+		Rank0: No potions
+		Rank1: 1 Lesser Healing Potion
+		Rank2: 2 Lesser Healing Potions
+		Rank3: 2 Healing Potions
+	}
+
+	ExtraInventory: {
+		DisplayName: Extra Inventory
+		Description: Opens more run inventory slots.
+		Rank0: 5 slots
+		Rank1: 6 slots
+		Rank2: 7 slots
+		Rank3: 8 slots
+		Rank4: 9 slots
+		Rank5: 10 slots
+	}
+
+	Haggler: {
+		DisplayName: Haggler
+		Description: Reduces shop prices.
+		Rank0: 0% off
+		Rank1: 5% off
+		Rank2: 10% off
+		Rank3: 15% off
+	}
+
+	ExtraShelf: {
+		DisplayName: Extra Shelf
+		Description: Shops stock one more item.
+		Rank0: 4 items
+		Rank1: 5 items
+	}
+
+	Restock: {
+		DisplayName: Restock
+		Description: Reroll a shop's stock once per shop.
+		Rank0: Locked
+		Rank1: Once per shop
+	}
+
+	SpareReroll: {
+		DisplayName: Spare Reroll
+		Description: Start each run with more rerolls.
+		Rank0: 1 reroll
+		Rank1: 2 rerolls
+		Rank2: 3 rerolls
+		Rank3: 4 rerolls
+	}
+
+	Scavenger: {
+		DisplayName: Scavenger
+		Description: Enemies drop more coins.
+		Rank0: +0% coins
+		Rank1: +10% coins
+		Rank2: +20% coins
+		Rank3: +30% coins
+	}
+
+	QuickRecovery: {
+		DisplayName: Quick Recovery
+		Description: Reduces potion sickness time.
+		Rank0: 60 seconds
+		Rank1: 55 seconds
+		Rank2: 50 seconds
+		Rank3: 45 seconds
+	}
+
+	HeartyMeal: {
+		DisplayName: Hearty Meal
+		Description: Moxley's heal also gives Well Fed for the next zone.
+		Rank0: Locked
+		Rank1: Well Fed next zone
+	}
+}
+
 Tiles: {
 	ArchiveDoor.MapEntry: Archive Door
 	Lamp.MapEntry: Lamp

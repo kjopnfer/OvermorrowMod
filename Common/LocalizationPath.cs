@@ -14,5 +14,6 @@ namespace OvermorrowMod.Common
         public const string UI = Localization + "UI.";
         public const string CollectibleBonus = Localization + "CollectibleBonus.";
         public const string CollectibleEffect = Localization + "CollectibleEffect.";
+        public const string MetaUpgrades = Localization + "MetaUpgrades.";
     }
 }
