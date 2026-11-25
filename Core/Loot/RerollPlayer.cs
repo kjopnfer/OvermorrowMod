@@ -1,3 +1,4 @@
+using OvermorrowMod.Core.MetaUpgrades;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -5,8 +6,6 @@ namespace OvermorrowMod.Core.Loot
 {
     public class RerollPlayer : ModPlayer
     {
-        public const int StartingRerolls = 1;
-
         public int Rerolls;
 
         public bool TrySpend()
@@ -16,7 +15,7 @@ namespace OvermorrowMod.Core.Loot
             return true;
         }
 
-        public void Reset() => Rerolls = StartingRerolls;
+        public void Reset() => Rerolls = Player.GetModPlayer<MetaUpgradePlayer>().Value(MetaUpgrade.SpareReroll);
 
         public override void SaveData(TagCompound tag) => tag["Rerolls"] = Rerolls;
 
