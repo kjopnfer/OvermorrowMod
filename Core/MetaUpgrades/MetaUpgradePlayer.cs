@@ -1,4 +1,6 @@
+using OvermorrowMod.Common.Utilities;
 using OvermorrowMod.Core.Globals;
+using OvermorrowMod.Core.WorldGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +41,12 @@ namespace OvermorrowMod.Core.MetaUpgrades
         }
 
         public void SetRank(MetaUpgrade upgrade, int rank) => ranks[upgrade.Name] = Math.Clamp(rank, 0, upgrade.MaxRank);
+
+        public override void PostUpdateEquips()
+        {
+            if (RunState.InRun)
+                Player.potionDelayTime = Math.Min(Player.potionDelayTime, ModUtils.SecondsToTicks(Value(MetaUpgrade.QuickRecovery)));
+        }
 
         public override void SaveData(TagCompound tag)
         {
