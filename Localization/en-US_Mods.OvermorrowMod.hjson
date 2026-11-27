@@ -555,8 +555,7 @@ Items: {
 		DisplayName: Subworld Key
 		Tooltip:
 			'''
-			For testing purposes only. 
-			Used to access the Archive subworld.
+			For testing purposes only.
 			'''
 	}
 

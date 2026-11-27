@@ -13,7 +13,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
-using static OvermorrowMod.Core.WorldGeneration.ArchiveSubworld.SetupGenPass;
 
 namespace OvermorrowMod.Content.Tiles.Archives
 {
